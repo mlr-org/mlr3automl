@@ -59,7 +59,8 @@ LearnerAutoWEKA = R6Class("LearnerAutoWEKA",
       learners = lrns(learner_names)
 
       set_threads(learners, n = 8)
-      learners$classif.xgboost$param_set$set_values(nrounds = 50L)
+      learners$classif.xgboost$param_set$set_values(nrounds = 25L)
+      learners$classif.ranger$param_set$set_values(num.trees = 250L)
 
       # initialize graph learner
       graph = ppl("robustify", task = task, factors_to_numeric = TRUE) %>>%
@@ -83,8 +84,10 @@ LearnerAutoWEKA = R6Class("LearnerAutoWEKA",
         loop_function = bayesopt_ego,
         surrogate = surrogate,
         acq_function = acq_function,
-        acq_optimizer = acq_optimizer,
-        args = list(init_design_size = 20))
+        acq_optimizer = acq_optimizer)
+
+      # initial design
+      initial_xdt = generate_initial_design(task)
 
       # initialize auto tuner
       auto_tuner = auto_tuner(
@@ -94,7 +97,7 @@ LearnerAutoWEKA = R6Class("LearnerAutoWEKA",
         measure = self$measure,
         terminator = self$terminator,
         search_space = search_space,
-        callbacks = self$callbacks
+        callbacks = c(self$callbacks, clbk("mlr3tuning.initial_design", design = initial_xdt))
       )
 
       auto_tuner$train(task)

@@ -46,12 +46,6 @@ learner_params = list(
     'glmnet.s' = ParamDbl$new(id = 'glmnet.s', lower = 0, upper = Inf, default = 0.01),
     'glmnet.alpha' = ParamDbl$new(id = 'glmnet.alpha', lower = 0, upper = 1, default = 1)
   ),
-  'kknn' = list(
-    'kknn.k' = ParamInt$new(id = 'kknn.k', lower = 1, upper = Inf, default = 7),
-    'kknn.distance' = ParamDbl$new(id = 'kknn.distance', lower = 1, upper = Inf, default = 2),
-    'kknn.kernel' = ParamFct$new(id = 'kknn.kernel', levels = c("rectangular", "triangular", "epanechnikov", "biweight", "triweight", "cos", "inv", "gaussian",
-                                                                "rank", "optimal"), default = "optimal")
-  ),
   'ranger' = list(
     'ranger.mtry.ratio' = ParamDbl$new(id = 'ranger.mtry.ratio', lower = 0, upper = 1),
     'ranger.replace' = ParamLgl$new(id = 'ranger.replace', default = TRUE),
@@ -79,15 +73,9 @@ learner_tokens = list(
     'glmnet.s' = to_tune(1e-04, 10000, logscale = TRUE),
     'glmnet.alpha' = to_tune(0, 1)
   ),
-  'kknn' = list(
-    'kknn.k' = to_tune(1, 50, logscale = TRUE),
-    'kknn.distance' = to_tune(1, 5),
-    'kknn.kernel' = to_tune(levels = c("rectangular", "optimal", "epanechnikov", "biweight",
-                                       "triweight", "cos", "inv", "gaussian", "rank"))
-  ),
   'ranger' = list(
     'ranger.mtry.ratio' = to_tune(lower = 0, upper = 1),
-    'ranger.replace' = to_tune(levels = c(TRUE, FALSE)),
+    'ranger.replace' = to_tune(),
     'ranger.sample.fraction' = to_tune(0.1, 1)
   ),
   'rpart' = list(
@@ -180,4 +168,54 @@ default_surrogate = function(instance = NULL, learner = NULL, n_learner = NULL, 
     learners = replicate(n_learner, learner$clone(deep = TRUE), simplify = FALSE)
     SurrogateLearnerCollection$new(learners)
   }
+}
+
+generate_initial_design = function(task) {
+  search_space_rpart = ps(
+    "minsplit"  = p_int(2, 128, logscale = TRUE),
+    "minbucket" = p_int(1, 64, logscale = TRUE),
+    "cp"        = p_dbl(1e-04, 0.1, logscale = TRUE)
+  )
+
+  search_space_xgboost = ps(
+    "eta"               = p_dbl(1e-04, 1, logscale = TRUE),
+    "max_depth"         = p_int(1, 20),
+    "colsample_bytree"  = p_dbl(1e-01, 1),
+    "colsample_bylevel" = p_dbl(1e-01, 1),
+    "lambda"            = p_dbl(1e-03, 1000, logscale = TRUE),
+    "alpha"             = p_dbl(1e-03, 1000, logscale = TRUE),
+    "subsample"         = p_dbl(1e-01, 1)
+  )
+
+  search_space_glmnet = ps(
+    "s"      = p_dbl(1e-04, 10000, logscale = TRUE),
+    "alpha"  = p_dbl(0, 1)
+  )
+
+  search_space_ranger = ps(
+    "mtry.ratio"       = p_dbl(lower = 0, upper = 1),
+    "replace"          = p_lgl(),
+    "sample.fraction"  = p_dbl(0.1, 1)
+  )
+
+  search_spaces = list(
+    "classif.rpart"   = search_space_rpart,
+    "classif.xgboost" = search_space_xgboost,
+    "classif.glmnet"  = search_space_glmnet,
+    "classif.ranger"  = search_space_ranger
+  )
+
+  xdt = imap_dtr(search_spaces, function(search_space, id) {
+    xss = default_values(lrn(id), search_space = search_space, task = task)
+    has_logscale = map_lgl(search_space$params, function(param) get_private(param)$.has_logscale)
+    xdt = as.data.table(map_if(xss, has_logscale, function(value) if (value > 0) log(value) else value))
+    setnames(xdt, sprintf("%s.%s", id, names(xdt)))
+    xdt[, branch.selection := id]
+  }, .fill = TRUE)
+
+  xdt_xgboost = generate_design_random(search_space_xgboost, 6)$data
+  setnames(xdt_xgboost, sprintf("%s.%s", "classif.xgboost", names(xdt_xgboost)))
+  xdt_xgboost[, branch.selection := "classif.xgboost"]
+
+  rbindlist(list(xdt, xdt_xgboost), fill = TRUE)
 }

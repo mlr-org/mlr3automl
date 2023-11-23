@@ -18,3 +18,13 @@ load_callback_timeout = function() {
     },
   )
 }
+
+load_callback_initial_design = function() {
+  callback_tuning("mlr3tuning.initial_design",
+    label = "Initial Design Callback",
+    on_optimization_begin = function(callback, context) {
+      assert_data_table(callback$state$design)
+      context$instance$eval_batch(callback$state$design)
+    }
+  )
+}
