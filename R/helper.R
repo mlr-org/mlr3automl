@@ -88,8 +88,7 @@ learner_tokens = list(
   'ranger' = list(
     'ranger.mtry.ratio' = to_tune(lower = 0, upper = 1),
     'ranger.replace' = to_tune(levels = c(TRUE, FALSE)),
-    'ranger.sample.fraction' = to_tune(0.1, 1),
-    'ranger.num.trees' = to_tune(1, 2000)
+    'ranger.sample.fraction' = to_tune(0.1, 1)
   ),
   'rpart' = list(
     'rpart.minsplit' = to_tune(2, 128, logscale = TRUE),
@@ -98,7 +97,6 @@ learner_tokens = list(
   ),
   'xgboost' = list(
     'xgboost.eta' = to_tune(1e-04, 1, logscale = TRUE),
-    'xgboost.nrounds' = to_tune(1, 5000),
     'xgboost.max_depth' = to_tune(1, 20),
     'xgboost.colsample_bytree' = to_tune(1e-01, 1),
     'xgboost.colsample_bylevel' = to_tune(1e-01, 1),

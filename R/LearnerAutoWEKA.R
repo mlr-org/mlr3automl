@@ -58,6 +58,9 @@ LearnerAutoWEKA = R6Class("LearnerAutoWEKA",
       learner_names = paste(self$task_type, learners_default, sep = ".")
       learners = lrns(learner_names)
 
+      set_threads(learners, n = 8)
+      learners$classif.xgboost$param_set$set_values(nrounds = 50L)
+
       # initialize graph learner
       graph = ppl("robustify", task = task, factors_to_numeric = TRUE) %>>%
         ppl("branch", lapply(learners, po))
@@ -81,7 +84,7 @@ LearnerAutoWEKA = R6Class("LearnerAutoWEKA",
         surrogate = surrogate,
         acq_function = acq_function,
         acq_optimizer = acq_optimizer,
-        args = list(init_design_size = 10))
+        args = list(init_design_size = 20))
 
       # initialize auto tuner
       auto_tuner = auto_tuner(
