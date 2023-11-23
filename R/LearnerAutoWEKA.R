@@ -72,6 +72,7 @@ LearnerAutoWEKA = R6Class("LearnerAutoWEKA",
       graph_learner$fallback = switch(self$task_type,
         "classif" = lrn("classif.featureless", predict_type = self$measure$predict_type),
         "regr" = lrn("regr.featureless"))
+      graph_learner$encapsulate = c(train = "callr", predict = "callr")
 
       # initialize mbo tuner
       surrogate = default_surrogate(n_learner = 1, search_space = search_space, noisy = TRUE)

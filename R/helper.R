@@ -46,6 +46,12 @@ learner_params = list(
     'glmnet.s' = ParamDbl$new(id = 'glmnet.s', lower = 0, upper = Inf, default = 0.01),
     'glmnet.alpha' = ParamDbl$new(id = 'glmnet.alpha', lower = 0, upper = 1, default = 1)
   ),
+  'kknn' = list(
+    'kknn.k' = ParamInt$new(id = 'kknn.k', lower = 1, upper = Inf, default = 7),
+    'kknn.distance' = ParamDbl$new(id = 'kknn.distance', lower = 1, upper = Inf, default = 2),
+    'kknn.kernel' = ParamFct$new(id = 'kknn.kernel', levels = c("rectangular", "triangular", "epanechnikov", "biweight", "triweight", "cos", "inv", "gaussian",
+                                                                "rank", "optimal"), default = "optimal")
+  ),
   'ranger' = list(
     'ranger.mtry.ratio' = ParamDbl$new(id = 'ranger.mtry.ratio', lower = 0, upper = 1),
     'ranger.replace' = ParamLgl$new(id = 'ranger.replace', default = TRUE),
@@ -72,6 +78,12 @@ learner_tokens = list(
   'glmnet' = list(
     'glmnet.s' = to_tune(1e-04, 10000, logscale = TRUE),
     'glmnet.alpha' = to_tune(0, 1)
+  ),
+  'kknn' = list(
+    'kknn.k' = to_tune(1, 50, logscale = TRUE),
+    'kknn.distance' = to_tune(1, 5),
+    'kknn.kernel' = to_tune(levels = c("rectangular", "optimal", "epanechnikov", "biweight",
+                                       "triweight", "cos", "inv", "gaussian", "rank"))
   ),
   'ranger' = list(
     'ranger.mtry.ratio' = to_tune(lower = 0, upper = 1),
@@ -198,11 +210,18 @@ generate_initial_design = function(task) {
     "sample.fraction"  = p_dbl(0.1, 1)
   )
 
+  search_space_kknn = ps(
+    "k"        = p_int(1, 50, logscale = TRUE),
+    "distance" = p_dbl(1, 5),
+    "kernel"   = p_fct(levels = c("rectangular", "optimal", "epanechnikov", "biweight", "triweight", "cos", "inv", "gaussian", "rank"))
+  )
+
   search_spaces = list(
     "classif.rpart"   = search_space_rpart,
     "classif.xgboost" = search_space_xgboost,
     "classif.glmnet"  = search_space_glmnet,
-    "classif.ranger"  = search_space_ranger
+    "classif.ranger"  = search_space_ranger,
+    "classif.kknn"    = search_space_kknn
   )
 
   xdt = imap_dtr(search_spaces, function(search_space, id) {
@@ -213,7 +232,7 @@ generate_initial_design = function(task) {
     xdt[, branch.selection := id]
   }, .fill = TRUE)
 
-  xdt_xgboost = generate_design_random(search_space_xgboost, 6)$data
+  xdt_xgboost = generate_design_random(search_space_xgboost, 5)$data
   setnames(xdt_xgboost, sprintf("%s.%s", "classif.xgboost", names(xdt_xgboost)))
   xdt_xgboost[, branch.selection := "classif.xgboost"]
 
