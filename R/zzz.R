@@ -6,6 +6,7 @@
 #' @import mlr3mbo
 #' @import mlr3pipelines
 #' @import bbotk
+#' @import mlr3tuningspaces
 "_PACKAGE"
 
 .onLoad = function(libname, pkgname) {
