@@ -39,10 +39,14 @@ LearnerAutoWEKA = R6Class("LearnerAutoWEKA",
       self$callbacks = assert_list(as_callbacks(callbacks), types = "CallbackTuning")
       assert_choice(task_type, mlr_reflections$task_types$type)
 
+      # find packages
+      learner_packages = unlist(map(learners[[task_type]], "packages"))
+      packages = unique(c("mlr3tuning", "mlr3learners", "mlr3pipelines", "mlr3mbo", "mlr3automl", learner_packages))
+
       super$initialize(
         id = id,
         task_type = task_type,
-        packages = c("mlr3tuning", "mlr3learners", "mlr3pipelines", "mlr3mbo", "mlr3automl", learners_default),
+        packages = packages,
         feature_types = mlr_reflections$task_feature_types,
         predict_types = names(mlr_reflections$learner_predict_types[[task_type]]),
         properties = mlr_reflections$learner_properties[[task_type]],
@@ -54,20 +58,18 @@ LearnerAutoWEKA = R6Class("LearnerAutoWEKA",
 
     .train = function(task) {
 
-      # initialize learners
-      learner_names = paste(self$task_type, learners_default, sep = ".")
-      learners = lrns(learner_names)
-
       # initialize graph learner
-      graph = ppl("robustify", task = task, factors_to_numeric = TRUE) %>>%
-        ppl("branch", lapply(learners, po))
+      gr_branch = get_branch_pipeline(self$task_type)
+      graph = ppl("robustify", task = task, factors_to_numeric = TRUE) %>>% gr_branch
       graph_learner = as_learner(graph)
       graph_learner$id = "graph_learner"
       graph_learner$predict_type = self$measure$predict_type
-      search_space = default_space(learners_default, self$task_type)
+      search_space = get_search_space(self$task_type)
       graph_learner$fallback = switch(self$task_type,
         "classif" = lrn("classif.featureless", predict_type = self$measure$predict_type),
         "regr" = lrn("regr.featureless"))
+
+      browser()
 
       # initialize mbo tuner
       surrogate = default_surrogate(n_learner = 1, search_space = search_space, noisy = TRUE)

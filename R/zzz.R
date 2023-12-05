@@ -6,6 +6,7 @@
 #' @import mlr3mbo
 #' @import mlr3pipelines
 #' @import bbotk
+#' @import mlr3tuningspaces
 "_PACKAGE"
 
 .onLoad = function(libname, pkgname) {
@@ -16,4 +17,4 @@
   x$add("mlr3tuning.timeout", load_callback_timeout)
 } # nocov end
 
-leanify_package()
+#leanify_package()
