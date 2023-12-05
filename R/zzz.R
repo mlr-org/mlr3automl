@@ -1,14 +1,16 @@
-#' @import data.table
+#' @import bbotk
 #' @import checkmate
-#' @import paradox
-#' @import mlr3misc
-#' @import R6
+#' @import data.table
 #' @import mlr3
+#' @import mlr3learners
+#' @import mlr3mbo
+#' @import mlr3misc
+#' @import mlr3pipelines
 #' @import mlr3tuning
 #' @import mlr3tuningspaces
-#' @import mlr3mbo
-#' @import mlr3pipelines
-#' @import bbotk
+#' @import paradox
+#' @import R6
+
 "_PACKAGE"
 
 .onLoad = function(libname, pkgname) {
@@ -19,4 +21,4 @@
   x$add("mlr3tuning.timeout", load_callback_timeout)
 } # nocov end
 
-leanify_package()
+#leanify_package()
