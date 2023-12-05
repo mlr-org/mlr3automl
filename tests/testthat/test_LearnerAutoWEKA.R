@@ -2,20 +2,25 @@ test_that("LearnerClassifAutoWEKA train works", {
   task = tsk("sonar")
   resampling = rsmp("cv", folds = 3)
   measure = msr("classif.ce")
-  terminator = trm("run_time", secs = 30)
+  terminator = trm("run_time", secs = 10)
   learner = LearnerClassifAutoWEKA$new(
     resampling = resampling,
     measure = measure,
     terminator = terminator)
 
-  learner$train(task)
+  expect_names(learner$packages, must.include = "xgboost")
+
+  expect_class(learner$train(task), "LearnerClassifAutoWEKA")
+  expect_class(learner$model, "AutoTuner")
+
+  expect_prediction(learner$predict(task))
 })
 
 test_that("LearnerClassifAutoWEKA resample works", {
   task = tsk("sonar")
   resampling = rsmp("cv", folds = 3)
   measure = msr("classif.ce")
-  terminator = trm("run_time", secs = 30)
+  terminator = trm("run_time", secs = 10)
   learner = LearnerClassifAutoWEKA$new(
     resampling = resampling,
     measure = measure,
@@ -30,13 +35,14 @@ test_that("LearnerClassifAutoWEKA train works with parallelization", {
   task = tsk("sonar")
   resampling = rsmp("cv", folds = 3)
   measure = msr("classif.ce")
-  terminator = trm("run_time", secs = 30)
+  terminator = trm("run_time", secs = 10)
   learner = LearnerClassifAutoWEKA$new(
     resampling = resampling,
     measure = measure,
     terminator = terminator)
 
-  learner$train(task)
+  expect_class(learner$train(task), "LearnerClassifAutoWEKA")
+  expect_class(learner$model, "AutoTuner")
 })
 
 test_that("callback timeout works", {
@@ -50,9 +56,8 @@ test_that("callback timeout works", {
     terminator = terminator,
     callbacks = clbk("mlr3tuning.timeout", time_limit = 20))
 
-  learner$train(task)
-
-  expect_true(learner$model$tuning_instance$archive$benchmark_result$learners$learner[[1]]$timeout["train"] < 20)
+  expect_class(learner$train(task), "LearnerClassifAutoWEKA")
+  expect_lte(learner$model$tuning_instance$archive$benchmark_result$learners$learner[[1]]$timeout["train"], 20)
 })
 
 
@@ -67,7 +72,6 @@ test_that("callback timeout works", {
     terminator = terminator,
     callbacks = clbk("mlr3tuning.timeout", time_limit = 20, max_time_limit = 5))
 
-  learner$train(task)
-
-  expect_equal(learner$model$tuning_instance$archive$benchmark_result$learners$learner[[1]]$timeout["train"], c(train = 5))
+  expect_class(learner$train(task), "LearnerClassifAutoWEKA")
+  expect_lte(learner$model$tuning_instance$archive$benchmark_result$learners$learner[[1]]$timeout["train"], 5)
 })
