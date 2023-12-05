@@ -17,4 +17,4 @@
   x$add("mlr3tuning.timeout", load_callback_timeout)
 } # nocov end
 
-#leanify_package()
+leanify_package()
