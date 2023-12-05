@@ -40,7 +40,8 @@ LearnerAutoWEKA = R6Class("LearnerAutoWEKA",
       assert_choice(task_type, mlr_reflections$task_types$type)
 
       # find packages
-      learner_packages = unlist(map(learners[[task_type]], "packages"))
+      learners = lrns(paste0(task_type, ".", learner_ids))
+      learner_packages = unlist(map(learners, "packages"))
       packages = unique(c("mlr3tuning", "mlr3learners", "mlr3pipelines", "mlr3mbo", "mlr3automl", learner_packages))
 
       super$initialize(
@@ -68,8 +69,6 @@ LearnerAutoWEKA = R6Class("LearnerAutoWEKA",
       graph_learner$fallback = switch(self$task_type,
         "classif" = lrn("classif.featureless", predict_type = self$measure$predict_type),
         "regr" = lrn("regr.featureless"))
-
-      browser()
 
       # initialize mbo tuner
       surrogate = default_surrogate(n_learner = 1, search_space = search_space, noisy = TRUE)

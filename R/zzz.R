@@ -3,10 +3,12 @@
 #' @import paradox
 #' @import mlr3misc
 #' @import R6
+#' @import mlr3
+#' @import mlr3tuning
+#' @import mlr3tuningspaces
 #' @import mlr3mbo
 #' @import mlr3pipelines
 #' @import bbotk
-#' @import mlr3tuningspaces
 "_PACKAGE"
 
 .onLoad = function(libname, pkgname) {

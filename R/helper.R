@@ -1,39 +1,7 @@
-learners = list(
-  classif = list(
-    rpart = lrn("classif.rpart", id = "rpart"),
-    ranger = lrn("classif.ranger", id = "ranger"),
-    xgboost = lrn("classif.xgboost", id = "xgboost"),
-    glmnet = lrn("classif.glmnet", id = "glmnet"),
-    kknn = lrn("classif.kknn", id = "kknn")
-  ),
-  regr = list(
-    rpart = lrn("regr.rpart", id = "rpart"),
-    ranger = lrn("regr.ranger", id = "ranger"),
-    xgboost = lrn("regr.xgboost", id = "xgboost"),
-    glmnet = lrn("regr.glmnet", id = "glmnet"),
-    kknn = lrn("regr.kknn", id = "kknn")
-  )
-)
-
-tuning_spaces = list(
-  classif = list(
-    rpart = lts("classif.rpart.default"),
-    ranger = lts("classif.ranger.default"),
-    xgboost = lts("classif.xgboost.default"),
-    glmnet = lts("classif.glmnet.default"),
-    kknn = lts("classif.kknn.default")
-  ),
-  regr = list(
-    rpart = lts("regr.rpart.default"),
-    ranger = lts("regr.ranger.default"),
-    xgboost = lts("regr.xgboost.default"),
-    glmnet = lts("regr.glmnet.default"),
-    kknn = lts("regr.kknn.default")
-  )
-)
+learner_ids = c("rpart", "ranger", "xgboost", "glmnet", "kknn")
 
 get_branch_pipeline = function(task_type) {
-  learners = learners[[task_type]]
+  learners = set_names(map(learner_ids, function(id) lrn(sprintf("%s.%s", task_type, id), id = id)), learner_ids)
 
   # create branch
   graph = ppl("branch", graphs = learners)
@@ -41,25 +9,25 @@ get_branch_pipeline = function(task_type) {
 }
 
 get_search_space = function(task_type) {
-  learners = learners[[task_type]]
-  tuning_spaces = tuning_spaces[[task_type]]
+  learners = set_names(map(learner_ids, function(id) lrn(sprintf("%s.%s", task_type, id), id = id)), learner_ids)
+  tuning_spaces = set_names(map(learner_ids, function(id) lts(sprintf("%s.%s.default", task_type, id))), learner_ids)
 
   # add tuning spaces
-  walk(names(learners), function(id) {
+  walk(learner_ids, function(id) {
     tuning_space = tuning_spaces[[id]]
     learners[[id]]$param_set$set_values(.values = tuning_space$values)
   })
 
   # create branch
   graph = ppl("branch", graphs = learners)
-  graph$param_set$set_values(branch.selection = to_tune(names(learners)))
+  graph$param_set$set_values(branch.selection = to_tune(learner_ids))
   graph
 
   # create search space
   search_space = graph$param_set$search_space()
 
   # add dependencies
-  walk(names(learners), function(learner_id) {
+  walk(learner_ids, function(learner_id) {
     param_ids = search_space$ids()
     param_ids = grep(learner_id, param_ids, value = TRUE)
     walk(param_ids, function(param_id) {
