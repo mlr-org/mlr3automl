@@ -65,10 +65,16 @@ LearnerAutoWEKA = R6Class("LearnerAutoWEKA",
       graph_learner = as_learner(graph)
       graph_learner$id = "graph_learner"
       graph_learner$predict_type = self$measure$predict_type
-      search_space = get_search_space(self$task_type)
       graph_learner$fallback = switch(self$task_type,
         "classif" = lrn("classif.featureless", predict_type = self$measure$predict_type),
         "regr" = lrn("regr.featureless"))
+      graph_learner$encapsulate = c(train = "callr", predict = "callr")
+
+      # initialize search space
+      search_space = get_search_space(self$task_type)
+
+      # get initial design
+      initial_xdt = generate_initial_design(self$task_type, task)
 
       # initialize mbo tuner
       surrogate = default_surrogate(n_learner = 1, search_space = search_space, noisy = TRUE)
@@ -81,8 +87,7 @@ LearnerAutoWEKA = R6Class("LearnerAutoWEKA",
         loop_function = bayesopt_ego,
         surrogate = surrogate,
         acq_function = acq_function,
-        acq_optimizer = acq_optimizer,
-        args = list(init_design_size = 10))
+        acq_optimizer = acq_optimizer)
 
       # initialize auto tuner
       auto_tuner = auto_tuner(
@@ -92,7 +97,7 @@ LearnerAutoWEKA = R6Class("LearnerAutoWEKA",
         measure = self$measure,
         terminator = self$terminator,
         search_space = search_space,
-        callbacks = self$callbacks
+        callbacks = c(self$callbacks, clbk("mlr3tuning.initial_design", design = initial_xdt))
       )
 
       auto_tuner$train(task)

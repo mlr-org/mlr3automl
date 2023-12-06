@@ -1,6 +1,6 @@
 test_that("LearnerClassifAutoWEKA train works", {
   task = tsk("sonar")
-  resampling = rsmp("cv", folds = 3)
+  resampling = rsmp("holdout")
   measure = msr("classif.ce")
   terminator = trm("run_time", secs = 10)
   learner = LearnerClassifAutoWEKA$new(
