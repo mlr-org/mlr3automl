@@ -36,7 +36,8 @@ NeedsCompilation: no
 Roxygen: list(markdown = TRUE, r6 = TRUE)
 RoxygenNote: 7.2.3
 Collate:
-    'helper.R'
     'LearnerAutoWEKA.R'
+    'helper.R'
     'mlr_callbacks.R'
+    'tuning_spaces_automl.R'
     'zzz.R'

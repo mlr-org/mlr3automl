@@ -59,26 +59,22 @@ LearnerAutoWEKA = R6Class("LearnerAutoWEKA",
 
     .train = function(task) {
 
-      # # initialize learners
-      # learner_names = paste(self$task_type, learners_default, sep = ".")
-      # learners = lrns(learner_names)
-
-      # set_threads(learners, n = 8)
-      # learners$classif.xgboost$param_set$set_values(nrounds = 25L)
-      # learners$classif.ranger$param_set$set_values(num.trees = 250L)
-
-
       # initialize graph learner
       gr_branch = get_branch_pipeline(self$task_type)
       graph = ppl("robustify", task = task, factors_to_numeric = TRUE) %>>% gr_branch
       graph_learner = as_learner(graph)
       graph_learner$id = "graph_learner"
       graph_learner$predict_type = self$measure$predict_type
-      search_space = get_search_space(self$task_type)
       graph_learner$fallback = switch(self$task_type,
         "classif" = lrn("classif.featureless", predict_type = self$measure$predict_type),
         "regr" = lrn("regr.featureless"))
       graph_learner$encapsulate = c(train = "callr", predict = "callr")
+
+      # initialize search space
+      search_space = get_search_space(self$task_type)
+
+      # get initial design
+      initial_xdt = generate_initial_design(self$task_type, task)
 
       # initialize mbo tuner
       surrogate = default_surrogate(n_learner = 1, search_space = search_space, noisy = TRUE)
@@ -92,9 +88,6 @@ LearnerAutoWEKA = R6Class("LearnerAutoWEKA",
         surrogate = surrogate,
         acq_function = acq_function,
         acq_optimizer = acq_optimizer)
-
-      # initial design
-      initial_xdt = generate_initial_design(task)
 
       # initialize auto tuner
       auto_tuner = auto_tuner(

@@ -22,4 +22,4 @@
   x$add("mlr3tuning.initial_design", load_callback_initial_design)
 } # nocov end
 
-leanify_package()
+# leanify_package()
