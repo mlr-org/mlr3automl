@@ -20,6 +20,10 @@
   x = utils::getFromNamespace("mlr_callbacks", ns = "mlr3misc")
   x$add("mlr3tuning.timeout", load_callback_timeout)
   x$add("mlr3tuning.initial_design", load_callback_initial_design)
+
+  x = utils::getFromNamespace("mlr_tuning_spaces", ns = "mlr3tuningspaces")
+
+  iwalk(tuning_spaces, function(obj, nm) x$add(nm, obj))
 } # nocov end
 
-# leanify_package()
+leanify_package()
