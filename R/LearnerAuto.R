@@ -1,7 +1,7 @@
-#' @title Auto-WEKA Learner
+#' @title Auto Learner
 #'
 #' @description
-#' Abstract base class for Auto-WEKA like learner.
+#' Abstract base class for Auto like learner.
 #'
 #' @param id (`character(1)`)\cr
 #'   Identifier for the new instance.
@@ -18,7 +18,7 @@
 #' @param callbacks (list of [mlr3tuning::CallbackTuning]).
 #'
 #' @export
-LearnerAutoWEKA = R6Class("LearnerAutoWEKA",
+LearnerAuto = R6Class("LearnerAuto",
   inherit = Learner,
   public = list(
 
@@ -70,7 +70,6 @@ LearnerAutoWEKA = R6Class("LearnerAutoWEKA",
   private = list(
 
     .train = function(task) {
-
       # initialize graph learner
       gr_branch = get_branch_pipeline(self$task_type, self$learner_ids)
       graph = ppl("robustify", task = task, factors_to_numeric = TRUE) %>>% gr_branch
@@ -96,8 +95,7 @@ LearnerAutoWEKA = R6Class("LearnerAutoWEKA",
         loop_function = bayesopt_ego,
         surrogate = surrogate,
         acq_function = acq_function,
-        acq_optimizer = acq_optimizer,
-        args = list(init_design_size = 10))
+        acq_optimizer = acq_optimizer)
 
       # initialize auto tuner
       auto_tuner = auto_tuner(
@@ -120,128 +118,40 @@ LearnerAutoWEKA = R6Class("LearnerAutoWEKA",
   )
 )
 
-tuning_space_classif_autoweka = tuning_space_regr_autoweka = list(
-  # J48
-  J48.O     = to_tune(),
-  J48.U     = to_tune(),
-  J48.B     = to_tune(),
-  J48.J     = to_tune(),
-  J48.A     = to_tune(),
-  J48.S     = to_tune(),
-  J48.M     = to_tune(1, 64),
-  J48.C     = to_tune(0, 1),
+tuning_space_auto = list(
+  # glmnet
+  glmnet.s     = to_tune(1e-4, 1e4, logscale = TRUE),
+  glmnet.alpha = to_tune(0, 1),
 
-  # Decision Table
-  DecisionTable.E     = to_tune(levels = c("acc", "auc")),
-  DecisionTable.I     = to_tune(),
-  DecisionTable.S     = to_tune(levels = c("BestFirst", "GreedyStepwise")),
-  DecisionTable.X     = to_tune(1, 4),
+  # kknn
+  kknn.k        = to_tune(1, 50, logscale = TRUE),
+  kknn.distance = to_tune(1, 5),
+  kknn.kernel   = to_tune(c("rectangular", "optimal", "epanechnikov", "biweight", "triweight", "cos",  "inv",  "gaussian", "rank")),
 
-  # KStar
-  KStar.B     = to_tune(1, 100),
-  KStar.E     = to_tune(),
-  KStar.M     = to_tune(levels = c("a", "d", "m", "n")),
+  # ranger
+  ranger.mtry.ratio      = to_tune(0, 1),
+  ranger.replace         = to_tune(),
+  ranger.sample.fraction = to_tune(1e-1, 1),
 
-  # LMT
-  LMT.B     = to_tune(),
-  LMT.R     = to_tune(),
-  LMT.C     = to_tune(),
-  LMT.P     = to_tune(),
-  LMT.M     = to_tune(1, 64),
-  LMT.W     = to_tune(0, 1),
-  LMT.A     = to_tune(),
+  # rpart
+  rpart.minsplit  = to_tune(2, 128, logscale = TRUE),
+  rpart.minbucket = to_tune(1, 64, logscale = TRUE),
+  rpart.cp        = to_tune(1e-04, 1e-1, logscale = TRUE),
 
-  # PART
-  PART.N     = to_tune(2, 5),
-  PART.M     = to_tune(1, 64),
-  PART.R     = to_tune(),
-  PART.B     = to_tune(),
-
-  # SMO
-  # SMO.C       = to_tune(0.5, 1.5),
-  # SMO.N       = to_tune(levels = c("0", "1", "2")),
-  # SMO.M       = to_tune(),
-  # SMO.K       = to_tune(levels = c("NormalizedPolyKernel", "PolyKernel", "Puk", "RBFKernel")),
-  # SMO.E_poly  = to_tune(0.2, 5),
-  # SMO.L_poly  = to_tune(),
-
-  # BayesNet
-  BayesNet.D   = to_tune(),
-  BayesNet.Q   = to_tune(levels = c("K2", "HillClimber", "LAGDHillClimber", "SimulatedAnnealing", "TabuSearch", "TAN")),
-
-  # JRip
-  JRip.N   = to_tune(1, 5),
-  JRip.E   = to_tune(),
-  JRip.P   = to_tune(),
-  JRip.O   = to_tune(1, 5),
-
-  # SimpleLogistic
-  SimpleLogistic.S   = to_tune(),
-  SimpleLogistic.W   = to_tune(0, 1),
-  SimpleLogistic.A   = to_tune(),
-
-  # VotedPerceptron
-  VotedPerceptron.I   = to_tune(1, 10),
-  VotedPerceptron.M   = to_tune(5000, 50000),
-  VotedPerceptron.E   = to_tune(0.2, 5),
-
-  # SGD
-  SGD.F   = to_tune(levels = c("0", "1")),
-  SGD.L   = to_tune(0.00001, 0.1),
-  SGD.R   = to_tune(1e-12, 10),
-  SGD.N   = to_tune(),
-  SGD.M   = to_tune(),
-
-  # Logistic
-  Logistic.R = to_tune(1e-12, 10),
-
-  # OneR
-  OneR.B = to_tune(1, 32),
-
-  # MultilayerPerceptron
-  MultilayerPerceptron.L   = to_tune(0.1, 1),
-  MultilayerPerceptron.M   = to_tune(0.1, 1),
-  MultilayerPerceptron.B   = to_tune(),
-  MultilayerPerceptron.H   = to_tune(levels = c("a", "i", "o", "t")),
-  MultilayerPerceptron.C   = to_tune(),
-  MultilayerPerceptron.R   = to_tune(),
-  MultilayerPerceptron.D   = to_tune(),
-  MultilayerPerceptron.S   = to_tune(1, 1),
-
-  # REPTree
-  REPTree.M   = to_tune(1, 64),
-  REPTree.V   = to_tune(1e-5, 1e-1),
-  #FIXME: how to add both?
-  #L   = to_tune(1, 1)
-  REPTree.L   = to_tune(2, 20),
-  REPTree.P   = to_tune(),
-
-  # IBk
-  IBk.E   = to_tune(),
-  IBk.K   = to_tune(1, 64),
-  IBk.X   = to_tune(),
-  IBk.F   = to_tune(),
-  IBk.I   = to_tune(),
-
-  # RandomForestWEKA
-  RandomForestWEKA.I       = to_tune(2, 256),
-  RandomForestWEKA.K       = to_tune(0, 32),
-  RandomForestWEKA.depth   = to_tune(0, 20),
-
-  # RandomTree
-  RandomTree.M       = to_tune(1, 64),
-  #FIXME: K is 0 and 2-32
-  RandomTree.K       = to_tune(0, 32),
-  RandomTree.depth   = to_tune(0, 20),
-  #FIXME: N is 0 and 2-5
-  RandomTree.N       = to_tune(0, 5),
-  RandomTree.U       = to_tune()
+  # xgboost
+  xgboost.eta               = to_tune(1e-4, 1, logscale = TRUE),
+  xgboost.max_depth         = to_tune(1, 20),
+  xgboost.colsample_bytree  = to_tune(1e-1, 1),
+  xgboost.colsample_bylevel = to_tune(1e-1, 1),
+  xgboost.lambda            = to_tune(1e-3, 1e3, logscale = TRUE),
+  xgboost.alpha             = to_tune(1e-3, 1e3, logscale = TRUE),
+  xgboost.subsample         = to_tune(1e-1, 1)
 )
 
-#' @title Classification Auto-WEKA Learner
+#' @title Classification Auto Learner
 #'
 #' @description
-#' Classification Auto-WEKA learner.
+#' Classification Auto learner.
 #'
 #' @param id (`character(1)`)\cr
 #'   Identifier for the new instance.
@@ -251,29 +161,27 @@ tuning_space_classif_autoweka = tuning_space_regr_autoweka = list(
 #' @param callbacks (list of [mlr3tuning::CallbackTuning]).
 #'
 #' @export
-LearnerClassifAutoWEKA = R6Class("LearnerClassifAutoWEKA",
-  inherit = LearnerAutoWEKA,
+LearnerClassifAuto = R6Class("LearnerClassifAuto",
+  inherit = LearnerAuto,
   public = list(
 
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(
-      id = "classif.autoweka",
+      id = "classif.auto",
       resampling = rsmp("cv", folds = 3),
       measure = msr("classif.ce"),
       terminator = trm("evals", n_evals = 100L),
       callbacks = list()
       ){
 
-      learner_ids = c("J48", "DecisionTable", "KStar", "LMT", "PART", "BayesNet", "JRip", "SimpleLogistic",
-        "VotedPerceptron", "SGD", "Logistic", "OneR", "MultilayerPerceptron", "REPTree", "IBk", "RandomForestWEKA",
-        "RandomTree") # "SMO"
+      learner_ids = c("rpart", "ranger", "xgboost", "glmnet", "kknn")
 
       super$initialize(
         id = id,
         task_type = "classif",
         learner_ids = learner_ids,
-        tuning_space = tuning_space_classif_autoweka,
+        tuning_space = tuning_space_auto,
         resampling = resampling,
         measure = measure,
         terminator = terminator,
@@ -282,10 +190,10 @@ LearnerClassifAutoWEKA = R6Class("LearnerClassifAutoWEKA",
   )
 )
 
-#' @title Regression Auto-WEKA Learner
+#' @title Regression Auto Learner
 #'
 #' @description
-#' Regression Auto-WEKA learner.
+#' Regression Auto learner.
 #'
 #' @param id (`character(1)`)\cr
 #'   Identifier for the new instance.
@@ -295,28 +203,27 @@ LearnerClassifAutoWEKA = R6Class("LearnerClassifAutoWEKA",
 #' @param callbacks (list of [mlr3tuning::CallbackTuning]).
 #'
 #' @export
-LearnerRegrAutoWEKA = R6Class("LearnerRegrAutoWEKA",
-  inherit = LearnerAutoWEKA,
+LearnerRegrAuto = R6Class("LearnerRegrAuto",
+  inherit = LearnerAuto,
   public = list(
 
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(
-      id = "regr.autoweka",
+      id = "regr.auto",
       resampling = rsmp("cv", folds = 3),
       measure = msr("regr.rmse"),
       terminator = trm("evals", n_evals = 100L),
       callbacks = list()
       ){
 
-      learner_ids = c("DecisionTable", "GaussianProcesses", "M5P", "KStar", "LinearRegression", "SGD",
-        "MultilayerPerceptron", "REPTree", "IBk", "M5Rules", "RandomForestWEKA", "RandomTree", "SMOreg")
+      learner_ids = c("rpart", "ranger", "xgboost", "glmnet", "kknn")
 
       super$initialize(
         id = id,
         task_type = "regr",
         learner_ids = learner_ids,
-        tuning_space = tuning_space_regr_autoweka,
+        tuning_space = tuning_space_auto,
         resampling = resampling,
         measure = measure,
         terminator = terminator,

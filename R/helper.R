@@ -1,6 +1,4 @@
-learner_ids = c("rpart", "ranger", "xgboost", "glmnet", "kknn")
-
-get_branch_pipeline = function(task_type) {
+get_branch_pipeline = function(task_type, learner_ids) {
   learners = set_names(map(learner_ids, function(id) lrn(sprintf("%s.%s", task_type, id), id = id)), learner_ids)
 
   # create branch
@@ -8,28 +6,20 @@ get_branch_pipeline = function(task_type) {
   graph
 }
 
-get_search_space = function(task_type) {
-  learners = set_names(map(learner_ids, function(id) lrn(sprintf("%s.%s", task_type, id), id = id)), learner_ids)
-  tuning_spaces = set_names(map(learner_ids, function(id) lts(sprintf("%s.%s.default", task_type, id))), learner_ids)
-
-  # add tuning spaces
-  walk(learner_ids, function(id) {
-    tuning_space = tuning_spaces[[id]]
-    learners[[id]]$param_set$set_values(.values = tuning_space$values)
-  })
-
+get_search_space = function(task_type, learner_ids, tuning_space) {
   # create branch
-  graph = ppl("branch", graphs = learners)
+  graph = get_branch_pipeline(task_type, learner_ids)
   graph$param_set$set_values(branch.selection = to_tune(learner_ids))
-  graph
+  graph$param_set$set_values(.values = tuning_space)
 
   # create search space
   search_space = graph$param_set$search_space()
+ # search_space$deps = deps[id %in% search_space$ids()]
 
   # add dependencies
   walk(learner_ids, function(learner_id) {
     param_ids = search_space$ids()
-    param_ids = grep(learner_id, param_ids, value = TRUE)
+    param_ids = grep(paste0("^", learner_id), param_ids, value = TRUE)
     walk(param_ids, function(param_id) {
       search_space$add_dep(
         id = param_id,

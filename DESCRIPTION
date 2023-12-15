@@ -16,6 +16,7 @@ Imports:
     bbotk,
     checkmate,
     data.table,
+    mlr3extralearners,
     mlr3mbo,
     mlr3misc (>= 0.9.4),
     mlr3pipelines,
@@ -30,13 +31,16 @@ Suggests:
     rpart,
     testthat (>= 3.0.0),
     xgboost
+Remotes:
+    damirpolat/mlr3extralearners@weka_learners
 Config/testthat/edition: 3
 Encoding: UTF-8
 NeedsCompilation: no
 Roxygen: list(markdown = TRUE, r6 = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.2.3.9000
 Collate:
     'helper.R'
+    'LearnerAuto.R'
     'LearnerAutoWEKA.R'
     'mlr_callbacks.R'
     'zzz.R'
