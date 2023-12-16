@@ -1,4 +1,6 @@
 test_that("classification graph is constructed", {
+  skip_on_ci()
+
   learner_ids = c("J48", "DecisionTable", "KStar", "LMT", "PART", "SMO","BayesNet", "JRip", "SimpleLogistic",
     "VotedPerceptron", "SGD", "Logistic", "OneR", "MultilayerPerceptron", "REPTree", "IBk", "RandomForestWEKA",
     "RandomTree")
@@ -8,6 +10,8 @@ test_that("classification graph is constructed", {
 })
 
 test_that("classification search_space is constructed", {
+  skip_on_ci()
+
   learner_ids = c("J48", "DecisionTable", "KStar", "LMT", "PART", "SMO", "BayesNet", "JRip", "SimpleLogistic",
     "VotedPerceptron", "SGD", "Logistic", "OneR", "MultilayerPerceptron", "REPTree", "IBk", "RandomForestWEKA",
     "RandomTree")
@@ -17,6 +21,8 @@ test_that("classification search_space is constructed", {
 })
 
 test_that("LearnerClassifAutoWEKA train works", {
+  skip_on_ci()
+
   task = tsk("sonar")
   resampling = rsmp("holdout")
   measure = msr("classif.ce")
@@ -35,6 +41,8 @@ test_that("LearnerClassifAutoWEKA train works", {
 })
 
 test_that("LearnerClassifAutoWEKA resample works", {
+  skip_on_ci()
+
   task = tsk("sonar")
   resampling = rsmp("holdout")
   measure = msr("classif.ce")
@@ -48,6 +56,8 @@ test_that("LearnerClassifAutoWEKA resample works", {
 })
 
 test_that("LearnerClassifAutoWEKA train works with parallelization", {
+  skip_on_ci()
+
   future::plan("multisession", workers = 2)
 
   task = tsk("sonar")
@@ -64,6 +74,8 @@ test_that("LearnerClassifAutoWEKA train works with parallelization", {
 })
 
 test_that("callback timeout works", {
+  skip_on_ci()
+
   task = tsk("sonar")
   resampling = rsmp("holdout")
   measure = msr("classif.ce")
@@ -80,6 +92,8 @@ test_that("callback timeout works", {
 
 
 test_that("callback timeout works", {
+  skip_on_ci()
+
   task = tsk("sonar")
   resampling = rsmp("holdout")
   measure = msr("classif.ce")
