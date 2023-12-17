@@ -167,7 +167,8 @@ tuning_space_classif_autoweka = tuning_space_regr_autoweka = list(
 
   # BayesNet
   BayesNet.D   = to_tune(),
-  BayesNet.Q   = to_tune(levels = c("K2", "HillClimber", "LAGDHillClimber", "SimulatedAnnealing", "TabuSearch", "TAN")),
+  BayesNet.Q   = to_tune(levels = c("local.K2", "local.HillClimber", "local.LAGDHillClimber",
+                                    "local.SimulatedAnnealing", "local.TabuSearch", "local.TAN")),
 
   # JRip
   JRip.N   = to_tune(1, 5),
