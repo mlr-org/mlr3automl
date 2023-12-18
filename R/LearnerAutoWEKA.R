@@ -207,12 +207,12 @@ tuning_space_classif_autoweka = append(tuning_space_common_autoweka, list(
   PART.B     = to_tune(),
 
   # SMO
-  # SMO.C       = to_tune(0.5, 1.5),
-  # SMO.N       = to_tune(levels = c("0", "1", "2")),
-  # SMO.M       = to_tune(),
-  # SMO.K       = to_tune(levels = c("NormalizedPolyKernel", "PolyKernel", "Puk", "RBFKernel")),
-  # SMO.E_poly  = to_tune(0.2, 5),
-  # SMO.L_poly  = to_tune(),
+  SMO.C       = to_tune(0.5, 1.5),
+  SMO.N       = to_tune(levels = c("0", "1", "2")),
+  SMO.M       = to_tune(),
+  SMO.K       = to_tune(levels = c("NormalizedPolyKernel", "PolyKernel", "Puk", "RBFKernel")),
+  SMO.E_poly  = to_tune(0.2, 5),
+  SMO.L_poly  = to_tune(),
 
   # BayesNet
   BayesNet.D   = to_tune(),
@@ -244,13 +244,13 @@ tuning_space_classif_autoweka = append(tuning_space_common_autoweka, list(
 
 tuning_space_regr_autoweka = append(tuning_space_common_autoweka, list(
   # Gaussian Processes
-  #GaussianProcesses.L       = to_tune(0.0001, 1),
-  #GaussianProcesses.N       = to_tune(levels = c("0", "1", "2")),
-  #GaussianProcesses.K       = to_tune(levels = c("supportVector.NormalizedPolyKernel", "supportVector.PolyKernel",
-  #                                               "supportVector.Puk", "supportVector.RBFKernel")),
-  #GaussianProcesses.E_poly  = to_tune(0.2, 5),
-  #GaussianProcesses.L_poly  = to_tune(p_lgl()),
-  #GaussianProcesses.S       = to_tune(1, 10),
+  GaussianProcesses.L       = to_tune(0.0001, 1),
+  GaussianProcesses.N       = to_tune(levels = c("0", "1", "2")),
+  GaussianProcesses.K       = to_tune(levels = c("supportVector.NormalizedPolyKernel", "supportVector.PolyKernel",
+                                                 "supportVector.Puk", "supportVector.RBFKernel")),
+  GaussianProcesses.E_poly  = to_tune(0.2, 5),
+  GaussianProcesses.L_poly  = to_tune(p_lgl()),
+  GaussianProcesses.S       = to_tune(1, 10),
   
   # M5P
   M5P.N       = to_tune(p_lgl()),
@@ -270,13 +270,13 @@ tuning_space_regr_autoweka = append(tuning_space_common_autoweka, list(
   M5Rules.R   = to_tune(p_lgl())
   
   # SMOreg
-  #SMOreg.C              = to_tune(0.5, 1.5),
-  #SMOreg.N              = to_tune(levels = c("0", "1", "2")),
-  #SMOreg.I              = to_tune(levels = c("RegSMOImproved")),
-  #SMOreg.V_improved     = to_tune(p_lgl()),
-  #SMOreg.K              = to_tune(levels = c("NormalizedPolyKernel", "PolyKernel", "Puk", "RBFKernel")),
-  #SMOreg.E_poly         = to_tune(0.2, 5),
-  #SMOreg.L_poly         = to_tune(p_lgl())
+  SMOreg.C              = to_tune(0.5, 1.5),
+  SMOreg.N              = to_tune(levels = c("0", "1", "2")),
+  SMOreg.I              = to_tune(levels = c("RegSMOImproved")),
+  SMOreg.V_improved     = to_tune(p_lgl()),
+  SMOreg.K              = to_tune(levels = c("NormalizedPolyKernel", "PolyKernel", "Puk", "RBFKernel")),
+  SMOreg.E_poly         = to_tune(0.2, 5),
+  SMOreg.L_poly         = to_tune(p_lgl())
 ))
 
 #' @title Classification Auto-WEKA Learner
@@ -308,7 +308,7 @@ LearnerClassifAutoWEKA = R6Class("LearnerClassifAutoWEKA",
 
       learner_ids = c("J48", "DecisionTable", "KStar", "LMT", "PART", "BayesNet", "JRip", "SimpleLogistic",
         "VotedPerceptron", "SGD", "Logistic", "OneR", "MultilayerPerceptron", "REPTree", "IBk", "RandomForestWEKA",
-        "RandomTree") # "SMO"
+        "RandomTree", "SMO")
 
       super$initialize(
         id = id,
@@ -351,7 +351,8 @@ LearnerRegrAutoWEKA = R6Class("LearnerRegrAutoWEKA",
       ){
 
       learner_ids = c("DecisionTable", "M5P", "KStar", "LinearRegression", "SGD",
-        "MultilayerPerceptron", "REPTree", "IBk", "M5Rules", "RandomForestWEKA", "RandomTree") # "GaussianProcesses" "SMOreg"
+        "MultilayerPerceptron", "REPTree", "IBk", "M5Rules", "RandomForestWEKA", "RandomTree",
+        "GaussianProcesses","SMOreg")
 
       super$initialize(
         id = id,
