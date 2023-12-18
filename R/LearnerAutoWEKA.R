@@ -130,6 +130,7 @@ tuning_space_classif_autoweka = tuning_space_regr_autoweka = list(
   J48.S     = to_tune(),
   J48.M     = to_tune(1, 64),
   J48.C     = to_tune(0, 1),
+  J48.R     = to_tune(), # Otherwise tuning C, U and N is not possible
 
   # Decision Table
   DecisionTable.E     = to_tune(levels = c("acc", "auc")),
