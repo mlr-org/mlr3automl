@@ -267,7 +267,7 @@ tuning_space_regr_autoweka = append(tuning_space_common_autoweka, list(
   M5Rules.N   = to_tune(p_lgl()),
   M5Rules.M   = to_tune(1, 64),
   M5Rules.U   = to_tune(p_lgl()),
-  M5Rules.R   = to_tune(p_lgl())
+  M5Rules.R   = to_tune(p_lgl()),
   
   # SMOreg
   SMOreg.C              = to_tune(0.5, 1.5),
