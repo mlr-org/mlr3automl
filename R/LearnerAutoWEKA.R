@@ -80,7 +80,6 @@ LearnerAutoWEKA = R6Class("LearnerAutoWEKA",
       graph_learner$fallback = switch(self$task_type,
         "classif" = lrn("classif.featureless", predict_type = self$measure$predict_type),
         "regr" = lrn("regr.featureless"))
-      graph_learner$encapsulate = c(train = "callr", predict = "callr")
 
       # initialize search space
       search_space = get_search_space(self$task_type, self$learner_ids, self$tuning_space)
