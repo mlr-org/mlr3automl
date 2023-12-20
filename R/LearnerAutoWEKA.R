@@ -157,11 +157,11 @@ tuning_space_common_autoweka = list(
   REPTree.P   = to_tune(),
   
   # IBk
-  IBk.E   = to_tune(),
-  IBk.K   = to_tune(1, 64),
-  IBk.X   = to_tune(),
-  IBk.F   = to_tune(),
-  IBk.I   = to_tune(),
+  #IBk.E   = to_tune(),
+  #IBk.K   = to_tune(1, 64),
+  #IBk.X   = to_tune(),
+  #IBk.F   = to_tune(),
+  #IBk.I   = to_tune(),
   
   # RandomForestWEKA
   RandomForestWEKA.I       = to_tune(2, 256),
@@ -174,7 +174,7 @@ tuning_space_common_autoweka = list(
   RandomTree.K       = to_tune(0, 32),
   RandomTree.depth   = to_tune(0, 20),
   #FIXME: N is 0 and 2-5
-  RandomTree.N       = to_tune(0, 5),
+  RandomTree.N       = to_tune(2, 5),
   RandomTree.U       = to_tune()
 )
 
@@ -306,8 +306,8 @@ LearnerClassifAutoWEKA = R6Class("LearnerClassifAutoWEKA",
       ){
 
       learner_ids = c("J48", "DecisionTable", "KStar", "LMT", "PART", "BayesNet", "JRip", "SimpleLogistic",
-        "VotedPerceptron", "SGD", "Logistic", "OneR", "MultilayerPerceptron", "REPTree", "IBk", "RandomForestWEKA",
-        "RandomTree", "SMO")
+        "VotedPerceptron", "SGD", "Logistic", "OneR", "MultilayerPerceptron", "REPTree", "RandomForestWEKA",
+        "RandomTree", "SMO") #IBk
 
       super$initialize(
         id = id,
@@ -350,8 +350,8 @@ LearnerRegrAutoWEKA = R6Class("LearnerRegrAutoWEKA",
       ){
 
       learner_ids = c("DecisionTable", "M5P", "KStar", "LinearRegression", "SGD",
-        "MultilayerPerceptron", "REPTree", "IBk", "M5Rules", "RandomForestWEKA", "RandomTree",
-        "GaussianProcesses","SMOreg")
+        "MultilayerPerceptron", "REPTree", "M5Rules", "RandomForestWEKA", "RandomTree",
+        "GaussianProcesses","SMOreg") #"IBk"
 
       super$initialize(
         id = id,
