@@ -37,11 +37,12 @@ Regression Auto learner.
 Creates a new instance of this \link[R6:R6Class]{R6} class.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{LearnerRegrAuto$new(
-  id = "regr.auto",
-  resampling = rsmp("cv", folds = 3),
+  id = "regr.automl",
+  resampling = rsmp("holdout"),
   measure = msr("regr.rmse"),
   terminator = trm("evals", n_evals = 100L),
-  callbacks = list()
+  callbacks = list(),
+  timeout_learner = Inf
 )}\if{html}{\out{</div>}}
 }
 
@@ -58,6 +59,8 @@ Identifier for the new instance.}
 \item{\code{terminator}}{(\link[bbotk:Terminator]{bbotk::Terminator}).}
 
 \item{\code{callbacks}}{(list of \link[mlr3tuning:CallbackTuning]{mlr3tuning::CallbackTuning}).}
+
+\item{\code{timeout_learner}}{(\code{integer(1)}).}
 }
 \if{html}{\out{</div>}}
 }

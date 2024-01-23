@@ -1,8 +1,18 @@
 get_branch_pipeline = function(task_type, learner_ids) {
-  learners = set_names(map(learner_ids, function(id) lrn(sprintf("%s.%s", task_type, id), id = id)), learner_ids)
+  learners = set_names(map(learner_ids, function(id) set_threads(lrn(sprintf("%s.%s", task_type, id), id = id), 8)), learner_ids)
 
   # create branch
   graph = ppl("branch", graphs = learners)
+
+  # fix learners
+  if (task_type == "classif") {
+    values = list(svm.type = "C-classification")
+  } else if (task_type == "regr") {
+    values = list(svm.type = "eps-regression")
+  }
+
+  graph$param_set$set_values(.values = values)
+
   graph
 }
 
@@ -30,6 +40,34 @@ get_search_space = function(task_type, learner_ids, tuning_space) {
   })
 
   search_space
+}
+
+generate_initial_design = function(task_type, learner_ids, task, tuning_space) {
+  map_dtr(learner_ids, function(learner_id) {
+    learner = lrn(sprintf("%s.%s", task_type, learner_id))
+
+    token = tuning_space[grep(paste0("^", learner_id), names(tuning_space))]
+
+    # learner without tuning space
+    if (!length(token)) {
+      return(data.table(branch.selection = learner_id))
+    }
+
+    names(token) = gsub(paste0("^", learner_id, "."), "", names(token))
+    learner$param_set$set_values(.values = token)
+    search_space = learner$param_set$search_space()
+    xss = default_values(learner, search_space = search_space, task = task)
+    has_logscale = map_lgl(search_space$params, function(param) get_private(param)$.has_logscale)
+    xdt = as.data.table(map_if(xss, has_logscale, function(value) if (value > 0) log(value) else value))
+
+    # fix nrounds
+    if (learner_id == "xgboost") {
+      xdt[, nrounds := 50L]
+    }
+
+    setnames(xdt, sprintf("%s.%s", learner_id, names(xdt)))
+    xdt[, branch.selection := learner_id]
+  }, .fill = TRUE)
 }
 
 default_surrogate = function(instance = NULL, learner = NULL, n_learner = NULL, search_space = NULL, noisy = NULL) {

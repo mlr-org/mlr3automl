@@ -12,17 +12,21 @@ Abstract base class for Auto like learner.
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
+\item{\code{learner_ids}}{(\code{character()}).}
+
 \item{\code{resampling}}{(\link[mlr3:Resampling]{mlr3::Resampling}).}
 
 \item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
 
 \item{\code{terminator}}{(\link[bbotk:Terminator]{bbotk::Terminator}).}
 
+\item{\code{tuning_space}}{(list of \link{TuneToken}).}
+
 \item{\code{callbacks}}{(list of \link[mlr3tuning:CallbackTuning]{mlr3tuning::CallbackTuning}).}
 
-\item{\code{learner_ids}}{(\code{character()}).}
+\item{\code{fallback_learner}}{(\link[mlr3:Learner]{mlr3::Learner}).}
 
-\item{\code{tuning_space}}{(list of \link{TuneToken}).}
+\item{\code{timeout_learner}}{(\code{integer(1)}).}
 }
 \if{html}{\out{</div>}}
 }
@@ -61,7 +65,9 @@ Creates a new instance of this \link[R6:R6Class]{R6} class.
   resampling,
   measure,
   terminator,
-  callbacks = list()
+  callbacks = list(),
+  fallback_learner = NULL,
+  timeout_learner = Inf
 )}\if{html}{\out{</div>}}
 }
 
@@ -88,6 +94,10 @@ List of \link[paradox:to_tune]{paradox::TuneToken}s.}
 \item{\code{terminator}}{(\link[bbotk:Terminator]{bbotk::Terminator}).}
 
 \item{\code{callbacks}}{(list of \link[mlr3tuning:CallbackTuning]{mlr3tuning::CallbackTuning}).}
+
+\item{\code{fallback_learner}}{(\link[mlr3:Learner]{mlr3::Learner}).}
+
+\item{\code{timeout_learner}}{(\code{integer(1)}).}
 }
 \if{html}{\out{</div>}}
 }

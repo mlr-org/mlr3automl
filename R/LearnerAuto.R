@@ -16,11 +16,16 @@
 #' @param measure ([mlr3::Measure]).
 #' @param terminator ([bbotk::Terminator]).
 #' @param callbacks (list of [mlr3tuning::CallbackTuning]).
+#' @param fallback_learner ([mlr3::Learner]).
+#' @param timeout_learner (`integer(1)`).
 #'
 #' @export
 LearnerAuto = R6Class("LearnerAuto",
   inherit = Learner,
   public = list(
+
+    #' @field learner_ids (`character()`).
+    learner_ids = NULL,
 
     #' @field resampling ([mlr3::Resampling]).
     resampling = NULL,
@@ -31,25 +36,30 @@ LearnerAuto = R6Class("LearnerAuto",
     #' @field terminator ([bbotk::Terminator]).
     terminator = NULL,
 
-    #' @field callbacks (list of [mlr3tuning::CallbackTuning]).
-    callbacks = NULL,
-
-    #' @field learner_ids (`character()`).
-    learner_ids = NULL,
-
     #' @field tuning_space (list of [TuneToken]).
     tuning_space = NULL,
 
+    #' @field callbacks (list of [mlr3tuning::CallbackTuning]).
+    callbacks = NULL,
+
+    #' @field fallback_learner ([mlr3::Learner]).
+    fallback_learner = NULL,
+
+    #' @field timeout_learner (`integer(1)`).
+    timeout_learner = NULL,
+
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
-    initialize = function(id, task_type, learner_ids, tuning_space, resampling, measure, terminator, callbacks = list()) {
+    initialize = function(id, task_type, learner_ids, tuning_space, resampling, measure, terminator, callbacks = list(), fallback_learner = NULL, timeout_learner = Inf) {
+      assert_choice(task_type, mlr_reflections$task_types$type)
       self$learner_ids = assert_character(learner_ids)
       self$tuning_space = assert_list(tuning_space, types = "TuneToken")
       self$resampling = assert_resampling(resampling)
       self$measure = assert_measure(measure)
       self$terminator = assert_terminator(terminator)
       self$callbacks = assert_list(as_callbacks(callbacks), types = "CallbackTuning")
-      assert_choice(task_type, mlr_reflections$task_types$type)
+      self$fallback_learner = assert_learner(fallback_learner)
+      self$timeout_learner = assert_numeric(timeout_learner)
 
       # find packages
       learners = lrns(paste0(task_type, ".", self$learner_ids))
@@ -76,13 +86,15 @@ LearnerAuto = R6Class("LearnerAuto",
       graph_learner = as_learner(graph)
       graph_learner$id = "graph_learner"
       graph_learner$predict_type = self$measure$predict_type
-      graph_learner$fallback = switch(self$task_type,
-        "classif" = lrn("classif.featureless", predict_type = self$measure$predict_type),
-        "regr" = lrn("regr.featureless"))
+      graph_learner$fallback = self$fallback_learner
       graph_learner$encapsulate = c(train = "callr", predict = "callr")
+      graph_learner$timeout = c(train = self$timeout_learner, predict = self$timeout_learner)
 
       # initialize search space
       search_space = get_search_space(self$task_type, self$learner_ids, self$tuning_space)
+
+      # get initial design
+      initial_xdt = generate_initial_design(self$task_type, self$learner_ids, task, self$tuning_space)
 
       # initialize mbo tuner
       surrogate = default_surrogate(n_learner = 1, search_space = search_space, noisy = TRUE)
@@ -105,7 +117,7 @@ LearnerAuto = R6Class("LearnerAuto",
         measure = self$measure,
         terminator = self$terminator,
         search_space = search_space,
-        callbacks = self$callbacks
+        callbacks = c(self$callbacks, clbk("mlr3tuning.initial_design", design = initial_xdt))
       )
 
       auto_tuner$train(task)
@@ -116,36 +128,6 @@ LearnerAuto = R6Class("LearnerAuto",
       self$model$predict(task)
     }
   )
-)
-
-tuning_space_auto = list(
-  # glmnet
-  glmnet.s     = to_tune(1e-4, 1e4, logscale = TRUE),
-  glmnet.alpha = to_tune(0, 1),
-
-  # kknn
-  kknn.k        = to_tune(1, 50, logscale = TRUE),
-  kknn.distance = to_tune(1, 5),
-  kknn.kernel   = to_tune(c("rectangular", "optimal", "epanechnikov", "biweight", "triweight", "cos",  "inv",  "gaussian", "rank")),
-
-  # ranger
-  ranger.mtry.ratio      = to_tune(0, 1),
-  ranger.replace         = to_tune(),
-  ranger.sample.fraction = to_tune(1e-1, 1),
-
-  # rpart
-  rpart.minsplit  = to_tune(2, 128, logscale = TRUE),
-  rpart.minbucket = to_tune(1, 64, logscale = TRUE),
-  rpart.cp        = to_tune(1e-04, 1e-1, logscale = TRUE),
-
-  # xgboost
-  xgboost.eta               = to_tune(1e-4, 1, logscale = TRUE),
-  xgboost.max_depth         = to_tune(1, 20),
-  xgboost.colsample_bytree  = to_tune(1e-1, 1),
-  xgboost.colsample_bylevel = to_tune(1e-1, 1),
-  xgboost.lambda            = to_tune(1e-3, 1e3, logscale = TRUE),
-  xgboost.alpha             = to_tune(1e-3, 1e3, logscale = TRUE),
-  xgboost.subsample         = to_tune(1e-1, 1)
 )
 
 #' @title Classification Auto Learner
@@ -159,6 +141,7 @@ tuning_space_auto = list(
 #' @param measure ([mlr3::Measure]).
 #' @param terminator ([bbotk::Terminator]).
 #' @param callbacks (list of [mlr3tuning::CallbackTuning]).
+#' @param timeout_learner (`integer(1)`).
 #'
 #' @export
 LearnerClassifAuto = R6Class("LearnerClassifAuto",
@@ -168,26 +151,85 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(
-      id = "classif.auto",
-      resampling = rsmp("cv", folds = 3),
+      id = "classif.automl",
+      resampling = rsmp("holdout"),
       measure = msr("classif.ce"),
       terminator = trm("evals", n_evals = 100L),
-      callbacks = list()
+      callbacks = list(),
+      timeout_learner = Inf
       ){
 
-      learner_ids = c("rpart", "ranger", "xgboost", "glmnet", "kknn")
+      learner_ids = c("rpart", "glmnet", "kknn", "lda", "log_reg", "multinom", "naive_bayes", "nnet", "qda", "ranger", "svm", "xgboost")
+      fallback_learner = lrn("classif.featureless", predict_type = measure$predict_type)
 
       super$initialize(
         id = id,
         task_type = "classif",
         learner_ids = learner_ids,
-        tuning_space = tuning_space_auto,
+        tuning_space = tuning_space,
         resampling = resampling,
         measure = measure,
         terminator = terminator,
-        callbacks = callbacks)
+        callbacks = callbacks,
+        fallback_learner = fallback_learner,
+        timeout_learner = timeout_learner)
+    }
+  ),
+
+  private = list(
+    .train = function(task) {
+
+      if ("twoclass" %in% task$properties) {
+        self$learner_ids = self$learner_ids[self$learner_ids != "multinom"]
+      } else {
+        self$learner_ids = self$learner_ids[self$learner_ids != "log_reg"]
+      }
+      super$.train(task)
     }
   )
+)
+
+tuning_space = list(
+  # glmnet
+  glmnet.s     = to_tune(1e-4, 1e4, logscale = TRUE),
+  glmnet.alpha = to_tune(0, 1),
+
+  # kknn
+  kknn.k = to_tune(1, 50, logscale = TRUE),
+  kknn.distance = to_tune(1, 5),
+  kknn.kernel = to_tune(c("rectangular", "optimal", "epanechnikov", "biweight", "triweight", "cos",  "inv",  "gaussian", "rank")),
+
+  # nnet
+  nnet.maxit = to_tune(1e1, 1e3, logscale = TRUE),
+  nnet.decay = to_tune(1e-4, 1e-1, logscale = TRUE),
+  nnet.size  = to_tune(2, 50, logscale = TRUE),
+
+  # ranger
+  ranger.mtry.ratio      = to_tune(0, 1),
+  ranger.replace         = to_tune(),
+  ranger.sample.fraction = to_tune(1e-1, 1),
+  ranger.num.trees       = to_tune(1, 2000),
+
+  # rpart
+  rpart.minsplit  = to_tune(2, 128, logscale = TRUE),
+  rpart.minbucket = to_tune(1, 64, logscale = TRUE),
+  rpart.cp        = to_tune(1e-04, 1e-1, logscale = TRUE),
+
+  # svm
+  svm.cost    = to_tune(1e-4, 1e4, logscale = TRUE),
+  svm.kernel  = to_tune(c("polynomial", "radial", "sigmoid", "linear")),
+  svm.degree  = to_tune(2, 5),
+  svm.gamma   = to_tune(1e-4, 1e4, logscale = TRUE),
+
+  # xgboost
+  xgboost.eta               = to_tune(1e-4, 1, logscale = TRUE),
+  xgboost.max_depth         = to_tune(1, 20),
+  xgboost.colsample_bytree  = to_tune(1e-1, 1),
+  xgboost.colsample_bylevel = to_tune(1e-1, 1),
+  xgboost.lambda            = to_tune(1e-3, 1e3, logscale = TRUE),
+  xgboost.alpha             = to_tune(1e-3, 1e3, logscale = TRUE),
+  xgboost.subsample         = to_tune(1e-1, 1),
+  xgboost.nrounds           = to_tune(1, 5000)
 )
 
 #' @title Regression Auto Learner
@@ -201,6 +243,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
 #' @param measure ([mlr3::Measure]).
 #' @param terminator ([bbotk::Terminator]).
 #' @param callbacks (list of [mlr3tuning::CallbackTuning]).
+#' @param timeout_learner (`integer(1)`).
 #'
 #' @export
 LearnerRegrAuto = R6Class("LearnerRegrAuto",
@@ -210,24 +253,28 @@ LearnerRegrAuto = R6Class("LearnerRegrAuto",
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(
-      id = "regr.auto",
-      resampling = rsmp("cv", folds = 3),
+      id = "regr.automl",
+      resampling = rsmp("holdout"),
       measure = msr("regr.rmse"),
       terminator = trm("evals", n_evals = 100L),
-      callbacks = list()
+      callbacks = list(),
+      timeout_learner = Inf
       ){
 
-      learner_ids = c("rpart", "ranger", "xgboost", "glmnet", "kknn")
+      learner_ids = c("rpart", "glmnet", "kknn", "km", "lm", "nnet", "ranger", "svm", "xgboost")
+      fallback_learner = lrn("regr.featureless")
 
       super$initialize(
         id = id,
         task_type = "regr",
         learner_ids = learner_ids,
-        tuning_space = tuning_space_auto,
+        tuning_space = tuning_space,
         resampling = resampling,
         measure = measure,
         terminator = terminator,
-        callbacks = callbacks)
+        callbacks = callbacks,
+        fallback_learner = fallback_learner,
+        timeout_learner = timeout_learner)
     }
   )
 )
