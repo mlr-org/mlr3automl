@@ -179,6 +179,14 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
   private = list(
     .train = function(task) {
 
+      browser()
+
+      if (task$nrow * task$ncol > 1e6) {
+        self$learner_ids = self$learner_ids[self$learner_ids %nin% c("glmnet", "svm")]
+        self$tuning_space = self$tuning_space[grep(paste0("^glmnet"), names(self$tuning_space), invert = TRUE)]
+        self$tuning_space = self$tuning_space[grep(paste0("^svm"), names(self$tuning_space), invert = TRUE)]
+      }
+
       if ("twoclass" %in% task$properties) {
         self$learner_ids = self$learner_ids[self$learner_ids != "multinom"]
       } else {

@@ -13,7 +13,7 @@ load_callback_timeout = function() {
       remaining_time = min(remaining_time, callback$state$max_time_limit)
 
       map(context$design$learner, function(learner) {
-        learner$timeout = c(train = remaining_time, predict = Inf)
+        learner$timeout = c(train = remaining_time, predict = remaining_time)
       })
     },
   )

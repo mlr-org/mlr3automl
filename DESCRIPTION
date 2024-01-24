@@ -16,6 +16,7 @@ Imports:
     bbotk,
     checkmate,
     data.table,
+    mlr3extralearners,
     mlr3mbo,
     mlr3misc (>= 0.9.4),
     mlr3pipelines,
@@ -33,6 +34,8 @@ Suggests:
     rpart,
     testthat (>= 3.0.0),
     xgboost
+Remotes:
+    mlr-org/mlr3extralearners
 Config/testthat/edition: 3
 Encoding: UTF-8
 NeedsCompilation: no

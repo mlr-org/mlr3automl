@@ -5,13 +5,14 @@ get_branch_pipeline = function(task_type, learner_ids) {
   graph = ppl("branch", graphs = learners)
 
   # fix learners
-  if (task_type == "classif") {
-    values = list(svm.type = "C-classification")
-  } else if (task_type == "regr") {
-    values = list(svm.type = "eps-regression")
+  if ("svm" %in% learner_ids) {
+    if (task_type == "classif") {
+      values = list(svm.type = "C-classification")
+    } else if (task_type == "regr") {
+      values = list(svm.type = "eps-regression")
+    }
+    graph$param_set$set_values(.values = values)
   }
-
-  graph$param_set$set_values(.values = values)
 
   graph
 }
