@@ -80,21 +80,19 @@ LearnerAuto = R6Class("LearnerAuto",
   private = list(
 
     .train = function(task) {
-      # initialize graph learner
-      gr_branch = get_branch_pipeline(self$task_type, self$learner_ids)
-      graph = ppl("robustify", task = task, factors_to_numeric = TRUE) %>>% gr_branch
-      graph_learner = as_learner(graph)
-      graph_learner$id = "graph_learner"
+
+      learner = lrn(sprintf("%s.xgboost", self$task_type), id = "xgboost", nthread = 8, nrounds = 10)
+      graph_preproc = ppl("robustify", task = task, learner = learner)
+      graph_learner = as_learner(graph_preproc %>>% learner)
+      graph_learner$param_set$set_values(.values = tuning_space)
       graph_learner$predict_type = self$measure$predict_type
       graph_learner$fallback = self$fallback_learner
       graph_learner$encapsulate = c(train = "callr", predict = "callr")
       graph_learner$timeout = c(train = self$timeout_learner, predict = self$timeout_learner)
+      graph_learner$id = "graph_learner"
 
-      # initialize search space
-      search_space = get_search_space(self$task_type, self$learner_ids, self$tuning_space)
-
-      # get initial design
-      initial_xdt = generate_initial_design(self$task_type, self$learner_ids, task, self$tuning_space)
+      search_space = graph_learner$param_set$search_space()
+      initial_xdt = generate_design_lhs(search_space, 20)$data
 
       # initialize mbo tuner
       surrogate = default_surrogate(n_learner = 1, search_space = search_space, noisy = TRUE)
@@ -116,9 +114,12 @@ LearnerAuto = R6Class("LearnerAuto",
         resampling = self$resampling,
         measure = self$measure,
         terminator = self$terminator,
-        search_space = search_space,
-        callbacks = c(self$callbacks, clbk("mlr3tuning.initial_design", design = initial_xdt))
+        callbacks = c(self$callbacks, clbk("mlr3tuning.initial_design", design = initial_xdt), clbk("mlr3tuning.xgboost"))
       )
+
+      auto_tuner$preproc = graph_preproc
+      splits = partition(task, ratio = 0.9, stratify = TRUE)
+      task$set_row_roles(splits$test, "holdout")
 
       auto_tuner$train(task)
       auto_tuner
@@ -174,62 +175,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         fallback_learner = fallback_learner,
         timeout_learner = timeout_learner)
     }
-  ),
-
-  private = list(
-    .train = function(task) {
-
-      if ("twoclass" %in% task$properties) {
-        self$learner_ids = self$learner_ids[self$learner_ids != "multinom"]
-      } else {
-        self$learner_ids = self$learner_ids[self$learner_ids != "log_reg"]
-      }
-      super$.train(task)
-    }
   )
-)
-
-tuning_space = list(
-  # glmnet
-  glmnet.s     = to_tune(1e-4, 1e4, logscale = TRUE),
-  glmnet.alpha = to_tune(0, 1),
-
-  # kknn
-  kknn.k = to_tune(1, 50, logscale = TRUE),
-  kknn.distance = to_tune(1, 5),
-  kknn.kernel = to_tune(c("rectangular", "optimal", "epanechnikov", "biweight", "triweight", "cos",  "inv",  "gaussian", "rank")),
-
-  # nnet
-  nnet.maxit = to_tune(1e1, 1e3, logscale = TRUE),
-  nnet.decay = to_tune(1e-4, 1e-1, logscale = TRUE),
-  nnet.size  = to_tune(2, 50, logscale = TRUE),
-
-  # ranger
-  ranger.mtry.ratio      = to_tune(0, 1),
-  ranger.replace         = to_tune(),
-  ranger.sample.fraction = to_tune(1e-1, 1),
-  ranger.num.trees       = to_tune(1, 2000),
-
-  # rpart
-  rpart.minsplit  = to_tune(2, 128, logscale = TRUE),
-  rpart.minbucket = to_tune(1, 64, logscale = TRUE),
-  rpart.cp        = to_tune(1e-04, 1e-1, logscale = TRUE),
-
-  # svm
-  svm.cost    = to_tune(1e-4, 1e4, logscale = TRUE),
-  svm.kernel  = to_tune(c("polynomial", "radial", "sigmoid", "linear")),
-  svm.degree  = to_tune(2, 5),
-  svm.gamma   = to_tune(1e-4, 1e4, logscale = TRUE),
-
-  # xgboost
-  xgboost.eta               = to_tune(1e-4, 1, logscale = TRUE),
-  xgboost.max_depth         = to_tune(1, 20),
-  xgboost.colsample_bytree  = to_tune(1e-1, 1),
-  xgboost.colsample_bylevel = to_tune(1e-1, 1),
-  xgboost.lambda            = to_tune(1e-3, 1e3, logscale = TRUE),
-  xgboost.alpha             = to_tune(1e-3, 1e3, logscale = TRUE),
-  xgboost.subsample         = to_tune(1e-1, 1),
-  xgboost.nrounds           = to_tune(1, 5000)
 )
 
 #' @title Regression Auto Learner
@@ -277,4 +223,15 @@ LearnerRegrAuto = R6Class("LearnerRegrAuto",
         timeout_learner = timeout_learner)
     }
   )
+)
+
+tuning_space = list(
+  # xgboost
+  xgboost.eta               = to_tune(1e-4, 1, logscale = TRUE),
+  xgboost.max_depth         = to_tune(1, 20),
+  xgboost.colsample_bytree  = to_tune(1e-1, 1),
+  xgboost.colsample_bylevel = to_tune(1e-1, 1),
+  xgboost.lambda            = to_tune(1e-3, 1e3, logscale = TRUE),
+  xgboost.alpha             = to_tune(1e-3, 1e3, logscale = TRUE),
+  xgboost.subsample         = to_tune(1e-1, 1)
 )

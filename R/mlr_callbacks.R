@@ -33,3 +33,17 @@ load_callback_initial_design = function() {
     }
   )
 }
+
+load_callback_xgboost = function() {
+  callback_tuning("mlr3tuning.xgboost",
+    label = "XBoost Callback",
+
+    on_result = function(callback, context) {
+      context$result$learner_param_vals[[1]]$xgboost.early_stopping_rounds = 10
+      context$result$learner_param_vals[[1]]$xgboost.nrounds = 1000
+      context$result$learner_param_vals[[1]]$xgboost.early_stopping_set = "holdout"
+    }
+  )
+}
+
+
