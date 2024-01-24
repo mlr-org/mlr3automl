@@ -159,7 +159,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
       timeout_learner = Inf
       ){
 
-      learner_ids = c("rpart", "glmnet", "kknn", "lda", "log_reg", "multinom", "naive_bayes", "nnet", "qda", "ranger", "svm", "xgboost")
+      learner_ids = c("rpart", "glmnet", "fnn", "lda", "log_reg", "multinom", "naive_bayes", "nnet", "qda", "ranger", "svm", "xgboost")
       fallback_learner = lrn("classif.featureless", predict_type = measure$predict_type)
 
       super$initialize(
@@ -178,13 +178,24 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
 
   private = list(
     .train = function(task) {
+      if (task$nrow * task$ncol > 1e5) {
+        self$learner_ids = self$learner_ids[self$learner_ids %nin% "svm"]
+        self$tuning_space = self$tuning_space[grep(paste0("^svm"), names(self$tuning_space), invert = TRUE)]
 
-      browser()
+        self$tuning_space$xgboost.nrounds = to_tune(1L, 2500L)
+      }
 
       if (task$nrow * task$ncol > 1e6) {
-        self$learner_ids = self$learner_ids[self$learner_ids %nin% c("glmnet", "svm")]
+        self$tuning_space$xgboost.nrounds = to_tune(1L, 1000L)
+        self$tuning_space$ranger.num.trees = to_tune(1L, 500L)
+      }
+
+      if (task$nrow * task$ncol > 1e7) {
+        self$learner_ids = self$learner_ids[self$learner_ids %nin% c("glmnet", "naive_bayes")]
         self$tuning_space = self$tuning_space[grep(paste0("^glmnet"), names(self$tuning_space), invert = TRUE)]
-        self$tuning_space = self$tuning_space[grep(paste0("^svm"), names(self$tuning_space), invert = TRUE)]
+
+        self$tuning_space$xgboost.nrounds = to_tune(30L, 30L)
+        self$tuning_space$ranger.num.trees = to_tune(250L, 250L)
       }
 
       if ("twoclass" %in% task$properties) {
@@ -202,10 +213,8 @@ tuning_space = list(
   glmnet.s     = to_tune(1e-4, 1e4, logscale = TRUE),
   glmnet.alpha = to_tune(0, 1),
 
-  # kknn
-  kknn.k = to_tune(1, 50, logscale = TRUE),
-  kknn.distance = to_tune(1, 5),
-  kknn.kernel = to_tune(c("rectangular", "optimal", "epanechnikov", "biweight", "triweight", "cos",  "inv",  "gaussian", "rank")),
+  # fnn
+  fnn.k = to_tune(1, 50, logscale = TRUE),
 
   # nnet
   nnet.maxit = to_tune(1e1, 1e3, logscale = TRUE),
@@ -269,7 +278,7 @@ LearnerRegrAuto = R6Class("LearnerRegrAuto",
       timeout_learner = Inf
       ){
 
-      learner_ids = c("rpart", "glmnet", "kknn", "km", "lm", "nnet", "ranger", "svm", "xgboost")
+      learner_ids = c("rpart", "glmnet", "fnn", "km", "lm", "nnet", "ranger", "svm", "xgboost")
       fallback_learner = lrn("regr.featureless")
 
       super$initialize(

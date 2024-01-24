@@ -1,7 +1,7 @@
 test_that("classification graph is constructed", {
   skip_on_ci()
 
-  learner_ids = c("rpart", "glmnet", "kknn", "lda", "log_reg", "multinom", "naive_bayes", "nnet", "qda", "ranger", "svm", "xgboost")
+  learner_ids = c("rpart", "glmnet", "fnn", "lda", "log_reg", "multinom", "naive_bayes", "nnet", "qda", "ranger", "svm", "xgboost")
 
   graph = get_branch_pipeline("classif", learner_ids)
   expect_class(graph, "Graph")
@@ -10,7 +10,7 @@ test_that("classification graph is constructed", {
 test_that("regression graph is constructed", {
   skip_on_ci()
 
-  learner_ids = c("rpart", "glmnet", "kknn", "km", "lm", "nnet", "ranger", "svm", "xgboost")
+  learner_ids = c("rpart", "glmnet", "fnn", "km", "lm", "nnet", "ranger", "svm", "xgboost")
 
   graph = get_branch_pipeline("regr", learner_ids)
   expect_class(graph, "Graph")
@@ -19,7 +19,7 @@ test_that("regression graph is constructed", {
 test_that("classification search space can be set", {
   skip_on_ci()
 
-  learner_ids = c("rpart", "glmnet", "kknn", "lda", "log_reg", "multinom", "naive_bayes", "nnet", "qda", "ranger", "svm", "xgboost")
+  learner_ids = c("rpart", "glmnet", "fnn", "lda", "log_reg", "multinom", "naive_bayes", "nnet", "qda", "ranger", "svm", "xgboost")
 
   graph = get_branch_pipeline("classif", learner_ids)
   learner = as_learner(graph)
@@ -40,7 +40,7 @@ test_that("classification search space can be set", {
 test_that("regression search space can be set", {
   skip_on_ci()
 
-  learner_ids = c("rpart", "glmnet", "kknn", "km", "lm", "nnet", "ranger", "svm", "xgboost")
+  learner_ids = c("rpart", "glmnet", "fnn", "km", "lm", "nnet", "ranger", "svm", "xgboost")
   graph = get_branch_pipeline("regr", learner_ids)
   learner = as_learner(graph)
 
@@ -58,7 +58,7 @@ test_that("regression search space can be set", {
 })
 
 test_that("initial design is generated", {
-  learner_ids = c("rpart", "glmnet", "kknn", "lda", "log_reg", "multinom", "naive_bayes", "nnet", "qda", "ranger", "svm", "xgboost")
+  learner_ids = c("rpart", "glmnet", "fnn", "lda", "log_reg", "multinom", "naive_bayes", "nnet", "qda", "ranger", "svm", "xgboost")
   xdt = generate_initial_design("classif", learner_ids, tsk("sonar"), tuning_space)
   expect_data_table(xdt, nrows = length(learner_ids))
 })
@@ -120,23 +120,22 @@ test_that("callback timeout works", {
     resampling = resampling,
     measure = measure,
     terminator = terminator,
-    callbacks = clbk("mlr3tuning.timeout", time_limit = 20))
+    callbacks = clbk("mlr3tuning.timeout", run_time = 20))
 
   expect_class(learner$train(task), "LearnerClassifAuto")
   expect_lte(learner$model$tuning_instance$archive$benchmark_result$learners$learner[[1]]$timeout["train"], 20)
 })
 
-
 test_that("callback timeout works", {
   task = tsk("sonar")
   resampling = rsmp("holdout")
   measure = msr("classif.ce")
-  terminator = trm("run_time", secs = 20)
+  terminator = trm("run_time", secs = 40)
   learner = LearnerClassifAuto$new(
     resampling = resampling,
     measure = measure,
     terminator = terminator,
-    callbacks = clbk("mlr3tuning.timeout", time_limit = 20, max_time_limit = 5))
+    callbacks = clbk("mlr3tuning.timeout", run_time = 40, timeout = 5))
 
   expect_class(learner$train(task), "LearnerClassifAuto")
   expect_lte(learner$model$tuning_instance$archive$benchmark_result$learners$learner[[1]]$timeout["train"], 5)

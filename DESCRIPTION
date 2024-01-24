@@ -25,9 +25,9 @@ Imports:
     R6
 Suggests:
     e1071,
+    fnn,
     future,
     glmnet,
-    kknn,
     MASS,
     nnet,
     ranger,
