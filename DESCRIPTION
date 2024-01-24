@@ -10,13 +10,13 @@ BugReports: https://github.com/damirpolat/mlr3automl/issues
 Depends:
     mlr3 (>= 0.14.0),
     mlr3learners,
+    mlr3extralearners,
     mlr3tuning,
     R (>= 3.1.0)
 Imports:
     bbotk,
     checkmate,
     data.table,
-    mlr3extralearners,
     mlr3mbo,
     mlr3misc (>= 0.9.4),
     mlr3pipelines,
