@@ -3,17 +3,22 @@ load_callback_timeout = function() {
   callback_tuning("mlr3tuning.timeout",
     label = "Timeout Callback",
     on_optimization_begin = function(callback, context) {
-      assert_count(callback$state$time_limit)
-      assert_count(callback$state$max_time_limit, null.ok = TRUE)
+      assert_count(callback$state$run_time)
+      assert_count(callback$state$timeout, null.ok = TRUE)
       callback$state$start_time = Sys.time()
     },
 
     on_eval_after_design = function(callback, context) {
-      remaining_time = max(0, callback$state$time_limit - as.integer(difftime(Sys.time(), callback$state$start_time, units = "secs")))
-      remaining_time = min(remaining_time, callback$state$max_time_limit)
+      iterations = context$objective_tuning$resampling$iters * max(nrow(context$design), length(context$design$param_values[[1]]))
+      remaining_time = callback$state$run_time - difftime(Sys.time(), callback$state$start_time, units = "secs")
+      timeout = max(0, remaining_time / iterations)
+      # limit to learner timeout
+      timeout = min(timeout, callback$state$timeout)
+
+      print(sprintf("Timeout: %s", timeout))
 
       map(context$design$learner, function(learner) {
-        learner$timeout = c(train = remaining_time, predict = Inf)
+        learner$timeout = c(train = timeout, predict = timeout)
       })
     },
   )

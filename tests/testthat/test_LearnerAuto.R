@@ -120,23 +120,22 @@ test_that("callback timeout works", {
     resampling = resampling,
     measure = measure,
     terminator = terminator,
-    callbacks = clbk("mlr3tuning.timeout", time_limit = 20))
+    callbacks = clbk("mlr3tuning.timeout", run_time = 20))
 
   expect_class(learner$train(task), "LearnerClassifAuto")
   expect_lte(learner$model$tuning_instance$archive$benchmark_result$learners$learner[[1]]$timeout["train"], 20)
 })
 
-
 test_that("callback timeout works", {
   task = tsk("sonar")
   resampling = rsmp("holdout")
   measure = msr("classif.ce")
-  terminator = trm("run_time", secs = 20)
+  terminator = trm("run_time", secs = 40)
   learner = LearnerClassifAuto$new(
     resampling = resampling,
     measure = measure,
     terminator = terminator,
-    callbacks = clbk("mlr3tuning.timeout", time_limit = 20, max_time_limit = 5))
+    callbacks = clbk("mlr3tuning.timeout", run_time = 40, timeout = 5))
 
   expect_class(learner$train(task), "LearnerClassifAuto")
   expect_lte(learner$model$tuning_instance$archive$benchmark_result$learners$learner[[1]]$timeout["train"], 5)
