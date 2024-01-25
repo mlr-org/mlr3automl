@@ -160,7 +160,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
       timeout_learner = Inf
       ){
 
-      learner_ids = c("rpart", "glmnet", "kknn", "lda", "log_reg", "multinom", "naive_bayes", "nnet", "qda", "ranger", "svm", "xgboost")
+      learner_ids = "xgboost"
       fallback_learner = lrn("classif.featureless", predict_type = measure$predict_type)
 
       super$initialize(
@@ -207,7 +207,7 @@ LearnerRegrAuto = R6Class("LearnerRegrAuto",
       timeout_learner = Inf
       ){
 
-      learner_ids = c("rpart", "glmnet", "kknn", "km", "lm", "nnet", "ranger", "svm", "xgboost")
+      learner_ids = "xgboost"
       fallback_learner = lrn("regr.featureless")
 
       super$initialize(
