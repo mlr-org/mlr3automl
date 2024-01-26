@@ -24,26 +24,3 @@ load_callback_timeout = function() {
   )
 }
 
-load_callback_initial_design = function() {
-  callback_tuning("mlr3tuning.initial_design",
-    label = "Initial Design Callback",
-    on_optimization_begin = function(callback, context) {
-      assert_data_table(callback$state$design)
-      context$instance$eval_batch(callback$state$design)
-    }
-  )
-}
-
-load_callback_xgboost = function() {
-  callback_tuning("mlr3tuning.xgboost",
-    label = "XBoost Callback",
-
-    on_result = function(callback, context) {
-      context$result$learner_param_vals[[1]]$xgboost.early_stopping_rounds = 10
-      context$result$learner_param_vals[[1]]$xgboost.nrounds = 1000
-      context$result$learner_param_vals[[1]]$xgboost.early_stopping_set = "holdout"
-    }
-  )
-}
-
-
