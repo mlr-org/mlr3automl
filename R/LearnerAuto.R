@@ -19,6 +19,7 @@
 #' @param learner_fallback ([mlr3::Learner]).
 #' @param learner_timeout (`integer(1)`).
 #' @param nrounds (`integer(1)`).
+#' @param early_stopping_rounds (`integer(1)`).
 #' @param early_stopping_nrounds (`integer(1)`).
 #' @param nthread (`integer(1)`).
 #' @param eval_metric (`character(1)`).
@@ -56,6 +57,9 @@ LearnerAuto = R6Class("LearnerAuto",
     nrounds = NULL,
 
     #' @field early_stopping_nrounds (`integer(1)`).
+    early_stopping_rounds = NULL,
+
+    #' @field early_stopping_nrounds (`integer(1)`).
     early_stopping_nrounds = NULL,
 
     #' @field nthread (`integer(1)`).
@@ -78,6 +82,7 @@ LearnerAuto = R6Class("LearnerAuto",
       learner_timeout = Inf,
       learner_fallback = NULL,
       nrounds = 10,
+      early_stopping_rounds = 10,
       early_stopping_nrounds = 1000,
       nthread = 1,
       eval_metric = NULL
@@ -92,6 +97,7 @@ LearnerAuto = R6Class("LearnerAuto",
       self$learner_timeout = assert_numeric(learner_timeout)
       self$learner_fallback = assert_learner(learner_fallback)
       self$nrounds = assert_int(nrounds)
+      self$early_stopping_rounds = assert_int(early_stopping_rounds)
       self$early_stopping_nrounds = assert_int(early_stopping_nrounds)
       self$nthread = assert_int(nthread)
       self$eval_metric = assert_character(eval_metric, null.ok = TRUE)
@@ -155,7 +161,7 @@ LearnerAuto = R6Class("LearnerAuto",
       tuner$optimize(instance)
 
       graph_learner$param_set$values = instance$result_learner_param_vals
-      graph_learner$param_set$values$xgboost.early_stopping_rounds = 10
+      graph_learner$param_set$values$xgboost.early_stopping_rounds = self$early_stopping_rounds
       graph_learner$param_set$values$xgboost.nrounds = self$early_stopping_nrounds
       graph_learner$param_set$values$xgboost.eval_metric = self$eval_metric
       # pointer to early stopping set breaks with callr
@@ -197,6 +203,7 @@ LearnerAuto = R6Class("LearnerAuto",
 #' @param learner_fallback ([mlr3::Learner]).
 #' @param learner_timeout (`integer(1)`).
 #' @param nrounds (`integer(1)`).
+#' @param early_stopping_rounds (`integer(1)`).
 #' @param early_stopping_nrounds (`integer(1)`).
 #' @param nthread (`integer(1)`).
 #' @param eval_metric (`character(1)`).
@@ -217,6 +224,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
       learner_timeout = Inf,
       learner_fallback = NULL,
       nrounds = 10,
+      early_stopping_rounds = 10,
       early_stopping_nrounds = 1000,
       nthread = 1,
       eval_metric = NULL
@@ -237,6 +245,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         learner_timeout = learner_timeout,
         learner_fallback = learner_fallback,
         nrounds = nrounds,
+        early_stopping_rounds,
         early_stopping_nrounds = early_stopping_nrounds,
         nthread = nthread,
         eval_metric = eval_metric)
@@ -278,6 +287,7 @@ LearnerRegrAuto = R6Class("LearnerRegrAuto",
       learner_timeout = Inf,
       learner_fallback = NULL,
       nrounds = 10,
+      early_stopping_rounds = 10,
       early_stopping_nrounds = 1000,
       nthread = 1,
       eval_metric = NULL
@@ -298,6 +308,7 @@ LearnerRegrAuto = R6Class("LearnerRegrAuto",
         learner_timeout = learner_timeout,
         learner_fallback = learner_fallback,
         nrounds = nrounds,
+        early_stopping_rounds = early_stopping_rounds,
         early_stopping_nrounds = early_stopping_nrounds,
         nthread = nthread,
         eval_metric = eval_metric)
