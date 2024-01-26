@@ -137,7 +137,7 @@ LearnerAuto = R6Class("LearnerAuto",
       )
 
       # evaluate initial design
-      initial_xdt = generate_design_lhs(search_space, 5)$data
+      initial_xdt = generate_design_lhs(search_space, 20)$data
       instance$eval_batch(initial_xdt)
 
       # initialize mbo tuner
