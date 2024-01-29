@@ -91,7 +91,6 @@ LearnerAuto = R6Class("LearnerAuto",
       graph_learner$fallback = self$learner_fallback
       graph_learner$encapsulate = c(train = "callr", predict = "callr")
       graph_learner$timeout = c(train = self$learner_timeout, predict = self$learner_timeout)
-      learner_ids = graph_learner$graph$pipeops$branch$param_set$params$selection$levels
 
       # initialize search space
       graph_scratch = graph_learner$clone(deep = TRUE)
@@ -111,7 +110,7 @@ LearnerAuto = R6Class("LearnerAuto",
       })
 
       # get initial design
-      initial_xdt = generate_initial_design(self$task_type, learner_ids, task, self$tuning_space)
+      initial_xdt = generate_initial_design(self$task_type, self$learner_ids, task, self$tuning_space)
 
       # initialize mbo tuner
       surrogate = default_surrogate(n_learner = 1, search_space = search_space, noisy = TRUE)
@@ -181,33 +180,33 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
       assert_count(nthread)
       learner_ids = c("rpart", "glmnet", "kknn", "lda", "log_reg", "multinom", "naive_bayes", "nnet", "qda", "ranger", "svm", "xgboost")
 
-      graph = po("removeconstants") %>>%
+      graph = po("removeconstants", id = "pre_removeconstants") %>>%
         po("branch", options = learner_ids) %>>%
         gunion(list(
           # rpart
           lrn("classif.rpart", id = "rpart"),
           # glmnet
-          po("imputehist", id = "glmnet_imputehist") %>>% po("imputeoor", id = "glmnet_imputeoor") %>>% po("encode", method = "one-hot", id = "glmnet_encode") %>>% lrn("classif.glmnet", id = "glmnet"),
+          po("imputehist", id = "glmnet_imputehist") %>>% po("imputeoor", id = "glmnet_imputeoor") %>>% po("encode", method = "one-hot", id = "glmnet_encode") %>>% po("removeconstants", id = "glmnet_post_removeconstants") %>>% lrn("classif.glmnet", id = "glmnet"),
           # kknn
-          po("imputehist", id = "kknn_imputehist") %>>% po("imputeoor", id = "kknn_imputeoor") %>>% lrn("classif.kknn", id = "kknn"),
+          po("imputehist", id = "kknn_imputehist") %>>% po("imputeoor", id = "kknn_imputeoor") %>>% po("removeconstants", id = "kknn_post_removeconstants") %>>% lrn("classif.kknn", id = "kknn"),
           # lda
-          po("imputehist", id = "lda_imputehist") %>>% po("imputeoor", id = "lda_imputeoor") %>>% lrn("classif.lda", id = "lda"),
+          po("imputehist", id = "lda_imputehist") %>>% po("imputeoor", id = "lda_imputeoor") %>>% po("removeconstants", id = "lda_post_removeconstants") %>>% lrn("classif.lda", id = "lda"),
           # log_reg
-          po("imputehist", id = "logreg_imputehist") %>>% po("imputeoor", id = "log_reg_imputeoor") %>>% lrn("classif.log_reg", id = "log_reg"),
+          po("imputehist", id = "logreg_imputehist") %>>% po("imputeoor", id = "log_reg_imputeoor") %>>% po("removeconstants", id = "log_reg_post_removeconstants") %>>% lrn("classif.log_reg", id = "log_reg"),
           # multinom
-          po("imputehist", id = "multinom_imputehist") %>>% po("imputeoor", id = "multinom_imputeoor") %>>% lrn("classif.multinom", id = "multinom"),
+          po("imputehist", id = "multinom_imputehist") %>>% po("imputeoor", id = "multinom_imputeoor") %>>% po("removeconstants", id = "multinom_post_removeconstants") %>>% lrn("classif.multinom", id = "multinom"),
           # naive_bayes
-          po("imputehist", id = "naive_bayes_imputehist") %>>% po("imputeoor", id = "naive_bayes_imputeoor") %>>% lrn("classif.naive_bayes", id = "naive_bayes"),
+          po("imputehist", id = "naive_bayes_imputehist") %>>% po("imputeoor", id = "naive_bayes_imputeoor") %>>% po("removeconstants", id = "naive_bayes_post_removeconstants") %>>% lrn("classif.naive_bayes", id = "naive_bayes"),
           # nnet
-          po("imputehist", id = "nnet_imputehist") %>>% po("imputeoor", id = "nnet_imputeoor") %>>% lrn("classif.nnet", id = "nnet"),
+          po("imputehist", id = "nnet_imputehist") %>>% po("imputeoor", id = "nnet_imputeoor") %>>% po("removeconstants", id = "nnet_post_removeconstants") %>>% lrn("classif.nnet", id = "nnet"),
           # qda
-          po("imputehist", id = "qda_imputehist") %>>% po("imputeoor", id = "qda_imputeoor") %>>% lrn("classif.qda", id = "qda"),
+          po("imputehist", id = "qda_imputehist") %>>% po("imputeoor", id = "qda_imputeoor") %>>% po("removeconstants", id = "qda_post_removeconstants") %>>% lrn("classif.qda", id = "qda"),
           # ranger
-          po("imputeoor", id = "ranger_imputeoor") %>>% lrn("classif.ranger", id = "ranger", num.threads = nthread),
+          po("imputeoor", id = "ranger_imputeoor") %>>% po("removeconstants", id = "ranger_post_removeconstants") %>>% lrn("classif.ranger", id = "ranger", num.threads = nthread),
           # svm
-          po("imputehist", id = "svm_imputehist") %>>% po("imputeoor", id = "svm_imputeoor") %>>% po("encode", method = "one-hot", id = "smv_encode") %>>% lrn("classif.svm", id = "svm", type = "C-classification"),
+          po("imputehist", id = "svm_imputehist") %>>% po("imputeoor", id = "svm_imputeoor") %>>% po("encode", method = "one-hot", id = "smv_encode") %>>% po("removeconstants", id = "svm_post_removeconstants") %>>% lrn("classif.svm", id = "svm", type = "C-classification"),
           # xgboost
-          po("imputeoor", id = "xgboost_imputeoor") %>>% lrn("classif.xgboost", id = "xgboost", nrounds = 50, nthread = nthread)
+          po("imputeoor", id = "xgboost_imputeoor") %>>% po("encode", method = "one-hot", id = "xgboost_encode") %>>% po("removeconstants", id = "xgboost_post_removeconstants") %>>% lrn("classif.xgboost", id = "xgboost", nrounds = 50, nthread = nthread)
         )) %>>% po("unbranch", options = learner_ids)
 
       learner_fallback = lrn("classif.featureless", predict_type = measure$predict_type)

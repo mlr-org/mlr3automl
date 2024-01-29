@@ -6,10 +6,10 @@ test_that("initial design is generated", {
 })
 
 test_that("LearnerClassifAuto train works", {
-  task = tsk("sonar")
+  task = tsk("penguins")
   resampling = rsmp("holdout")
   measure = msr("classif.ce")
-  terminator = trm("run_time", secs = 10)
+  terminator = trm("run_time", secs = 30)
   learner = LearnerClassifAuto$new(
     resampling = resampling,
     measure = measure,
