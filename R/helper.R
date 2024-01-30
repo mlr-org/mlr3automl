@@ -18,11 +18,11 @@ generate_initial_design = function(task_type, learner_ids, task, tuning_space) {
 
     # fix nrounds
     if (learner_id == "xgboost") {
-      xdt[, nrounds := 50L]
+      set(xdt, j = "nrounds", value = 50L)
     }
 
     setnames(xdt, sprintf("%s.%s", learner_id, names(xdt)))
-    xdt[, branch.selection := learner_id]
+    set(xdt, j = "branch.selection", value = learner_id)
   }, .fill = TRUE)
 }
 
