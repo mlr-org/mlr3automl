@@ -24,9 +24,9 @@ Abstract base class for Auto like learner.
 
 \item{\code{callbacks}}{(list of \link[mlr3tuning:CallbackTuning]{mlr3tuning::CallbackTuning}).}
 
-\item{\code{fallback_learner}}{(\link[mlr3:Learner]{mlr3::Learner}).}
+\item{\code{learner_fallback}}{(\link[mlr3:Learner]{mlr3::Learner}).}
 
-\item{\code{timeout_learner}}{(\code{integer(1)}).}
+\item{\code{learner_timeout}}{(\code{integer(1)}).}
 }
 \if{html}{\out{</div>}}
 }
@@ -66,8 +66,8 @@ Creates a new instance of this \link[R6:R6Class]{R6} class.
   measure,
   terminator,
   callbacks = list(),
-  fallback_learner = NULL,
-  timeout_learner = Inf
+  learner_fallback = NULL,
+  learner_timeout = Inf
 )}\if{html}{\out{</div>}}
 }
 
@@ -95,9 +95,9 @@ List of \link[paradox:to_tune]{paradox::TuneToken}s.}
 
 \item{\code{callbacks}}{(list of \link[mlr3tuning:CallbackTuning]{mlr3tuning::CallbackTuning}).}
 
-\item{\code{fallback_learner}}{(\link[mlr3:Learner]{mlr3::Learner}).}
+\item{\code{learner_fallback}}{(\link[mlr3:Learner]{mlr3::Learner}).}
 
-\item{\code{timeout_learner}}{(\code{integer(1)}).}
+\item{\code{learner_timeout}}{(\code{integer(1)}).}
 }
 \if{html}{\out{</div>}}
 }

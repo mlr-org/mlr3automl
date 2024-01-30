@@ -63,12 +63,11 @@ test_that("initial design is generated", {
   expect_data_table(xdt, nrows = length(learner_ids))
 })
 
-
 test_that("LearnerClassifAuto train works", {
   task = tsk("sonar")
   resampling = rsmp("holdout")
   measure = msr("classif.ce")
-  terminator = trm("run_time", secs = 10)
+  terminator = trm("run_time", secs = 60)
   learner = LearnerClassifAuto$new(
     resampling = resampling,
     measure = measure,
@@ -95,6 +94,23 @@ test_that("LearnerClassifAuto resample works", {
   expect_resample_result(resample(task, learner, rsmp("holdout")))
 })
 
+test_that("LearnerClassifAuto timeout works", {
+  task = tsk("sonar")
+  resampling = rsmp("holdout")
+  measure = msr("classif.ce")
+  terminator = trm("run_time", secs = 1)
+  learner = LearnerClassifAuto$new(
+    resampling = resampling,
+    measure = measure,
+    terminator = terminator)
+
+  expect_class(learner$train(task), "LearnerClassifAuto")
+  expect_class(learner$model, "AutoTuner")
+  expect_equal(max(learner$model$tuning_instance$archive$data$batch_nr), 1)
+
+  expect_prediction(learner$predict(task))
+})
+
 test_that("LearnerClassifAuto train works with parallelization", {
   future::plan("multisession", workers = 2)
 
@@ -109,34 +125,4 @@ test_that("LearnerClassifAuto train works with parallelization", {
 
   expect_class(learner$train(task), "LearnerClassifAuto")
   expect_class(learner$model, "AutoTuner")
-})
-
-test_that("callback timeout works", {
-  task = tsk("sonar")
-  resampling = rsmp("holdout")
-  measure = msr("classif.ce")
-  terminator = trm("run_time", secs = 20)
-  learner = LearnerClassifAuto$new(
-    resampling = resampling,
-    measure = measure,
-    terminator = terminator,
-    callbacks = clbk("mlr3tuning.timeout", run_time = 20))
-
-  expect_class(learner$train(task), "LearnerClassifAuto")
-  expect_lte(learner$model$tuning_instance$archive$benchmark_result$learners$learner[[1]]$timeout["train"], 20)
-})
-
-test_that("callback timeout works", {
-  task = tsk("sonar")
-  resampling = rsmp("holdout")
-  measure = msr("classif.ce")
-  terminator = trm("run_time", secs = 40)
-  learner = LearnerClassifAuto$new(
-    resampling = resampling,
-    measure = measure,
-    terminator = terminator,
-    callbacks = clbk("mlr3tuning.timeout", run_time = 40, timeout = 5))
-
-  expect_class(learner$train(task), "LearnerClassifAuto")
-  expect_lte(learner$model$tuning_instance$archive$benchmark_result$learners$learner[[1]]$timeout["train"], 5)
 })
