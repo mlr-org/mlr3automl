@@ -42,7 +42,8 @@ Creates a new instance of this \link[R6:R6Class]{R6} class.
   measure = msr("classif.ce"),
   terminator = trm("evals", n_evals = 100L),
   callbacks = list(),
-  learner_timeout = Inf
+  learner_timeout = Inf,
+  nthread = 1
 )}\if{html}{\out{</div>}}
 }
 
@@ -61,6 +62,8 @@ Identifier for the new instance.}
 \item{\code{callbacks}}{(list of \link[mlr3tuning:CallbackTuning]{mlr3tuning::CallbackTuning}).}
 
 \item{\code{learner_timeout}}{(\code{integer(1)}).}
+
+\item{\code{nthread}}{(\code{integer(1)}).}
 }
 \if{html}{\out{</div>}}
 }

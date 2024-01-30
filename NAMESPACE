@@ -2,7 +2,6 @@
 
 export(LearnerAuto)
 export(LearnerClassifAuto)
-export(LearnerRegrAuto)
 import(R6)
 import(bbotk)
 import(checkmate)

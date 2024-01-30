@@ -1,5 +1,5 @@
-get_branch_pipeline = function(task_type, learner_ids) {
-  learners = set_names(map(learner_ids, function(id) set_threads(lrn(sprintf("%s.%s", task_type, id), id = id), 8)), learner_ids)
+get_branch_pipeline = function(task_type, learner_ids, nthread = NULL) {
+  learners = set_names(map(learner_ids, function(id) set_threads(lrn(sprintf("%s.%s", task_type, id), id = id), nthread)), learner_ids)
 
   # create branch
   graph = ppl("branch", graphs = learners)
@@ -18,7 +18,7 @@ get_branch_pipeline = function(task_type, learner_ids) {
 
 get_search_space = function(task_type, learner_ids, tuning_space) {
   # create branch
-  graph = get_branch_pipeline(task_type, learner_ids)
+  graph = get_branch_pipeline(task_type, learner_ids, 1)
   graph$param_set$set_values(branch.selection = to_tune(learner_ids))
   graph$param_set$set_values(.values = tuning_space)
 
