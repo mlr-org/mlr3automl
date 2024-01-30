@@ -9,7 +9,7 @@ test_that("LearnerClassifAuto train works", {
   task = tsk("penguins")
   resampling = rsmp("holdout")
   measure = msr("classif.ce")
-  terminator = trm("run_time", secs = 30)
+  terminator = trm("run_time", secs = 60)
   learner = LearnerClassifAuto$new(
     resampling = resampling,
     measure = measure,
@@ -33,4 +33,39 @@ test_that("LearnerClassifAuto resample works", {
     terminator = terminator)
 
   expect_resample_result(resample(task, learner, rsmp("holdout")))
+})
+
+test_that("LearnerClassifAuto timeout works", {
+  task = tsk("sonar")
+  resampling = rsmp("holdout")
+  measure = msr("classif.ce")
+  terminator = trm("run_time", secs = 1)
+  learner = LearnerClassifAuto$new(
+    resampling = resampling,
+    measure = measure,
+    terminator = terminator)
+
+  expect_class(learner$train(task), "LearnerClassifAuto")
+  expect_class(learner$model, "AutoTuner")
+  expect_equal(max(learner$model$tuning_instance$archive$data$batch_nr), 1)
+
+  expect_prediction(learner$predict(task))
+})
+
+test_that("LearnerClassifAuto nthread works", {
+  task = tsk("sonar")
+  resampling = rsmp("holdout")
+  measure = msr("classif.ce")
+  terminator = trm("run_time", secs = 1)
+  learner = LearnerClassifAuto$new(
+    resampling = resampling,
+    measure = measure,
+    terminator = terminator,
+    nthread = 2)
+
+  expect_class(learner$train(task), "LearnerClassifAuto")
+
+
+
+  expect_prediction(learner$predict(task))
 })

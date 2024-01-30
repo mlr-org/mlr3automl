@@ -55,7 +55,19 @@ LearnerAuto = R6Class("LearnerAuto",
 
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
-    initialize = function(id, task_type, learner_ids, graph, tuning_space, resampling, measure, terminator, callbacks = list(), learner_fallback = NULL, learner_timeout = Inf) {
+    initialize = function(
+      id,
+      task_type,
+      learner_ids,
+      graph,
+      tuning_space,
+      resampling,
+      measure,
+      terminator,
+      callbacks = list(),
+      learner_fallback = NULL,
+      learner_timeout = Inf
+      ) {
       assert_choice(task_type, mlr_reflections$task_types$type)
       self$learner_ids = assert_character(learner_ids)
       self$graph = assert_graph(graph)
