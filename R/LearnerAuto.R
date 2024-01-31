@@ -124,17 +124,8 @@ LearnerAuto = R6Class("LearnerAuto",
       # get initial design
       initial_xdt = generate_initial_design(self$task_type, self$learner_ids, task, self$tuning_space)
 
-      # initialize mbo tuner
-      surrogate = default_surrogate(n_learner = 1, search_space = search_space, noisy = TRUE)
-      acq_function = AcqFunctionEI$new()
-      acq_optimizer = AcqOptimizer$new(
-        optimizer = opt("random_search", batch_size = 1000L),
-        terminator = trm("evals", n_evals = 10000L))
-      tuner = tnr("mbo",
-        loop_function = bayesopt_ego,
-        surrogate = surrogate,
-        acq_function = acq_function,
-        acq_optimizer = acq_optimizer)
+      # initialize tuner
+      tuner = tnr("irace")
 
       # initialize auto tuner
       auto_tuner = auto_tuner(

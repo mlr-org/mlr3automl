@@ -17,6 +17,7 @@ Imports:
     bbotk,
     checkmate,
     data.table,
+    irace,
     mlr3mbo,
     mlr3misc (>= 0.9.4),
     mlr3pipelines,
