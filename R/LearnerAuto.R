@@ -56,6 +56,8 @@ LearnerAuto = R6Class("LearnerAuto",
     #' @field xgboost_eval_metric (`character(1)`).
     xgboost_eval_metric = NULL,
 
+    xgboost_lhs_size = NULL,
+
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(
@@ -70,7 +72,8 @@ LearnerAuto = R6Class("LearnerAuto",
       callbacks = list(),
       learner_fallback = NULL,
       learner_timeout = Inf,
-      xgboost_eval_metric = NULL
+      xgboost_eval_metric = NULL,
+      xgboost_lhs_size = 5L
       ) {
       assert_choice(task_type, mlr_reflections$task_types$type)
       self$learner_ids = assert_character(learner_ids)
@@ -83,6 +86,7 @@ LearnerAuto = R6Class("LearnerAuto",
       self$learner_fallback = assert_learner(learner_fallback)
       self$learner_timeout = assert_numeric(learner_timeout)
       self$xgboost_eval_metric = assert_character(xgboost_eval_metric, null.ok = TRUE)
+      self$xgboost_lhs_size = assert_count(xgboost_lhs_size)
 
       # packages
       packages = unique(c("mlr3tuning", "mlr3learners", "mlr3pipelines", "mlr3mbo", "mlr3automl", graph$packages))
@@ -154,7 +158,10 @@ LearnerAuto = R6Class("LearnerAuto",
         acq_optimizer = acq_optimizer)
 
       # get initial design
-      initial_xdt = generate_default_design(self$task_type, self$learner_ids, task, self$tuning_space)
+      lhs_xdt = generate_lhs_design(self$xgboost_lhs_size, self$task_type, "xgboost", self$tuning_space)
+      default_xdt = generate_default_design(self$task_type, self$learner_ids, task, self$tuning_space)
+      initial_xdt = rbindlist(list(lhs_xdt, default_xdt), use.names = TRUE, fill = TRUE)
+      setorderv(initial_xdt, "branch.selection")
 
       # initialize instance
       instance = ti(
@@ -171,6 +178,7 @@ LearnerAuto = R6Class("LearnerAuto",
       tuner$optimize(instance)
 
       # fit final model
+      task$set_row_roles(splits$test, "use")
       graph_learner$param_set$set_values(.values = instance$result_learner_param_vals)
       graph_learner$timeout = c(train = Inf, predict = Inf)
       graph_learner$train(task)
@@ -215,7 +223,8 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
       callbacks = list(),
       learner_timeout = Inf,
       nthread = 1L,
-      xgboost_eval_metric = NULL
+      xgboost_eval_metric = NULL,
+      xgboost_lhs_size = 5L
       ){
       assert_count(nthread)
       learner_ids = c("rpart", "glmnet", "kknn", "lda", "log_reg", "multinom", "naive_bayes", "nnet", "qda", "ranger", "svm", "xgboost")
@@ -263,7 +272,8 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         callbacks = callbacks,
         learner_fallback = learner_fallback,
         learner_timeout = learner_timeout,
-        xgboost_eval_metric = xgboost_eval_metric)
+        xgboost_eval_metric = xgboost_eval_metric,
+        xgboost_lhs_size = xgboost_lhs_size)
     }
   ),
 
