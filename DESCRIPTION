@@ -37,6 +37,7 @@ Suggests:
     testthat (>= 3.0.0),
     xgboost
 Remotes:
+    mlr-org/mlr3learners@holdout_task,
     mlr-org/bbotk,
     mlr-org/mlr3tuning
 Config/testthat/edition: 3
