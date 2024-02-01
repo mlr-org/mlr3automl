@@ -1,12 +1,15 @@
 Package: mlr3automl
 Title: AutoML extention for 'mlr3'
 Version: 0.0.1
-Authors@R:
-    person("Damir", "Pulatov", , "damirpolat@protonmail.com", role = c("cre", "aut"))
+Authors@R: c(
+    person("Damir", "Pulatov", , "damirpolat@protonmail.com", role = c("cre", "aut")),
+    person("Marc", "Becker", , "marcbecker@posteo.de", role = "aut",
+           comment = c(ORCID = "0000-0002-8115-0400"))
+    )
 Description: Flexible AutoML system for the 'mlr3' ecosystem.
 License: LGPL-3
-URL: https://github.com/damirpolat/mlr3automl
-BugReports: https://github.com/damirpolat/mlr3automl/issues
+URL: https://github.com/mlr-org/mlr3automl
+BugReports: https://github.com/mlr-org/mlr3automl/issues
 Depends:
     mlr3 (>= 0.14.0),
     mlr3learners,
