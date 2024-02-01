@@ -14,6 +14,8 @@ Abstract base class for Auto like learner.
 \describe{
 \item{\code{learner_ids}}{(\code{character()}).}
 
+\item{\code{graph}}{(\link[mlr3pipelines:Graph]{mlr3pipelines::Graph}).}
+
 \item{\code{resampling}}{(\link[mlr3:Resampling]{mlr3::Resampling}).}
 
 \item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
@@ -27,8 +29,6 @@ Abstract base class for Auto like learner.
 \item{\code{learner_fallback}}{(\link[mlr3:Learner]{mlr3::Learner}).}
 
 \item{\code{learner_timeout}}{(\code{integer(1)}).}
-
-\item{\code{nthread}}{(\code{integer(1)}).}
 }
 \if{html}{\out{</div>}}
 }
@@ -63,14 +63,14 @@ Creates a new instance of this \link[R6:R6Class]{R6} class.
   id,
   task_type,
   learner_ids,
+  graph,
   tuning_space,
   resampling,
   measure,
   terminator,
   callbacks = list(),
   learner_fallback = NULL,
-  learner_timeout = Inf,
-  nthread = 1
+  learner_timeout = Inf
 )}\if{html}{\out{</div>}}
 }
 
@@ -87,6 +87,9 @@ Must be an element of \link[=mlr_reflections]{mlr_reflections$task_types$type}.}
 \item{\code{learner_ids}}{(\code{character()})\cr
 List of learner ids.}
 
+\item{\code{graph}}{(\link[mlr3pipelines:Graph]{mlr3pipelines::Graph}).
+Graph.}
+
 \item{\code{tuning_space}}{(list of \link[paradox:to_tune]{paradox::TuneToken})\cr
 List of \link[paradox:to_tune]{paradox::TuneToken}s.}
 
@@ -101,8 +104,6 @@ List of \link[paradox:to_tune]{paradox::TuneToken}s.}
 \item{\code{learner_fallback}}{(\link[mlr3:Learner]{mlr3::Learner}).}
 
 \item{\code{learner_timeout}}{(\code{integer(1)}).}
-
-\item{\code{nthread}}{(\code{integer(1)}).}
 }
 \if{html}{\out{</div>}}
 }

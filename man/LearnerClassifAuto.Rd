@@ -43,7 +43,7 @@ Creates a new instance of this \link[R6:R6Class]{R6} class.
   terminator = trm("evals", n_evals = 100L),
   callbacks = list(),
   learner_timeout = Inf,
-  nthread = 1
+  nthread = 1L
 )}\if{html}{\out{</div>}}
 }
 
