@@ -122,7 +122,10 @@ LearnerAuto = R6Class("LearnerAuto",
       })
 
       # get initial design
-      initial_xdt = generate_initial_design(self$task_type, self$learner_ids, task, self$tuning_space)
+      lhs_xdt = generate_lhs_design(self$lhs_size, self$task_type, self$learner_ids, self$tuning_space)
+      default_xdt = generate_default_design(self$task_type, self$learner_ids, task, self$tuning_space)
+      initial_xdt = rbindlist(list(lhs_xdt, default_xdt), use.names = TRUE, fill = TRUE)
+      setorderv(initial_xdt, "branch.selection")
 
       # initialize mbo tuner
       surrogate = default_surrogate(n_learner = 1, search_space = search_space, noisy = TRUE)

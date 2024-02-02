@@ -1,4 +1,4 @@
-generate_initial_design = function(task_type, learner_ids, task, tuning_space) {
+generate_default_design = function(task_type, learner_ids, task, tuning_space) {
   map_dtr(learner_ids, function(learner_id) {
     learner = lrn(sprintf("%s.%s", task_type, learner_id))
 
@@ -23,6 +23,26 @@ generate_initial_design = function(task_type, learner_ids, task, tuning_space) {
 
     setnames(xdt, sprintf("%s.%s", learner_id, names(xdt)))
     set(xdt, j = "branch.selection", value = learner_id)
+  }, .fill = TRUE)
+}
+
+generate_lhs_design = function(size, task_type, learner_ids, tuning_space) {
+
+  map_dtr(learner_ids, function(learner_id) {
+    learner = lrn(sprintf("%s.%s", task_type, learner_id))
+
+    token = tuning_space[grep(paste0("^", learner_id), names(tuning_space))]
+    # learner without tuning space
+    if (!length(token)) {
+      return(data.table(branch.selection = learner_id))
+    }
+
+    names(token) = gsub(paste0("^", learner_id, "."), "", names(token))
+    learner$param_set$set_values(.values = token)
+    search_space = learner$param_set$search_space()
+    xdt = generate_design_lhs(search_space, size)$data
+    setnames(xdt, sprintf("%s.%s", learner_id, names(xdt)))
+    xdt[, branch.selection := learner_id]
   }, .fill = TRUE)
 }
 
