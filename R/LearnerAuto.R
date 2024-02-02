@@ -171,6 +171,7 @@ LearnerAuto = R6Class("LearnerAuto",
       tuner$optimize(instance)
 
       # fit final model
+      task$set_row_roles(splits$test, "use")
       graph_learner$param_set$set_values(.values = instance$result_learner_param_vals)
       graph_learner$timeout = c(train = Inf, predict = Inf)
       graph_learner$train(task)
