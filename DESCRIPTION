@@ -19,23 +19,24 @@ Imports:
     bbotk,
     checkmate,
     data.table,
-    mlr3mbo,
-    mlr3misc (>= 0.9.4),
-    mlr3pipelines,
-    mlr3tuningspaces,
-    paradox,
-    R6
-Suggests:
     e1071,
     future,
     glmnet,
     kknn,
+    lhs,
     MASS,
+    mlr3mbo,
+    mlr3misc (>= 0.9.4),
+    mlr3pipelines,
+    mlr3tuningspaces,
     nnet,
+    paradox,
+    R6,
     ranger,
     rpart,
-    testthat (>= 3.0.0),
     xgboost
+Suggests:
+    testthat (>= 3.0.0)
 Remotes:
     mlr-org/mlr3learners@holdout_task,
     mlr-org/bbotk,
