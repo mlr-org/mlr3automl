@@ -56,7 +56,7 @@ LearnerAuto = R6Class("LearnerAuto",
     #' @field xgboost_eval_metric (`character(1)`).
     xgboost_eval_metric = NULL,
 
-    xgboost_lhs_size = NULL,
+    lhs_size = NULL,
 
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
@@ -73,7 +73,7 @@ LearnerAuto = R6Class("LearnerAuto",
       learner_fallback = NULL,
       learner_timeout = Inf,
       xgboost_eval_metric = NULL,
-      xgboost_lhs_size = 5L
+      lhs_size = 3L
       ) {
       assert_choice(task_type, mlr_reflections$task_types$type)
       self$learner_ids = assert_character(learner_ids)
@@ -86,7 +86,7 @@ LearnerAuto = R6Class("LearnerAuto",
       self$learner_fallback = assert_learner(learner_fallback)
       self$learner_timeout = assert_numeric(learner_timeout)
       self$xgboost_eval_metric = assert_character(xgboost_eval_metric, null.ok = TRUE)
-      self$xgboost_lhs_size = assert_count(xgboost_lhs_size)
+      self$lhs_size = assert_count(lhs_size)
 
       # packages
       packages = unique(c("mlr3tuning", "mlr3learners", "mlr3pipelines", "mlr3mbo", "mlr3automl", graph$packages))
@@ -158,7 +158,7 @@ LearnerAuto = R6Class("LearnerAuto",
         acq_optimizer = acq_optimizer)
 
       # get initial design
-      lhs_xdt = generate_lhs_design(self$xgboost_lhs_size, self$task_type, "xgboost", self$tuning_space)
+      lhs_xdt = generate_lhs_design(self$lhs_size, self$task_type, self$learner_ids[self$learner_ids %nin% c("ranger", "lda")], self$tuning_space)
       default_xdt = generate_default_design(self$task_type, self$learner_ids, task, self$tuning_space)
       initial_xdt = rbindlist(list(lhs_xdt, default_xdt), use.names = TRUE, fill = TRUE)
       setorderv(initial_xdt, "branch.selection")
@@ -224,7 +224,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
       learner_timeout = Inf,
       nthread = 1L,
       xgboost_eval_metric = NULL,
-      xgboost_lhs_size = 5L
+      lhs_size = 3L
       ){
       assert_count(nthread)
       learner_ids = c("lda", "nnet", "ranger", "xgboost")
@@ -237,7 +237,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
           # nnet
           po("imputehist", id = "nnet_imputehist") %>>% po("imputeoor", id = "nnet_imputeoor") %>>% po("removeconstants", id = "nnet_post_removeconstants") %>>% lrn("classif.nnet", id = "nnet"),
           # ranger
-          po("imputeoor", id = "ranger_imputeoor") %>>% po("removeconstants", id = "ranger_post_removeconstants") %>>% lrn("classif.ranger", id = "ranger", num.threads = nthread),
+          po("imputeoor", id = "ranger_imputeoor") %>>% po("removeconstants", id = "ranger_post_removeconstants") %>>% lrn("classif.ranger", id = "ranger", num.threads = nthread, num.trees = 500),
           # xgboost
           po("imputeoor", id = "xgboost_imputeoor") %>>% po("encode", method = "one-hot", id = "xgboost_encode") %>>% po("removeconstants", id = "xgboost_post_removeconstants") %>>% lrn("classif.xgboost", id = "xgboost", nrounds = 5000, early_stopping_rounds = 10, nthread = nthread)
         )) %>>% po("unbranch", options = learner_ids)
@@ -257,7 +257,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         learner_fallback = learner_fallback,
         learner_timeout = learner_timeout,
         xgboost_eval_metric = xgboost_eval_metric,
-        xgboost_lhs_size = xgboost_lhs_size)
+        lhs_size = lhs_size)
     }
   )
 )
@@ -272,7 +272,6 @@ tuning_space = list(
   ranger.mtry.ratio      = to_tune(0, 1),
   ranger.replace         = to_tune(),
   ranger.sample.fraction = to_tune(1e-1, 1),
-  ranger.num.trees       = to_tune(1, 2000),
 
   # xgboost
   xgboost.eta               = to_tune(1e-4, 1, logscale = TRUE),
