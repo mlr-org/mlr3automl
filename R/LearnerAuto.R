@@ -71,7 +71,7 @@ LearnerAuto = R6Class("LearnerAuto",
       callbacks = list(),
       learner_fallback = NULL,
       learner_timeout = Inf,
-      lhs_size = 4L
+      lhs_size = 2L
       ) {
       assert_choice(task_type, mlr_reflections$task_types$type)
       self$learner_ids = assert_character(learner_ids)
@@ -128,7 +128,7 @@ LearnerAuto = R6Class("LearnerAuto",
       })
 
       # get initial design
-      lhs_xdt = generate_lhs_design(self$lhs_size, self$task_type, self$learner_ids, self$tuning_space)
+      lhs_xdt = generate_lhs_design(self$lhs_size, self$task_type, self$learner_ids[self$learner_ids != "lda"], self$tuning_space)
       default_xdt = generate_default_design(self$task_type, self$learner_ids, task, self$tuning_space)
       initial_xdt = rbindlist(list(lhs_xdt, default_xdt), use.names = TRUE, fill = TRUE)
       setorderv(initial_xdt, "branch.selection")
@@ -198,7 +198,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
       callbacks = list(),
       learner_timeout = Inf,
       nthread = 1L,
-      lhs_size = 4L
+      lhs_size = 2L
       ){
       assert_count(nthread)
       learner_ids = c("lda", "nnet", "ranger", "xgboost")
