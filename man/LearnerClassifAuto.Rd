@@ -43,7 +43,8 @@ Creates a new instance of this \link[R6:R6Class]{R6} class.
   terminator = trm("evals", n_evals = 100L),
   callbacks = list(),
   learner_timeout = Inf,
-  nthread = 1L
+  nthread = 1L,
+  lhs_size = 4L
 )}\if{html}{\out{</div>}}
 }
 
@@ -64,6 +65,8 @@ Identifier for the new instance.}
 \item{\code{learner_timeout}}{(\code{integer(1)}).}
 
 \item{\code{nthread}}{(\code{integer(1)}).}
+
+\item{\code{lhs_size}}{(\code{integer(1)}).}
 }
 \if{html}{\out{</div>}}
 }

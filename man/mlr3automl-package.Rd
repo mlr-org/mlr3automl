@@ -11,12 +11,17 @@ Flexible AutoML system for the 'mlr3' ecosystem.
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/damirpolat/mlr3automl}
-  \item Report bugs at \url{https://github.com/damirpolat/mlr3automl/issues}
+  \item \url{https://github.com/mlr-org/mlr3automl}
+  \item Report bugs at \url{https://github.com/mlr-org/mlr3automl/issues}
 }
 
 }
 \author{
 \strong{Maintainer}: Damir Pulatov \email{damirpolat@protonmail.com}
+
+Authors:
+\itemize{
+  \item Marc Becker \email{marcbecker@posteo.de} (\href{https://orcid.org/0000-0002-8115-0400}{ORCID})
+}
 
 }

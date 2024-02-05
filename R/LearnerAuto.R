@@ -20,6 +20,7 @@
 #' @param callbacks (list of [mlr3tuning::CallbackTuning]).
 #' @param learner_fallback ([mlr3::Learner]).
 #' @param learner_timeout (`integer(1)`).
+#' @param lhs_size (`integer(1)`).
 #'
 #' @export
 LearnerAuto = R6Class("LearnerAuto",
@@ -53,6 +54,9 @@ LearnerAuto = R6Class("LearnerAuto",
     #' @field learner_timeout (`integer(1)`).
     learner_timeout = NULL,
 
+    #' @field lhs_size (`integer(1)`).
+    lhs_size = NULL,
+
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(
@@ -66,7 +70,8 @@ LearnerAuto = R6Class("LearnerAuto",
       terminator,
       callbacks = list(),
       learner_fallback = NULL,
-      learner_timeout = Inf
+      learner_timeout = Inf,
+      lhs_size = 4L
       ) {
       assert_choice(task_type, mlr_reflections$task_types$type)
       self$learner_ids = assert_character(learner_ids)
@@ -78,6 +83,7 @@ LearnerAuto = R6Class("LearnerAuto",
       self$callbacks = assert_list(as_callbacks(callbacks), types = "CallbackTuning")
       self$learner_fallback = assert_learner(learner_fallback)
       self$learner_timeout = assert_numeric(learner_timeout)
+      self$lhs_size = assert_count(lhs_size)
 
       # packages
       packages = unique(c("mlr3tuning", "mlr3learners", "mlr3pipelines", "mlr3mbo", "mlr3automl", graph$packages))
@@ -122,7 +128,10 @@ LearnerAuto = R6Class("LearnerAuto",
       })
 
       # get initial design
-      initial_xdt = generate_initial_design(self$task_type, self$learner_ids, task, self$tuning_space)
+      lhs_xdt = generate_lhs_design(self$lhs_size, self$task_type, self$learner_ids, self$tuning_space)
+      default_xdt = generate_default_design(self$task_type, self$learner_ids, task, self$tuning_space)
+      initial_xdt = rbindlist(list(lhs_xdt, default_xdt), use.names = TRUE, fill = TRUE)
+      setorderv(initial_xdt, "branch.selection")
 
       # initialize mbo tuner
       surrogate = default_surrogate(n_learner = 1, search_space = search_space, noisy = TRUE)
@@ -172,6 +181,7 @@ LearnerAuto = R6Class("LearnerAuto",
 #' @param callbacks (list of [mlr3tuning::CallbackTuning]).
 #' @param learner_timeout (`integer(1)`).
 #' @param nthread (`integer(1)`).
+#' @param lhs_size (`integer(1)`).
 #'
 #' @export
 LearnerClassifAuto = R6Class("LearnerClassifAuto",
@@ -187,7 +197,8 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
       terminator = trm("evals", n_evals = 100L),
       callbacks = list(),
       learner_timeout = Inf,
-      nthread = 1L
+      nthread = 1L,
+      lhs_size = 4L
       ){
       assert_count(nthread)
       learner_ids = c("lda", "nnet", "ranger", "xgboost")
@@ -218,7 +229,8 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         terminator = terminator,
         callbacks = callbacks,
         learner_fallback = learner_fallback,
-        learner_timeout = learner_timeout)
+        learner_timeout = learner_timeout,
+        lhs_size = lhs_size)
     }
   )
 )

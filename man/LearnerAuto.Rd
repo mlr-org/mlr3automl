@@ -29,6 +29,8 @@ Abstract base class for Auto like learner.
 \item{\code{learner_fallback}}{(\link[mlr3:Learner]{mlr3::Learner}).}
 
 \item{\code{learner_timeout}}{(\code{integer(1)}).}
+
+\item{\code{lhs_size}}{(\code{integer(1)}).}
 }
 \if{html}{\out{</div>}}
 }
@@ -70,7 +72,8 @@ Creates a new instance of this \link[R6:R6Class]{R6} class.
   terminator,
   callbacks = list(),
   learner_fallback = NULL,
-  learner_timeout = Inf
+  learner_timeout = Inf,
+  lhs_size = 4L
 )}\if{html}{\out{</div>}}
 }
 
@@ -104,6 +107,8 @@ List of \link[paradox:to_tune]{paradox::TuneToken}s.}
 \item{\code{learner_fallback}}{(\link[mlr3:Learner]{mlr3::Learner}).}
 
 \item{\code{learner_timeout}}{(\code{integer(1)}).}
+
+\item{\code{lhs_size}}{(\code{integer(1)}).}
 }
 \if{html}{\out{</div>}}
 }
