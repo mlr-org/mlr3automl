@@ -1,4 +1,4 @@
-generate_initial_design = function(task_type, learner_ids, task, tuning_space) {
+generate_default_design = function(task_type, learner_ids, task, tuning_space) {
   map_dtr(learner_ids, function(learner_id) {
     learner = lrn(sprintf("%s.%s", task_type, learner_id))
 
@@ -16,15 +16,31 @@ generate_initial_design = function(task_type, learner_ids, task, tuning_space) {
     has_logscale = map_lgl(search_space$params, function(param) get_private(param)$.has_logscale)
     xdt = as.data.table(map_if(xss, has_logscale, function(value) if (value > 0) log(value) else value))
 
-    # fix nrounds
-    if (learner_id == "xgboost") {
-      set(xdt, j = "nrounds", value = 50L)
-    }
-
     setnames(xdt, sprintf("%s.%s", learner_id, names(xdt)))
     set(xdt, j = "branch.selection", value = learner_id)
   }, .fill = TRUE)
 }
+
+generate_lhs_design = function(size, task_type, learner_ids, tuning_space) {
+
+  map_dtr(learner_ids, function(learner_id) {
+    learner = lrn(sprintf("%s.%s", task_type, learner_id))
+
+    token = tuning_space[grep(paste0("^", learner_id), names(tuning_space))]
+    # learner without tuning space
+    if (!length(token)) {
+      return(data.table(branch.selection = learner_id))
+    }
+
+    names(token) = gsub(paste0("^", learner_id, "."), "", names(token))
+    learner$param_set$set_values(.values = token)
+    search_space = learner$param_set$search_space()
+    xdt = generate_design_lhs(search_space, size)$data
+    setnames(xdt, sprintf("%s.%s", learner_id, names(xdt)))
+    xdt[, branch.selection := learner_id]
+  }, .fill = TRUE)
+}
+
 
 default_surrogate = function(instance = NULL, learner = NULL, n_learner = NULL, search_space = NULL, noisy = NULL) {
   assert_r6(instance, "OptimInstance", null.ok = TRUE)
@@ -99,4 +115,22 @@ default_surrogate = function(instance = NULL, learner = NULL, n_learner = NULL, 
     learners = replicate(n_learner, learner$clone(deep = TRUE), simplify = FALSE)
     SurrogateLearnerCollection$new(learners)
   }
+}
+
+cb.timeout = function(timeout) {
+  callback = function(env = parent.frame()) {
+    if (is.null(env$start_time)) {
+      env$start_time <- Sys.time()
+    }
+
+    if (difftime(Sys.time(), env$start_time, units = "secs") > timeout) {
+      message("Timeout reached")
+      env$stop_condition <- TRUE
+    } else {
+      env$stop_condition <- FALSE
+    }
+  }
+  attr(callback, 'call') = match.call()
+  attr(callback, 'name') = 'cb.timeout'
+  callback
 }
