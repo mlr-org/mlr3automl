@@ -190,33 +190,17 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
       nthread = 1L
       ){
       assert_count(nthread)
-      learner_ids = c("rpart", "glmnet", "kknn", "lda", "log_reg", "multinom", "naive_bayes", "nnet", "qda", "ranger", "svm", "xgboost")
+      learner_ids = c("lda", "nnet", "ranger", "xgboost")
 
       graph = po("removeconstants", id = "pre_removeconstants") %>>%
         po("branch", options = learner_ids) %>>%
         gunion(list(
-          # rpart
-          lrn("classif.rpart", id = "rpart"),
-          # glmnet
-          po("imputehist", id = "glmnet_imputehist") %>>% po("imputeoor", id = "glmnet_imputeoor") %>>% po("encode", method = "one-hot", id = "glmnet_encode") %>>% po("removeconstants", id = "glmnet_post_removeconstants") %>>% lrn("classif.glmnet", id = "glmnet"),
-          # kknn
-          po("imputehist", id = "kknn_imputehist") %>>% po("imputeoor", id = "kknn_imputeoor") %>>% po("removeconstants", id = "kknn_post_removeconstants") %>>% lrn("classif.kknn", id = "kknn"),
           # lda
           po("imputehist", id = "lda_imputehist") %>>% po("imputeoor", id = "lda_imputeoor") %>>% po("removeconstants", id = "lda_post_removeconstants") %>>% lrn("classif.lda", id = "lda"),
-          # log_reg
-          po("imputehist", id = "logreg_imputehist") %>>% po("imputeoor", id = "log_reg_imputeoor") %>>% po("removeconstants", id = "log_reg_post_removeconstants") %>>% lrn("classif.log_reg", id = "log_reg"),
-          # multinom
-          po("imputehist", id = "multinom_imputehist") %>>% po("imputeoor", id = "multinom_imputeoor") %>>% po("removeconstants", id = "multinom_post_removeconstants") %>>% lrn("classif.multinom", id = "multinom"),
-          # naive_bayes
-          po("imputehist", id = "naive_bayes_imputehist") %>>% po("imputeoor", id = "naive_bayes_imputeoor") %>>% po("removeconstants", id = "naive_bayes_post_removeconstants") %>>% lrn("classif.naive_bayes", id = "naive_bayes"),
           # nnet
           po("imputehist", id = "nnet_imputehist") %>>% po("imputeoor", id = "nnet_imputeoor") %>>% po("removeconstants", id = "nnet_post_removeconstants") %>>% lrn("classif.nnet", id = "nnet"),
-          # qda
-          po("imputehist", id = "qda_imputehist") %>>% po("imputeoor", id = "qda_imputeoor") %>>% po("removeconstants", id = "qda_post_removeconstants") %>>% lrn("classif.qda", id = "qda"),
           # ranger
           po("imputeoor", id = "ranger_imputeoor") %>>% po("removeconstants", id = "ranger_post_removeconstants") %>>% lrn("classif.ranger", id = "ranger", num.threads = nthread),
-          # svm
-          po("imputehist", id = "svm_imputehist") %>>% po("imputeoor", id = "svm_imputeoor") %>>% po("encode", method = "one-hot", id = "smv_encode") %>>% po("removeconstants", id = "svm_post_removeconstants") %>>% lrn("classif.svm", id = "svm", type = "C-classification"),
           # xgboost
           po("imputeoor", id = "xgboost_imputeoor") %>>% po("encode", method = "one-hot", id = "xgboost_encode") %>>% po("removeconstants", id = "xgboost_post_removeconstants") %>>% lrn("classif.xgboost", id = "xgboost", nrounds = 50, nthread = nthread)
         )) %>>% po("unbranch", options = learner_ids)
@@ -236,31 +220,10 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         learner_fallback = learner_fallback,
         learner_timeout = learner_timeout)
     }
-  ),
-
-  private = list(
-    .train = function(task) {
-
-      if ("twoclass" %in% task$properties) {
-        self$learner_ids = self$learner_ids[self$learner_ids != "multinom"]
-      } else {
-        self$learner_ids = self$learner_ids[self$learner_ids != "log_reg"]
-      }
-      super$.train(task)
-    }
   )
 )
 
 tuning_space = list(
-  # glmnet
-  glmnet.s     = to_tune(1e-4, 1e4, logscale = TRUE),
-  glmnet.alpha = to_tune(0, 1),
-
-  # kknn
-  kknn.k = to_tune(1, 50, logscale = TRUE),
-  kknn.distance = to_tune(1, 5),
-  kknn.kernel = to_tune(c("rectangular", "optimal", "epanechnikov", "biweight", "triweight", "cos",  "inv",  "gaussian", "rank")),
-
   # nnet
   nnet.maxit = to_tune(1e1, 1e3, logscale = TRUE),
   nnet.decay = to_tune(1e-4, 1e-1, logscale = TRUE),
@@ -271,17 +234,6 @@ tuning_space = list(
   ranger.replace         = to_tune(),
   ranger.sample.fraction = to_tune(1e-1, 1),
   ranger.num.trees       = to_tune(1, 2000),
-
-  # rpart
-  rpart.minsplit  = to_tune(2, 128, logscale = TRUE),
-  rpart.minbucket = to_tune(1, 64, logscale = TRUE),
-  rpart.cp        = to_tune(1e-04, 1e-1, logscale = TRUE),
-
-  # svm
-  svm.cost    = to_tune(1e-4, 1e4, logscale = TRUE),
-  svm.kernel  = to_tune(c("polynomial", "radial", "sigmoid", "linear")),
-  svm.degree  = to_tune(2, 5),
-  svm.gamma   = to_tune(1e-4, 1e4, logscale = TRUE),
 
   # xgboost
   xgboost.eta               = to_tune(1e-4, 1, logscale = TRUE),
