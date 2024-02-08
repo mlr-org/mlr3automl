@@ -277,7 +277,7 @@ tuning_space = list(
   ranger.mtry.ratio      = to_tune(0, 1),
   ranger.replace         = to_tune(),
   ranger.sample.fraction = to_tune(1e-1, 1),
-  ranger.num.trees       = to_tune(1, 2000),
+  ranger.num.trees       = to_tune(500, 2000),
 
   # rpart
   rpart.minsplit  = to_tune(2, 128, logscale = TRUE),
@@ -298,5 +298,5 @@ tuning_space = list(
   xgboost.lambda            = to_tune(1e-3, 1e3, logscale = TRUE),
   xgboost.alpha             = to_tune(1e-3, 1e3, logscale = TRUE),
   xgboost.subsample         = to_tune(1e-1, 1),
-  xgboost.nrounds           = to_tune(1, 5000)
+  xgboost.nrounds           = to_tune(1, 1000)
 )
