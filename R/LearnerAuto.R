@@ -159,7 +159,7 @@ LearnerAuto = R6Class("LearnerAuto",
     },
 
     .predict = function(task) {
-      self$model$predict(task)
+      self$model$graph_learner$predict(task)
     }
   )
 )
