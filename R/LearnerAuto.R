@@ -53,6 +53,10 @@ LearnerAuto = R6Class("LearnerAuto",
     #' @field learner_timeout (`integer(1)`).
     learner_timeout = NULL,
 
+    instance = NULL,
+
+    lhs_size = NULL,
+
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(
@@ -66,7 +70,8 @@ LearnerAuto = R6Class("LearnerAuto",
       terminator,
       callbacks = list(),
       learner_fallback = NULL,
-      learner_timeout = Inf
+      learner_timeout = Inf,
+      lhs_size = 4L
       ) {
       assert_choice(task_type, mlr_reflections$task_types$type)
       self$learner_ids = assert_character(learner_ids)
@@ -78,6 +83,7 @@ LearnerAuto = R6Class("LearnerAuto",
       self$callbacks = assert_list(as_callbacks(callbacks), types = "CallbackTuning")
       self$learner_fallback = assert_learner(learner_fallback)
       self$learner_timeout = assert_numeric(learner_timeout)
+      self$lhs_size = assert_count(lhs_size)
 
       # packages
       packages = unique(c("mlr3tuning", "mlr3learners", "mlr3pipelines", "mlr3mbo", "mlr3automl", graph$packages))
@@ -121,34 +127,35 @@ LearnerAuto = R6Class("LearnerAuto",
         })
       })
 
-      # get initial design
-      initial_xdt = generate_initial_design(self$task_type, self$learner_ids, task, self$tuning_space)
+      # initial design
+      lhs_xdt = generate_lhs_design(self$lhs_size, self$task_type, self$learner_ids, self$tuning_space)
+      default_xdt = generate_default_design(self$task_type, self$learner_ids, task, self$tuning_space)
+      initial_xdt = rbindlist(list(lhs_xdt, default_xdt), use.names = TRUE, fill = TRUE)
+      setorderv(initial_xdt, "branch.selection")
 
       # initialize mbo tuner
-      surrogate = default_surrogate(n_learner = 1, search_space = search_space, noisy = TRUE)
-      acq_function = AcqFunctionEI$new()
-      acq_optimizer = AcqOptimizer$new(
-        optimizer = opt("random_search", batch_size = 1000L),
-        terminator = trm("evals", n_evals = 10000L))
-      tuner = tnr("mbo",
-        loop_function = bayesopt_ego,
-        surrogate = surrogate,
-        acq_function = acq_function,
-        acq_optimizer = acq_optimizer)
+      tuner = tnr("adbo", initial_design = initial_xdt)
 
       # initialize auto tuner
-      auto_tuner = auto_tuner(
-        tuner = tuner,
+      self$instance = TuningInstanceRushSingleCrit$new(
+        task = task,
         learner = graph_learner,
         resampling = self$resampling,
         measure = self$measure,
         terminator = self$terminator,
         search_space = search_space,
-        callbacks = c(self$callbacks, clbk("mlr3tuning.initial_design", design = initial_xdt))
+        callbacks = self$callbacks,
+        store_benchmark_result = FALSE
       )
 
-      auto_tuner$train(task)
-      auto_tuner
+      tuner$optimize(self$instance)
+
+      # fit final model
+      graph_learner$param_set$set_values(.values = self$instance$result_learner_param_vals)
+      graph_learner$timeout = c(train = Inf, predict = Inf)
+      graph_learner$train(task)
+
+      list(graph_learner = graph_learner, instance = self$instance)
     },
 
     .predict = function(task) {
@@ -156,8 +163,6 @@ LearnerAuto = R6Class("LearnerAuto",
     }
   )
 )
-
-
 
 #' @title Classification Auto Learner
 #'
@@ -187,7 +192,8 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
       terminator = trm("evals", n_evals = 100L),
       callbacks = list(),
       learner_timeout = Inf,
-      nthread = 1L
+      nthread = 1L,
+      lhs_size = 4L
       ){
       assert_count(nthread)
       learner_ids = c("rpart", "glmnet", "kknn", "lda", "log_reg", "multinom", "naive_bayes", "nnet", "qda", "ranger", "svm", "xgboost")
@@ -234,7 +240,8 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         terminator = terminator,
         callbacks = callbacks,
         learner_fallback = learner_fallback,
-        learner_timeout = learner_timeout)
+        learner_timeout = learner_timeout,
+        lhs_size = lhs_size)
     }
   ),
 

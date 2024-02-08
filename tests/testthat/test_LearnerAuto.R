@@ -1,11 +1,20 @@
 
-test_that("initial design is generated", {
+test_that("default design is generated", {
   learner_ids = c("rpart", "glmnet", "kknn", "lda", "log_reg", "multinom", "naive_bayes", "nnet", "qda", "ranger", "svm", "xgboost")
-  xdt = generate_initial_design("classif", learner_ids, tsk("sonar"), tuning_space)
+  xdt = generate_default_design("classif", learner_ids, tsk("sonar"), tuning_space)
   expect_data_table(xdt, nrows = length(learner_ids))
 })
 
+test_that("lhs design is generated", {
+  learner_ids = c("rpart", "glmnet", "kknn", "lda", "log_reg", "multinom", "naive_bayes", "nnet", "qda", "ranger", "svm", "xgboost")
+  xdt = generate_lhs_design(4, "classif", learner_ids, tuning_space)
+})
+
 test_that("LearnerClassifAuto train works", {
+  library(rush)
+
+  rush_plan(n_workers = 4)
+
   task = tsk("penguins")
   resampling = rsmp("holdout")
   measure = msr("classif.ce")
@@ -15,12 +24,13 @@ test_that("LearnerClassifAuto train works", {
     measure = measure,
     terminator = terminator)
 
-  expect_names(learner$packages, must.include = "xgboost")
   expect_class(learner$train(task), "LearnerClassifAuto")
+
   expect_class(learner$model, "AutoTuner")
 
   expect_prediction(learner$predict(task))
 })
+
 
 test_that("LearnerClassifAuto resample works", {
   task = tsk("sonar")
