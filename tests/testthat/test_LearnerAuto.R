@@ -7,7 +7,7 @@ test_that("default design is generated", {
 
 test_that("lhs design is generated", {
   learner_ids = c("rpart", "glmnet", "kknn", "lda", "log_reg", "multinom", "naive_bayes", "nnet", "qda", "ranger", "svm", "xgboost")
-  xdt = generate_lhs_design(4, "classif", learner_ids, tuning_space)
+  xdt = generate_lhs_design(10, "classif", learner_ids, tuning_space)
 })
 
 test_that("LearnerClassifAuto train works", {
@@ -15,10 +15,12 @@ test_that("LearnerClassifAuto train works", {
 
   rush_plan(n_workers = 4)
 
+  lgr::get_logger("bbotk")$set_threshold("debug")
+
   task = tsk("penguins")
   resampling = rsmp("holdout")
   measure = msr("classif.ce")
-  terminator = trm("run_time", secs = 60)
+  terminator = trm("evals", n_evals = 100)
   learner = LearnerClassifAuto$new(
     resampling = resampling,
     measure = measure,
