@@ -43,7 +43,7 @@ Remotes:
     mlr-org/bbotk@rush,
     mlr-org/mlr3tuning@rush,
     mlr-org/mlr3mbo@adbo,
-    mlr-org/mlr3learners
+    mlr-org/mlr3learners@holdout_task,
 Config/testthat/edition: 3
 Encoding: UTF-8
 NeedsCompilation: no

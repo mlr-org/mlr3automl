@@ -57,6 +57,9 @@ LearnerAuto = R6Class("LearnerAuto",
 
     lhs_size = NULL,
 
+    #' @field xgboost_eval_metric (`character(1)`).
+    xgboost_eval_metric = NULL,
+
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(
@@ -71,7 +74,8 @@ LearnerAuto = R6Class("LearnerAuto",
       callbacks = list(),
       learner_fallback = NULL,
       learner_timeout = Inf,
-      lhs_size = 4L
+      lhs_size = 4L,
+      xgboost_eval_metric = NULL
       ) {
       assert_choice(task_type, mlr_reflections$task_types$type)
       self$learner_ids = assert_character(learner_ids)
@@ -84,6 +88,7 @@ LearnerAuto = R6Class("LearnerAuto",
       self$learner_fallback = assert_learner(learner_fallback)
       self$learner_timeout = assert_numeric(learner_timeout)
       self$lhs_size = assert_count(lhs_size)
+      self$xgboost_eval_metric = assert_character(xgboost_eval_metric, null.ok = TRUE)
 
       # packages
       packages = unique(c("mlr3tuning", "mlr3learners", "mlr3pipelines", "mlr3mbo", "mlr3automl", graph$packages))
@@ -102,6 +107,18 @@ LearnerAuto = R6Class("LearnerAuto",
   private = list(
 
     .train = function(task) {
+     # holdout task
+      preproc = po("removeconstants", id = "pre_removeconstants") %>>%
+        po("imputeoor", id = "xgboost_imputeoor") %>>%
+        po("encode", method = "one-hot", id = "xgboost_encode") %>>%
+        po("removeconstants", id = "xgboost_post_removeconstants")
+      splits = partition(task, ratio = 0.9, stratify = TRUE)
+      holdout_task = task$clone()
+      holdout_task$filter(splits$test)
+      preproc$train(task)
+      holdout_task = preproc$predict(holdout_task)[[1]]
+      task$set_row_roles(splits$test, "holdout")
+
       # initialize graph learner
       graph_learner = as_learner(self$graph)
       graph_learner$id = "graph_learner"
@@ -109,6 +126,9 @@ LearnerAuto = R6Class("LearnerAuto",
       graph_learner$fallback = self$learner_fallback
       graph_learner$encapsulate = c(train = "callr", predict = "callr")
       graph_learner$timeout = c(train = self$learner_timeout, predict = self$learner_timeout)
+      graph_learner$param_set$values$xgboost.holdout_task = holdout_task
+      graph_learner$param_set$values$xgboost.callbacks = list(cb.timeout(self$learner_timeout * 0.8))
+      graph_learner$param_set$values$xgboost.eval_metric = self$xgboost_eval_metric
 
       # initialize search space
       graph_scratch = graph_learner$clone(deep = TRUE)
@@ -144,13 +164,15 @@ LearnerAuto = R6Class("LearnerAuto",
         measure = self$measure,
         terminator = self$terminator,
         search_space = search_space,
-        callbacks = self$callbacks,
+        callbacks = c(self$callbacks, clbk("mlr3automl.nrounds")),
         store_benchmark_result = FALSE
       )
 
+      # tune
       tuner$optimize(self$instance)
 
       # fit final model
+      task$set_row_roles(splits$test, "use")
       graph_learner$param_set$set_values(.values = self$instance$result_learner_param_vals)
       graph_learner$timeout = c(train = Inf, predict = Inf)
       graph_learner$train(task)
@@ -193,8 +215,9 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
       callbacks = list(),
       learner_timeout = Inf,
       nthread = 1L,
-      lhs_size = 4L
-      ){
+      lhs_size = 4L,
+      xgboost_eval_metric = NULL
+      ) {
       assert_count(nthread)
       learner_ids = c("rpart", "glmnet", "kknn", "lda", "log_reg", "multinom", "naive_bayes", "nnet", "qda", "ranger", "svm", "xgboost")
 
@@ -224,7 +247,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
           # svm
           po("imputehist", id = "svm_imputehist") %>>% po("imputeoor", id = "svm_imputeoor") %>>% po("encode", method = "one-hot", id = "smv_encode") %>>% po("removeconstants", id = "svm_post_removeconstants") %>>% lrn("classif.svm", id = "svm", type = "C-classification"),
           # xgboost
-          po("imputeoor", id = "xgboost_imputeoor") %>>% po("encode", method = "one-hot", id = "xgboost_encode") %>>% po("removeconstants", id = "xgboost_post_removeconstants") %>>% lrn("classif.xgboost", id = "xgboost", nrounds = 50, nthread = nthread)
+          po("imputeoor", id = "xgboost_imputeoor") %>>% po("encode", method = "one-hot", id = "xgboost_encode") %>>% po("removeconstants", id = "xgboost_post_removeconstants") %>>% lrn("classif.xgboost", id = "xgboost", nrounds = 5000, early_stopping_rounds = 10, nthread = nthread)
         )) %>>% po("unbranch", options = learner_ids)
 
       learner_fallback = lrn("classif.featureless", predict_type = measure$predict_type)
@@ -241,7 +264,8 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         callbacks = callbacks,
         learner_fallback = learner_fallback,
         learner_timeout = learner_timeout,
-        lhs_size = lhs_size)
+        lhs_size = lhs_size,
+        xgboost_eval_metric = xgboost_eval_metric)
     }
   ),
 
@@ -297,6 +321,5 @@ tuning_space = list(
   xgboost.colsample_bylevel = to_tune(1e-1, 1),
   xgboost.lambda            = to_tune(1e-3, 1e3, logscale = TRUE),
   xgboost.alpha             = to_tune(1e-3, 1e3, logscale = TRUE),
-  xgboost.subsample         = to_tune(1e-1, 1),
-  xgboost.nrounds           = to_tune(1, 1000)
+  xgboost.subsample         = to_tune(1e-1, 1)
 )

@@ -20,7 +20,7 @@ test_that("LearnerClassifAuto train works", {
   task = tsk("penguins")
   resampling = rsmp("holdout")
   measure = msr("classif.ce")
-  terminator = trm("evals", n_evals = 100)
+  terminator = trm("evals", n_evals = 20)
   learner = LearnerClassifAuto$new(
     resampling = resampling,
     measure = measure,

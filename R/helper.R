@@ -16,11 +16,6 @@ generate_default_design = function(task_type, learner_ids, task, tuning_space) {
     has_logscale = map_lgl(search_space$params, function(param) get_private(param)$.has_logscale)
     xdt = as.data.table(map_if(xss, has_logscale, function(value) if (value > 0) log(value) else value))
 
-    # fix nrounds
-    if (learner_id == "xgboost") {
-      set(xdt, j = "nrounds", value = 50L)
-    }
-
     setnames(xdt, sprintf("%s.%s", learner_id, names(xdt)))
     set(xdt, j = "branch.selection", value = learner_id)
   }, .fill = TRUE)
@@ -120,4 +115,22 @@ default_surrogate = function(instance = NULL, learner = NULL, n_learner = NULL, 
     learners = replicate(n_learner, learner$clone(deep = TRUE), simplify = FALSE)
     SurrogateLearnerCollection$new(learners)
   }
+}
+
+cb.timeout = function(timeout) {
+  callback = function(env = parent.frame()) {
+    if (is.null(env$start_time)) {
+      env$start_time <- Sys.time()
+    }
+
+    if (difftime(Sys.time(), env$start_time, units = "secs") > timeout) {
+      message("Timeout reached")
+      env$stop_condition <- TRUE
+    } else {
+      env$stop_condition <- FALSE
+    }
+  }
+  attr(callback, 'call') = match.call()
+  attr(callback, 'name') = 'cb.timeout'
+  callback
 }
