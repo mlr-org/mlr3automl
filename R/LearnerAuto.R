@@ -107,7 +107,10 @@ LearnerAuto = R6Class("LearnerAuto",
   private = list(
 
     .train = function(task) {
-     # holdout task
+
+      lg$debug("Training '%s' on task '%s'", self$id, task$id)
+
+      # holdout task
       preproc = po("removeconstants", id = "pre_removeconstants") %>>%
         po("imputeoor", id = "xgboost_imputeoor") %>>%
         po("encode", method = "one-hot", id = "xgboost_encode") %>>%
@@ -169,9 +172,11 @@ LearnerAuto = R6Class("LearnerAuto",
       )
 
       # tune
+      lg$debug("Tuning hyperparameters")
       tuner$optimize(self$instance)
 
       # fit final model
+      lg$debug("Fitting final model")
       task$set_row_roles(splits$test, "use")
       graph_learner$param_set$set_values(.values = self$instance$result_learner_param_vals)
       graph_learner$timeout = c(train = Inf, predict = Inf)

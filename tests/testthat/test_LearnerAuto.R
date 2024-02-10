@@ -16,6 +16,8 @@ test_that("LearnerClassifAuto train works", {
   rush_plan(n_workers = 4)
 
   lgr::get_logger("bbotk")$set_threshold("debug")
+  lgr::get_logger("rush")$set_threshold("debug")
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
 
   task = tsk("penguins")
   resampling = rsmp("holdout")
@@ -24,7 +26,8 @@ test_that("LearnerClassifAuto train works", {
   learner = LearnerClassifAuto$new(
     resampling = resampling,
     measure = measure,
-    terminator = terminator)
+    terminator = terminator,
+    lhs_size = 1)
 
   expect_class(learner$train(task), "LearnerClassifAuto")
 
