@@ -102,6 +102,9 @@ LearnerAuto = R6Class("LearnerAuto",
   private = list(
 
     .train = function(task) {
+
+      lg$debug("Training '%s' on task '%s'", self$id, task$id)
+
       # initialize graph learner
       graph_learner = as_learner(self$graph)
       graph_learner$id = "graph_learner"
@@ -148,9 +151,12 @@ LearnerAuto = R6Class("LearnerAuto",
         store_benchmark_result = FALSE
       )
 
+      # tune
+      lg$debug("Tuning hyperparameters")
       tuner$optimize(self$instance)
 
       # fit final model
+      lg$debug("Fitting final model")
       graph_learner$param_set$set_values(.values = self$instance$result_learner_param_vals)
       graph_learner$timeout = c(train = Inf, predict = Inf)
       graph_learner$train(task)

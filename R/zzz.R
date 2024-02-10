@@ -20,6 +20,15 @@
   x = utils::getFromNamespace("mlr_callbacks", ns = "mlr3misc")
   x$add("mlr3tuning.timeout", load_callback_timeout)
   x$add("mlr3tuning.initial_design", load_callback_initial_design)
+
+  # setup logger
+  lg = lgr::get_logger(pkgname)
+  assign("lg", lg, envir = parent.env(environment()))
+  f = function(event) {
+    event$msg = paste0("[mlr3automl] ", event$msg)
+    TRUE
+  }
+  lg$set_filters(list(f))
 } # nocov end
 
 leanify_package()
