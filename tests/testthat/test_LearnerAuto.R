@@ -11,13 +11,11 @@ test_that("lhs design is generated", {
 })
 
 test_that("LearnerClassifAuto train works", {
-  library(rush)
+  rush::rush_plan(n_workers = 4, lgr_thresholds = c(bbotk = "trace", rush = "debug", mlr3automl = "debug"))
 
-  rush_plan(n_workers = 4)
-
-  lgr::get_logger("bbotk")$set_threshold("debug")
-  lgr::get_logger("rush")$set_threshold("debug")
-  lgr::get_logger("mlr3automl")$set_threshold("debug")
+  # lgr::get_logger("bbotk")$set_threshold("trace")
+  # lgr::get_logger("rush")$set_threshold("debug")
+  # lgr::get_logger("mlr3automl")$set_threshold("debug")
 
   task = tsk("penguins")
   resampling = rsmp("holdout")
