@@ -172,11 +172,11 @@ LearnerAuto = R6Class("LearnerAuto",
       )
 
       # tune
-      lg$debug("Tuning hyperparameters")
+      lg$debug("Learner '%s' starts tuning phase", self$id)
       tuner$optimize(self$instance)
 
       # fit final model
-      lg$debug("Fitting final model")
+      lg$debug("Learner '%s' fits final model", self$id)
       task$set_row_roles(splits$test, "use")
       graph_learner$param_set$set_values(.values = self$instance$result_learner_param_vals)
       graph_learner$timeout = c(train = Inf, predict = Inf)
@@ -186,6 +186,7 @@ LearnerAuto = R6Class("LearnerAuto",
     },
 
     .predict = function(task) {
+      lg$debug("Predicting with '%s' on task '%s'", self$id, task$id)
       self$model$graph_learner$predict(task)
     }
   )
