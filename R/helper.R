@@ -100,3 +100,46 @@ default_surrogate = function(instance = NULL, learner = NULL, n_learner = NULL, 
     SurrogateLearnerCollection$new(learners)
   }
 }
+
+defaults = list(
+  # glmnet
+  glmnet.s     = 0.01,
+  glmnet.alpha = 1,
+  
+  # kknn
+  kknn.k = 7,
+  kknn.distance = 2,
+  kknn.kernel = "optimal",
+  
+  # nnet
+  nnet.maxit = 100,
+  nnet.decay = 0,
+  nnet.size  = 3,
+  
+  # ranger
+  ranger.mtry.ratio      = 0.5, # no default
+  ranger.replace         = TRUE,
+  ranger.sample.fraction = 1e-1, # no default
+  ranger.num.trees       = 500,
+  
+  # rpart
+  rpart.minsplit  = 20,
+  rpart.minbucket = 1, # no default
+  rpart.cp        = 0.01,
+  
+  # svm
+  svm.cost    = 1,
+  svm.kernel  = "radial",
+  svm.degree  = 3,
+  svm.gamma   = 1e-4, # no default
+  
+  # xgboost
+  xgboost.eta               = 0.3,
+  xgboost.max_depth         = 6,
+  xgboost.colsample_bytree  = 1,
+  xgboost.colsample_bylevel = 1,
+  xgboost.lambda            = 1,
+  xgboost.alpha             = 0,
+  xgboost.subsample         = 1,
+  xgboost.nrounds           = 1 # no default
+)
