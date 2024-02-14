@@ -2,6 +2,8 @@
 
 export(LearnerAuto)
 export(LearnerClassifAuto)
+export(autoplot.LearnerClassifAuto)
+export(autoplot.LearnerRegrAuto)
 import(R6)
 import(bbotk)
 import(checkmate)
