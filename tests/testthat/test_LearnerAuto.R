@@ -13,9 +13,9 @@ test_that("lhs design is generated", {
 test_that("LearnerClassifAuto train works", {
   rush::rush_plan(n_workers = 4, lgr_thresholds = c(bbotk = "trace", rush = "debug", mlr3automl = "debug"))
 
-  # lgr::get_logger("bbotk")$set_threshold("trace")
-  # lgr::get_logger("rush")$set_threshold("debug")
-  # lgr::get_logger("mlr3automl")$set_threshold("debug")
+  lgr::get_logger("bbotk")$set_threshold("trace")
+  lgr::get_logger("rush")$set_threshold("debug")
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
 
   task = tsk("penguins")
   resampling = rsmp("holdout")
@@ -33,6 +33,28 @@ test_that("LearnerClassifAuto train works", {
 
   expect_prediction(learner$predict(task))
 })
+
+test_that("LearnerClassifAuto memory_limit works", {
+  rush::rush_plan(n_workers = 4, lgr_thresholds = c(mlr3 = "info", bbotk = "trace", rush = "debug", mlr3automl = "debug"))
+
+  lgr::get_logger("bbotk")$set_threshold("trace")
+  lgr::get_logger("rush")$set_threshold("debug")
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
+  lgr::get_logger("mlr3")$set_threshold("info")
+
+  task = tsk("sonar")
+  resampling = rsmp("holdout")
+  measure = msr("classif.ce")
+  terminator = trm("evals", n_evals = 20)
+  learner = LearnerClassifAuto$new(
+    resampling = resampling,
+    measure = measure,
+    terminator = terminator,
+    learner_memory_limit = 1e10)
+
+  expect_class(learner$train(task), "LearnerClassifAuto")
+}
+
 
 
 test_that("LearnerClassifAuto resample works", {
@@ -64,6 +86,9 @@ test_that("LearnerClassifAuto timeout works", {
 
   expect_prediction(learner$predict(task))
 })
+
+
+
 
 test_that("LearnerClassifAuto nthread works", {
   task = tsk("sonar")

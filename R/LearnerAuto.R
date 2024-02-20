@@ -50,11 +50,15 @@ LearnerAuto = R6Class("LearnerAuto",
     #' @field learner_fallback ([mlr3::Learner]).
     learner_fallback = NULL,
 
-    #' @field learner_timeout (`integer(1)`).
+    #' @field learner_timeout (`numeric(1)`).
     learner_timeout = NULL,
+
+    #' @field learner_memory_limit (`numeric(1)`).
+    learner_memory_limit = NULL,
 
     instance = NULL,
 
+    #' @field lhs_size (`integer(1)`).
     lhs_size = NULL,
 
     #' @description
@@ -71,6 +75,7 @@ LearnerAuto = R6Class("LearnerAuto",
       callbacks = list(),
       learner_fallback = NULL,
       learner_timeout = Inf,
+      learner_memory_limit = Inf,
       lhs_size = 4L
       ) {
       assert_choice(task_type, mlr_reflections$task_types$type)
@@ -83,6 +88,7 @@ LearnerAuto = R6Class("LearnerAuto",
       self$callbacks = assert_list(as_callbacks(callbacks), types = "CallbackTuning")
       self$learner_fallback = assert_learner(learner_fallback)
       self$learner_timeout = assert_numeric(learner_timeout)
+      self$learner_memory_limit = assert_numeric(learner_memory_limit)
       self$lhs_size = assert_count(lhs_size)
 
       # packages
@@ -112,6 +118,7 @@ LearnerAuto = R6Class("LearnerAuto",
       graph_learner$fallback = self$learner_fallback
       graph_learner$encapsulate = c(train = "callr", predict = "callr")
       graph_learner$timeout = c(train = self$learner_timeout, predict = self$learner_timeout)
+      graph_learner$memory_limit = c(train = self$learner_memory_limit, predict = self$learner_memory_limit)
 
       # initialize search space
       graph_scratch = graph_learner$clone(deep = TRUE)
@@ -199,6 +206,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
       terminator = trm("evals", n_evals = 100L),
       callbacks = list(),
       learner_timeout = Inf,
+      learner_memory_limit = Inf,
       nthread = 1L,
       lhs_size = 4L
       ){
@@ -248,6 +256,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         callbacks = callbacks,
         learner_fallback = learner_fallback,
         learner_timeout = learner_timeout,
+        learner_memory_limit = learner_memory_limit,
         lhs_size = lhs_size)
     }
   ),

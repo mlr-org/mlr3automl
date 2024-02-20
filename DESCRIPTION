@@ -39,6 +39,8 @@ Imports:
 Suggests:
     testthat (>= 3.0.0)
 Remotes:
+    mlr-org/mlr3@mlr3automl,
+    mlr-org/mlr3misc@mlr3automl,
     mlr-org/rush,
     mlr-org/bbotk@rush,
     mlr-org/mlr3tuning@rush,
