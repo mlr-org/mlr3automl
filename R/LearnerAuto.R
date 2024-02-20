@@ -201,17 +201,23 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
       lhs_size = 2L
       ){
       assert_count(nthread)
-      learner_ids = c("lda", "nnet", "ranger", "xgboost")
+      learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost")
 
       graph = po("removeconstants", id = "pre_removeconstants") %>>%
         po("branch", options = learner_ids) %>>%
         gunion(list(
+          # glmnet
+          po("imputehist", id = "glmnet_imputehist") %>>% po("imputeoor", id = "glmnet_imputeoor") %>>% po("encode", method = "one-hot", id = "glmnet_encode") %>>% po("removeconstants", id = "glmnet_post_removeconstants") %>>% lrn("classif.glmnet", id = "glmnet"),
+          # kknn
+          po("imputehist", id = "kknn_imputehist") %>>% po("imputeoor", id = "kknn_imputeoor") %>>% po("removeconstants", id = "kknn_post_removeconstants") %>>% lrn("classif.kknn", id = "kknn"),
           # lda
           po("imputehist", id = "lda_imputehist") %>>% po("imputeoor", id = "lda_imputeoor") %>>% po("removeconstants", id = "lda_post_removeconstants") %>>% lrn("classif.lda", id = "lda"),
           # nnet
           po("imputehist", id = "nnet_imputehist") %>>% po("imputeoor", id = "nnet_imputeoor") %>>% po("removeconstants", id = "nnet_post_removeconstants") %>>% lrn("classif.nnet", id = "nnet"),
           # ranger
           po("imputeoor", id = "ranger_imputeoor") %>>% po("removeconstants", id = "ranger_post_removeconstants") %>>% lrn("classif.ranger", id = "ranger", num.threads = nthread),
+          # svm
+          po("imputehist", id = "svm_imputehist") %>>% po("imputeoor", id = "svm_imputeoor") %>>% po("encode", method = "one-hot", id = "smv_encode") %>>% po("removeconstants", id = "svm_post_removeconstants") %>>% lrn("classif.svm", id = "svm", type = "C-classification"),
           # xgboost
           po("imputeoor", id = "xgboost_imputeoor") %>>% po("encode", method = "one-hot", id = "xgboost_encode") %>>% po("removeconstants", id = "xgboost_post_removeconstants") %>>% lrn("classif.xgboost", id = "xgboost", nrounds = 50, nthread = nthread)
         )) %>>% po("unbranch", options = learner_ids)
@@ -236,6 +242,15 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
 )
 
 tuning_space = list(
+  # glmnet
+  glmnet.s     = to_tune(1e-4, 1e4, logscale = TRUE),
+  glmnet.alpha = to_tune(0, 1),
+
+  # kknn
+  kknn.k = to_tune(1, 50, logscale = TRUE),
+  kknn.distance = to_tune(1, 5),
+  kknn.kernel = to_tune(c("rectangular", "optimal", "epanechnikov", "biweight", "triweight", "cos",  "inv",  "gaussian", "rank")),
+
   # nnet
   nnet.maxit = to_tune(1e1, 1e3, logscale = TRUE),
   nnet.decay = to_tune(1e-4, 1e-1, logscale = TRUE),
@@ -246,6 +261,12 @@ tuning_space = list(
   ranger.replace         = to_tune(),
   ranger.sample.fraction = to_tune(1e-1, 1),
   ranger.num.trees       = to_tune(1, 2000),
+
+   # svm
+  svm.cost    = to_tune(1e-4, 1e4, logscale = TRUE),
+  svm.kernel  = to_tune(c("polynomial", "radial", "sigmoid", "linear")),
+  svm.degree  = to_tune(2, 5),
+  svm.gamma   = to_tune(1e-4, 1e4, logscale = TRUE),
 
   # xgboost
   xgboost.eta               = to_tune(1e-4, 1, logscale = TRUE),
