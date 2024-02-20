@@ -138,7 +138,7 @@ LearnerAuto = R6Class("LearnerAuto",
       })
 
       # initial design
-      lhs_xdt = generate_lhs_design(self$lhs_size, self$task_type, self$learner_ids, self$tuning_space)
+      lhs_xdt = generate_lhs_design(self$lhs_size, self$task_type, self$learner_ids[self$learner_ids != "lda"], self$tuning_space)
       default_xdt = generate_default_design(self$task_type, self$learner_ids, task, self$tuning_space)
       initial_xdt = rbindlist(list(lhs_xdt, default_xdt), use.names = TRUE, fill = TRUE)
       setorderv(initial_xdt, "branch.selection")
@@ -211,29 +211,19 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
       lhs_size = 4L
       ){
       assert_count(nthread)
-      learner_ids = c("rpart", "glmnet", "kknn", "lda", "log_reg", "multinom", "naive_bayes", "nnet", "qda", "ranger", "svm", "xgboost")
+      learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost")
 
       graph = po("removeconstants", id = "pre_removeconstants") %>>%
         po("branch", options = learner_ids) %>>%
         gunion(list(
-          # rpart
-          lrn("classif.rpart", id = "rpart"),
           # glmnet
           po("imputehist", id = "glmnet_imputehist") %>>% po("imputeoor", id = "glmnet_imputeoor") %>>% po("encode", method = "one-hot", id = "glmnet_encode") %>>% po("removeconstants", id = "glmnet_post_removeconstants") %>>% lrn("classif.glmnet", id = "glmnet"),
           # kknn
           po("imputehist", id = "kknn_imputehist") %>>% po("imputeoor", id = "kknn_imputeoor") %>>% po("removeconstants", id = "kknn_post_removeconstants") %>>% lrn("classif.kknn", id = "kknn"),
           # lda
           po("imputehist", id = "lda_imputehist") %>>% po("imputeoor", id = "lda_imputeoor") %>>% po("removeconstants", id = "lda_post_removeconstants") %>>% lrn("classif.lda", id = "lda"),
-          # log_reg
-          po("imputehist", id = "logreg_imputehist") %>>% po("imputeoor", id = "log_reg_imputeoor") %>>% po("removeconstants", id = "log_reg_post_removeconstants") %>>% lrn("classif.log_reg", id = "log_reg"),
-          # multinom
-          po("imputehist", id = "multinom_imputehist") %>>% po("imputeoor", id = "multinom_imputeoor") %>>% po("removeconstants", id = "multinom_post_removeconstants") %>>% lrn("classif.multinom", id = "multinom"),
-          # naive_bayes
-          po("imputehist", id = "naive_bayes_imputehist") %>>% po("imputeoor", id = "naive_bayes_imputeoor") %>>% po("removeconstants", id = "naive_bayes_post_removeconstants") %>>% lrn("classif.naive_bayes", id = "naive_bayes"),
           # nnet
           po("imputehist", id = "nnet_imputehist") %>>% po("imputeoor", id = "nnet_imputeoor") %>>% po("removeconstants", id = "nnet_post_removeconstants") %>>% lrn("classif.nnet", id = "nnet"),
-          # qda
-          po("imputehist", id = "qda_imputehist") %>>% po("imputeoor", id = "qda_imputeoor") %>>% po("removeconstants", id = "qda_post_removeconstants") %>>% lrn("classif.qda", id = "qda"),
           # ranger
           po("imputeoor", id = "ranger_imputeoor") %>>% po("removeconstants", id = "ranger_post_removeconstants") %>>% lrn("classif.ranger", id = "ranger", num.threads = nthread),
           # svm
@@ -259,18 +249,6 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         learner_memory_limit = learner_memory_limit,
         lhs_size = lhs_size)
     }
-  ),
-
-  private = list(
-    .train = function(task) {
-
-      if ("twoclass" %in% task$properties) {
-        self$learner_ids = self$learner_ids[self$learner_ids != "multinom"]
-      } else {
-        self$learner_ids = self$learner_ids[self$learner_ids != "log_reg"]
-      }
-      super$.train(task)
-    }
   )
 )
 
@@ -295,12 +273,7 @@ tuning_space = list(
   ranger.sample.fraction = to_tune(1e-1, 1),
   ranger.num.trees       = to_tune(500, 2000),
 
-  # rpart
-  rpart.minsplit  = to_tune(2, 128, logscale = TRUE),
-  rpart.minbucket = to_tune(1, 64, logscale = TRUE),
-  rpart.cp        = to_tune(1e-04, 1e-1, logscale = TRUE),
-
-  # svm
+   # svm
   svm.cost    = to_tune(1e-4, 1e4, logscale = TRUE),
   svm.kernel  = to_tune(c("polynomial", "radial", "sigmoid", "linear")),
   svm.degree  = to_tune(2, 5),

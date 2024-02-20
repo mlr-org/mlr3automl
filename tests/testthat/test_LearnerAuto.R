@@ -1,7 +1,7 @@
 
-test_that("default design is generated", {
-  learner_ids = c("rpart", "glmnet", "kknn", "lda", "log_reg", "multinom", "naive_bayes", "nnet", "qda", "ranger", "svm", "xgboost")
-  xdt = generate_default_design("classif", learner_ids, tsk("sonar"), tuning_space)
+test_that("initial design is generated", {
+  learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost")
+  xdt = generate_initial_design("classif", learner_ids, tsk("sonar"), tuning_space)
   expect_data_table(xdt, nrows = length(learner_ids))
 })
 
