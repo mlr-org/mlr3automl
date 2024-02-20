@@ -18,14 +18,7 @@ autoplot.LearnerClassifAuto = function(object, type = "marginal", split_branch =
     }
   }
 
-  if (type != "pca") {
-    branch = object$result$branch.selection
-    cols_x = cols_x[grepl(branch, cols_x)]
-    if (length(cols_x) == 0) {
-      cols_x = object$archive$cols_x
-    }
-    autoplot(object = object, type = type, cols_x = cols_x, trafo = trafo, learner = learner, grid_resolution = grid_resolution, theme = theme, ...)
-  } else {
+  if (type %in% c("pca", "hyperparameter")) {
     cols_y = object$archive$cols_y
     data = fortify(object)
     if (is.null(batch)) batch = seq_len(object$archive$n_batch)
@@ -75,9 +68,24 @@ autoplot.LearnerClassifAuto = function(object, type = "marginal", split_branch =
          guides(fill = guide_colorbar(barwidth = 0.5, barheight = 10)) +
          theme
      },
+     "hyperparameter" = {
+       data = data[, c(..cols_x, ..cols_y)]
+       task = TaskRegr$new(id = "viz", backend = data, target = cols_y)
+       lrn = lrn("regr.rpart", keep_model = TRUE)
+       lrn = as_learner(pipeline_robustify(task, lrn) %>>% po("learner", lrn))
+       lrn$train(task)
+       autoplot(lrn$graph_model$pipeops$regr.rpart$learner_model)
+     },
 
      stopf("Unknown plot type '%s'", type)
     )
+  } else {
+    branch = object$result$branch.selection
+    cols_x = cols_x[grepl(branch, cols_x)]
+    if (length(cols_x) == 0) {
+      cols_x = object$archive$cols_x
+    }
+    autoplot(object = object, type = type, cols_x = cols_x, trafo = trafo, learner = learner, grid_resolution = grid_resolution, theme = theme, ...)
   }
 }
 
