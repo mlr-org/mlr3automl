@@ -9,7 +9,7 @@ test_that("LearnerClassifAuto train works", {
   task = tsk("penguins")
   resampling = rsmp("holdout")
   measure = msr("classif.ce")
-  terminator = trm("run_time", secs = 60)
+  terminator = trm("run_time", secs = 10)
   learner = LearnerClassifAuto$new(
     resampling = resampling,
     measure = measure,

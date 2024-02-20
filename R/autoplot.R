@@ -6,6 +6,8 @@
 autoplot.LearnerClassifAuto = function(object, type = "marginal", split_branch = TRUE, cols_x = NULL, trafo = FALSE, grid_resolution = 100, batch = NULL, theme = theme_minimal(), ...) { # nolint
   assert_flag(trafo)
 
+  require_namespaces("mlr3viz")
+
   object = object$model$tuning_instance
 
   if (is.null(cols_x)) {
