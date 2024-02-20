@@ -50,11 +50,15 @@ LearnerAuto = R6Class("LearnerAuto",
     #' @field learner_fallback ([mlr3::Learner]).
     learner_fallback = NULL,
 
-    #' @field learner_timeout (`integer(1)`).
+    #' @field learner_timeout (`numeric(1)`).
     learner_timeout = NULL,
+
+    #' @field learner_memory_limit (`numeric(1)`).
+    learner_memory_limit = NULL,
 
     instance = NULL,
 
+    #' @field lhs_size (`integer(1)`).
     lhs_size = NULL,
 
     #' @field xgboost_eval_metric (`character(1)`).
@@ -74,8 +78,9 @@ LearnerAuto = R6Class("LearnerAuto",
       callbacks = list(),
       learner_fallback = NULL,
       learner_timeout = Inf,
-      lhs_size = 4L,
-      xgboost_eval_metric = NULL
+      learner_memory_limit = Inf,
+      xgboost_eval_metric = NULL,
+      lhs_size = 4L
       ) {
       assert_choice(task_type, mlr_reflections$task_types$type)
       self$learner_ids = assert_character(learner_ids)
@@ -87,6 +92,7 @@ LearnerAuto = R6Class("LearnerAuto",
       self$callbacks = assert_list(as_callbacks(callbacks), types = "CallbackTuning")
       self$learner_fallback = assert_learner(learner_fallback)
       self$learner_timeout = assert_numeric(learner_timeout)
+      self$learner_memory_limit = assert_numeric(learner_memory_limit)
       self$lhs_size = assert_count(lhs_size)
       self$xgboost_eval_metric = assert_character(xgboost_eval_metric, null.ok = TRUE)
 
@@ -132,6 +138,7 @@ LearnerAuto = R6Class("LearnerAuto",
       graph_learner$param_set$values$xgboost.holdout_task = holdout_task
       graph_learner$param_set$values$xgboost.callbacks = list(cb.timeout(self$learner_timeout * 0.8))
       graph_learner$param_set$values$xgboost.eval_metric = self$xgboost_eval_metric
+      graph_learner$memory_limit = c(train = self$learner_memory_limit, predict = self$learner_memory_limit)
 
       # initialize search space
       graph_scratch = graph_learner$clone(deep = TRUE)
@@ -220,6 +227,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
       terminator = trm("evals", n_evals = 100L),
       callbacks = list(),
       learner_timeout = Inf,
+      learner_memory_limit = Inf,
       nthread = 1L,
       lhs_size = 4L,
       xgboost_eval_metric = NULL
@@ -270,8 +278,9 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         callbacks = callbacks,
         learner_fallback = learner_fallback,
         learner_timeout = learner_timeout,
-        lhs_size = lhs_size,
-        xgboost_eval_metric = xgboost_eval_metric)
+        learner_memory_limit = learner_memory_limit,
+        xgboost_eval_metric = xgboost_eval_metric,
+        lhs_size = lhs_size)
     }
   ),
 
