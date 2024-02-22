@@ -131,12 +131,13 @@ LearnerAuto = R6Class("LearnerAuto",
 
       # reduce number of workers on large data sets
       if (task$nrow > self$large_data_size) {
-        lg$debug("Task larger than %i rows. Reducing number of workers to %s", self$large_data_size, self$large_data_nthread)
         self$learner_ids = c("rpart", "lda", "ranger", "xgboost")
         self$graph$param_set$set_values(xgboost.nthread = self$large_data_nthread)
         self$graph$param_set$set_values(ranger.num.threads = self$large_data_nthread)
         n_workers = utils::getFromNamespace("rush_env", ns = "rush")$n_workers
-        tuner$param_set$set_values(n_workers = floor(n_workers / self$large_data_nthread))
+        n = floor(n_workers / self$large_data_nthread)
+        lg$debug("Task larger than %i rows. Reducing number of workers to %s", self$large_data_size, n)
+        tuner$param_set$set_values(n_workers = n)
       }
 
       # holdout task
