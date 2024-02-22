@@ -133,8 +133,6 @@ LearnerAuto = R6Class("LearnerAuto",
       if (task$nrow > self$large_data_size) {
         lg$debug("Task larger than %i rows. Reducing number of workers to %s", self$large_data_size, self$large_data_nthread)
         self$learner_ids = c("rpart", "lda", "ranger", "xgboost")
-        browser()
-        self$tuning_space[grepl(c("rpart", "lda", "ranger", "xgboost"), names(self$tuning_space))]
         self$graph$param_set$set_values(xgboost.nthread = self$large_data_nthread)
         self$graph$param_set$set_values(ranger.num.threads = self$large_data_nthread)
         n_workers = utils::getFromNamespace("rush_env", ns = "rush")$n_workers
