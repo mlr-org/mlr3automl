@@ -93,7 +93,7 @@ LearnerAuto = R6Class("LearnerAuto",
       assert_choice(task_type, mlr_reflections$task_types$type)
       self$learner_ids = assert_character(learner_ids)
       self$graph = assert_graph(graph)
-      self$tuning_space = assert_list(tuning_space, types = "TuneToken")
+      self$tuning_space = assert_list(tuning_space)
       self$resampling = assert_resampling(resampling)
       self$measure = assert_measure(measure)
       self$terminator = assert_terminator(terminator)
@@ -166,8 +166,9 @@ LearnerAuto = R6Class("LearnerAuto",
       graph_learner$memory_limit = c(train = self$learner_memory_limit, predict = self$learner_memory_limit)
 
       # initialize search space
+      tuning_space = unlist(unname(self$tuning_space[self$learner_ids[self$learner_ids %in% names(self$tuning_space)]]), recursive = FALSE)
       graph_scratch = graph_learner$clone(deep = TRUE)
-      graph_scratch$param_set$set_values(.values = self$tuning_space)
+      graph_scratch$param_set$set_values(.values = tuning_space)
       graph_scratch$param_set$set_values(branch.selection = to_tune(self$learner_ids))
       search_space = graph_scratch$param_set$search_space()
       walk(self$learner_ids, function(learner_id) {
@@ -325,43 +326,50 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
 )
 
 tuning_space = list(
-  # glmnet
-  glmnet.s     = to_tune(1e-4, 1e4, logscale = TRUE),
-  glmnet.alpha = to_tune(0, 1),
+  glmnet = list(
+    glmnet.s     = to_tune(1e-4, 1e4, logscale = TRUE),
+    glmnet.alpha = to_tune(0, 1)
+  ),
 
-  # kknn
-  kknn.k = to_tune(1, 50, logscale = TRUE),
-  kknn.distance = to_tune(1, 5),
-  kknn.kernel = to_tune(c("rectangular", "optimal", "epanechnikov", "biweight", "triweight", "cos",  "inv",  "gaussian", "rank")),
+  kknn = list(
+    kknn.k = to_tune(1, 50, logscale = TRUE),
+    kknn.distance = to_tune(1, 5),
+    kknn.kernel = to_tune(c("rectangular", "optimal", "epanechnikov", "biweight", "triweight", "cos",  "inv",  "gaussian", "rank"))
+  ),
 
-  # nnet
-  nnet.maxit = to_tune(1e1, 1e3, logscale = TRUE),
-  nnet.decay = to_tune(1e-4, 1e-1, logscale = TRUE),
-  nnet.size  = to_tune(2, 50, logscale = TRUE),
+  nnet = list(
+      nnet.maxit = to_tune(1e1, 1e3, logscale = TRUE),
+      nnet.decay = to_tune(1e-4, 1e-1, logscale = TRUE),
+      nnet.size  = to_tune(2, 50, logscale = TRUE)
+  ),
 
-  # ranger
-  ranger.mtry.ratio      = to_tune(0, 1),
-  ranger.replace         = to_tune(),
-  ranger.sample.fraction = to_tune(1e-1, 1),
-  ranger.num.trees       = to_tune(500, 2000),
+  ranger = list(
+    ranger.mtry.ratio      = to_tune(0, 1),
+    ranger.replace         = to_tune(),
+    ranger.sample.fraction = to_tune(1e-1, 1),
+    ranger.num.trees       = to_tune(500, 2000)
+  ),
 
-  # rpart
-  rpart.minsplit  = to_tune(2, 128, logscale = TRUE),
-  rpart.minbucket = to_tune(1, 64, logscale = TRUE),
-  rpart.cp        = to_tune(1e-04, 1e-1, logscale = TRUE),
+  rpart = list(
+    rpart.minsplit  = to_tune(2, 128, logscale = TRUE),
+    rpart.minbucket = to_tune(1, 64, logscale = TRUE),
+    rpart.cp        = to_tune(1e-04, 1e-1, logscale = TRUE)
+  ),
 
-  # svm
-  svm.cost    = to_tune(1e-4, 1e4, logscale = TRUE),
-  svm.kernel  = to_tune(c("polynomial", "radial", "sigmoid", "linear")),
-  svm.degree  = to_tune(2, 5),
-  svm.gamma   = to_tune(1e-4, 1e4, logscale = TRUE),
+  svm = list(
+    svm.cost    = to_tune(1e-4, 1e4, logscale = TRUE),
+    svm.kernel  = to_tune(c("polynomial", "radial", "sigmoid", "linear")),
+    svm.degree  = to_tune(2, 5),
+    svm.gamma   = to_tune(1e-4, 1e4, logscale = TRUE)
+  ),
 
-  # xgboost
-  xgboost.eta               = to_tune(1e-4, 1, logscale = TRUE),
-  xgboost.max_depth         = to_tune(1, 20),
-  xgboost.colsample_bytree  = to_tune(1e-1, 1),
-  xgboost.colsample_bylevel = to_tune(1e-1, 1),
-  xgboost.lambda            = to_tune(1e-3, 1e3, logscale = TRUE),
-  xgboost.alpha             = to_tune(1e-3, 1e3, logscale = TRUE),
-  xgboost.subsample         = to_tune(1e-1, 1)
+  xgboost = list(
+    xgboost.eta               = to_tune(1e-4, 1, logscale = TRUE),
+    xgboost.max_depth         = to_tune(1, 20),
+    xgboost.colsample_bytree  = to_tune(1e-1, 1),
+    xgboost.colsample_bylevel = to_tune(1e-1, 1),
+    xgboost.lambda            = to_tune(1e-3, 1e3, logscale = TRUE),
+    xgboost.alpha             = to_tune(1e-3, 1e3, logscale = TRUE),
+    xgboost.subsample         = to_tune(1e-1, 1)
+  )
 )
