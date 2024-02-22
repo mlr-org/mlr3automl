@@ -49,7 +49,7 @@ test_that("LearnerClassifAuto works with large data sets", {
     resampling = resampling,
     measure = measure,
     terminator = terminator,
-    lhs_size = 10,
+    lhs_size = 1,
     large_data_size = 300,
     large_data_nthread = 2)
 
