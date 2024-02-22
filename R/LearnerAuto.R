@@ -64,6 +64,12 @@ LearnerAuto = R6Class("LearnerAuto",
     #' @field xgboost_eval_metric (`character(1)`).
     xgboost_eval_metric = NULL,
 
+    #' @field small_data_size (`integer(1)`).
+    small_data_size = NULL,
+
+    #' @field small_data_resampling ([mlr3::Resampling]).
+    small_data_resampling = NULL,
+
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(
@@ -80,7 +86,9 @@ LearnerAuto = R6Class("LearnerAuto",
       learner_timeout = Inf,
       learner_memory_limit = Inf,
       xgboost_eval_metric = NULL,
-      lhs_size = 4L
+      lhs_size = 4L,
+      small_data_size = 5000L,
+      small_data_resampling = rsmp("cv", folds = 5)
       ) {
       assert_choice(task_type, mlr_reflections$task_types$type)
       self$learner_ids = assert_character(learner_ids)
@@ -95,6 +103,8 @@ LearnerAuto = R6Class("LearnerAuto",
       self$learner_memory_limit = assert_numeric(learner_memory_limit)
       self$lhs_size = assert_count(lhs_size)
       self$xgboost_eval_metric = assert_character(xgboost_eval_metric, null.ok = TRUE)
+      self$small_data_size = assert_count(small_data_size)
+      self$small_data_resampling = assert_resampling(small_data_resampling)
 
       # packages
       packages = unique(c("mlr3tuning", "mlr3learners", "mlr3pipelines", "mlr3mbo", "mlr3automl", graph$packages))
@@ -115,6 +125,14 @@ LearnerAuto = R6Class("LearnerAuto",
     .train = function(task) {
 
       lg$debug("Training '%s' on task '%s'", self$id, task$id)
+
+      # small data resampling
+      resampling = if (task$nrow < self$small_data_size) {
+        lg$debug("Task has less than %i rows, using small data resampling", self$small_data_size)
+        self$small_data_resampling
+      } else {
+        self$resampling
+      }
 
       # holdout task
       preproc = po("removeconstants", id = "pre_removeconstants") %>>%
@@ -170,7 +188,7 @@ LearnerAuto = R6Class("LearnerAuto",
       self$instance = TuningInstanceRushSingleCrit$new(
         task = task,
         learner = graph_learner,
-        resampling = self$resampling,
+        resampling = resampling,
         measure = self$measure,
         terminator = self$terminator,
         search_space = search_space,
@@ -230,7 +248,9 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
       learner_memory_limit = Inf,
       nthread = 1L,
       lhs_size = 4L,
-      xgboost_eval_metric = NULL
+      xgboost_eval_metric = NULL,
+      small_data_size = 5000L,
+      small_data_resampling = rsmp("cv", folds = 5)
       ) {
       assert_count(nthread)
       learner_ids = c("rpart", "glmnet", "kknn", "lda", "log_reg", "multinom", "naive_bayes", "nnet", "qda", "ranger", "svm", "xgboost")
@@ -280,7 +300,9 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         learner_timeout = learner_timeout,
         learner_memory_limit = learner_memory_limit,
         xgboost_eval_metric = xgboost_eval_metric,
-        lhs_size = lhs_size)
+        lhs_size = lhs_size,
+        small_data_size = small_data_size,
+        small_data_resampling = small_data_resampling)
     }
   ),
 
