@@ -2,7 +2,7 @@ generate_default_design = function(task_type, learner_ids, task, tuning_space) {
   map_dtr(learner_ids, function(learner_id) {
     learner = lrn(sprintf("%s.%s", task_type, learner_id))
 
-    token = tuning_space[grep(paste0("^", learner_id), names(tuning_space))]
+    token = tuning_space[[learner_id]]
 
     # learner without tuning space
     if (!length(token)) {
@@ -27,7 +27,7 @@ generate_lhs_design = function(size, task_type, learner_ids, tuning_space) {
   map_dtr(learner_ids, function(learner_id) {
     learner = lrn(sprintf("%s.%s", task_type, learner_id))
 
-    token = tuning_space[grep(paste0("^", learner_id), names(tuning_space))]
+    token = tuning_space[[learner_id]]
     # learner without tuning space
     if (!length(token)) {
       return(data.table(branch.selection = learner_id))
