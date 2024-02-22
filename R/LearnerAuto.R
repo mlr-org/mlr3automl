@@ -64,6 +64,12 @@ LearnerAuto = R6Class("LearnerAuto",
     #' @field xgboost_eval_metric (`character(1)`).
     xgboost_eval_metric = NULL,
 
+    #' @field large_data_size (`numeric(1)`).
+    large_data_size = NULL,
+
+    #' @field large_data_nthread (`integer(1)`).
+    large_data_nthread = NULL,
+
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(
@@ -80,7 +86,9 @@ LearnerAuto = R6Class("LearnerAuto",
       learner_timeout = Inf,
       learner_memory_limit = Inf,
       xgboost_eval_metric = NULL,
-      lhs_size = 4L
+      lhs_size = 4L,
+      large_data_size = 1e6,
+      large_data_nthread = 1L
       ) {
       assert_choice(task_type, mlr_reflections$task_types$type)
       self$learner_ids = assert_character(learner_ids)
@@ -95,6 +103,8 @@ LearnerAuto = R6Class("LearnerAuto",
       self$learner_memory_limit = assert_numeric(learner_memory_limit)
       self$lhs_size = assert_count(lhs_size)
       self$xgboost_eval_metric = assert_character(xgboost_eval_metric, null.ok = TRUE)
+      self$large_data_size = assert_numeric(large_data_size)
+      self$large_data_nthread = assert_count(large_data_nthread)
 
       # packages
       packages = unique(c("mlr3tuning", "mlr3learners", "mlr3pipelines", "mlr3mbo", "mlr3automl", graph$packages))
@@ -115,6 +125,17 @@ LearnerAuto = R6Class("LearnerAuto",
     .train = function(task) {
 
       lg$debug("Training '%s' on task '%s'", self$id, task$id)
+
+      # initialize mbo tuner
+      tuner = tnr("adbo")
+
+      # reduce number of workers on large data sets
+      if (task$nrow > self$large_data_size) {
+        self$graph$param_set$set_values(xgboost.nthread = self$large_data_nthread)
+        self$graph$param_set$set_values(ranger.num.threads = self$large_data_nthread)
+        n_workers = utils::getFromNamespace("rush_env", ns = "rush")$n_workers
+        tuner$param_set$set_values(n_workers = floor(n_workers / self$large_data_nthread))
+      }
 
       # holdout task
       preproc = po("removeconstants", id = "pre_removeconstants") %>>%
@@ -162,9 +183,7 @@ LearnerAuto = R6Class("LearnerAuto",
       default_xdt = generate_default_design(self$task_type, self$learner_ids, task, self$tuning_space)
       initial_xdt = rbindlist(list(lhs_xdt, default_xdt), use.names = TRUE, fill = TRUE)
       setorderv(initial_xdt, "branch.selection")
-
-      # initialize mbo tuner
-      tuner = tnr("adbo", initial_design = initial_xdt)
+      tuner$param_set$set_values(initial_design = initial_xdt)
 
       # initialize auto tuner
       self$instance = TuningInstanceRushSingleCrit$new(
@@ -230,7 +249,9 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
       learner_memory_limit = Inf,
       nthread = 1L,
       lhs_size = 4L,
-      xgboost_eval_metric = NULL
+      xgboost_eval_metric = NULL,
+      large_data_size = 1e6,
+      large_data_nthread = 1L
       ) {
       assert_count(nthread)
       learner_ids = c("rpart", "glmnet", "kknn", "lda", "log_reg", "multinom", "naive_bayes", "nnet", "qda", "ranger", "svm", "xgboost")
@@ -280,7 +301,9 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         learner_timeout = learner_timeout,
         learner_memory_limit = learner_memory_limit,
         xgboost_eval_metric = xgboost_eval_metric,
-        lhs_size = lhs_size)
+        lhs_size = lhs_size,
+        large_data_size = large_data_size,
+        large_data_nthread = large_data_nthread)
     }
   ),
 
