@@ -136,7 +136,7 @@ LearnerAuto = R6Class("LearnerAuto",
         self$graph$param_set$set_values(ranger.num.threads = self$large_data_nthread)
         n_workers = utils::getFromNamespace("rush_env", ns = "rush")$n_workers
         n = floor(n_workers / self$large_data_nthread)
-        lg$debug("Task larger than %i rows. Reducing number of workers to %s", self$large_data_size, n)
+        lg$debug("Task larger than %i rows. Reducing number of workers to %i", self$large_data_size, n)
         tuner$param_set$set_values(n_workers = n)
       }
 
