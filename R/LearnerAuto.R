@@ -69,6 +69,11 @@ LearnerAuto = R6Class("LearnerAuto",
 
     #' @field large_data_nthread (`integer(1)`).
     large_data_nthread = NULL,
+    #' @field small_data_size (`integer(1)`).
+    small_data_size = NULL,
+
+    #' @field small_data_resampling ([mlr3::Resampling]).
+    small_data_resampling = NULL,
 
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
@@ -88,7 +93,9 @@ LearnerAuto = R6Class("LearnerAuto",
       xgboost_eval_metric = NULL,
       lhs_size = 4L,
       large_data_size = 1e6,
-      large_data_nthread = 1L
+      large_data_nthread = 1L,
+      small_data_size = 5000L,
+      small_data_resampling = rsmp("cv", folds = 5)
       ) {
       assert_choice(task_type, mlr_reflections$task_types$type)
       self$learner_ids = assert_character(learner_ids)
@@ -105,6 +112,8 @@ LearnerAuto = R6Class("LearnerAuto",
       self$xgboost_eval_metric = assert_character(xgboost_eval_metric, null.ok = TRUE)
       self$large_data_size = assert_numeric(large_data_size)
       self$large_data_nthread = assert_count(large_data_nthread)
+      self$small_data_size = assert_count(small_data_size)
+      self$small_data_resampling = assert_resampling(small_data_resampling)
 
       # packages
       packages = unique(c("mlr3tuning", "mlr3learners", "mlr3pipelines", "mlr3mbo", "mlr3automl", graph$packages))
@@ -131,13 +140,21 @@ LearnerAuto = R6Class("LearnerAuto",
 
       # reduce number of workers on large data sets
       if (task$nrow > self$large_data_size) {
-        self$learner_ids = c("rpart", "lda", "ranger", "xgboost")
+        self$learner_ids = c("lda", "ranger", "xgboost")
         self$graph$param_set$set_values(xgboost.nthread = self$large_data_nthread)
         self$graph$param_set$set_values(ranger.num.threads = self$large_data_nthread)
         n_workers = utils::getFromNamespace("rush_env", ns = "rush")$n_workers
         n = floor(n_workers / self$large_data_nthread)
         lg$debug("Task larger than %i rows. Reducing number of workers to %i", self$large_data_size, n)
         tuner$param_set$set_values(n_workers = n)
+      }
+
+      # small data resampling
+      resampling = if (task$nrow < self$small_data_size) {
+        lg$debug("Task has less than %i rows, using small data resampling", self$small_data_size)
+        self$small_data_resampling
+      } else {
+        self$resampling
       }
 
       # holdout task
@@ -193,7 +210,7 @@ LearnerAuto = R6Class("LearnerAuto",
       self$instance = TuningInstanceRushSingleCrit$new(
         task = task,
         learner = graph_learner,
-        resampling = self$resampling,
+        resampling = resampling,
         measure = self$measure,
         terminator = self$terminator,
         search_space = search_space,
@@ -255,7 +272,9 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
       lhs_size = 4L,
       xgboost_eval_metric = NULL,
       large_data_size = 1e6,
-      large_data_nthread = 1L
+      large_data_nthread = 1L,
+      small_data_size = 5000L,
+      small_data_resampling = rsmp("cv", folds = 5)
       ) {
       assert_count(nthread)
       learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost")
@@ -297,7 +316,9 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         xgboost_eval_metric = xgboost_eval_metric,
         lhs_size = lhs_size,
         large_data_size = large_data_size,
-        large_data_nthread = large_data_nthread)
+        large_data_nthread = large_data_nthread,
+        small_data_size = small_data_size,
+        small_data_resampling = small_data_resampling)
     }
   )
 )

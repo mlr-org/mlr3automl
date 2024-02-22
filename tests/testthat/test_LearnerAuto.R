@@ -34,6 +34,34 @@ test_that("LearnerClassifAuto train works", {
   expect_prediction(learner$predict(task))
 })
 
+test_that("LearnerClassifAuto works with small and large data sets", {
+  rush::rush_plan(n_workers = 4, lgr_thresholds = c(bbotk = "trace", rush = "debug", mlr3automl = "debug"))
+
+  lgr::get_logger("bbotk")$set_threshold("trace")
+  lgr::get_logger("rush")$set_threshold("debug")
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
+
+  task = tsk("penguins")
+  resampling = rsmp("holdout")
+  measure = msr("classif.ce")
+  terminator = trm("evals", n_evals = 20)
+  learner = LearnerClassifAuto$new(
+    resampling = resampling,
+    measure = measure,
+    terminator = terminator,
+    lhs_size = 1,
+    large_data_size = 300,
+    large_data_nthread = 2,
+    small_data_size = 1000L,
+    small_data_resampling = rsmp("cv", folds = 5))
+
+  expect_class(learner$train(task), "LearnerClassifAuto")
+
+  expect_class(learner$model, "AutoTuner")
+
+  expect_prediction(learner$predict(task))
+})
+
 test_that("LearnerClassifAuto works with large data sets", {
   rush::rush_plan(n_workers = 4, lgr_thresholds = c(bbotk = "trace", rush = "debug", mlr3automl = "debug"))
 
@@ -52,6 +80,32 @@ test_that("LearnerClassifAuto works with large data sets", {
     lhs_size = 1,
     large_data_size = 300,
     large_data_nthread = 2)
+
+  expect_class(learner$train(task), "LearnerClassifAuto")
+
+  expect_class(learner$model, "AutoTuner")
+
+  expect_prediction(learner$predict(task))
+})
+
+test_that("LearnerClassifAuto works with small data set resampling", {
+  rush::rush_plan(n_workers = 4, lgr_thresholds = c(mlr3 = "info", bbotk = "trace", rush = "debug", mlr3automl = "debug"))
+
+  lgr::get_logger("bbotk")$set_threshold("trace")
+  lgr::get_logger("rush")$set_threshold("debug")
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
+
+  task = tsk("penguins")
+  resampling = rsmp("holdout")
+  measure = msr("classif.ce")
+  terminator = trm("evals", n_evals = 20)
+  learner = LearnerClassifAuto$new(
+    resampling = resampling,
+    measure = measure,
+    terminator = terminator,
+    lhs_size = 1,
+    small_data_size = 1000L,
+    small_data_resampling = rsmp("cv", folds = 5))
 
   expect_class(learner$train(task), "LearnerClassifAuto")
 
@@ -80,7 +134,6 @@ test_that("LearnerClassifAuto memory_limit works", {
 
   expect_class(learner$train(task), "LearnerClassifAuto")
 }
-
 
 
 test_that("LearnerClassifAuto resample works", {
