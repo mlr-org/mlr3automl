@@ -161,6 +161,7 @@ LearnerAuto = R6Class("LearnerAuto",
       preproc = po("removeconstants", id = "pre_removeconstants") %>>%
         po("imputeoor", id = "xgboost_imputeoor") %>>%
         po("encode", method = "one-hot", id = "xgboost_encode") %>>%
+        po("collapsefactors", target_level_count = 1000, id = "xgboost_collapse") %>>%
         po("removeconstants", id = "xgboost_post_removeconstants")
       splits = partition(task, ratio = 0.9, stratify = TRUE)
       holdout_task = task$clone()
@@ -283,19 +284,19 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         po("branch", options = learner_ids) %>>%
         gunion(list(
           # glmnet
-          po("imputehist", id = "glmnet_imputehist") %>>% po("imputeoor", id = "glmnet_imputeoor") %>>% po("encode", method = "one-hot", id = "glmnet_encode") %>>% po("removeconstants", id = "glmnet_post_removeconstants") %>>% lrn("classif.glmnet", id = "glmnet"),
+          po("imputehist", id = "glmnet_imputehist") %>>% po("imputeoor", id = "glmnet_imputeoor") %>>% po("collapsefactors", target_level_count = 1000, id = "glmnet_collapse") %>>% po("encode", method = "one-hot", id = "glmnet_encode") %>>% po("removeconstants", id = "glmnet_post_removeconstants") %>>% lrn("classif.glmnet", id = "glmnet"),
           # kknn
-          po("imputehist", id = "kknn_imputehist") %>>% po("imputeoor", id = "kknn_imputeoor") %>>% po("removeconstants", id = "kknn_post_removeconstants") %>>% lrn("classif.kknn", id = "kknn"),
+          po("imputehist", id = "kknn_imputehist") %>>% po("imputeoor", id = "kknn_imputeoor") %>>% po("collapsefactors", target_level_count = 1000, id = "kknn_collapse") %>>% po("removeconstants", id = "kknn_post_removeconstants") %>>% lrn("classif.kknn", id = "kknn"),
           # lda
-          po("imputehist", id = "lda_imputehist") %>>% po("imputeoor", id = "lda_imputeoor") %>>% po("removeconstants", id = "lda_post_removeconstants") %>>% lrn("classif.lda", id = "lda"),
+          po("imputehist", id = "lda_imputehist") %>>% po("imputeoor", id = "lda_imputeoor") %>>% po("collapsefactors", target_level_count = 1000, id = "lda_collapse") %>>% po("removeconstants", id = "lda_post_removeconstants") %>>% lrn("classif.lda", id = "lda"),
           # nnet
-          po("imputehist", id = "nnet_imputehist") %>>% po("imputeoor", id = "nnet_imputeoor") %>>% po("removeconstants", id = "nnet_post_removeconstants") %>>% lrn("classif.nnet", id = "nnet"),
+          po("imputehist", id = "nnet_imputehist") %>>% po("imputeoor", id = "nnet_imputeoor") %>>%po("collapsefactors", target_level_count = 1000, id = "nnet_collapse") %>>%  po("removeconstants", id = "nnet_post_removeconstants") %>>% lrn("classif.nnet", id = "nnet"),
           # ranger
-          po("imputeoor", id = "ranger_imputeoor") %>>% po("removeconstants", id = "ranger_post_removeconstants") %>>% lrn("classif.ranger", id = "ranger", num.threads = nthread),
+          po("imputeoor", id = "ranger_imputeoor") %>>% po("collapsefactors", target_level_count = 1000, id = "ranger_collapse") %>>% po("removeconstants", id = "ranger_post_removeconstants") %>>% lrn("classif.ranger", id = "ranger", num.threads = nthread),
           # svm
-          po("imputehist", id = "svm_imputehist") %>>% po("imputeoor", id = "svm_imputeoor") %>>% po("encode", method = "one-hot", id = "smv_encode") %>>% po("removeconstants", id = "svm_post_removeconstants") %>>% lrn("classif.svm", id = "svm", type = "C-classification"),
+          po("imputehist", id = "svm_imputehist") %>>% po("imputeoor", id = "svm_imputeoor") %>>% po("collapsefactors", target_level_count = 1000, id = "svm_collapse") %>>% po("encode", method = "one-hot", id = "smv_encode") %>>% po("removeconstants", id = "svm_post_removeconstants") %>>% lrn("classif.svm", id = "svm", type = "C-classification"),
           # xgboost
-          po("imputeoor", id = "xgboost_imputeoor") %>>% po("encode", method = "one-hot", id = "xgboost_encode") %>>% po("removeconstants", id = "xgboost_post_removeconstants") %>>% lrn("classif.xgboost", id = "xgboost", nrounds = 5000, early_stopping_rounds = 10, nthread = nthread)
+          po("imputeoor", id = "xgboost_imputeoor") %>>% po("collapsefactors", target_level_count = 1000, id = "xgboost_collapse") %>>% po("encode", method = "one-hot", id = "xgboost_encode") %>>% po("removeconstants", id = "xgboost_post_removeconstants") %>>% lrn("classif.xgboost", id = "xgboost", nrounds = 5000, early_stopping_rounds = 10, nthread = nthread)
         )) %>>% po("unbranch", options = learner_ids)
 
       learner_fallback = lrn("classif.featureless", predict_type = measure$predict_type)
