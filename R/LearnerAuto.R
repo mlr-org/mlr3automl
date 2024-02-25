@@ -69,11 +69,14 @@ LearnerAuto = R6Class("LearnerAuto",
 
     #' @field large_data_nthread (`integer(1)`).
     large_data_nthread = NULL,
+
     #' @field small_data_size (`integer(1)`).
     small_data_size = NULL,
 
     #' @field small_data_resampling ([mlr3::Resampling]).
     small_data_resampling = NULL,
+
+    max_cardinality = NULL,
 
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
@@ -95,7 +98,8 @@ LearnerAuto = R6Class("LearnerAuto",
       large_data_size = 1e6,
       large_data_nthread = 1L,
       small_data_size = 5000L,
-      small_data_resampling = rsmp("cv", folds = 5)
+      small_data_resampling = rsmp("cv", folds = 5),
+      max_cardinality = 100L
       ) {
       assert_choice(task_type, mlr_reflections$task_types$type)
       self$learner_ids = assert_character(learner_ids)
@@ -114,6 +118,7 @@ LearnerAuto = R6Class("LearnerAuto",
       self$large_data_nthread = assert_count(large_data_nthread)
       self$small_data_size = assert_count(small_data_size)
       self$small_data_resampling = assert_resampling(small_data_resampling)
+      self$max_cardinality = assert_count(max_cardinality)
 
       # packages
       packages = unique(c("mlr3tuning", "mlr3learners", "mlr3pipelines", "mlr3mbo", "mlr3automl", graph$packages))
@@ -157,11 +162,17 @@ LearnerAuto = R6Class("LearnerAuto",
         self$resampling
       }
 
+      # cardinality
+      if (any(map_int(task$col_info$levels, length) > self$max_cardinality)) {
+        lg$debug("Task has factors larger than %i levels", self$max_cardinality)
+      }
+
       # holdout task
       preproc = po("removeconstants", id = "pre_removeconstants") %>>%
+        po("fixfactors") %>>%
         po("imputeoor", id = "xgboost_imputeoor") %>>%
+        po("collapsefactors", target_level_count = self$max_cardinality, id = "xgboost_collapse") %>>%
         po("encode", method = "one-hot", id = "xgboost_encode") %>>%
-        po("collapsefactors", target_level_count = 1000, id = "xgboost_collapse") %>>%
         po("removeconstants", id = "xgboost_post_removeconstants")
       splits = partition(task, ratio = 0.9, stratify = TRUE)
       holdout_task = task$clone()
@@ -275,29 +286,81 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
       large_data_size = 1e6,
       large_data_nthread = 1L,
       small_data_size = 5000L,
-      small_data_resampling = rsmp("cv", folds = 5)
+      small_data_resampling = rsmp("cv", folds = 5),
+      max_cardinality = 100L
       ) {
       assert_count(nthread)
+      assert_count(max_cardinality)
       learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost")
 
+      # glmnet
+      branch_glmnet = po("imputehist", id = "glmnet_imputehist") %>>%
+        po("imputeoor", id = "glmnet_imputeoor") %>>%
+        po("fixfactors", id = "glmnet_fixfactors") %>>%
+        po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "glmnet_imputesample") %>>%
+        po("collapsefactors", target_level_count = max_cardinality, id = "glmnet_collapse") %>>%
+        po("encode", method = "one-hot", id = "glmnet_encode") %>>%
+        po("removeconstants", id = "glmnet_post_removeconstants") %>>%
+        lrn("classif.glmnet", id = "glmnet")
+
+      # kknn
+      branch_kknn = po("imputehist", id = "kknn_imputehist") %>>%
+        po("imputeoor", id = "kknn_imputeoor") %>>%
+        po("fixfactors", id = "kknn_fixfactors") %>>%
+        po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "kknn_imputesample") %>>%
+        po("collapsefactors", target_level_count = max_cardinality, id = "kknn_collapse") %>>%
+        po("removeconstants", id = "kknn_post_removeconstants") %>>%
+        lrn("classif.kknn", id = "kknn")
+
+      # lda
+      branch_lda = po("imputehist", id = "lda_imputehist") %>>%
+        po("imputeoor", id = "lda_imputeoor") %>>%
+        po("fixfactors", id = "lda_fixfactors") %>>%
+        po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "lda_imputesample") %>>%
+        po("collapsefactors", target_level_count = max_cardinality, id = "lda_collapse") %>>%
+        po("removeconstants", id = "lda_post_removeconstants") %>>%
+        lrn("classif.lda", id = "lda")
+
+      # nnet
+      branch_nnet = po("imputehist", id = "nnet_imputehist") %>>%
+        po("imputeoor", id = "nnet_imputeoor") %>>%
+        po("fixfactors", id = "nnet_fixfactors") %>>%
+        po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "nnet_imputesample") %>>%
+        po("collapsefactors", target_level_count = max_cardinality, id = "nnet_collapse") %>>%
+        po("removeconstants", id = "nnet_post_removeconstants") %>>%
+        lrn("classif.nnet", id = "nnet")
+
+      # ranger
+      branch_ranger = po("imputeoor", id = "ranger_imputeoor") %>>%
+        po("fixfactors", id = "ranger_fixfactors") %>>%
+        po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "ranger_imputesample") %>>%
+        po("collapsefactors", target_level_count = max_cardinality, id = "ranger_collapse") %>>%
+        po("removeconstants", id = "ranger_post_removeconstants") %>>%
+        lrn("classif.ranger", id = "ranger", num.threads = nthread)
+
+      # svm
+      branch_svm = po("imputehist", id = "svm_imputehist") %>>%
+        po("imputeoor", id = "svm_imputeoor") %>>%
+        po("fixfactors", id = "svm_fixfactors") %>>%
+        po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "svm_imputesample") %>>%
+        po("collapsefactors", target_level_count = max_cardinality, id = "svm_collapse") %>>%
+        po("encode", method = "one-hot", id = "smv_encode") %>>%
+        po("removeconstants", id = "svm_post_removeconstants") %>>%
+        lrn("classif.svm", id = "svm", type = "C-classification")
+
+      # xgboost
+      branch_xgboost = po("imputeoor", id = "xgboost_imputeoor") %>>%
+        po("fixfactors", id = "xgboost_fixfactors") %>>%
+        po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "xgboost_imputesample") %>>%
+        po("collapsefactors", target_level_count = max_cardinality, id = "xgboost_collapse") %>>%
+        po("encode", method = "one-hot", id = "xgboost_encode") %>>%
+        po("removeconstants", id = "xgboost_post_removeconstants") %>>%
+        lrn("classif.xgboost", id = "xgboost", nrounds = 5000, early_stopping_rounds = 10, nthread = nthread)
+
+      # branch graph
       graph = po("removeconstants", id = "pre_removeconstants") %>>%
         po("branch", options = learner_ids) %>>%
-        gunion(list(
-          # glmnet
-          po("imputehist", id = "glmnet_imputehist") %>>% po("imputeoor", id = "glmnet_imputeoor") %>>% po("collapsefactors", target_level_count = 1000, id = "glmnet_collapse") %>>% po("encode", method = "one-hot", id = "glmnet_encode") %>>% po("removeconstants", id = "glmnet_post_removeconstants") %>>% lrn("classif.glmnet", id = "glmnet"),
-          # kknn
-          po("imputehist", id = "kknn_imputehist") %>>% po("imputeoor", id = "kknn_imputeoor") %>>% po("collapsefactors", target_level_count = 1000, id = "kknn_collapse") %>>% po("removeconstants", id = "kknn_post_removeconstants") %>>% lrn("classif.kknn", id = "kknn"),
-          # lda
-          po("imputehist", id = "lda_imputehist") %>>% po("imputeoor", id = "lda_imputeoor") %>>% po("collapsefactors", target_level_count = 1000, id = "lda_collapse") %>>% po("removeconstants", id = "lda_post_removeconstants") %>>% lrn("classif.lda", id = "lda"),
-          # nnet
-          po("imputehist", id = "nnet_imputehist") %>>% po("imputeoor", id = "nnet_imputeoor") %>>%po("collapsefactors", target_level_count = 1000, id = "nnet_collapse") %>>%  po("removeconstants", id = "nnet_post_removeconstants") %>>% lrn("classif.nnet", id = "nnet"),
-          # ranger
-          po("imputeoor", id = "ranger_imputeoor") %>>% po("collapsefactors", target_level_count = 1000, id = "ranger_collapse") %>>% po("removeconstants", id = "ranger_post_removeconstants") %>>% lrn("classif.ranger", id = "ranger", num.threads = nthread),
-          # svm
-          po("imputehist", id = "svm_imputehist") %>>% po("imputeoor", id = "svm_imputeoor") %>>% po("collapsefactors", target_level_count = 1000, id = "svm_collapse") %>>% po("encode", method = "one-hot", id = "smv_encode") %>>% po("removeconstants", id = "svm_post_removeconstants") %>>% lrn("classif.svm", id = "svm", type = "C-classification"),
-          # xgboost
-          po("imputeoor", id = "xgboost_imputeoor") %>>% po("collapsefactors", target_level_count = 1000, id = "xgboost_collapse") %>>% po("encode", method = "one-hot", id = "xgboost_encode") %>>% po("removeconstants", id = "xgboost_post_removeconstants") %>>% lrn("classif.xgboost", id = "xgboost", nrounds = 5000, early_stopping_rounds = 10, nthread = nthread)
-        )) %>>% po("unbranch", options = learner_ids)
+        gunion(list(branch_glmnet, branch_kknn, branch_lda, branch_nnet, branch_ranger, branch_svm, branch_xgboost)) %>>% po("unbranch", options = learner_ids)
 
       learner_fallback = lrn("classif.featureless", predict_type = measure$predict_type)
 
@@ -319,7 +382,8 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         large_data_size = large_data_size,
         large_data_nthread = large_data_nthread,
         small_data_size = small_data_size,
-        small_data_resampling = small_data_resampling)
+        small_data_resampling = small_data_resampling,
+        max_cardinality = max_cardinality)
     }
   )
 )

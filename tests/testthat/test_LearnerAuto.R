@@ -11,13 +11,13 @@ test_that("lhs design is generated", {
 })
 
 test_that("LearnerClassifAuto train works", {
-  rush::rush_plan(n_workers = 4, lgr_thresholds = c(bbotk = "trace", rush = "debug", mlr3automl = "debug"))
+  rush::rush_plan(n_workers = 4, lgr_thresholds = c(bbotk = "trace", rush = "debug", mlr3automl = "debug"), large_objects_path = ".")
 
   lgr::get_logger("bbotk")$set_threshold("trace")
   lgr::get_logger("rush")$set_threshold("debug")
   lgr::get_logger("mlr3automl")$set_threshold("debug")
 
-  task = tsk("penguins")
+  #task = tsk("penguins")
   resampling = rsmp("holdout")
   measure = msr("classif.ce")
   terminator = trm("evals", n_evals = 20)
@@ -32,6 +32,30 @@ test_that("LearnerClassifAuto train works", {
   expect_class(learner$model, "AutoTuner")
 
   expect_prediction(learner$predict(task))
+})
+
+test_that("LearnerClassifAuto works with large factors", {
+  library(mlr3oml)
+
+  rush::rush_plan(n_workers = 4, lgr_thresholds = c(bbotk = "trace", rush = "debug", mlr3automl = "debug"), large_objects_path = ".")
+
+  lgr::get_logger("bbotk")$set_threshold("trace")
+  lgr::get_logger("rush")$set_threshold("debug")
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
+
+  odata = odt(4135)
+  task = as_task(odata)
+  resampling = rsmp("holdout")
+  measure = msr("classif.ce")
+  terminator = trm("evals", n_evals = 20)
+  learner = LearnerClassifAuto$new(
+    resampling = resampling,
+    measure = measure,
+    terminator = terminator,
+    lhs_size = 10,
+    max_cardinality = 100)
+
+  expect_class(learner$train(task), "LearnerClassifAuto")
 })
 
 test_that("LearnerClassifAuto works with small and large data sets", {
