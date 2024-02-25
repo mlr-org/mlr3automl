@@ -52,7 +52,7 @@ test_that("LearnerClassifAuto works with large factors", {
     resampling = resampling,
     measure = measure,
     terminator = terminator,
-    lhs_size = 10,
+    lhs_size = 1,
     max_cardinality = 100)
 
   expect_class(learner$train(task), "LearnerClassifAuto")

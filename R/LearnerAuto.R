@@ -169,8 +169,9 @@ LearnerAuto = R6Class("LearnerAuto",
 
       # holdout task
       preproc = po("removeconstants", id = "pre_removeconstants") %>>%
-        po("fixfactors") %>>%
         po("imputeoor", id = "xgboost_imputeoor") %>>%
+        po("fixfactors", id = "xgboost_fixfactors") %>>%
+        po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "xgboost_imputesample") %>>%
         po("collapsefactors", target_level_count = self$max_cardinality, id = "xgboost_collapse") %>>%
         po("encode", method = "one-hot", id = "xgboost_encode") %>>%
         po("removeconstants", id = "xgboost_post_removeconstants")
