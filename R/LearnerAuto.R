@@ -144,7 +144,7 @@ LearnerAuto = R6Class("LearnerAuto",
       tuner = tnr("adbo")
 
       # reduce number of workers on large data sets
-      if (task$nrow > self$large_data_size) {
+      if (task$nrow * task$ncol > self$large_data_size) {
         self$learner_ids = c("lda", "ranger", "xgboost")
         self$graph$param_set$set_values(xgboost.nthread = self$large_data_nthread)
         self$graph$param_set$set_values(ranger.num.threads = self$large_data_nthread)
