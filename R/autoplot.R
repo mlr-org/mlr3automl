@@ -58,7 +58,11 @@ autoplot.LearnerClassifAuto = function(object, type = "marginal", split_branch =
            data = data_dim,
            shape = 21,
            size = 3,
-           stroke = 1) +
+           alpha = 0.5) +
+         geom_segment(
+           aes(xend = c(tail(data_dim$PC1, n = -1), NA),
+               yend = c(tail(data_dim$PC2, n = -1), NA)),
+           arrow = arrow(length = unit(0.2, "cm"))) +
          labs(
            x = "First Principal Component",
            y = "Second Principal Component",
