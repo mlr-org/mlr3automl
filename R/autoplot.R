@@ -3,7 +3,7 @@
 #' @return [ggplot2::ggplot()].
 #'
 #' @export
-autoplot.LearnerClassifAuto = function(object, type = "marginal", split_branch = TRUE, cols_x = NULL, trafo = FALSE, grid_resolution = 100, batch = NULL, theme = theme_minimal(), ...) { # nolint
+autoplot.LearnerClassifAuto = function(object, type = "marginal", leaf_type = "bar", split_branch = TRUE, cols_x = NULL, trafo = FALSE, grid_resolution = 100, batch = NULL, theme = theme_minimal(), ...) { # nolint
   assert_flag(trafo)
 
   require_namespaces("mlr3viz")
@@ -78,7 +78,28 @@ autoplot.LearnerClassifAuto = function(object, type = "marginal", split_branch =
        lrn = lrn("regr.rpart", keep_model = TRUE)
        lrn = as_learner(pipeline_robustify(task, lrn) %>>% po("learner", lrn))
        lrn$train(task)
-       autoplot(lrn$graph_model$pipeops$regr.rpart$learner_model)
+       tree = lrn$graph_model$pipeops$regr.rpart$learner_model
+       if (leaf_type == "bar") {
+         autoplot(tree)
+       } else {
+         geom_type = get(paste("geom_", leaf_type, sep = ""))
+         ggparty::ggparty(partykit::as.party(tree$model)) +
+           ggparty::geom_edge() +
+           ggparty::geom_edge_label() +
+           ggparty::geom_node_splitvar() +
+           ggparty::geom_node_plot(
+             gglist = list(
+               geom_type(aes(x = .data[[cols_y]])),
+               xlab(cols_y),
+               scale_fill_viridis_d(end = 0.8),
+               theme),
+             ids = "terminal",
+             shared_axis_labels= TRUE) +
+           ggparty::geom_node_label(
+             mapping = aes(label = paste0("n=", .data[["nodesize"]])),
+             nudge_y = 0.03,
+             ids = "terminal")
+       }
      },
 
      stopf("Unknown plot type '%s'", type)
