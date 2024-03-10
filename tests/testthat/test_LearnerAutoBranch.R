@@ -10,7 +10,7 @@ test_that("lhs design is generated", {
   xdt = generate_lhs_design(10, "classif", learner_ids, tuning_space)
 })
 
-test_that("LearnerClassifAuto train works", {
+test_that("LearnerClassifAutoBranch train works", {
   rush::rush_plan(n_workers = 4, lgr_thresholds = c(bbotk = "trace", rush = "debug", mlr3automl = "debug"), large_objects_path = ".")
 
   lgr::get_logger("bbotk")$set_threshold("trace")
@@ -21,20 +21,20 @@ test_that("LearnerClassifAuto train works", {
   resampling = rsmp("holdout")
   measure = msr("classif.ce")
   terminator = trm("evals", n_evals = 20)
-  learner = LearnerClassifAuto$new(
+  learner = LearnerClassifAutoBranch$new(
     resampling = resampling,
     measure = measure,
     terminator = terminator,
     lhs_size = 10)
 
-  expect_class(learner$train(task), "LearnerClassifAuto")
+  expect_class(learner$train(task), "LearnerClassifAutoBranch")
 
   expect_class(learner$model, "AutoTuner")
 
   expect_prediction(learner$predict(task))
 })
 
-test_that("LearnerClassifAuto works with large factors", {
+test_that("LearnerClassifAutoBranch works with large factors", {
   library(mlr3oml)
 
   rush::rush_plan(n_workers = 4, lgr_thresholds = c(bbotk = "trace", rush = "debug", mlr3automl = "debug"), large_objects_path = ".")
@@ -48,17 +48,17 @@ test_that("LearnerClassifAuto works with large factors", {
   resampling = rsmp("holdout")
   measure = msr("classif.ce")
   terminator = trm("evals", n_evals = 20)
-  learner = LearnerClassifAuto$new(
+  learner = LearnerClassifAutoBranch$new(
     resampling = resampling,
     measure = measure,
     terminator = terminator,
     lhs_size = 1,
     max_cardinality = 100)
 
-  expect_class(learner$train(task), "LearnerClassifAuto")
+  expect_class(learner$train(task), "LearnerClassifAutoBranch")
 })
 
-test_that("LearnerClassifAuto works with small and large data sets", {
+test_that("LearnerClassifAutoBranch works with small and large data sets", {
   rush::rush_plan(n_workers = 4, lgr_thresholds = c(bbotk = "trace", rush = "debug", mlr3automl = "debug"))
 
   lgr::get_logger("bbotk")$set_threshold("trace")
@@ -69,7 +69,7 @@ test_that("LearnerClassifAuto works with small and large data sets", {
   resampling = rsmp("holdout")
   measure = msr("classif.ce")
   terminator = trm("evals", n_evals = 20)
-  learner = LearnerClassifAuto$new(
+  learner = LearnerClassifAutoBranch$new(
     resampling = resampling,
     measure = measure,
     terminator = terminator,
@@ -79,14 +79,14 @@ test_that("LearnerClassifAuto works with small and large data sets", {
     small_data_size = 1000L,
     small_data_resampling = rsmp("cv", folds = 5))
 
-  expect_class(learner$train(task), "LearnerClassifAuto")
+  expect_class(learner$train(task), "LearnerClassifAutoBranch")
 
   expect_class(learner$model, "AutoTuner")
 
   expect_prediction(learner$predict(task))
 })
 
-test_that("LearnerClassifAuto works with large data sets", {
+test_that("LearnerClassifAutoBranch works with large data sets", {
   rush::rush_plan(n_workers = 4, lgr_thresholds = c(bbotk = "trace", rush = "debug", mlr3automl = "debug"))
 
   lgr::get_logger("bbotk")$set_threshold("trace")
@@ -97,7 +97,7 @@ test_that("LearnerClassifAuto works with large data sets", {
   resampling = rsmp("holdout")
   measure = msr("classif.ce")
   terminator = trm("evals", n_evals = 20)
-  learner = LearnerClassifAuto$new(
+  learner = LearnerClassifAutoBranch$new(
     resampling = resampling,
     measure = measure,
     terminator = terminator,
@@ -105,14 +105,14 @@ test_that("LearnerClassifAuto works with large data sets", {
     large_data_size = 300,
     large_data_nthread = 2)
 
-  expect_class(learner$train(task), "LearnerClassifAuto")
+  expect_class(learner$train(task), "LearnerClassifAutoBranch")
 
   expect_class(learner$model, "AutoTuner")
 
   expect_prediction(learner$predict(task))
 })
 
-test_that("LearnerClassifAuto works with small data set resampling", {
+test_that("LearnerClassifAutoBranch works with small data set resampling", {
   rush::rush_plan(n_workers = 4, lgr_thresholds = c(mlr3 = "info", bbotk = "trace", rush = "debug", mlr3automl = "debug"))
 
   lgr::get_logger("bbotk")$set_threshold("trace")
@@ -123,7 +123,7 @@ test_that("LearnerClassifAuto works with small data set resampling", {
   resampling = rsmp("holdout")
   measure = msr("classif.ce")
   terminator = trm("evals", n_evals = 20)
-  learner = LearnerClassifAuto$new(
+  learner = LearnerClassifAutoBranch$new(
     resampling = resampling,
     measure = measure,
     terminator = terminator,
@@ -131,14 +131,14 @@ test_that("LearnerClassifAuto works with small data set resampling", {
     small_data_size = 1000L,
     small_data_resampling = rsmp("cv", folds = 5))
 
-  expect_class(learner$train(task), "LearnerClassifAuto")
+  expect_class(learner$train(task), "LearnerClassifAutoBranch")
 
   expect_class(learner$model, "AutoTuner")
 
   expect_prediction(learner$predict(task))
 })
 
-test_that("LearnerClassifAuto memory_limit works", {
+test_that("LearnerClassifAutoBranch memory_limit works", {
   rush::rush_plan(n_workers = 4, lgr_thresholds = c(mlr3 = "info", bbotk = "trace", rush = "debug", mlr3automl = "debug"))
 
   lgr::get_logger("bbotk")$set_threshold("trace")
@@ -150,22 +150,22 @@ test_that("LearnerClassifAuto memory_limit works", {
   resampling = rsmp("holdout")
   measure = msr("classif.ce")
   terminator = trm("evals", n_evals = 20)
-  learner = LearnerClassifAuto$new(
+  learner = LearnerClassifAutoBranch$new(
     resampling = resampling,
     measure = measure,
     terminator = terminator,
     learner_memory_limit = 1e10)
 
-  expect_class(learner$train(task), "LearnerClassifAuto")
+  expect_class(learner$train(task), "LearnerClassifAutoBranch")
 }
 
 
-test_that("LearnerClassifAuto resample works", {
+test_that("LearnerClassifAutoBranch resample works", {
   task = tsk("sonar")
   resampling = rsmp("holdout")
   measure = msr("classif.ce")
   terminator = trm("run_time", secs = 10)
-  learner = LearnerClassifAuto$new(
+  learner = LearnerClassifAutoBranch$new(
     resampling = resampling,
     measure = measure,
     terminator = terminator)
@@ -173,17 +173,17 @@ test_that("LearnerClassifAuto resample works", {
   expect_resample_result(resample(task, learner, rsmp("holdout")))
 })
 
-test_that("LearnerClassifAuto timeout works", {
+test_that("LearnerClassifAutoBranch timeout works", {
   task = tsk("sonar")
   resampling = rsmp("holdout")
   measure = msr("classif.ce")
   terminator = trm("run_time", secs = 1)
-  learner = LearnerClassifAuto$new(
+  learner = LearnerClassifAutoBranch$new(
     resampling = resampling,
     measure = measure,
     terminator = terminator)
 
-  expect_class(learner$train(task), "LearnerClassifAuto")
+  expect_class(learner$train(task), "LearnerClassifAutoBranch")
   expect_class(learner$model, "AutoTuner")
   expect_equal(max(learner$model$tuning_instance$archive$data$batch_nr), 1)
 
@@ -193,18 +193,18 @@ test_that("LearnerClassifAuto timeout works", {
 
 
 
-test_that("LearnerClassifAuto nthread works", {
+test_that("LearnerClassifAutoBranch nthread works", {
   task = tsk("sonar")
   resampling = rsmp("holdout")
   measure = msr("classif.ce")
   terminator = trm("run_time", secs = 1)
-  learner = LearnerClassifAuto$new(
+  learner = LearnerClassifAutoBranch$new(
     resampling = resampling,
     measure = measure,
     terminator = terminator,
     nthread = 2)
 
-  expect_class(learner$train(task), "LearnerClassifAuto")
+  expect_class(learner$train(task), "LearnerClassifAutoBranch")
 
 
 
