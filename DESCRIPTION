@@ -56,5 +56,6 @@ Collate:
     'LearnerAuto.R'
     'LearnerAutoBranch.R'
     'LearnerAutoXgboost.R'
+    'LearnerAutoSVM.R'
     'mlr_callbacks.R'
     'zzz.R'
