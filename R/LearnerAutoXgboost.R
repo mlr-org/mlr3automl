@@ -51,8 +51,8 @@ LearnerClassifAutoXgboost = R6Class("LearnerClassifAutoXgboost",
         po("imputeoor", id = "xgboost_imputeoor") %>>%
         po("fixfactors", id = "xgboost_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "xgboost_imputesample") %>>%
-        po("collapsefactors", target_level_count = max_cardinality, id = "xgboost_collapse") %>>%
-        po("encode", method = "one-hot", id = "xgboost_encode") %>>%
+        #po("collapsefactors", target_level_count = max_cardinality, id = "xgboost_collapse") %>>%
+        po("encodeimpact") %>>%
         po("removeconstants", id = "xgboost_post_removeconstants") %>>%
         lrn("classif.xgboost", id = "xgboost", nrounds = 5000, early_stopping_rounds = 10, nthread = nthread)
 
@@ -117,8 +117,8 @@ LearnerClassifAutoXgboost = R6Class("LearnerClassifAutoXgboost",
         po("imputeoor", id = "xgboost_imputeoor") %>>%
         po("fixfactors", id = "xgboost_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "xgboost_imputesample") %>>%
-        po("collapsefactors", target_level_count = self$max_cardinality, id = "xgboost_collapse") %>>%
-        po("encode", method = "one-hot", id = "xgboost_encode") %>>%
+        #po("collapsefactors", target_level_count = self$max_cardinality, id = "xgboost_collapse") %>>%
+        po("encodeimpact") %>>%
         po("removeconstants", id = "xgboost_post_removeconstants")
       splits = partition(task, ratio = 0.9, stratify = TRUE)
       holdout_task = task$clone()
@@ -145,8 +145,6 @@ LearnerClassifAutoXgboost = R6Class("LearnerClassifAutoXgboost",
       default_xdt = generate_default_design(self$task_type, self$learner_id, task, self$tuning_space, branch = FALSE)
       initial_xdt = rbindlist(list(lhs_xdt, default_xdt), use.names = TRUE, fill = TRUE)
       tuner$param_set$set_values(initial_design = initial_xdt)
-
-      browser()
 
       # initialize auto tuner
       self$instance = TuningInstanceRushSingleCrit$new(
