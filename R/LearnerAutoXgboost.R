@@ -92,7 +92,6 @@ LearnerClassifAutoXgboost = R6Class("LearnerClassifAutoXgboost",
       # reduce number of workers on large data sets
       if (task$nrow * task$ncol > self$large_data_size) {
         self$graph$param_set$set_values(xgboost.nthread = self$large_data_nthread)
-        self$graph$param_set$set_values(ranger.num.threads = self$large_data_nthread)
         n_workers = utils::getFromNamespace("rush_env", ns = "rush")$n_workers
         n = floor(n_workers / self$large_data_nthread)
         lg$debug("Task larger than %i rows. Reducing number of workers to %i", self$large_data_size, n)
