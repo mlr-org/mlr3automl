@@ -146,8 +146,6 @@ LearnerClassifAutoXgboost = R6Class("LearnerClassifAutoXgboost",
       initial_xdt = rbindlist(list(lhs_xdt, default_xdt), use.names = TRUE, fill = TRUE)
       tuner$param_set$set_values(initial_design = initial_xdt)
 
-      browser()
-
       # initialize auto tuner
       self$instance = TuningInstanceRushSingleCrit$new(
         task = task,
