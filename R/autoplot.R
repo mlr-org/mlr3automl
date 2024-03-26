@@ -26,99 +26,99 @@ autoplot.LearnerClassifAuto = function(object, type = "marginal", split_branch =
     data = data[list(batch), , on = "batch_nr"]
 
     switch(type,
-     # show all settings in 2D with dimensionality reduction
-     "pca" = {
-       if (length(cols_x) < 3) {
-         stop("Need at least 3 parameters.")
-       }
-       # remove non numeric columns
-       char_cols = names(data)[sapply(data, is.character)]
-       cols_x = cols_x[!cols_x %in% char_cols]
-       data = data[, c(..cols_x, ..cols_y)]
-       # replace NA with default
-       for (col in colnames(data)) {
-         if (any(is.na(data[, ..col]))) {
-           data[is.na(get(col)), (col) := defaults[[col]]]
-         }
-       }
-       # remove zero variance columns
-       zero_cols = names(data)[sapply(data, function(x) length(unique(x)) == 1)]
-       cols_x = setdiff(cols_x, zero_cols)
+      # show all settings in 2D with dimensionality reduction
+      "pca" = {
+        if (length(cols_x) < 3) {
+          stop("Need at least 3 parameters.")
+        }
+        # remove non numeric columns
+        char_cols = names(data)[sapply(data, is.character)]
+        cols_x = cols_x[!cols_x %in% char_cols]
+        data = data[, c(..cols_x, ..cols_y)]
+        # replace NA with default
+        for (col in colnames(data)) {
+          if (any(is.na(data[, ..col]))) {
+            data[is.na(get(col)), (col) := defaults[[col]]]
+          }
+        }
+        # remove zero variance columns
+        zero_cols = names(data)[sapply(data, function(x) length(unique(x)) == 1)]
+        cols_x = setdiff(cols_x, zero_cols)
 
-       # dimensionality reduction
-       data_dim = prcomp(data[, ..cols_x], scale. = TRUE)
-       data_dim = as.data.table(data_dim$x)
+        # dimensionality reduction
+        data_dim = prcomp(data[, ..cols_x], scale. = TRUE)
+        data_dim = as.data.table(data_dim$x)
 
-       plot = ggplot(data_dim,
-              mapping = aes(
-                x = data_dim$PC1,
-                y = data_dim$PC2)) +
-         geom_point(
-           mapping = aes(fill = data[[cols_y]]),
-           data = data_dim,
-           shape = 21,
-           size = 3,
-           alpha = 0.5) +
-         geom_point(
-           data = data_dim[1, ],
-           mapping = aes(x = PC1,
-                         y = PC2),
-           shape = 21,
-           colour = "green",
-           alpha = 1,
-           size = 5) +
-         geom_point(
-           data = data_dim[nrow(data_dim), ],
-           mapping = aes(x = PC1,
-                         y = PC2),
-           shape = 21,
-           colour = "red",
-           alpha = 1,
-           size = 5) +
-         labs(
-           x = "First Principal Component",
-           y = "Second Principal Component",
-           fill = cols_y
-         ) +
-         scale_fill_viridis_c() +
-         guides(fill = guide_colorbar(barwidth = 0.5, barheight = 10)) +
-         theme
-         if (add_arrow) {
-           plot = plot +
-             geom_segment(
-             aes(xend = c(tail(data_dim$PC1, n = -1), NA),
-                 yend = c(tail(data_dim$PC2, n = -1), NA)),
-             arrow = arrow(length = unit(0.2, "cm")))
-         }
-         return(plot)
-     },
-     "hyperparameter" = {
-       data = data[, c(..cols_x, ..cols_y)]
-       task = TaskRegr$new(id = "viz", backend = data, target = cols_y)
-       lrn = lrn("regr.rpart", keep_model = TRUE)
-       lrn = as_learner(pipeline_robustify(task, lrn) %>>% po("learner", lrn))
-       lrn$train(task)
-       tree = lrn$graph_model$pipeops$regr.rpart$learner_model
-       
-       ggparty::ggparty(partykit::as.party(tree$model)) +
-         ggparty::geom_edge() +
-         ggparty::geom_edge_label() +
-         ggparty::geom_node_splitvar() +
-         ggparty::geom_node_plot(
-           gglist = list(
-             geom_violin(aes(x = "", y = .data[[cols_y]])),
-             xlab(cols_y),
-             scale_fill_viridis_d(end = 0.8),
-             theme),
-           ids = "terminal",
-           shared_axis_labels = TRUE) +
-         ggparty::geom_node_label(
-           mapping = aes(label = paste0("n=", .data[["nodesize"]])),
-           nudge_y = 0.03,
-           ids = "terminal")
-     },
+        plot = ggplot(data_dim,
+          mapping = aes(x = PC1,
+            y = PC2)) +
+          geom_point(
+            mapping = aes(fill = data[[cols_y]]),
+            data = data_dim,
+            shape = 21,
+            size = 3,
+            alpha = 0.5) +
+          geom_point(
+            data = data_dim[1, ],
+            mapping = aes(x = PC1,
+              y = PC2),
+            shape = 21,
+            colour = "green",
+            alpha = 1,
+            size = 5) +
+          geom_point(
+            data = data_dim[nrow(data_dim), ],
+            mapping = aes(x = PC1,
+              y = PC2),
+            shape = 21,
+            colour = "red",
+            alpha = 1,
+            size = 5) +
+          labs(
+            x = "First Principal Component",
+            y = "Second Principal Component",
+            fill = cols_y
+          ) +
+          scale_fill_viridis_c() +
+          guides(fill = guide_colorbar(barwidth = 0.5, barheight = 10)) +
+          theme
+        if (add_arrow) {
+          plot = plot +
+            geom_segment(
+              aes(xend = c(tail(data_dim$PC1, n = -1), NA),
+                yend = c(tail(data_dim$PC2, n = -1), NA)),
+              arrow = arrow(length = unit(0.2, "cm")))
+        }
+        return(plot)
+      },
+      "hyperparameter" = {
+        data = data[, c(..cols_x, ..cols_y)]
+        task = TaskRegr$new(id = "viz", backend = data, target = cols_y)
+        lrn = lrn("regr.rpart", keep_model = TRUE)
+        lrn = as_learner(pipeline_robustify(task, lrn) %>>% po("learner", lrn))
+        lrn$train(task)
+        tree = lrn$graph_model$pipeops$regr.rpart$learner_model
 
-     stopf("Unknown plot type '%s'", type)
+        plot = ggparty::ggparty(partykit::as.party(tree$model)) +
+          ggparty::geom_edge() +
+          ggparty::geom_edge_label() +
+          ggparty::geom_node_splitvar() +
+          ggparty::geom_node_plot(
+            gglist = list(
+              geom_violin(aes(x = "", y = .data[[cols_y]])),
+              xlab(cols_y),
+              scale_fill_viridis_d(end = 0.8),
+              theme),
+            ids = "terminal",
+            shared_axis_labels = TRUE) +
+          ggparty::geom_node_label(
+            mapping = aes(label = paste0("n=", .data[["nodesize"]])),
+            nudge_y = 0.03,
+            ids = "terminal")
+        return(plot)
+      },
+
+      stopf("Unknown plot type '%s'", type)
     )
   } else {
     branch = object$result$branch.selection
