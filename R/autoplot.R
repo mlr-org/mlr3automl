@@ -3,7 +3,7 @@
 #' @return [ggplot2::ggplot()].
 #'
 #' @export
-autoplot.LearnerClassifAuto = function(object, type = "marginal", leaf_type = "bar", split_branch = TRUE, cols_x = NULL, trafo = FALSE, grid_resolution = 100, batch = NULL, theme = theme_minimal(), ...) { # nolint
+autoplot.LearnerClassifAuto = function(object, type = "marginal", split_branch = TRUE, add_arrow = TRUE, cols_x = NULL, trafo = FALSE, grid_resolution = 100, batch = NULL, theme = theme_minimal(), ...) { # nolint
   assert_flag(trafo)
 
   require_namespaces("mlr3viz")
@@ -49,7 +49,7 @@ autoplot.LearnerClassifAuto = function(object, type = "marginal", leaf_type = "b
        data_dim = prcomp(data[, ..cols_x], scale. = TRUE)
        data_dim = as.data.table(data_dim$x)
 
-       ggplot(data_dim,
+       plot = ggplot(data_dim,
               mapping = aes(
                 x = data_dim$PC1,
                 y = data_dim$PC2)) +
@@ -59,10 +59,22 @@ autoplot.LearnerClassifAuto = function(object, type = "marginal", leaf_type = "b
            shape = 21,
            size = 3,
            alpha = 0.5) +
-         geom_segment(
-           aes(xend = c(tail(data_dim$PC1, n = -1), NA),
-               yend = c(tail(data_dim$PC2, n = -1), NA)),
-           arrow = arrow(length = unit(0.2, "cm"))) +
+         geom_point(
+           data = data_dim[1, ],
+           mapping = aes(x = PC1,
+                         y = PC2),
+           shape = 21,
+           colour = "green",
+           alpha = 1,
+           size = 5) +
+         geom_point(
+           data = data_dim[nrow(data_dim), ],
+           mapping = aes(x = PC1,
+                         y = PC2),
+           shape = 21,
+           colour = "red",
+           alpha = 1,
+           size = 5) +
          labs(
            x = "First Principal Component",
            y = "Second Principal Component",
@@ -71,6 +83,14 @@ autoplot.LearnerClassifAuto = function(object, type = "marginal", leaf_type = "b
          scale_fill_viridis_c() +
          guides(fill = guide_colorbar(barwidth = 0.5, barheight = 10)) +
          theme
+         if (add_arrow) {
+           plot = plot +
+             geom_segment(
+             aes(xend = c(tail(data_dim$PC1, n = -1), NA),
+                 yend = c(tail(data_dim$PC2, n = -1), NA)),
+             arrow = arrow(length = unit(0.2, "cm")))
+         }
+         return(plot)
      },
      "hyperparameter" = {
        data = data[, c(..cols_x, ..cols_y)]
@@ -79,27 +99,23 @@ autoplot.LearnerClassifAuto = function(object, type = "marginal", leaf_type = "b
        lrn = as_learner(pipeline_robustify(task, lrn) %>>% po("learner", lrn))
        lrn$train(task)
        tree = lrn$graph_model$pipeops$regr.rpart$learner_model
-       if (leaf_type == "bar") {
-         autoplot(tree)
-       } else {
-         geom_type = get(paste("geom_", leaf_type, sep = ""))
-         ggparty::ggparty(partykit::as.party(tree$model)) +
-           ggparty::geom_edge() +
-           ggparty::geom_edge_label() +
-           ggparty::geom_node_splitvar() +
-           ggparty::geom_node_plot(
-             gglist = list(
-               geom_type(aes(x = .data[[cols_y]])),
-               xlab(cols_y),
-               scale_fill_viridis_d(end = 0.8),
-               theme),
-             ids = "terminal",
-             shared_axis_labels= TRUE) +
-           ggparty::geom_node_label(
-             mapping = aes(label = paste0("n=", .data[["nodesize"]])),
-             nudge_y = 0.03,
-             ids = "terminal")
-       }
+       
+       ggparty::ggparty(partykit::as.party(tree$model)) +
+         ggparty::geom_edge() +
+         ggparty::geom_edge_label() +
+         ggparty::geom_node_splitvar() +
+         ggparty::geom_node_plot(
+           gglist = list(
+             geom_violin(aes(x = "", y = .data[[cols_y]])),
+             xlab(cols_y),
+             scale_fill_viridis_d(end = 0.8),
+             theme),
+           ids = "terminal",
+           shared_axis_labels = TRUE) +
+         ggparty::geom_node_label(
+           mapping = aes(label = paste0("n=", .data[["nodesize"]])),
+           nudge_y = 0.03,
+           ids = "terminal")
      },
 
      stopf("Unknown plot type '%s'", type)
