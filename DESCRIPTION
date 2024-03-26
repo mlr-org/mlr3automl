@@ -35,7 +35,11 @@ Imports:
     R6,
     ranger,
     rpart,
-    xgboost
+    xgboost,
+    utils,
+    stats,
+    ggparty,
+    partykit,
 Suggests:
     mlr3viz,
     testthat (>= 3.0.0)

@@ -1,9 +1,28 @@
 #' @title Plots for Auto Learners
 #'
+#' @param object ([mlr3automl::LearnerClassifAuto]).
+#' @param type (character(1)):\cr
+#'  Type of the plot.
+#' @param add_arrow (`logical(1)`)\cr
+#'  If `TRUE` (default), add arrows to the PCA plot.
+#' @param cols_x (`character()`)\cr
+#'  Column names of x values.
+#'  By default, all untransformed x values from the search space are plotted.
+#'  Transformed hyperparameters are prefixed with `x_domain_`.
+#' @param trafo (`logical(1)`)\cr
+#'  If `FALSE` (default), the untransformed x values are plotted.
+#'  If `TRUE`, the transformed x values are plotted.
+#' @param batch (`integer()`)\cr
+#'  The batch number(s) to limit the plot to.
+#'  The default is all batches.
+#' @param theme ([ggplot2::theme()])\cr
+#'  The [ggplot2::theme_minimal()] is applied by default to all plots.
+#' @param ... (ignored).
+#' 
 #' @return [ggplot2::ggplot()].
 #'
 #' @export
-autoplot.LearnerClassifAuto = function(object, type = "marginal", split_branch = TRUE, add_arrow = TRUE, cols_x = NULL, trafo = FALSE, grid_resolution = 100, batch = NULL, theme = theme_minimal(), ...) { # nolint
+autoplot.LearnerClassifAuto = function(object, type = "marginal", add_arrow = TRUE, cols_x = NULL, trafo = FALSE, batch = NULL, theme = theme_minimal(), ...) { # nolint
   assert_flag(trafo)
 
   require_namespaces("mlr3viz")
@@ -50,8 +69,8 @@ autoplot.LearnerClassifAuto = function(object, type = "marginal", split_branch =
         data_dim = as.data.table(data_dim$x)
 
         plot = ggplot(data_dim,
-          mapping = aes(x = PC1,
-            y = PC2)) +
+          mapping = aes(x = data_dim$PC1,
+            y = data_dim$PC2)) +
           geom_point(
             mapping = aes(fill = data[[cols_y]]),
             data = data_dim,
@@ -60,16 +79,16 @@ autoplot.LearnerClassifAuto = function(object, type = "marginal", split_branch =
             alpha = 0.5) +
           geom_point(
             data = data_dim[1, ],
-            mapping = aes(x = PC1,
-              y = PC2),
+            mapping = aes(x = data_dim$PC1,
+              y = data_dim$PC2),
             shape = 21,
             colour = "green",
             alpha = 1,
             size = 5) +
           geom_point(
             data = data_dim[nrow(data_dim), ],
-            mapping = aes(x = PC1,
-              y = PC2),
+            mapping = aes(x = data_dim$PC1,
+              y = data_dim$PC2),
             shape = 21,
             colour = "red",
             alpha = 1,
@@ -126,7 +145,7 @@ autoplot.LearnerClassifAuto = function(object, type = "marginal", split_branch =
     if (length(cols_x) == 0) {
       cols_x = object$archive$cols_x
     }
-    autoplot(object = object, type = type, cols_x = cols_x, trafo = trafo, learner = learner, grid_resolution = grid_resolution, theme = theme, ...)
+    autoplot(object = object, type = type, cols_x = cols_x, ...)
   }
 }
 
