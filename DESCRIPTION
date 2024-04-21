@@ -13,10 +13,12 @@ BugReports: https://github.com/mlr-org/mlr3automl/issues
 Depends:
     mlr3 (>= 0.14.0),
     mlr3learners,
+    mlr3extralearners,
     mlr3tuning,
     R (>= 3.1.0)
 Imports:
     bbotk,
+    catboost,
     checkmate,
     data.table,
     e1071,
@@ -41,7 +43,7 @@ Suggests:
 Remotes:
     mlr-org/mlr3@mlr3automl,
     mlr-org/mlr3misc@mlr3automl,
-    mlr-org/rush,
+    mlr-org/rush@mlr3automl,
     mlr-org/bbotk@rush_old,
     mlr-org/mlr3tuning@rush_old,
     mlr-org/mlr3mbo@adbo,

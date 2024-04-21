@@ -18,6 +18,7 @@
 
   # callbacks
   x = utils::getFromNamespace("mlr_callbacks", ns = "mlr3misc")
+  x$add("mlr3automl.branch_nrounds", load_callback_branch_nrounds)
   x$add("mlr3automl.nrounds", load_callback_nrounds)
 
   # setup logger

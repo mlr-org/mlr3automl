@@ -1,12 +1,12 @@
 
 test_that("initial design is generated", {
-  learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost")
-  xdt = generate_initial_design("classif", learner_ids, tsk("sonar"), tuning_space)
+  learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost")
+  xdt = generate_default_design("classif", learner_ids, tsk("sonar"), tuning_space)
   expect_data_table(xdt, nrows = length(learner_ids))
 })
 
 test_that("lhs design is generated", {
-  learner_ids = c("rpart", "glmnet", "kknn", "lda", "log_reg", "multinom", "naive_bayes", "nnet", "qda", "ranger", "svm", "xgboost")
+  learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost")
   xdt = generate_lhs_design(10, "classif", learner_ids, tuning_space)
 })
 
@@ -17,7 +17,7 @@ test_that("LearnerClassifAutoBranch train works", {
   lgr::get_logger("rush")$set_threshold("debug")
   lgr::get_logger("mlr3automl")$set_threshold("debug")
 
-  #task = tsk("penguins")
+  task = tsk("penguins")
   resampling = rsmp("holdout")
   measure = msr("classif.ce")
   terminator = trm("evals", n_evals = 20)
@@ -25,7 +25,8 @@ test_that("LearnerClassifAutoBranch train works", {
     resampling = resampling,
     measure = measure,
     terminator = terminator,
-    lhs_size = 10)
+    lhs_size = 1,
+    small_data_resampling = rsmp("holdout"))
 
   expect_class(learner$train(task), "LearnerClassifAutoBranch")
 

@@ -63,7 +63,7 @@ LearnerClassifAutoXgboost = R6Class("LearnerClassifAutoXgboost",
         task_type = "classif",
         learner_id = "xgboost",
         graph = graph,
-        tuning_space = tuning_space,
+        tuning_space = tuning_space_xgboost,
         resampling = resampling,
         measure = measure,
         terminator = terminator,
@@ -137,7 +137,7 @@ LearnerClassifAutoXgboost = R6Class("LearnerClassifAutoXgboost",
       graph_learner$param_set$values$xgboost.callbacks = list(cb.timeout(self$learner_timeout * 0.8))
       graph_learner$param_set$values$xgboost.eval_metric = self$xgboost_eval_metric
       graph_learner$memory_limit = c(train = self$learner_memory_limit, predict = self$learner_memory_limit)
-      graph_learner$param_set$set_values(.values = unlist(unname(tuning_space), recursive = FALSE))
+      graph_learner$param_set$set_values(.values = unlist(unname(self$tuning_space), recursive = FALSE))
 
       # initial design
       lhs_xdt = generate_lhs_design(self$lhs_size, self$task_type, self$learner_id, self$tuning_space, branch = FALSE)
@@ -172,7 +172,7 @@ LearnerClassifAutoXgboost = R6Class("LearnerClassifAutoXgboost",
   )
 )
 
-tuning_space = list(
+tuning_space_xgboost = list(
   xgboost = list(
     xgboost.eta               = to_tune(1e-4, 1, logscale = TRUE),
     xgboost.max_depth         = to_tune(1, 20),

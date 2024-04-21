@@ -145,9 +145,10 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
 
       # reduce number of workers on large data sets
       if (task$nrow * task$ncol > self$large_data_size) {
-        self$learner_ids = c("lda", "ranger", "xgboost")
+        self$learner_ids = c("lda", "ranger", "xgboost", "catboost")
         self$graph$param_set$set_values(xgboost.nthread = self$large_data_nthread)
         self$graph$param_set$set_values(ranger.num.threads = self$large_data_nthread)
+        self$graph$param_set$set_values(catboost.thread_count = self$large_data_nthread)
         n_workers = utils::getFromNamespace("rush_env", ns = "rush")$n_workers
         n = floor(n_workers / self$large_data_nthread)
         lg$debug("Task larger than %i rows. Reducing number of workers to %i", self$large_data_size, n)
@@ -227,7 +228,7 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
         measure = self$measure,
         terminator = self$terminator,
         search_space = search_space,
-        callbacks = c(self$callbacks, clbk("mlr3automl.nrounds")),
+        callbacks = c(self$callbacks, clbk("mlr3automl.branch_nrounds")),
         store_benchmark_result = FALSE
       )
 
@@ -292,7 +293,7 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
       ) {
       assert_count(nthread)
       assert_count(max_cardinality)
-      learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost")
+      learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost")
 
       # glmnet
       branch_glmnet = po("imputehist", id = "glmnet_imputehist") %>>%
@@ -358,10 +359,13 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         po("removeconstants", id = "xgboost_post_removeconstants") %>>%
         lrn("classif.xgboost", id = "xgboost", nrounds = 5000, early_stopping_rounds = 10, nthread = nthread)
 
+      # catboost
+      branch_catboost = lrn("classif.catboost", id = "catboost", thread_count = nthread)
+
       # branch graph
       graph = po("removeconstants", id = "pre_removeconstants") %>>%
         po("branch", options = learner_ids) %>>%
-        gunion(list(branch_glmnet, branch_kknn, branch_lda, branch_nnet, branch_ranger, branch_svm, branch_xgboost)) %>>% po("unbranch", options = learner_ids)
+        gunion(list(branch_glmnet, branch_kknn, branch_lda, branch_nnet, branch_ranger, branch_svm, branch_xgboost, branch_catboost)) %>>% po("unbranch", options = learner_ids)
 
       learner_fallback = lrn("classif.featureless", predict_type = measure$predict_type)
 
@@ -429,5 +433,11 @@ tuning_space = list(
     xgboost.lambda            = to_tune(1e-3, 1e3, logscale = TRUE),
     xgboost.alpha             = to_tune(1e-3, 1e3, logscale = TRUE),
     xgboost.subsample         = to_tune(1e-1, 1)
+  ),
+
+  catboost = list(
+    catboost.depth          = to_tune(5, 8),
+    catboost.learning_rate  = to_tune(5e-3, 0.2, logscale = TRUE),
+    catboost.l2_leaf_reg    = to_tune(1, 5)
   )
 )
