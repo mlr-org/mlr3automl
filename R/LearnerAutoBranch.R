@@ -150,7 +150,7 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
 
       # reduce number of workers on large data sets
       if (task$nrow * task$ncol > self$large_data_size) {
-        self$learner_ids = c("lda", "ranger", "xgboost", "catboost")
+        self$learner_ids = c("lda", "ranger", "xgboost", "catboost", "extra_trees")
         self$graph$param_set$set_values(xgboost.nthread = self$large_data_nthread)
         self$graph$param_set$set_values(ranger.num.threads = self$large_data_nthread)
         self$graph$param_set$set_values(catboost.thread_count = self$large_data_nthread)
@@ -305,7 +305,7 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
       ) {
       assert_count(nthread)
       assert_count(max_cardinality)
-      learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost")
+      learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees")
 
       # glmnet
       branch_glmnet = po("imputehist", id = "glmnet_imputehist") %>>%
@@ -373,10 +373,18 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
       # catboost
       branch_catboost = lrn("classif.catboost", id = "catboost", thread_count = nthread, iterations = 500, early_stopping_rounds = 10, use_best_model = TRUE)
 
+      # extra trees
+      branch_extra_trees = po("imputeoor", id = "extra_trees_imputeoor") %>>%
+        po("fixfactors", id = "extra_trees_fixfactors") %>>%
+        po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "extra_trees_imputesample") %>>%
+        po("collapsefactors", target_level_count = max_cardinality, id = "extra_trees_collapse") %>>%
+        po("removeconstants", id = "extra_trees_post_removeconstants") %>>%
+        lrn("classif.ranger", id = "extra_trees", num.threads = nthread, splitrule = "extratrees", num.trees = 100, replace = FALSE, sample.fraction = 1)
+
       # branch graph
       graph = po("removeconstants", id = "pre_removeconstants") %>>%
         po("branch", options = learner_ids) %>>%
-        gunion(list(branch_glmnet, branch_kknn, branch_lda, branch_nnet, branch_ranger, branch_svm, branch_xgboost, branch_catboost)) %>>% po("unbranch", options = learner_ids)
+        gunion(list(branch_glmnet, branch_kknn, branch_lda, branch_nnet, branch_ranger, branch_svm, branch_xgboost, branch_catboost, branch_extra_trees)) %>>% po("unbranch", options = learner_ids)
 
       learner_fallback = lrn("classif.featureless", predict_type = measure$predict_type)
 
