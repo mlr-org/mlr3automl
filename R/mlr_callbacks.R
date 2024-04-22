@@ -11,10 +11,12 @@ load_callback_branch_nrounds = function() {
       states = get_private(context$resample_result)$.data$learner_states(get_private(context$resample_result)$.view)
 
       callback$state$max_nrounds = max(map_dbl(states, function(state) {
-        if (inherits(state$model$xgboost, "NO_OP") || is.null(state$model$xgboost$model$best_iteration)) {
-          NA_real_
+        if (!inherits(state$model$xgboost, "NO_OP")) {
+          state$model$xgboost$model$best_iteration %??% NA_real_
+        } else if (!inherits(state$model$catboost, "NO_OP")) {
+          state$model$catboost$model$tree_count %??% NA_real_
         } else {
-          state$model$xgboost$model$best_iteration
+          NA_real_
         }
       }))
     },
@@ -30,6 +32,10 @@ load_callback_branch_nrounds = function() {
         context$result$learner_param_vals[[1]]$xgboost.callbacks = list(cb.timeout(timeout = Inf))
         context$result$learner_param_vals[[1]]$xgboost.nrounds = context$instance$archive$best()$max_nrounds
         context$result$learner_param_vals[[1]]$xgboost.holdout_task = NULL
+      } else if (context$result$learner_param_vals[[1]]$branch.selection == "catboost") {
+        context$result$learner_param_vals[[1]]$catboost.early_stopping_rounds = NULL
+        context$result$learner_param_vals[[1]]$catboost.iterations = context$instance$archive$best()$max_nrounds
+        context$result$learner_param_vals[[1]]$catboost.holdout_task = NULL
       }
     }
   )

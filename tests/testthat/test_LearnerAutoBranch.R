@@ -35,6 +35,34 @@ test_that("LearnerClassifAutoBranch train works", {
   expect_prediction(learner$predict(task))
 })
 
+
+test_that("catboost early stopping works", {
+  rush::rush_plan(n_workers = 4, lgr_thresholds = c(bbotk = "trace", rush = "debug", mlr3automl = "debug"), large_objects_path = ".")
+  #options(bbotk_local = TRUE)
+
+  lgr::get_logger("bbotk")$set_threshold("trace")
+  lgr::get_logger("rush")$set_threshold("debug")
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
+
+  task = tsk("penguins")
+  resampling = rsmp("holdout")
+  measure = msr("classif.ce")
+  terminator = trm("evals", n_evals = 20)
+  learner = LearnerClassifAutoBranch$new(
+    resampling = resampling,
+    measure = measure,
+    terminator = terminator,
+    lhs_size = 1,
+    catboost_eval_metric = "MultiClass",
+    small_data_resampling = rsmp("holdout"))
+
+  expect_class(learner$train(task), "LearnerClassifAutoBranch")
+
+  expect_class(learner$model, "AutoTuner")
+
+  expect_prediction(learner$predict(task))
+})
+
 test_that("LearnerClassifAutoBranch works with large factors", {
   library(mlr3oml)
 

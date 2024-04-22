@@ -64,6 +64,9 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
     #' @field xgboost_eval_metric (`character(1)`).
     xgboost_eval_metric = NULL,
 
+    #' @field catboost_eval_metric (`character(1)`).
+    catboost_eval_metric = NULL,
+
     #' @field large_data_size (`numeric(1)`).
     large_data_size = NULL,
 
@@ -94,6 +97,7 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
       learner_timeout = Inf,
       learner_memory_limit = Inf,
       xgboost_eval_metric = NULL,
+      catboost_eval_metric = NULL,
       lhs_size = 4L,
       large_data_size = 1e6,
       large_data_nthread = 1L,
@@ -114,6 +118,7 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
       self$learner_memory_limit = assert_numeric(learner_memory_limit)
       self$lhs_size = assert_count(lhs_size)
       self$xgboost_eval_metric = assert_character(xgboost_eval_metric, null.ok = TRUE)
+      self$catboost_eval_metric = assert_character(catboost_eval_metric, null.ok = TRUE)
       self$large_data_size = assert_numeric(large_data_size)
       self$large_data_nthread = assert_count(large_data_nthread)
       self$small_data_size = assert_count(small_data_size)
@@ -169,6 +174,11 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
       }
 
       # holdout task
+      splits = partition(task, ratio = 0.9, stratify = TRUE)
+      holdout_task = task$clone()
+      holdout_task$filter(splits$test)
+
+      # xgboost
       preproc = po("removeconstants", id = "pre_removeconstants") %>>%
         po("imputeoor", id = "xgboost_imputeoor") %>>%
         po("fixfactors", id = "xgboost_fixfactors") %>>%
@@ -176,12 +186,12 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
         po("collapsefactors", target_level_count = self$max_cardinality, id = "xgboost_collapse") %>>%
         po("encode", method = "one-hot", id = "xgboost_encode") %>>%
         po("removeconstants", id = "xgboost_post_removeconstants")
-      splits = partition(task, ratio = 0.9, stratify = TRUE)
-      holdout_task = task$clone()
-      holdout_task$filter(splits$test)
       preproc$train(task)
-      holdout_task = preproc$predict(holdout_task)[[1]]
       task$set_row_roles(splits$test, "holdout")
+      holdout_task_xgboost = preproc$predict(holdout_task)[[1]]
+
+      # catboost
+      holdout_task_catboost = holdout_task$clone()
 
       # initialize graph learner
       graph_learner = as_learner(self$graph)
@@ -190,10 +200,12 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
       graph_learner$fallback = self$learner_fallback
       graph_learner$encapsulate = c(train = "callr", predict = "callr")
       graph_learner$timeout = c(train = self$learner_timeout, predict = self$learner_timeout)
-      graph_learner$param_set$values$xgboost.holdout_task = holdout_task
+      graph_learner$param_set$values$xgboost.holdout_task = holdout_task_xgboost
       graph_learner$param_set$values$xgboost.callbacks = list(cb.timeout(self$learner_timeout * 0.8))
       graph_learner$param_set$values$xgboost.eval_metric = self$xgboost_eval_metric
       graph_learner$memory_limit = c(train = self$learner_memory_limit, predict = self$learner_memory_limit)
+      graph_learner$param_set$values$catboost.holdout_task = holdout_task_catboost
+      graph_learner$param_set$values$catboost.eval_metric = self$catboost_eval_metric
 
       # initialize search space
       tuning_space = unlist(unname(self$tuning_space[self$learner_ids[self$learner_ids %in% names(self$tuning_space)]]), recursive = FALSE)
@@ -285,6 +297,7 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
       nthread = 1L,
       lhs_size = 4L,
       xgboost_eval_metric = NULL,
+      catboost_eval_metric = NULL,
       large_data_size = 1e6,
       large_data_nthread = 1L,
       small_data_size = 5000L,
@@ -360,7 +373,7 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         lrn("classif.xgboost", id = "xgboost", nrounds = 5000, early_stopping_rounds = 10, nthread = nthread)
 
       # catboost
-      branch_catboost = lrn("classif.catboost", id = "catboost", thread_count = nthread)
+      branch_catboost = lrn("classif.catboost", id = "catboost", thread_count = nthread, iterations = 500, early_stopping_rounds = 10, use_best_model = TRUE)
 
       # branch graph
       graph = po("removeconstants", id = "pre_removeconstants") %>>%
@@ -383,6 +396,7 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         learner_timeout = learner_timeout,
         learner_memory_limit = learner_memory_limit,
         xgboost_eval_metric = xgboost_eval_metric,
+        catboost_eval_metric = catboost_eval_metric,
         lhs_size = lhs_size,
         large_data_size = large_data_size,
         large_data_nthread = large_data_nthread,
