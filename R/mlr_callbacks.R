@@ -36,6 +36,7 @@ load_callback_branch_nrounds = function() {
         context$result$learner_param_vals[[1]]$catboost.early_stopping_rounds = NULL
         context$result$learner_param_vals[[1]]$catboost.iterations = context$instance$archive$best()$max_nrounds
         context$result$learner_param_vals[[1]]$catboost.holdout_task = NULL
+        context$result$learner_param_vals[[1]]$catboost.eval_metric = NULL
       }
     }
   )

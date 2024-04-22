@@ -183,8 +183,7 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
         po("imputeoor", id = "xgboost_imputeoor") %>>%
         po("fixfactors", id = "xgboost_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "xgboost_imputesample") %>>%
-        po("collapsefactors", target_level_count = self$max_cardinality, id = "xgboost_collapse") %>>%
-        po("encode", method = "one-hot", id = "xgboost_encode") %>>%
+        po("encodeimpact", id = "xgboost_encode") %>>%
         po("removeconstants", id = "xgboost_post_removeconstants")
       preproc$train(task)
       task$set_row_roles(splits$test, "holdout")
@@ -367,8 +366,7 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
       branch_xgboost = po("imputeoor", id = "xgboost_imputeoor") %>>%
         po("fixfactors", id = "xgboost_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "xgboost_imputesample") %>>%
-        po("collapsefactors", target_level_count = max_cardinality, id = "xgboost_collapse") %>>%
-        po("encode", method = "one-hot", id = "xgboost_encode") %>>%
+        po("encodeimpact", id = "xgboost_encode") %>>%
         po("removeconstants", id = "xgboost_post_removeconstants") %>>%
         lrn("classif.xgboost", id = "xgboost", nrounds = 5000, early_stopping_rounds = 10, nthread = nthread)
 
