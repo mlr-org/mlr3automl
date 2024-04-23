@@ -42,8 +42,8 @@ Remotes:
     mlr-org/mlr3@mlr3automl,
     mlr-org/mlr3misc@mlr3automl,
     mlr-org/rush,
-    mlr-org/bbotk@rush,
-    mlr-org/mlr3tuning@rush,
+    mlr-org/bbotk@rush_old,
+    mlr-org/mlr3tuning@rush_old,
     mlr-org/mlr3mbo@adbo,
     mlr-org/mlr3learners@holdout_task,
 Config/testthat/edition: 3
