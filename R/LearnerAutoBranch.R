@@ -371,7 +371,7 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         lrn("classif.xgboost", id = "xgboost", nrounds = 5000, early_stopping_rounds = 10, nthread = nthread)
 
       # catboost
-      branch_catboost = lrn("classif.catboost", id = "catboost", thread_count = nthread, iterations = 500, early_stopping_rounds = 10, use_best_model = TRUE)
+      branch_catboost = lrn("classif.catboost", id = "catboost", thread_count = nthread, iterations = 1000, early_stopping_rounds = 10, use_best_model = TRUE)
 
       # branch graph
       graph = po("removeconstants", id = "pre_removeconstants") %>>%
