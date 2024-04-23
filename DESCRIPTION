@@ -41,7 +41,7 @@ Suggests:
 Remotes:
     mlr-org/mlr3@mlr3automl,
     mlr-org/mlr3misc@mlr3automl,
-    mlr-org/rush,
+    mlr-org/rush@mlr3automl,
     mlr-org/bbotk@rush_old,
     mlr-org/mlr3tuning@rush_old,
     mlr-org/mlr3mbo@adbo,
