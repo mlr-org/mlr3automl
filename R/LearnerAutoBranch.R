@@ -225,7 +225,7 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
       })
 
       # initial design
-      lhs_xdt = generate_lhs_design(self$lhs_size, self$task_type, self$learner_ids[self$learner_ids != "lda"], self$tuning_space)
+      lhs_xdt = generate_lhs_design(self$lhs_size, self$task_type, self$learner_ids[self$learner_ids %nin% c("extra_trees", "lda")], self$tuning_space)
       default_xdt = generate_default_design(self$task_type, self$learner_ids, task, self$tuning_space)
       initial_xdt = rbindlist(list(lhs_xdt, default_xdt), use.names = TRUE, fill = TRUE)
       setorderv(initial_xdt, "branch.selection")
