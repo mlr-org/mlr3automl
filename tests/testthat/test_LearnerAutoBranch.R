@@ -1,6 +1,6 @@
 
 test_that("initial design is generated", {
-  learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost")
+  learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "ranger")
   xdt = generate_default_design("classif", learner_ids, tsk("sonar"), tuning_space)
   expect_data_table(xdt, nrows = length(learner_ids))
 })

@@ -1,7 +1,10 @@
 generate_default_design = function(task_type, learner_ids, task, tuning_space, branch = TRUE) {
   map_dtr(learner_ids, function(learner_id) {
-    learner = lrn(sprintf("%s.%s", task_type, learner_id))
+    if (learner_id %nin% mlr_learners$keys()) {
+      return(data.table(branch.selection = learner_id))
+    }
 
+    learner = lrn(sprintf("%s.%s", task_type, learner_id))
     token = tuning_space[[learner_id]]
 
     # learner without tuning space
