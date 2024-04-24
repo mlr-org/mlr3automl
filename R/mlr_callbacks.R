@@ -18,7 +18,7 @@ load_callback_branch_nrounds = function() {
         } else {
           NA_real_
         }
-      }))
+      }), na.rm = TRUE)
     },
 
     on_eval_before_archive = function(callback, context) {
