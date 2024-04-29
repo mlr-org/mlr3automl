@@ -21,13 +21,13 @@ test_that("LearnerClassifAutoBranch train works", {
   task = tsk("penguins")
 
   learner = lrn("classif.automl_branch",
-    resampling = rsmp("holdout"),
+    small_data_resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 20)
   )
 
   expect_class(learner$train(task), "LearnerClassifAutoBranch")
-  expect_class(learner$model, "AutoTuner")
+  expect_class(learner$model$instance, "TuningInstanceAsyncSingleCrit")
   expect_prediction(learner$predict(task))
 })
 
