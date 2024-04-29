@@ -7,7 +7,7 @@
 Classification Auto learner.
 }
 \section{Super classes}{
-\code{\link[mlr3:Learner]{mlr3::Learner}} -> \code{mlr3automl::LearnerAutoBranch} -> \code{LearnerClassifAutoBranch}
+\code{\link[mlr3:Learner]{mlr3::Learner}} -> \code{\link[mlr3automl:LearnerAutoBranch]{mlr3automl::LearnerAutoBranch}} -> \code{LearnerClassifAutoBranch}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -20,6 +20,7 @@ Classification Auto learner.
 <details><summary>Inherited methods</summary>
 <ul>
 <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="base_learner"><a href='../../mlr3/html/Learner.html#method-Learner-base_learner'><code>mlr3::Learner$base_learner()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="estimate_memory_usage"><a href='../../mlr3/html/Learner.html#method-Learner-estimate_memory_usage'><code>mlr3::Learner$estimate_memory_usage()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="format"><a href='../../mlr3/html/Learner.html#method-Learner-format'><code>mlr3::Learner$format()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="help"><a href='../../mlr3/html/Learner.html#method-Learner-help'><code>mlr3::Learner$help()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="predict"><a href='../../mlr3/html/Learner.html#method-Learner-predict'><code>mlr3::Learner$predict()</code></a></span></li>
@@ -36,23 +37,7 @@ Classification Auto learner.
 \subsection{Method \code{new()}}{
 Creates a new instance of this \link[R6:R6Class]{R6} class.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LearnerClassifAutoBranch$new(
-  id = "classif.automl",
-  resampling = rsmp("holdout"),
-  measure = msr("classif.ce"),
-  terminator = trm("evals", n_evals = 100L),
-  callbacks = list(),
-  learner_timeout = Inf,
-  learner_memory_limit = Inf,
-  nthread = 1L,
-  lhs_size = 4L,
-  xgboost_eval_metric = NULL,
-  large_data_size = 1e+06,
-  large_data_nthread = 1L,
-  small_data_size = 5000L,
-  small_data_resampling = rsmp("cv", folds = 5),
-  max_cardinality = 100L
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LearnerClassifAutoBranch$new(id = "classif.automl")}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -60,18 +45,6 @@ Creates a new instance of this \link[R6:R6Class]{R6} class.
 \describe{
 \item{\code{id}}{(\code{character(1)})\cr
 Identifier for the new instance.}
-
-\item{\code{resampling}}{(\link[mlr3:Resampling]{mlr3::Resampling}).}
-
-\item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
-
-\item{\code{terminator}}{(\link[bbotk:Terminator]{bbotk::Terminator}).}
-
-\item{\code{callbacks}}{(list of \link[mlr3tuning:CallbackTuning]{mlr3tuning::CallbackTuning}).}
-
-\item{\code{learner_timeout}}{(\code{integer(1)}).}
-
-\item{\code{nthread}}{(\code{integer(1)}).}
 }
 \if{html}{\out{</div>}}
 }

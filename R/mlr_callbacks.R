@@ -1,10 +1,10 @@
 
 load_callback_branch_nrounds = function() {
-  callback_rush_tuning("mlr3automl.branch_nrounds",
+  callback_async_tuning("mlr3automl.branch_nrounds",
     label = "Boosting Rounds Callback",
 
     on_eval_after_xs = function(callback, context) {
-      context$objective_tuning$store_models = TRUE
+      context$instance$objective$store_models = TRUE
     },
 
     on_eval_after_resample = function(callback, context) {
@@ -43,7 +43,7 @@ load_callback_branch_nrounds = function() {
 }
 
 load_callback_nrounds = function() {
-  callback_rush_tuning("mlr3automl.nrounds",
+  callback_async_tuning("mlr3automl.nrounds",
     label = "Boosting Rounds Callback",
 
     on_eval_after_xs = function(callback, context) {

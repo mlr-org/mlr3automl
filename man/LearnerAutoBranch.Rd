@@ -12,37 +12,11 @@ Abstract base class for Auto like learner.
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{learner_ids}}{(\code{character()}).}
-
 \item{\code{graph}}{(\link[mlr3pipelines:Graph]{mlr3pipelines::Graph}).}
 
-\item{\code{resampling}}{(\link[mlr3:Resampling]{mlr3::Resampling}).}
+\item{\code{tuning_space}}{(\code{list()}).}
 
-\item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
-
-\item{\code{terminator}}{(\link[bbotk:Terminator]{bbotk::Terminator}).}
-
-\item{\code{tuning_space}}{(list of \link{TuneToken}).}
-
-\item{\code{callbacks}}{(list of \link[mlr3tuning:CallbackTuning]{mlr3tuning::CallbackTuning}).}
-
-\item{\code{learner_fallback}}{(\link[mlr3:Learner]{mlr3::Learner}).}
-
-\item{\code{learner_timeout}}{(\code{numeric(1)}).}
-
-\item{\code{learner_memory_limit}}{(\code{numeric(1)}).}
-
-\item{\code{lhs_size}}{(\code{integer(1)}).}
-
-\item{\code{xgboost_eval_metric}}{(\code{character(1)}).}
-
-\item{\code{large_data_size}}{(\code{numeric(1)}).}
-
-\item{\code{large_data_nthread}}{(\code{integer(1)}).}
-
-\item{\code{small_data_size}}{(\code{integer(1)}).}
-
-\item{\code{small_data_resampling}}{(\link[mlr3:Resampling]{mlr3::Resampling}).}
+\item{\code{instance}}{(\link{TuningInstanceRushSingleCrit}).}
 }
 \if{html}{\out{</div>}}
 }
@@ -57,6 +31,7 @@ Abstract base class for Auto like learner.
 <details><summary>Inherited methods</summary>
 <ul>
 <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="base_learner"><a href='../../mlr3/html/Learner.html#method-Learner-base_learner'><code>mlr3::Learner$base_learner()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="estimate_memory_usage"><a href='../../mlr3/html/Learner.html#method-Learner-estimate_memory_usage'><code>mlr3::Learner$estimate_memory_usage()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="format"><a href='../../mlr3/html/Learner.html#method-Learner-format'><code>mlr3::Learner$format()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="help"><a href='../../mlr3/html/Learner.html#method-Learner-help'><code>mlr3::Learner$help()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="predict"><a href='../../mlr3/html/Learner.html#method-Learner-predict'><code>mlr3::Learner$predict()</code></a></span></li>
@@ -73,27 +48,7 @@ Abstract base class for Auto like learner.
 \subsection{Method \code{new()}}{
 Creates a new instance of this \link[R6:R6Class]{R6} class.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LearnerAutoBranch$new(
-  id,
-  task_type,
-  learner_ids,
-  graph,
-  tuning_space,
-  resampling,
-  measure,
-  terminator,
-  callbacks = list(),
-  learner_fallback = NULL,
-  learner_timeout = Inf,
-  learner_memory_limit = Inf,
-  xgboost_eval_metric = NULL,
-  lhs_size = 4L,
-  large_data_size = 1e+06,
-  large_data_nthread = 1L,
-  small_data_size = 5000L,
-  small_data_resampling = rsmp("cv", folds = 5),
-  max_cardinality = 100L
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LearnerAutoBranch$new(id, task_type, param_set, graph, tuning_space)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -106,26 +61,14 @@ Identifier for the new instance.}
 Type of task, e.g. \code{"regr"} or \code{"classif"}.
 Must be an element of \link[=mlr_reflections]{mlr_reflections$task_types$type}.}
 
-\item{\code{learner_ids}}{(\code{character()})\cr
-List of learner ids.}
+\item{\code{param_set}}{(\link{ParamSet})\cr
+Parameter set.}
 
 \item{\code{graph}}{(\link[mlr3pipelines:Graph]{mlr3pipelines::Graph}).
 Graph.}
 
-\item{\code{tuning_space}}{(list of \link[paradox:to_tune]{paradox::TuneToken})\cr
-List of \link[paradox:to_tune]{paradox::TuneToken}s.}
-
-\item{\code{resampling}}{(\link[mlr3:Resampling]{mlr3::Resampling}).}
-
-\item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
-
-\item{\code{terminator}}{(\link[bbotk:Terminator]{bbotk::Terminator}).}
-
-\item{\code{callbacks}}{(list of \link[mlr3tuning:CallbackTuning]{mlr3tuning::CallbackTuning}).}
-
-\item{\code{learner_fallback}}{(\link[mlr3:Learner]{mlr3::Learner}).}
-
-\item{\code{learner_timeout}}{(\code{integer(1)}).}
+\item{\code{tuning_space}}{(list of lists of \link[paradox:to_tune]{paradox::TuneToken})\cr
+List of tuning spaces.}
 }
 \if{html}{\out{</div>}}
 }

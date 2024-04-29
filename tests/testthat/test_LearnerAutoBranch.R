@@ -17,21 +17,17 @@ test_that("LearnerClassifAutoBranch train works", {
   lgr::get_logger("rush")$set_threshold("debug")
   lgr::get_logger("mlr3automl")$set_threshold("debug")
 
+
   task = tsk("penguins")
-  resampling = rsmp("holdout")
-  measure = msr("classif.ce")
-  terminator = trm("evals", n_evals = 20)
-  learner = LearnerClassifAutoBranch$new(
-    resampling = resampling,
-    measure = measure,
-    terminator = terminator,
-    lhs_size = 1,
-    small_data_resampling = rsmp("holdout"))
+
+  learner = lrn("classif.automl_branch",
+    resampling = rsmp("holdout"),
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 20)
+  )
 
   expect_class(learner$train(task), "LearnerClassifAutoBranch")
-
   expect_class(learner$model, "AutoTuner")
-
   expect_prediction(learner$predict(task))
 })
 
