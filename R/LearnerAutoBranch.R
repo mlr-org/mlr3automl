@@ -220,30 +220,30 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
     initialize = function(id = "classif.automl") {
       param_set = ps(
         # learner
-        learner_ids = p_uty(tags = "required"),
-        learner_timeout = p_int(lower = 1L, default = 900L, tags = "required"),
+        learner_ids = p_uty(),
+        learner_timeout = p_int(lower = 1L, default = 900L),
         xgboost_eval_metric = p_uty(),
         catboost_eval_metric = p_uty(),
         # system
-        max_nthread = p_int(lower = 1L, default = 8L, tags = "required"),
-        max_memory = p_int(lower = 1L, default = 320000L, tags = "required"),
+        max_nthread = p_int(lower = 1L, default = 8L),
+        max_memory = p_int(lower = 1L, default = 32000L),
         # large data
-        large_data_size = p_int(lower = 1L, default = 1e6, tags = "required"),
-        large_data_learner_ids = p_uty(tags = "required"),
-        large_data_nthread = p_int(lower = 1L, default = 2L, tags = "required"),
+        large_data_size = p_int(lower = 1L, default = 1e6),
+        large_data_learner_ids = p_uty(),
+        large_data_nthread = p_int(lower = 1L, default = 2L),
         # small data
-        small_data_size = p_int(lower = 1L, default = 5000L, tags = "required"),
-        small_data_resampling = p_uty(tags = "required"),
-        max_cardinality = p_int(lower = 1L, default = 100L, tags = "required"),
+        small_data_size = p_int(lower = 1L, default = 5000L),
+        small_data_resampling = p_uty(),
+        max_cardinality = p_int(lower = 1L, default = 100L),
         # tuner
-        resampling = p_uty(tags = "required"),
-        terminator = p_uty(tags = "required"),
-        measure = p_uty(tags = "required"),
+        resampling = p_uty(),
+        terminator = p_uty(),
+        measure = p_uty(),
         lhs_size = p_int(lower = 1L, default = 4L),
         callbacks = p_uty(),
-        timeout = p_int(lower = 1L, default = 14400L, tags = "required"))
+        timeout = p_int(lower = 1L, default = 14400L))
 
-      learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees")
+      learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm")
       param_set$set_values(
         learner_ids = learner_ids,
         learner_timeout = 900L,
@@ -334,6 +334,9 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         po("removeconstants", id = "extra_trees_post_removeconstants") %>>%
         lrn("classif.ranger", id = "extra_trees", splitrule = "extratrees", num.trees = 100, replace = FALSE, sample.fraction = 1)
 
+      # lightgbm
+      branch_lightgbm = lrn("classif.lightgbm", id = "lightgbm")
+
       # branch graph
       graph = po("removeconstants", id = "pre_removeconstants") %>>%
         po("branch", options = learner_ids) %>>%
@@ -395,6 +398,13 @@ tuning_space = list(
     catboost.depth          = to_tune(5, 8),
     catboost.learning_rate  = to_tune(5e-3, 0.2, logscale = TRUE),
     catboost.l2_leaf_reg    = to_tune(1, 5)
+  ),
+
+  lightgbm = list(
+    lightgbm.learning_rate = to_tune(5e-3, 0.2, logscale = TRUE),
+    lightgbm.feature_fraction = to_tune(0.75, 1),
+    lightgbm.min_data_in_leaf = to_tune(2, 60),
+    lightgbm.num_leaves    = to_tune(16, 96)
   )
 )
 
