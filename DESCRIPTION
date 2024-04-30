@@ -15,7 +15,8 @@ Depends:
     mlr3learners,
     mlr3extralearners,
     mlr3tuning,
-    R (>= 3.1.0)
+    R (>= 3.1.0),
+    rush
 Imports:
     bbotk,
     checkmate,
@@ -36,7 +37,6 @@ Imports:
     R6,
     ranger,
     rpart,
-    rush,
     xgboost
 Suggests:
     testthat (>= 3.0.0)
