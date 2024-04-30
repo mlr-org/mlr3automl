@@ -15,6 +15,8 @@ load_callback_branch_nrounds = function() {
           state$model$xgboost$model$best_iteration %??% NA_real_
         } else if (!inherits(state$model$catboost, "NO_OP")) {
           state$model$catboost$model$tree_count %??% NA_real_
+        } else if (!inherits(state$model$lightgbm, "NO_OP")) {
+          state$model$lightgbm$model$best_iter %??% NA_real_
         } else {
           NA_real_
         }
@@ -29,7 +31,7 @@ load_callback_branch_nrounds = function() {
     on_result = function(callback, context) {
       if (context$result$learner_param_vals[[1]]$branch.selection == "xgboost") {
         context$result$learner_param_vals[[1]]$xgboost.early_stopping_rounds = NULL
-        context$result$learner_param_vals[[1]]$xgboost.callbacks = list(cb.timeout(timeout = Inf))
+        context$result$learner_param_vals[[1]]$xgboost.callbacks = list(cb_timeout_xgboost(timeout = Inf))
         context$result$learner_param_vals[[1]]$xgboost.nrounds = context$instance$archive$best()$max_nrounds
         context$result$learner_param_vals[[1]]$xgboost.holdout_task = NULL
       } else if (context$result$learner_param_vals[[1]]$branch.selection == "catboost") {
@@ -37,6 +39,11 @@ load_callback_branch_nrounds = function() {
         context$result$learner_param_vals[[1]]$catboost.iterations = context$instance$archive$best()$max_nrounds
         context$result$learner_param_vals[[1]]$catboost.holdout_task = NULL
         context$result$learner_param_vals[[1]]$catboost.eval_metric = NULL
+      } else if (context$result$learner_param_vals[[1]]$branch.selection == "lightgbm") {
+        context$result$learner_param_vals[[1]]$lightgbm.early_stopping_rounds = NULL
+        context$result$learner_param_vals[[1]]$lightgbm.num_iterations = context$instance$archive$best()$max_nrounds
+        context$result$learner_param_vals[[1]]$lightgbm.holdout_task = NULL
+        context$result$learner_param_vals[[1]]$lightgbm.callbacks = NULL
       }
     }
   )
@@ -69,7 +76,7 @@ load_callback_nrounds = function() {
 
     on_result = function(callback, context) {
       context$result$learner_param_vals[[1]]$xgboost.early_stopping_rounds = NULL
-      context$result$learner_param_vals[[1]]$xgboost.callbacks = list(cb.timeout(timeout = Inf))
+      context$result$learner_param_vals[[1]]$xgboost.callbacks = list(cb_timeout_xgboost(timeout = Inf))
       context$result$learner_param_vals[[1]]$xgboost.nrounds = context$instance$archive$best()$max_nrounds
       context$result$learner_param_vals[[1]]$xgboost.holdout_task = NULL
     }

@@ -114,7 +114,7 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
       graph_learner$timeout = c(train = pv$learner_timeout, predict = pv$learner_timeout)
 
       # holdout task
-      if (any(c("xgboost", "catboost") %in% learner_ids)) {
+      if (any(c("xgboost", "catboost", "lightgbm") %in% learner_ids)) {
         lg$debug("Creating holdout task for xgboost and catboost")
 
         # holdout task
@@ -133,7 +133,7 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
             po("removeconstants", id = "xgboost_post_removeconstants")
           preproc$train(task)
           graph_learner$param_set$values$xgboost.holdout_task = preproc$predict(holdout_task)[[1]]
-          graph_learner$param_set$values$xgboost.callbacks = list(cb.timeout(pv$learner_timeout * 0.8))
+          graph_learner$param_set$values$xgboost.callbacks = list(cb_timeout_xgboost(pv$learner_timeout * 0.8))
           graph_learner$param_set$values$xgboost.eval_metric = pv$xgboost_eval_metric
         }
 
@@ -141,6 +141,13 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
           # catboost
           graph_learner$param_set$values$catboost.holdout_task = holdout_task$clone()
           graph_learner$param_set$values$catboost.eval_metric = pv$catboost_eval_metric
+        }
+
+        if ("lightgbm" %in% learner_ids) {
+          # lightgbm
+          graph_learner$param_set$values$lightgbm.holdout_task = holdout_task$clone()
+          graph_learner$param_set$values$lightgbm.eval = pv$lightgbm_eval_metric
+          graph_learner$param_set$values$lightgbm.callbacks = list(cb_timeout_lightgbm(pv$learner_timeout * 0.8))
         }
       }
 
@@ -187,7 +194,7 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
 
       # fit final model
       lg$debug("Learner '%s' fits final model", self$id)
-      if (any(c("xgboost", "catboost") %in% learner_ids)) task$set_row_roles(splits$test, "use")
+      if (any(c("xgboost", "catboost", "lightgbm") %in% learner_ids)) task$set_row_roles(splits$test, "use")
       graph_learner$param_set$set_values(.values = self$instance$result_learner_param_vals)
       graph_learner$timeout = c(train = Inf, predict = Inf)
       graph_learner$train(task)
@@ -224,6 +231,7 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         learner_timeout = p_int(lower = 1L, default = 900L),
         xgboost_eval_metric = p_uty(),
         catboost_eval_metric = p_uty(),
+        lightgbm_eval_metric = p_uty(),
         # system
         max_nthread = p_int(lower = 1L, default = 8L),
         max_memory = p_int(lower = 1L, default = 32000L),
@@ -336,7 +344,7 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         lrn("classif.ranger", id = "extra_trees", splitrule = "extratrees", num.trees = 100, replace = FALSE, sample.fraction = 1)
 
       # lightgbm
-      branch_lightgbm = lrn("classif.lightgbm", id = "lightgbm")
+      branch_lightgbm = lrn("classif.lightgbm", id = "lightgbm", num_iterations = 5000, early_stopping_rounds = 10)
 
       # branch graph
       graph = po("removeconstants", id = "pre_removeconstants") %>>%

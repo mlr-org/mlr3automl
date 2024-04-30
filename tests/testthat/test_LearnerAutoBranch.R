@@ -162,6 +162,7 @@ test_that("lightgbm works", {
   task = tsk("penguins")
   learner = lrn("classif.automl_branch",
     learner_ids = "lightgbm",
+    lightgbm_eval_metric = "multi_logloss",
     small_data_size = 100,
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 6)
