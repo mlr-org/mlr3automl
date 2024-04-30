@@ -1,7 +1,7 @@
 library(rush)
 
 test_that("initial design is generated", {
-  learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm")
+  learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees")
   xdt = generate_default_design(
     task_type = "classif",
     learner_ids,
@@ -12,7 +12,7 @@ test_that("initial design is generated", {
 })
 
 test_that("lhs design is generated", {
-  learner_ids =  c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm")
+  learner_ids =  c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees")
   xdt = generate_lhs_design(10, "classif", learner_ids, tuning_space)
   n_hp = sum(map_dbl(tuning_space, length))
   expect_data_table(xdt, nrows = 80, ncols = n_hp + 1)
@@ -154,21 +154,6 @@ test_that("extra_trees works", {
 
   expect_class(learner$train(task), "LearnerClassifAutoBranch")
   expect_equal(learner$model$instance$result$branch.selection, "extra_trees")
-})
-
-test_that("lightgbm works", {
-  rush_plan(n_workers = 2)
-
-  task = tsk("penguins")
-  learner = lrn("classif.automl_branch",
-    learner_ids = "lightgbm",
-    small_data_size = 100,
-    measure = msr("classif.ce"),
-    terminator = trm("evals", n_evals = 6)
-  )
-
-  expect_class(learner$train(task), "LearnerClassifAutoBranch")
-  expect_equal(learner$model$instance$result$branch.selection, "lightgbm")
 })
 
 test_that("all learner work", {

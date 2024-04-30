@@ -243,7 +243,7 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         callbacks = p_uty(),
         store_benchmark_result = p_lgl(default = FALSE))
 
-      learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm")
+      learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees")
       param_set$set_values(
         learner_ids = learner_ids,
         learner_timeout = 900L,
@@ -335,9 +335,6 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         po("removeconstants", id = "extra_trees_post_removeconstants") %>>%
         lrn("classif.ranger", id = "extra_trees", splitrule = "extratrees", num.trees = 100, replace = FALSE, sample.fraction = 1)
 
-      # lightgbm
-      branch_lightgbm = lrn("classif.lightgbm", id = "lightgbm")
-
       # branch graph
       graph = po("removeconstants", id = "pre_removeconstants") %>>%
         po("branch", options = learner_ids) %>>%
@@ -350,8 +347,7 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
           branch_svm,
           branch_xgboost,
           branch_catboost,
-          branch_extra_trees,
-          branch_lightgbm )) %>>%
+          branch_extra_trees)) %>>%
         po("unbranch", options = learner_ids)
 
       super$initialize(
@@ -410,13 +406,6 @@ tuning_space = list(
     catboost.depth          = to_tune(5, 8),
     catboost.learning_rate  = to_tune(5e-3, 0.2, logscale = TRUE),
     catboost.l2_leaf_reg    = to_tune(1, 5)
-  ),
-
-  lightgbm = list(
-    lightgbm.learning_rate = to_tune(5e-3, 0.2, logscale = TRUE),
-    lightgbm.feature_fraction = to_tune(0.75, 1),
-    lightgbm.min_data_in_leaf = to_tune(2, 60),
-    lightgbm.num_leaves    = to_tune(16, 96)
   )
 )
 
