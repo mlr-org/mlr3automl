@@ -220,28 +220,28 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
     initialize = function(id = "classif.automl") {
       param_set = ps(
         # learner
-        learner_ids = p_uty(tags = "required"),
-        learner_timeout = p_int(lower = 1L, default = 900L, tags = "required"),
+        learner_ids = p_uty(),
+        learner_timeout = p_int(lower = 1L, default = 900L),
         xgboost_eval_metric = p_uty(),
         catboost_eval_metric = p_uty(),
         # system
-        max_nthread = p_int(lower = 1L, default = 8L, tags = "required"),
-        max_memory = p_int(lower = 1L, default = 320000L, tags = "required"),
+        max_nthread = p_int(lower = 1L, default = 8L),
+        max_memory = p_int(lower = 1L, default = 320000L),
         # large data
-        large_data_size = p_int(lower = 1L, default = 1e6, tags = "required"),
-        large_data_learner_ids = p_uty(tags = "required"),
-        large_data_nthread = p_int(lower = 1L, default = 2L, tags = "required"),
+        large_data_size = p_int(lower = 1L, default = 1e6),
+        large_data_learner_ids = p_uty(),
+        large_data_nthread = p_int(lower = 1L, default = 2L),
         # small data
-        small_data_size = p_int(lower = 1L, default = 5000L, tags = "required"),
-        small_data_resampling = p_uty(tags = "required"),
-        max_cardinality = p_int(lower = 1L, default = 100L, tags = "required"),
+        small_data_size = p_int(lower = 1L, default = 5000L),
+        small_data_resampling = p_uty(),
+        max_cardinality = p_int(lower = 1L, default = 100L),
         # tuner
-        resampling = p_uty(tags = "required"),
-        terminator = p_uty(tags = "required"),
-        measure = p_uty(tags = "required"),
+        resampling = p_uty(),
+        terminator = p_uty(),
+        measure = p_uty(),
         lhs_size = p_int(lower = 1L, default = 4L),
         callbacks = p_uty(),
-        timeout = p_int(lower = 1L, default = 14400L, tags = "required"))
+        timeout = p_int(lower = 1L, default = 14400L))
 
       learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees")
       param_set$set_values(
