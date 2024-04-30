@@ -79,7 +79,7 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
         walk(learner_ids, function(learner_id) {
           set_threads(graph$pipeops[[learner_id]]$learner, pv$large_data_nthread)
         })
-        n_workers = utils::getFromNamespace("rush_env", ns = "rush")$n_workers
+        n_workers = rush_config()$n_workers
         n = floor(n_workers / pv$large_data_nthread)
         lg$debug("Task larger than %i rows. Reducing number of workers to %i", pv$large_data_size, n)
         tuner$param_set$set_values(n_workers = n)
@@ -178,7 +178,7 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
         terminator = pv$terminator,
         search_space = search_space,
         callbacks = c(pv$callbacks, clbk("mlr3automl.branch_nrounds")),
-        store_benchmark_result = FALSE
+        store_benchmark_result = pv$store_benchmark_result
       )
 
       # tune
@@ -226,7 +226,7 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         catboost_eval_metric = p_uty(),
         # system
         max_nthread = p_int(lower = 1L, default = 8L),
-        max_memory = p_int(lower = 1L, default = 320000L),
+        max_memory = p_int(lower = 1L, default = 32000L),
         # large data
         large_data_size = p_int(lower = 1L, default = 1e6),
         large_data_learner_ids = p_uty(),
@@ -241,9 +241,9 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         measure = p_uty(),
         lhs_size = p_int(lower = 1L, default = 4L),
         callbacks = p_uty(),
-        timeout = p_int(lower = 1L, default = 14400L))
+        store_benchmark_result = p_lgl(default = FALSE))
 
-      learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees")
+      learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm")
       param_set$set_values(
         learner_ids = learner_ids,
         learner_timeout = 900L,
@@ -258,7 +258,8 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         resampling = rsmp("cv", folds = 3L),
         terminator = trm("run_time", secs = 14400L),
         measure = msr("classif.ce"),
-        lhs_size = 4L)
+        lhs_size = 4L,
+        store_benchmark_result = FALSE)
 
       # glmnet
       branch_glmnet = po("imputehist", id = "glmnet_imputehist") %>>%
@@ -334,10 +335,24 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         po("removeconstants", id = "extra_trees_post_removeconstants") %>>%
         lrn("classif.ranger", id = "extra_trees", splitrule = "extratrees", num.trees = 100, replace = FALSE, sample.fraction = 1)
 
+      # lightgbm
+      branch_lightgbm = lrn("classif.lightgbm", id = "lightgbm")
+
       # branch graph
       graph = po("removeconstants", id = "pre_removeconstants") %>>%
         po("branch", options = learner_ids) %>>%
-        gunion(list(branch_glmnet, branch_kknn, branch_lda, branch_nnet, branch_ranger, branch_svm, branch_xgboost, branch_catboost, branch_extra_trees)) %>>% po("unbranch", options = learner_ids)
+        gunion(list(
+          branch_glmnet,
+          branch_kknn,
+          branch_lda,
+          branch_nnet,
+          branch_ranger,
+          branch_svm,
+          branch_xgboost,
+          branch_catboost,
+          branch_extra_trees,
+          branch_lightgbm )) %>>%
+        po("unbranch", options = learner_ids)
 
       super$initialize(
         id = id,
@@ -395,6 +410,13 @@ tuning_space = list(
     catboost.depth          = to_tune(5, 8),
     catboost.learning_rate  = to_tune(5e-3, 0.2, logscale = TRUE),
     catboost.l2_leaf_reg    = to_tune(1, 5)
+  ),
+
+  lightgbm = list(
+    lightgbm.learning_rate = to_tune(5e-3, 0.2, logscale = TRUE),
+    lightgbm.feature_fraction = to_tune(0.75, 1),
+    lightgbm.min_data_in_leaf = to_tune(2, 60),
+    lightgbm.num_leaves    = to_tune(16, 96)
   )
 )
 

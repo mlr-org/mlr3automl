@@ -1,29 +1,185 @@
+library(rush)
 
 test_that("initial design is generated", {
-  learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "ranger")
-  xdt = generate_default_design("classif", learner_ids, tsk("sonar"), tuning_space)
-  expect_data_table(xdt, nrows = length(learner_ids))
+  learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm")
+  xdt = generate_default_design(
+    task_type = "classif",
+    learner_ids,
+    task = tsk("sonar"),
+    tuning_space)
+  n_hp = sum(map_dbl(tuning_space, length))
+  expect_data_table(xdt, nrows = length(learner_ids), ncols = n_hp + 1)
 })
 
 test_that("lhs design is generated", {
-  learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost")
+  learner_ids =  c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm")
   xdt = generate_lhs_design(10, "classif", learner_ids, tuning_space)
+  n_hp = sum(map_dbl(tuning_space, length))
+  expect_data_table(xdt, nrows = 80, ncols = n_hp + 1)
 })
 
-test_that("LearnerClassifAutoBranch train works", {
-  rush::rush_plan(n_workers = 4, lgr_thresholds = c(bbotk = "trace", rush = "debug", mlr3automl = "debug"), large_objects_path = ".")
-
-  lgr::get_logger("bbotk")$set_threshold("trace")
-  lgr::get_logger("rush")$set_threshold("debug")
-  lgr::get_logger("mlr3automl")$set_threshold("debug")
-
+test_that("glmnet works", {
+  rush_plan(n_workers = 2)
 
   task = tsk("penguins")
-
   learner = lrn("classif.automl_branch",
-    small_data_resampling = rsmp("holdout"),
+    learner_ids = "glmnet",
+    small_data_size = 100,
     measure = msr("classif.ce"),
-    terminator = trm("evals", n_evals = 20)
+    terminator = trm("evals", n_evals = 6)
+  )
+
+  expect_class(learner$train(task), "LearnerClassifAutoBranch")
+  expect_equal(learner$model$instance$result$branch.selection, "glmnet")
+})
+
+test_that("kknn works", {
+  rush_plan(n_workers = 2)
+
+  task = tsk("penguins")
+  learner = lrn("classif.automl_branch",
+    learner_ids = "kknn",
+    small_data_size = 100,
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 6)
+  )
+
+  expect_class(learner$train(task), "LearnerClassifAutoBranch")
+  expect_equal(learner$model$instance$result$branch.selection, "kknn")
+})
+
+test_that("lda works", {
+  rush_plan(n_workers = 2)
+
+  task = tsk("penguins")
+  learner = lrn("classif.automl_branch",
+    learner_ids = "lda",
+    small_data_size = 100,
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 6)
+  )
+
+  expect_class(learner$train(task), "LearnerClassifAutoBranch")
+  expect_equal(learner$model$instance$result$branch.selection, "lda")
+})
+
+test_that("nnet works", {
+  rush_plan(n_workers = 2)
+
+  task = tsk("penguins")
+  learner = lrn("classif.automl_branch",
+    learner_ids = "nnet",
+    small_data_size = 100,
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 6)
+  )
+
+  expect_class(learner$train(task), "LearnerClassifAutoBranch")
+  expect_equal(learner$model$instance$result$branch.selection, "nnet")
+})
+
+test_that("ranger works", {
+  rush_plan(n_workers = 2)
+
+  task = tsk("penguins")
+  learner = lrn("classif.automl_branch",
+    learner_ids = "ranger",
+    small_data_size = 100,
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 6)
+  )
+
+  expect_class(learner$train(task), "LearnerClassifAutoBranch")
+  expect_equal(learner$model$instance$result$branch.selection, "ranger")
+})
+
+test_that("svm works", {
+  rush_plan(n_workers = 2)
+
+  task = tsk("penguins")
+  learner = lrn("classif.automl_branch",
+    learner_ids = "svm",
+    small_data_size = 100,
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 6)
+  )
+
+  expect_class(learner$train(task), "LearnerClassifAutoBranch")
+  expect_equal(learner$model$instance$result$branch.selection, "svm")
+})
+
+test_that("xgboost works", {
+  rush_plan(n_workers = 2)
+
+  task = tsk("penguins")
+  learner = lrn("classif.automl_branch",
+    learner_ids = "xgboost",
+    small_data_size = 100,
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 6)
+  )
+
+  expect_class(learner$train(task), "LearnerClassifAutoBranch")
+  expect_equal(learner$model$instance$result$branch.selection, "xgboost")
+  expect_numeric(learner$model$instance$archive$data$max_nrounds, lower = 1)
+})
+
+test_that("catboost works", {
+  rush_plan(n_workers = 2)
+
+  task = tsk("penguins")
+  learner = lrn("classif.automl_branch",
+    learner_ids = "catboost",
+    catboost_eval_metric = "MultiClass",
+    small_data_size = 100,
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 6)
+  )
+
+  expect_class(learner$train(task), "LearnerClassifAutoBranch")
+  expect_equal(learner$model$instance$result$branch.selection, "catboost")
+  expect_numeric(learner$model$instance$archive$data$max_nrounds, lower = 1)
+})
+
+test_that("extra_trees works", {
+  rush_plan(n_workers = 2)
+
+  task = tsk("penguins")
+  learner = lrn("classif.automl_branch",
+    learner_ids = "extra_trees",
+    small_data_size = 100,
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 6)
+  )
+
+  expect_class(learner$train(task), "LearnerClassifAutoBranch")
+  expect_equal(learner$model$instance$result$branch.selection, "extra_trees")
+})
+
+test_that("lightgbm works", {
+  rush_plan(n_workers = 2)
+
+  task = tsk("penguins")
+  learner = lrn("classif.automl_branch",
+    learner_ids = "lightgbm",
+    small_data_size = 100,
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 6)
+  )
+
+  expect_class(learner$train(task), "LearnerClassifAutoBranch")
+  expect_equal(learner$model$instance$result$branch.selection, "lightgbm")
+})
+
+test_that("all learner work", {
+  rush_plan(n_workers = 2)
+
+  task = tsk("penguins")
+  learner = lrn("classif.automl_branch",
+    small_data_size = 100,
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 20),
+    lhs_size = 1
   )
 
   expect_class(learner$train(task), "LearnerClassifAutoBranch")
@@ -31,207 +187,37 @@ test_that("LearnerClassifAutoBranch train works", {
   expect_prediction(learner$predict(task))
 })
 
-
-test_that("catboost early stopping works", {
-  rush::rush_plan(n_workers = 4, lgr_thresholds = c(bbotk = "trace", rush = "debug", mlr3automl = "debug"), large_objects_path = ".")
-  #options(bbotk_local = TRUE)
-
-  lgr::get_logger("bbotk")$set_threshold("trace")
-  lgr::get_logger("rush")$set_threshold("debug")
-  lgr::get_logger("mlr3automl")$set_threshold("debug")
+test_that("small data set switch works", {
+  rush_plan(n_workers = 2)
 
   task = tsk("penguins")
-  resampling = rsmp("holdout")
-  measure = msr("classif.ce")
-  terminator = trm("evals", n_evals = 20)
-  learner = LearnerClassifAutoBranch$new(
-    resampling = resampling,
-    measure = measure,
-    terminator = terminator,
+  learner = lrn("classif.automl_branch",
+    small_data_size = 1000,
+    small_data_resampling = rsmp("cv", folds = 2),
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 1),
     lhs_size = 1,
-    catboost_eval_metric = "MultiClass",
-    small_data_resampling = rsmp("holdout"))
+    store_benchmark_result = TRUE
+  )
 
   expect_class(learner$train(task), "LearnerClassifAutoBranch")
-
-  expect_class(learner$model, "AutoTuner")
-
-  expect_prediction(learner$predict(task))
+  expect_equal(learner$model$instance$archive$benchmark_result$resamplings$resampling[[1]]$iters, 2)
 })
 
-test_that("LearnerClassifAutoBranch works with large factors", {
-  library(mlr3oml)
-
-  rush::rush_plan(n_workers = 4, lgr_thresholds = c(bbotk = "trace", rush = "debug", mlr3automl = "debug"), large_objects_path = ".")
-
-  lgr::get_logger("bbotk")$set_threshold("trace")
-  lgr::get_logger("rush")$set_threshold("debug")
-  lgr::get_logger("mlr3automl")$set_threshold("debug")
-
-  odata = odt(4135)
-  task = as_task(odata)
-  resampling = rsmp("holdout")
-  measure = msr("classif.ce")
-  terminator = trm("evals", n_evals = 20)
-  learner = LearnerClassifAutoBranch$new(
-    resampling = resampling,
-    measure = measure,
-    terminator = terminator,
-    lhs_size = 1,
-    max_cardinality = 100)
-
-  expect_class(learner$train(task), "LearnerClassifAutoBranch")
-})
-
-test_that("LearnerClassifAutoBranch works with small and large data sets", {
-  rush::rush_plan(n_workers = 4, lgr_thresholds = c(bbotk = "trace", rush = "debug", mlr3automl = "debug"))
-
-  lgr::get_logger("bbotk")$set_threshold("trace")
-  lgr::get_logger("rush")$set_threshold("debug")
-  lgr::get_logger("mlr3automl")$set_threshold("debug")
+test_that("large data set switch works", {
+  rush_plan(n_workers = 2)
 
   task = tsk("penguins")
-  resampling = rsmp("holdout")
-  measure = msr("classif.ce")
-  terminator = trm("evals", n_evals = 20)
-  learner = LearnerClassifAutoBranch$new(
-    resampling = resampling,
-    measure = measure,
-    terminator = terminator,
-    lhs_size = 1,
-    large_data_size = 300,
+  learner = lrn("classif.automl_branch",
+    large_data_size = 100,
     large_data_nthread = 2,
-    small_data_size = 1000L,
-    small_data_resampling = rsmp("cv", folds = 5))
-
-  expect_class(learner$train(task), "LearnerClassifAutoBranch")
-
-  expect_class(learner$model, "AutoTuner")
-
-  expect_prediction(learner$predict(task))
-})
-
-test_that("LearnerClassifAutoBranch works with large data sets", {
-  rush::rush_plan(n_workers = 4, lgr_thresholds = c(bbotk = "trace", rush = "debug", mlr3automl = "debug"))
-
-  lgr::get_logger("bbotk")$set_threshold("trace")
-  lgr::get_logger("rush")$set_threshold("debug")
-  lgr::get_logger("mlr3automl")$set_threshold("debug")
-
-  task = tsk("penguins")
-  resampling = rsmp("holdout")
-  measure = msr("classif.ce")
-  terminator = trm("evals", n_evals = 20)
-  learner = LearnerClassifAutoBranch$new(
-    resampling = resampling,
-    measure = measure,
-    terminator = terminator,
+    large_data_learner_ids = "ranger",
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 1),
     lhs_size = 1,
-    large_data_size = 300,
-    large_data_nthread = 2)
+    store_benchmark_result = TRUE
+  )
 
   expect_class(learner$train(task), "LearnerClassifAutoBranch")
-
-  expect_class(learner$model, "AutoTuner")
-
-  expect_prediction(learner$predict(task))
-})
-
-test_that("LearnerClassifAutoBranch works with small data set resampling", {
-  rush::rush_plan(n_workers = 4, lgr_thresholds = c(mlr3 = "info", bbotk = "trace", rush = "debug", mlr3automl = "debug"))
-
-  lgr::get_logger("bbotk")$set_threshold("trace")
-  lgr::get_logger("rush")$set_threshold("debug")
-  lgr::get_logger("mlr3automl")$set_threshold("debug")
-
-  task = tsk("penguins")
-  resampling = rsmp("holdout")
-  measure = msr("classif.ce")
-  terminator = trm("evals", n_evals = 20)
-  learner = LearnerClassifAutoBranch$new(
-    resampling = resampling,
-    measure = measure,
-    terminator = terminator,
-    lhs_size = 1,
-    small_data_size = 1000L,
-    small_data_resampling = rsmp("cv", folds = 5))
-
-  expect_class(learner$train(task), "LearnerClassifAutoBranch")
-
-  expect_class(learner$model, "AutoTuner")
-
-  expect_prediction(learner$predict(task))
-})
-
-test_that("LearnerClassifAutoBranch memory_limit works", {
-  rush::rush_plan(n_workers = 4, lgr_thresholds = c(mlr3 = "info", bbotk = "trace", rush = "debug", mlr3automl = "debug"))
-
-  lgr::get_logger("bbotk")$set_threshold("trace")
-  lgr::get_logger("rush")$set_threshold("debug")
-  lgr::get_logger("mlr3automl")$set_threshold("debug")
-  lgr::get_logger("mlr3")$set_threshold("info")
-
-  task = tsk("sonar")
-  resampling = rsmp("holdout")
-  measure = msr("classif.ce")
-  terminator = trm("evals", n_evals = 20)
-  learner = LearnerClassifAutoBranch$new(
-    resampling = resampling,
-    measure = measure,
-    terminator = terminator,
-    learner_memory_limit = 1e10)
-
-  expect_class(learner$train(task), "LearnerClassifAutoBranch")
-}
-
-
-test_that("LearnerClassifAutoBranch resample works", {
-  task = tsk("sonar")
-  resampling = rsmp("holdout")
-  measure = msr("classif.ce")
-  terminator = trm("run_time", secs = 10)
-  learner = LearnerClassifAutoBranch$new(
-    resampling = resampling,
-    measure = measure,
-    terminator = terminator)
-
-  expect_resample_result(resample(task, learner, rsmp("holdout")))
-})
-
-test_that("LearnerClassifAutoBranch timeout works", {
-  task = tsk("sonar")
-  resampling = rsmp("holdout")
-  measure = msr("classif.ce")
-  terminator = trm("run_time", secs = 1)
-  learner = LearnerClassifAutoBranch$new(
-    resampling = resampling,
-    measure = measure,
-    terminator = terminator)
-
-  expect_class(learner$train(task), "LearnerClassifAutoBranch")
-  expect_class(learner$model, "AutoTuner")
-  expect_equal(max(learner$model$tuning_instance$archive$data$batch_nr), 1)
-
-  expect_prediction(learner$predict(task))
-})
-
-
-
-
-test_that("LearnerClassifAutoBranch nthread works", {
-  task = tsk("sonar")
-  resampling = rsmp("holdout")
-  measure = msr("classif.ce")
-  terminator = trm("run_time", secs = 1)
-  learner = LearnerClassifAutoBranch$new(
-    resampling = resampling,
-    measure = measure,
-    terminator = terminator,
-    nthread = 2)
-
-  expect_class(learner$train(task), "LearnerClassifAutoBranch")
-
-
-
-  expect_prediction(learner$predict(task))
+  expect_set_equal(learner$model$instance$archive$data$branch.selection, "ranger")
 })

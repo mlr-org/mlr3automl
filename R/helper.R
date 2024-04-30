@@ -1,6 +1,6 @@
 generate_default_design = function(task_type, learner_ids, task, tuning_space, branch = TRUE) {
   map_dtr(learner_ids, function(learner_id) {
-    if (learner_id %nin% mlr_learners$keys()) {
+    if (paste0(task_type, ".", learner_id) %nin% mlr_learners$keys()) {
       return(data.table(branch.selection = learner_id))
     }
 
@@ -16,7 +16,7 @@ generate_default_design = function(task_type, learner_ids, task, tuning_space, b
     learner$param_set$set_values(.values = token)
     search_space = learner$param_set$search_space()
     xss = default_values(learner, search_space = search_space, task = task)
-    has_logscale = map_lgl(search_space$params, function(param) get_private(param)$.has_logscale)
+    has_logscale = map_lgl(search_space$params$.trafo, function(x) identical(x, exp))
     xdt = as.data.table(map_if(xss, has_logscale, function(value) if (value > 0) log(value) else value))
 
     setnames(xdt, sprintf("%s.%s", learner_id, names(xdt)))
@@ -30,6 +30,7 @@ generate_default_design = function(task_type, learner_ids, task, tuning_space, b
 
 generate_lhs_design = function(size, task_type, learner_ids, tuning_space, branch = TRUE) {
   if (!size) return(data.table())
+  learner_ids = learner_ids[learner_ids %in% names(tuning_space)]
 
   map_dtr(learner_ids, function(learner_id) {
     learner = lrn(sprintf("%s.%s", task_type, learner_id))
