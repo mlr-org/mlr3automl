@@ -26,7 +26,6 @@ Imports:
     glmnet,
     kknn,
     lhs,
-    lightgbm,
     MASS,
     mlr3mbo,
     mlr3misc (>= 0.9.4),

@@ -63,31 +63,41 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
       tuner = tnr("adbo")
 
       # remove learner based on memory limit
+      lg$debug("Starting to select from %i learners: %s", length(learner_ids), paste0(learner_ids, collapse = ","))
+
       memory_usage = map_dbl(learner_ids, function(learner_id) {
         graph$pipeops[[learner_id]]$learner$estimate_memory_usage(task)/1e6
       })
       learner_ids = learner_ids[memory_usage < pv$max_memory]
+      lg$debug("Keeping %i learner(s) that in memory limit: %s", length(learner_ids), paste0(learner_ids, collapse = ","))
 
       # set number of threads
+      lg$debug("Setting number of threads per learner to %i", pv$max_nthread)
       walk(learner_ids, function(learner_id) {
         set_threads(graph$pipeops[[learner_id]]$learner, pv$max_nthread)
       })
 
       # reduce number of workers on large data sets
       if (task$nrow * task$ncol > pv$large_data_size) {
+        lg$debug("Task larger than %i rows", pv$large_data_size)
+
         learner_ids = intersect(learner_ids, pv$large_data_learner_ids)
+        lg$debug("Keeping %i learners due to task size: %s", length(learner_ids), paste0(learner_ids, collapse = ","))
+
+        lg$debug("Increasing number of threads per learner to %i", pv$large_data_nthread)
         walk(learner_ids, function(learner_id) {
           set_threads(graph$pipeops[[learner_id]]$learner, pv$large_data_nthread)
         })
         n_workers = rush_config()$n_workers
-        n = floor(n_workers / pv$large_data_nthread)
-        lg$debug("Task larger than %i rows. Reducing number of workers to %i", pv$large_data_size, n)
+        n = max(1, floor(n_workers / pv$large_data_nthread))
         tuner$param_set$set_values(n_workers = n)
+        lg$debug("Reducing number of workers to %i", n)
       }
 
       # small data resampling
       resampling = if (task$nrow < pv$small_data_size) {
-        lg$debug("Task has less than %i rows, using small data resampling", pv$small_data_size)
+        lg$debug("Task has less than %i rows", pv$small_data_size)
+        lg$debug("Using small data set resampling with %i iterations", pv$small_data_resampling$iters)
         pv$small_data_resampling
       } else {
         pv$resampling
@@ -99,7 +109,7 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
 
         # collapse factors
         pipeop_ids = names(graph$pipeops)
-        pipeop_ids[grep("collapse", pipeop_ids)]
+        pipeop_ids = pipeop_ids[grep("collapse", pipeop_ids)]
         walk(pipeop_ids, function(pipeop_id) {
           graph$pipeops[[pipeop_id]]$param_set$values$target_level_count = pv$max_cardinality
         })
@@ -115,13 +125,13 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
 
       # holdout task
       if (any(c("xgboost", "catboost", "lightgbm") %in% learner_ids)) {
-        lg$debug("Creating holdout task for xgboost and catboost")
 
         # holdout task
         splits = partition(task, ratio = 0.9, stratify = TRUE)
         holdout_task = task$clone()
         holdout_task$filter(splits$test)
         task$set_row_roles(splits$test, "holdout")
+        lg$debug("Creating holdout task with %i rows", holdout_task$nrow)
 
         if ("xgboost" %in% learner_ids) {
           # xgboost
@@ -135,12 +145,14 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
           graph_learner$param_set$values$xgboost.holdout_task = preproc$predict(holdout_task)[[1]]
           graph_learner$param_set$values$xgboost.callbacks = list(cb_timeout_xgboost(pv$learner_timeout * 0.8))
           graph_learner$param_set$values$xgboost.eval_metric = pv$xgboost_eval_metric
+          lg$debug("Applying holdout task to xgboost")
         }
 
         if ("catboost" %in% learner_ids) {
           # catboost
           graph_learner$param_set$values$catboost.holdout_task = holdout_task$clone()
           graph_learner$param_set$values$catboost.eval_metric = pv$catboost_eval_metric
+          lg$debug("Applying holdout task to catboost")
         }
 
         if ("lightgbm" %in% learner_ids) {
@@ -233,12 +245,12 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         catboost_eval_metric = p_uty(),
         lightgbm_eval_metric = p_uty(),
         # system
-        max_nthread = p_int(lower = 1L, default = 8L),
+        max_nthread = p_int(lower = 1L, default = 1L),
         max_memory = p_int(lower = 1L, default = 32000L),
         # large data
         large_data_size = p_int(lower = 1L, default = 1e6),
         large_data_learner_ids = p_uty(),
-        large_data_nthread = p_int(lower = 1L, default = 2L),
+        large_data_nthread = p_int(lower = 1L, default = 4L),
         # small data
         small_data_size = p_int(lower = 1L, default = 5000L),
         small_data_resampling = p_uty(),
@@ -255,11 +267,11 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
       param_set$set_values(
         learner_ids = learner_ids,
         learner_timeout = 900L,
-        max_nthread = 8L,
+        max_nthread = 1L,
         max_memory = 32000L,
         large_data_size = 1e6L,
-        large_data_learner_ids = c("lda", "ranger", "xgboost", "catboost", "extra_trees"),
-        large_data_nthread = 2L,
+        large_data_learner_ids = c("lda", "ranger", "xgboost", "catboost", "extra_trees", "lightgbm"),
+        large_data_nthread = 4L,
         small_data_size = 5000L,
         small_data_resampling = rsmp("cv", folds = 10L),
         max_cardinality = 100L,
@@ -312,7 +324,7 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "ranger_imputesample") %>>%
         po("collapsefactors", target_level_count = 100, id = "ranger_collapse") %>>%
         po("removeconstants", id = "ranger_post_removeconstants") %>>%
-        lrn("classif.ranger", id = "ranger")
+        lrn("classif.ranger", id = "ranger", num.trees = 2000) # use upper bound of search space for memory estimation
 
       # svm
       branch_svm = po("imputehist", id = "svm_imputehist") %>>%
@@ -359,7 +371,7 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
           branch_xgboost,
           branch_catboost,
           branch_extra_trees,
-          branch_lightgbm )) %>>%
+          branch_lightgbm)) %>>%
         po("unbranch", options = learner_ids)
 
       super$initialize(
@@ -420,11 +432,12 @@ tuning_space = list(
     catboost.l2_leaf_reg    = to_tune(1, 5)
   ),
 
+
   lightgbm = list(
-    lightgbm.learning_rate = to_tune(5e-3, 0.2, logscale = TRUE),
+    lightgbm.learning_rate    = to_tune(5e-3, 0.2, logscale = TRUE),
     lightgbm.feature_fraction = to_tune(0.75, 1),
     lightgbm.min_data_in_leaf = to_tune(2, 60),
-    lightgbm.num_leaves    = to_tune(16, 96)
+    lightgbm.num_leaves       = to_tune(16, 96)
   )
 )
 

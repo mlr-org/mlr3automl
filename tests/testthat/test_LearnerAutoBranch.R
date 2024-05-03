@@ -1,7 +1,7 @@
 library(rush)
 
 test_that("initial design is generated", {
-  learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm")
+  learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees")
   xdt = generate_default_design(
     task_type = "classif",
     learner_ids,
@@ -12,7 +12,7 @@ test_that("initial design is generated", {
 })
 
 test_that("lhs design is generated", {
-  learner_ids =  c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm")
+  learner_ids =  c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees")
   xdt = generate_lhs_design(10, "classif", learner_ids, tuning_space)
   n_hp = sum(map_dbl(tuning_space, length))
   expect_data_table(xdt, nrows = 80, ncols = n_hp + 1)
@@ -20,6 +20,7 @@ test_that("lhs design is generated", {
 
 test_that("glmnet works", {
   rush_plan(n_workers = 2)
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
 
   task = tsk("penguins")
   learner = lrn("classif.automl_branch",
@@ -35,6 +36,7 @@ test_that("glmnet works", {
 
 test_that("kknn works", {
   rush_plan(n_workers = 2)
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
 
   task = tsk("penguins")
   learner = lrn("classif.automl_branch",
@@ -50,6 +52,7 @@ test_that("kknn works", {
 
 test_that("lda works", {
   rush_plan(n_workers = 2)
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
 
   task = tsk("penguins")
   learner = lrn("classif.automl_branch",
@@ -65,6 +68,7 @@ test_that("lda works", {
 
 test_that("nnet works", {
   rush_plan(n_workers = 2)
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
 
   task = tsk("penguins")
   learner = lrn("classif.automl_branch",
@@ -80,6 +84,7 @@ test_that("nnet works", {
 
 test_that("ranger works", {
   rush_plan(n_workers = 2)
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
 
   task = tsk("penguins")
   learner = lrn("classif.automl_branch",
@@ -95,6 +100,7 @@ test_that("ranger works", {
 
 test_that("svm works", {
   rush_plan(n_workers = 2)
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
 
   task = tsk("penguins")
   learner = lrn("classif.automl_branch",
@@ -110,6 +116,7 @@ test_that("svm works", {
 
 test_that("xgboost works", {
   rush_plan(n_workers = 2)
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
 
   task = tsk("penguins")
   learner = lrn("classif.automl_branch",
@@ -126,6 +133,7 @@ test_that("xgboost works", {
 
 test_that("catboost works", {
   rush_plan(n_workers = 2)
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
 
   task = tsk("penguins")
   learner = lrn("classif.automl_branch",
@@ -143,6 +151,7 @@ test_that("catboost works", {
 
 test_that("extra_trees works", {
   rush_plan(n_workers = 2)
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
 
   task = tsk("penguins")
   learner = lrn("classif.automl_branch",
@@ -158,6 +167,7 @@ test_that("extra_trees works", {
 
 test_that("lightgbm works", {
   rush_plan(n_workers = 2)
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
 
   task = tsk("penguins")
   learner = lrn("classif.automl_branch",
@@ -174,6 +184,7 @@ test_that("lightgbm works", {
 
 test_that("all learner work", {
   rush_plan(n_workers = 2)
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
 
   task = tsk("penguins")
   learner = lrn("classif.automl_branch",
@@ -188,8 +199,26 @@ test_that("all learner work", {
   expect_prediction(learner$predict(task))
 })
 
+test_that("memory limit works", {
+  rush_plan(n_workers = 2)
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
+
+  task = tsk("spam")
+  learner = lrn("classif.automl_branch",
+    max_memory = 50,
+    small_data_size = 100,
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 20),
+    resampling = rsmp("holdout"),
+    lhs_size = 1
+  )
+
+  learner$train(task)
+})
+
 test_that("small data set switch works", {
   rush_plan(n_workers = 2)
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
 
   task = tsk("penguins")
   learner = lrn("classif.automl_branch",
@@ -207,12 +236,14 @@ test_that("small data set switch works", {
 
 test_that("large data set switch works", {
   rush_plan(n_workers = 2)
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
 
   task = tsk("penguins")
   learner = lrn("classif.automl_branch",
     large_data_size = 100,
-    large_data_nthread = 2,
+    large_data_nthread = 4,
     large_data_learner_ids = "ranger",
+    small_data_size = 100,
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 1),
     lhs_size = 1,
@@ -221,4 +252,19 @@ test_that("large data set switch works", {
 
   expect_class(learner$train(task), "LearnerClassifAutoBranch")
   expect_set_equal(learner$model$instance$archive$data$branch.selection, "ranger")
+})
+
+test_that("max_cardinality works", {
+  rush_plan(n_workers = 2)
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
+
+  task = tsk("penguins")
+  learner = lrn("classif.automl_branch",
+    max_cardinality = 2,
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 1),
+    lhs_size = 1
+  )
+
+  expect_class(learner$train(task), "LearnerClassifAutoBranch")
 })
