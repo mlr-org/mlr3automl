@@ -333,12 +333,9 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
       graph = po("removeconstants", id = "pre_removeconstants") %>>%
         po("branch", options = learner_ids) %>>%
         gunion(list(
-          branch_glmnet,
           branch_kknn,
           branch_lda,
-          branch_nnet,
           branch_ranger,
-          branch_svm,
           branch_xgboost,
           branch_catboost,
           branch_extra_trees,
@@ -356,16 +353,6 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
 )
 
 tuning_space = list(
-  glmnet = list(
-    glmnet.s     = to_tune(1e-4, 1e4, logscale = TRUE),
-    glmnet.alpha = to_tune(0, 1)
-  ),
-
-  kknn = list(
-    kknn.k = to_tune(1, 50, logscale = TRUE),
-    kknn.distance = to_tune(1, 5),
-    kknn.kernel = to_tune(c("rectangular", "optimal", "epanechnikov", "biweight", "triweight", "cos",  "inv",  "gaussian", "rank"))
-  ),
 
   xgboost = list(
     xgboost.eta               = to_tune(5e-3, 0.2, logscale = TRUE),
