@@ -69,7 +69,7 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
         graph$pipeops[[learner_id]]$learner$estimate_memory_usage(task)/1e6
       })
       learner_ids = learner_ids[memory_usage < pv$max_memory]
-      lg$debug("Keeping %i learner(s) that in memory limit: %s", length(learner_ids), paste0(learner_ids, collapse = ","))
+      lg$debug("Checking learners for memory limit of %i MB. Keeping %i learner(s): %s", pv$max_memory, length(learner_ids), paste0(learner_ids, collapse = ","))
 
       # set number of threads
       lg$debug("Setting number of threads per learner to %i", pv$max_nthread)
@@ -79,10 +79,10 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
 
       # reduce number of workers on large data sets
       if (task$nrow * task$ncol > pv$large_data_size) {
-        lg$debug("Task larger than %i rows", pv$large_data_size)
+        lg$debug("Task size larger than %i rows", pv$large_data_size)
 
         learner_ids = intersect(learner_ids, pv$large_data_learner_ids)
-        lg$debug("Keeping %i learners due to task size: %s", length(learner_ids), paste0(learner_ids, collapse = ","))
+        lg$debug("Keeping %i learner(s): %s", length(learner_ids), paste0(learner_ids, collapse = ","))
 
         lg$debug("Reducing number of threads per learner to %i", pv$large_data_nthread)
         walk(learner_ids, function(learner_id) {
