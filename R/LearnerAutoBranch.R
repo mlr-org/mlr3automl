@@ -263,7 +263,7 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         callbacks = p_uty(),
         store_benchmark_result = p_lgl(default = FALSE))
 
-      learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm")
+      learner_ids = c("kknn", "lda", "ranger", "xgboost", "catboost", "extra_trees", "lightgbm")
       param_set$set_values(
         learner_ids = learner_ids,
         learner_timeout = 900L,
@@ -281,16 +281,6 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         lhs_size = 4L,
         store_benchmark_result = FALSE)
 
-      # glmnet
-      branch_glmnet = po("imputehist", id = "glmnet_imputehist") %>>%
-        po("imputeoor", id = "glmnet_imputeoor") %>>%
-        po("fixfactors", id = "glmnet_fixfactors") %>>%
-        po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "glmnet_imputesample") %>>%
-        po("collapsefactors", target_level_count = 100, id = "glmnet_collapse") %>>%
-        po("encode", method = "one-hot", id = "glmnet_encode") %>>%
-        po("removeconstants", id = "glmnet_post_removeconstants") %>>%
-        lrn("classif.glmnet", id = "glmnet")
-
       # kknn
       branch_kknn = po("imputehist", id = "kknn_imputehist") %>>%
         po("imputeoor", id = "kknn_imputeoor") %>>%
@@ -298,7 +288,7 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "kknn_imputesample") %>>%
         po("collapsefactors", target_level_count = 100, id = "kknn_collapse") %>>%
         po("removeconstants", id = "kknn_post_removeconstants") %>>%
-        lrn("classif.kknn", id = "kknn")
+        lrn("classif.kknn", id = "kknn", k = 5)
 
       # lda
       branch_lda = po("imputehist", id = "lda_imputehist") %>>%
@@ -309,15 +299,6 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         po("removeconstants", id = "lda_post_removeconstants") %>>%
         lrn("classif.lda", id = "lda")
 
-      # nnet
-      branch_nnet = po("imputehist", id = "nnet_imputehist") %>>%
-        po("imputeoor", id = "nnet_imputeoor") %>>%
-        po("fixfactors", id = "nnet_fixfactors") %>>%
-        po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "nnet_imputesample") %>>%
-        po("collapsefactors", target_level_count = 100, id = "nnet_collapse") %>>%
-        po("removeconstants", id = "nnet_post_removeconstants") %>>%
-        lrn("classif.nnet", id = "nnet")
-
       # ranger
       branch_ranger = po("imputeoor", id = "ranger_imputeoor") %>>%
         po("fixfactors", id = "ranger_fixfactors") %>>%
@@ -325,16 +306,6 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         po("collapsefactors", target_level_count = 100, id = "ranger_collapse") %>>%
         po("removeconstants", id = "ranger_post_removeconstants") %>>%
         lrn("classif.ranger", id = "ranger", num.trees = 2000) # use upper bound of search space for memory estimation
-
-      # svm
-      branch_svm = po("imputehist", id = "svm_imputehist") %>>%
-        po("imputeoor", id = "svm_imputeoor") %>>%
-        po("fixfactors", id = "svm_fixfactors") %>>%
-        po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "svm_imputesample") %>>%
-        po("collapsefactors", target_level_count = 100, id = "svm_collapse") %>>%
-        po("encode", method = "one-hot", id = "smv_encode") %>>%
-        po("removeconstants", id = "svm_post_removeconstants") %>>%
-        lrn("classif.svm", id = "svm", type = "C-classification")
 
       # xgboost
       branch_xgboost = po("imputeoor", id = "xgboost_imputeoor") %>>%
@@ -396,34 +367,11 @@ tuning_space = list(
     kknn.kernel = to_tune(c("rectangular", "optimal", "epanechnikov", "biweight", "triweight", "cos",  "inv",  "gaussian", "rank"))
   ),
 
-  nnet = list(
-      nnet.maxit = to_tune(1e1, 1e3, logscale = TRUE),
-      nnet.decay = to_tune(1e-4, 1e-1, logscale = TRUE),
-      nnet.size  = to_tune(2, 50, logscale = TRUE)
-  ),
-
-  ranger = list(
-    ranger.mtry.ratio      = to_tune(0, 1),
-    ranger.replace         = to_tune(),
-    ranger.sample.fraction = to_tune(1e-1, 1),
-    ranger.num.trees       = to_tune(500, 2000)
-  ),
-
-  svm = list(
-    svm.cost    = to_tune(1e-4, 1e4, logscale = TRUE),
-    svm.kernel  = to_tune(c("polynomial", "radial", "sigmoid", "linear")),
-    svm.degree  = to_tune(2, 5),
-    svm.gamma   = to_tune(1e-4, 1e4, logscale = TRUE)
-  ),
-
   xgboost = list(
-    xgboost.eta               = to_tune(1e-4, 1, logscale = TRUE),
-    xgboost.max_depth         = to_tune(1, 20),
-    xgboost.colsample_bytree  = to_tune(1e-1, 1),
-    xgboost.colsample_bylevel = to_tune(1e-1, 1),
-    xgboost.lambda            = to_tune(1e-3, 1e3, logscale = TRUE),
-    xgboost.alpha             = to_tune(1e-3, 1e3, logscale = TRUE),
-    xgboost.subsample         = to_tune(1e-1, 1)
+    xgboost.eta               = to_tune(5e-3, 0.2, logscale = TRUE),
+    xgboost.max_depth         = to_tune(3, 10),
+    xgboost.min_child_weight  = to_tune(1, 5),
+    xgboost.colsample_bytree  = to_tune(0.5, 1)
   ),
 
   catboost = list(
@@ -431,7 +379,6 @@ tuning_space = list(
     catboost.learning_rate  = to_tune(5e-3, 0.2, logscale = TRUE),
     catboost.l2_leaf_reg    = to_tune(1, 5)
   ),
-
 
   lightgbm = list(
     lightgbm.learning_rate    = to_tune(5e-3, 0.2, logscale = TRUE),
