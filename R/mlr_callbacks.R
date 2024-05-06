@@ -32,16 +32,16 @@ load_callback_branch_nrounds = function() {
       if (context$result$learner_param_vals[[1]]$branch.selection == "xgboost") {
         context$result$learner_param_vals[[1]]$xgboost.early_stopping_rounds = NULL
         context$result$learner_param_vals[[1]]$xgboost.callbacks = list(cb_timeout_xgboost(timeout = Inf))
-        context$result$learner_param_vals[[1]]$xgboost.nrounds = context$instance$archive$best()$max_nrounds
+        context$result$learner_param_vals[[1]]$xgboost.nrounds = max(context$instance$archive$best()$max_nrounds, 1)
         context$result$learner_param_vals[[1]]$xgboost.holdout_task = NULL
       } else if (context$result$learner_param_vals[[1]]$branch.selection == "catboost") {
         context$result$learner_param_vals[[1]]$catboost.early_stopping_rounds = NULL
-        context$result$learner_param_vals[[1]]$catboost.iterations = context$instance$archive$best()$max_nrounds
+        context$result$learner_param_vals[[1]]$catboost.iterations = max(context$instance$archive$best()$max_nrounds, 1)
         context$result$learner_param_vals[[1]]$catboost.holdout_task = NULL
         context$result$learner_param_vals[[1]]$catboost.eval_metric = NULL
       } else if (context$result$learner_param_vals[[1]]$branch.selection == "lightgbm") {
         context$result$learner_param_vals[[1]]$lightgbm.early_stopping_rounds = NULL
-        context$result$learner_param_vals[[1]]$lightgbm.num_iterations = context$instance$archive$best()$max_nrounds
+        context$result$learner_param_vals[[1]]$lightgbm.num_iterations = max(context$instance$archive$best()$max_nrounds, 1)
         context$result$learner_param_vals[[1]]$lightgbm.holdout_task = NULL
         context$result$learner_param_vals[[1]]$lightgbm.callbacks = NULL
       }
