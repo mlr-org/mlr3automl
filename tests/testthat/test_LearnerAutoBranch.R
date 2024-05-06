@@ -121,6 +121,7 @@ test_that("xgboost works", {
   task = tsk("penguins")
   learner = lrn("classif.automl_branch",
     learner_ids = "xgboost",
+    xgboost_eval_metric = "mlogloss",
     small_data_size = 100,
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 6)
@@ -191,7 +192,7 @@ test_that("xgboost, catboost and lightgbm work", {
     learner_ids = c("xgboost", "catboost", "lightgbm"),
     catboost_eval_metric = "MultiClass",
     lightgbm_eval_metric = "multi_logloss",
-    xgboost_eval_metric = "multi_logloss",
+    xgboost_eval_metric = "mlogloss",
     small_data_size = 100,
     lhs_size = 1,
     measure = msr("classif.ce"),
