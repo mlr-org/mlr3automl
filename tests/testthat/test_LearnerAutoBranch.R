@@ -182,6 +182,26 @@ test_that("lightgbm works", {
   expect_equal(learner$model$instance$result$branch.selection, "lightgbm")
 })
 
+test_that("xgboost, catboost and lightgbm work", {
+  rush_plan(n_workers = 2)
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
+
+  task = tsk("penguins")
+  learner = lrn("classif.automl_branch",
+    learner_ids = c("xgboost", "catboost", "lightgbm"),
+    catboost_eval_metric = "MultiClass",
+    lightgbm_eval_metric = "multi_logloss",
+    xgboost_eval_metric = "multi_logloss",
+    small_data_size = 100,
+    lhs_size = 1,
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 20),
+    callbacks = clbk("mlr3tuning.async_save_logs")
+  )
+
+  expect_class(learner$train(task), "LearnerClassifAutoBranch")
+})
+
 test_that("all learner work", {
   rush_plan(n_workers = 2)
   lgr::get_logger("mlr3automl")$set_threshold("debug")
@@ -260,6 +280,7 @@ test_that("max_cardinality works", {
 
   task = tsk("penguins")
   learner = lrn("classif.automl_branch",
+    small_data_size = 100,
     max_cardinality = 2,
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 1),
@@ -267,4 +288,23 @@ test_that("max_cardinality works", {
   )
 
   expect_class(learner$train(task), "LearnerClassifAutoBranch")
+})
+
+test_that("logger callback works", {
+  rush_plan(n_workers = 2)
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
+
+  task = tsk("penguins")
+  learner = lrn("classif.automl_branch",
+    small_data_size = 100,
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 20),
+    lhs_size = 1,
+    callbacks = clbk("mlr3tuning.async_save_logs")
+  )
+
+  expect_class(learner$train(task), "LearnerClassifAutoBranch")
+
+  expect_list(learner$instance$archive$data$log)
+  expect_list(learner$instance$archive$data$log[[1]], len = 3)
 })
