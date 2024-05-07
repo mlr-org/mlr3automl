@@ -150,7 +150,8 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
 
         if ("catboost" %in% learner_ids) {
           # catboost
-          graph_learner$param_set$values$catboost.holdout_task = holdout_task$clone()
+          preproc = po("colapply", applicator = as.numeric, affect_columns = selector_type("integer"))
+          graph_learner$param_set$values$catboost.holdout_task = preproc$train(list(holdout_task))[[1]]
           graph_learner$param_set$values$catboost.eval_metric = pv$catboost_eval_metric
           lg$debug("Applying holdout task to catboost")
         }
@@ -345,7 +346,8 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         lrn("classif.xgboost", id = "xgboost", nrounds = 5000, early_stopping_rounds = 10)
 
       # catboost
-      branch_catboost = lrn("classif.catboost", id = "catboost", iterations = 500, early_stopping_rounds = 10, use_best_model = TRUE)
+      branch_catboost = po("colapply", applicator = as.numeric, affect_columns = selector_type("integer")) %>>%
+        lrn("classif.catboost", id = "catboost", iterations = 500, early_stopping_rounds = 10, use_best_model = TRUE)
 
       # extra trees
       branch_extra_trees = po("imputeoor", id = "extra_trees_imputeoor") %>>%

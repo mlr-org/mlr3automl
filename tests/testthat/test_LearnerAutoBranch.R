@@ -309,3 +309,33 @@ test_that("logger callback works", {
   expect_list(learner$instance$archive$data$log)
   expect_list(learner$instance$archive$data$log[[1]], len = 3)
 })
+
+test_that("integer columns work", {
+  library(mlr3oml)
+  rush_plan(n_workers = 2)
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
+
+  task = tsk("oml", data_id = 1464)
+  learner = lrn("classif.automl_branch",
+    learner_ids = "catboost",
+    small_data_size = 100,
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 20),
+    lhs_size = 1
+  )
+
+  learner$train(task)
+
+
+
+
+})
+
+if (FALSE) {
+  library(mlr3oml)
+  library(mlr3pipelines)
+
+
+  pipeline = po("colapply", applicator = as.numeric, affect_columns = selector_type("integer"))
+  pipeline$train(list(task))
+}
