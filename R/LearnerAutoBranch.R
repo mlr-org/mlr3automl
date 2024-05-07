@@ -104,8 +104,9 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
       }
 
       # cardinality
-      if (any(map_int(task$col_info$levels, length) > pv$max_cardinality)) {
-        lg$debug("Task has factors larger than %i levels", pv$max_cardinality)
+      cardinality = map_int(task$col_info$levels, length)
+      if (any(cardinality > pv$max_cardinality)) {
+        lg$debug("Reducing number of factor levels to %i", pv$max_cardinality)
 
         # collapse factors
         pipeop_ids = names(graph$pipeops)
@@ -113,6 +114,11 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
         walk(pipeop_ids, function(pipeop_id) {
           graph$pipeops[[pipeop_id]]$param_set$values$target_level_count = pv$max_cardinality
         })
+      }
+
+      if (any(cardinality > pv$extra_trees_max_cardinality) && "extra_trees" %in% learner_ids) {
+        lg$debug("Reducing number of factor levels to %i for extra trees", pv$extra_trees_max_cardinality)
+        graph$pipeops$extra_trees_collapse$param_set$values$target_level_count = pv$extra_trees_max_cardinality
       }
 
       # initialize graph learner
@@ -256,6 +262,7 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         small_data_size = p_int(lower = 1L, default = 5000L),
         small_data_resampling = p_uty(),
         max_cardinality = p_int(lower = 1L, default = 100L),
+        extra_trees_max_cardinality = p_int(lower = 1L, default = 40L),
         # tuner
         resampling = p_uty(),
         terminator = p_uty(),
@@ -276,6 +283,7 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         small_data_size = 5000L,
         small_data_resampling = rsmp("cv", folds = 10L),
         max_cardinality = 100L,
+        extra_trees_max_cardinality = 40L,
         resampling = rsmp("cv", folds = 3L),
         terminator = trm("run_time", secs = 14400L),
         measure = msr("classif.ce"),
@@ -283,7 +291,9 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         store_benchmark_result = FALSE)
 
       # glmnet
-      branch_glmnet = po("imputehist", id = "glmnet_imputehist") %>>%
+      branch_glmnet =
+        po("removeconstants", id = "glmnet_removeconstants") %>>%
+        po("imputehist", id = "glmnet_imputehist") %>>%
         po("imputeoor", id = "glmnet_imputeoor") %>>%
         po("fixfactors", id = "glmnet_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "glmnet_imputesample") %>>%
@@ -293,7 +303,8 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         lrn("classif.glmnet", id = "glmnet")
 
       # kknn
-      branch_kknn = po("imputehist", id = "kknn_imputehist") %>>%
+      branch_kknn = po("removeconstants", id = "kknn_removeconstants") %>>%
+        po("imputehist", id = "kknn_imputehist") %>>%
         po("imputeoor", id = "kknn_imputeoor") %>>%
         po("fixfactors", id = "kknn_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "kknn_imputesample") %>>%
@@ -302,7 +313,8 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         lrn("classif.kknn", id = "kknn")
 
       # lda
-      branch_lda = po("imputehist", id = "lda_imputehist") %>>%
+      branch_lda = po("removeconstants", id = "lda_removeconstants") %>>%
+        po("imputehist", id = "lda_imputehist") %>>%
         po("imputeoor", id = "lda_imputeoor") %>>%
         po("fixfactors", id = "lda_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "lda_imputesample") %>>%
@@ -311,7 +323,8 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         lrn("classif.lda", id = "lda")
 
       # nnet
-      branch_nnet = po("imputehist", id = "nnet_imputehist") %>>%
+      branch_nnet = po("removeconstants", id = "nnet_removeconstants") %>>%
+        po("imputehist", id = "nnet_imputehist") %>>%
         po("imputeoor", id = "nnet_imputeoor") %>>%
         po("fixfactors", id = "nnet_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "nnet_imputesample") %>>%
@@ -320,7 +333,8 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         lrn("classif.nnet", id = "nnet")
 
       # ranger
-      branch_ranger = po("imputeoor", id = "ranger_imputeoor") %>>%
+      branch_ranger = po("removeconstants", id = "ranger_removeconstants") %>>%
+        po("imputeoor", id = "ranger_imputeoor") %>>%
         po("fixfactors", id = "ranger_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "ranger_imputesample") %>>%
         po("collapsefactors", target_level_count = 100, id = "ranger_collapse") %>>%
@@ -328,7 +342,8 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         lrn("classif.ranger", id = "ranger", num.trees = 2000) # use upper bound of search space for memory estimation
 
       # svm
-      branch_svm = po("imputehist", id = "svm_imputehist") %>>%
+      branch_svm = po("removeconstants", id = "svm_removeconstants") %>>%
+        po("imputehist", id = "svm_imputehist") %>>%
         po("imputeoor", id = "svm_imputeoor") %>>%
         po("fixfactors", id = "svm_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "svm_imputesample") %>>%
@@ -338,7 +353,8 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         lrn("classif.svm", id = "svm", type = "C-classification")
 
       # xgboost
-      branch_xgboost = po("imputeoor", id = "xgboost_imputeoor") %>>%
+      branch_xgboost = po("removeconstants", id = "xgboost_removeconstants") %>>%
+        po("imputeoor", id = "xgboost_imputeoor") %>>%
         po("fixfactors", id = "xgboost_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "xgboost_imputesample") %>>%
         po("encodeimpact", id = "xgboost_encode") %>>%
@@ -350,10 +366,11 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         lrn("classif.catboost", id = "catboost", iterations = 500, early_stopping_rounds = 10, use_best_model = TRUE)
 
       # extra trees
-      branch_extra_trees = po("imputeoor", id = "extra_trees_imputeoor") %>>%
+      branch_extra_trees = po("removeconstants", id = "extra_trees_removeconstants") %>>%
+        po("imputeoor", id = "extra_trees_imputeoor") %>>%
         po("fixfactors", id = "extra_trees_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "extra_trees_imputesample") %>>%
-        po("collapsefactors", target_level_count = 100, id = "extra_trees_collapse") %>>%
+        po("collapsefactors", target_level_count = 40, id = "extra_trees_collapse") %>>%
         po("removeconstants", id = "extra_trees_post_removeconstants") %>>%
         lrn("classif.ranger", id = "extra_trees", splitrule = "extratrees", num.trees = 100, replace = FALSE, sample.fraction = 1)
 
@@ -361,8 +378,7 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
       branch_lightgbm = lrn("classif.lightgbm", id = "lightgbm", num_iterations = 5000, early_stopping_rounds = 10)
 
       # branch graph
-      graph = po("removeconstants", id = "pre_removeconstants") %>>%
-        po("branch", options = learner_ids) %>>%
+      graph = po("branch", options = learner_ids) %>>%
         gunion(list(
           branch_glmnet,
           branch_kknn,

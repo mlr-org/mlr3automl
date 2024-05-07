@@ -291,6 +291,23 @@ test_that("max_cardinality works", {
   expect_class(learner$train(task), "LearnerClassifAutoBranch")
 })
 
+test_that("max_cardinality works for extra trees", {
+  rush_plan(n_workers = 2)
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
+
+  task = tsk("penguins")
+  learner = lrn("classif.automl_branch",
+    small_data_size = 100,
+    max_cardinality = 3,
+    extra_trees_max_cardinality = 2,
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 1),
+    lhs_size = 1
+  )
+
+  expect_class(learner$train(task), "LearnerClassifAutoBranch")
+})
+
 test_that("logger callback works", {
   rush_plan(n_workers = 2)
   lgr::get_logger("mlr3automl")$set_threshold("debug")
@@ -324,11 +341,24 @@ test_that("integer columns work", {
     lhs_size = 1
   )
 
-  learner$train(task)
+  expect_class(learner$train(task), "LearnerClassifAutoBranch")
+})
 
+test_that("constant columns work", {
+  library(mlr3oml)
+  rush_plan(n_workers = 2, lgr_thresholds = c(mlr3 = "info"))
+  lgr::get_logger("mlr3automl")$set_threshold("debug")
 
+  task = tsk("oml", data_id = 41143)
+  learner = lrn("classif.automl_branch",
+    learner_ids = "catboost",
+    small_data_size = 100,
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 20),
+    lhs_size = 1
+  )
 
-
+  expect_class(learner$train(task), "LearnerClassifAutoBranch")
 })
 
 if (FALSE) {
