@@ -14,6 +14,7 @@ Depends:
     mlr3 (>= 0.14.0),
     mlr3learners,
     mlr3extralearners,
+    mlr3torch,
     mlr3tuning,
     R (>= 3.1.0),
     rush
@@ -32,7 +33,6 @@ Imports:
     mlr3misc (>= 0.9.4),
     mlr3pipelines,
     mlr3tuningspaces,
-    nnet,
     paradox,
     R6,
     ranger,
@@ -41,7 +41,7 @@ Imports:
 Suggests:
     testthat (>= 3.0.0)
 Remotes:
-    mlr-org/mlr3@learner_size,
+    mlr-org/mlr3@mlr3automl,
     mlr-org/mlr3misc,
     mlr-org/rush,
     mlr-org/bbotk,
@@ -49,6 +49,7 @@ Remotes:
     mlr-org/mlr3mbo@adbo,
     mlr-org/mlr3learners@mlr3automl,
     mlr-org/mlr3extralearners@mlr3automl,
+    mlr-org/mlr3torch@mlr3automl,
     mlr-org/paradox
 Config/testthat/edition: 3
 Encoding: UTF-8

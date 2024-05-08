@@ -271,14 +271,14 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         callbacks = p_uty(),
         store_benchmark_result = p_lgl(default = FALSE))
 
-      learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm")
+      learner_ids = c("glmnet", "kknn", "lda", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm", "mlp")
       param_set$set_values(
         learner_ids = learner_ids,
         learner_timeout = 900L,
         max_nthread = 1L,
         max_memory = 32000L,
         large_data_size = 1e6L,
-        large_data_learner_ids = c("lda", "ranger", "xgboost", "catboost", "extra_trees", "lightgbm"),
+        large_data_learner_ids = c("lda", "ranger", "xgboost", "catboost", "extra_trees", "lightgbm", "mlp"),
         large_data_nthread = 4L,
         small_data_size = 5000L,
         small_data_resampling = rsmp("cv", folds = 10L),
@@ -321,16 +321,6 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         po("collapsefactors", target_level_count = 100, id = "lda_collapse") %>>%
         po("removeconstants", id = "lda_post_removeconstants") %>>%
         lrn("classif.lda", id = "lda")
-
-      # nnet
-      branch_nnet = po("removeconstants", id = "nnet_removeconstants") %>>%
-        po("imputehist", id = "nnet_imputehist") %>>%
-        po("imputeoor", id = "nnet_imputeoor") %>>%
-        po("fixfactors", id = "nnet_fixfactors") %>>%
-        po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "nnet_imputesample") %>>%
-        po("collapsefactors", target_level_count = 100, id = "nnet_collapse") %>>%
-        po("removeconstants", id = "nnet_post_removeconstants") %>>%
-        lrn("classif.nnet", id = "nnet")
 
       # ranger
       branch_ranger = po("removeconstants", id = "ranger_removeconstants") %>>%
@@ -377,19 +367,28 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
       # lightgbm
       branch_lightgbm = lrn("classif.lightgbm", id = "lightgbm", num_iterations = 5000, early_stopping_rounds = 10)
 
+      # mlp
+      branch_mlp = po("removeconstants", id = "mlp_removeconstants") %>>%
+        po("imputeoor", id = "mlp_imputeoor") %>>%
+        po("fixfactors", id = "mlp_fixfactors") %>>%
+        po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "mlp_imputesample") %>>%
+        po("encodeimpact", id = "mlp_encode") %>>%
+        po("removeconstants", id = "mlp_post_removeconstants") %>>%
+        lrn("classif.mlp", neurons = c(10, 10), batch_size = 1, epochs = 1, id = "mlp")
+
       # branch graph
       graph = po("branch", options = learner_ids) %>>%
         gunion(list(
           branch_glmnet,
           branch_kknn,
           branch_lda,
-          branch_nnet,
           branch_ranger,
           branch_svm,
           branch_xgboost,
           branch_catboost,
           branch_extra_trees,
-          branch_lightgbm)) %>>%
+          branch_lightgbm,
+          branch_mlp)) %>>%
         po("unbranch", options = learner_ids)
 
       super$initialize(
@@ -412,12 +411,6 @@ tuning_space = list(
     kknn.k = to_tune(1, 50, logscale = TRUE),
     kknn.distance = to_tune(1, 5),
     kknn.kernel = to_tune(c("rectangular", "optimal", "epanechnikov", "biweight", "triweight", "cos",  "inv",  "gaussian", "rank"))
-  ),
-
-  nnet = list(
-      nnet.maxit = to_tune(1e1, 1e3, logscale = TRUE),
-      nnet.decay = to_tune(1e-4, 1e-1, logscale = TRUE),
-      nnet.size  = to_tune(2, 50, logscale = TRUE)
   ),
 
   ranger = list(
@@ -456,6 +449,11 @@ tuning_space = list(
     lightgbm.feature_fraction = to_tune(0.75, 1),
     lightgbm.min_data_in_leaf = to_tune(2, 60),
     lightgbm.num_leaves       = to_tune(16, 96)
+  ),
+
+  mlp = list(
+    mlp.epochs = to_tune(1, 100, logscale = TRUE),
+    mlp.batch_size = to_tune(1, 64, logscale = TRUE)
   )
 )
 
