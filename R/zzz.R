@@ -10,6 +10,7 @@
 #' @import mlr3tuningspaces
 #' @import paradox
 #' @import R6
+#' @import ggplot2
 
 "_PACKAGE"
 

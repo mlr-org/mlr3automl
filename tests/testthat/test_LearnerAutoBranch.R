@@ -1,5 +1,3 @@
-library(rush)
-
 test_that("initial design is generated", {
   learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees")
   xdt = generate_default_design(
@@ -360,12 +358,3 @@ test_that("constant columns work", {
 
   expect_class(learner$train(task), "LearnerClassifAutoBranch")
 })
-
-if (FALSE) {
-  library(mlr3oml)
-  library(mlr3pipelines)
-
-
-  pipeline = po("colapply", applicator = as.numeric, affect_columns = selector_type("integer"))
-  pipeline$train(list(task))
-}

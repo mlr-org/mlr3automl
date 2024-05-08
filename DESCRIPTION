@@ -5,7 +5,7 @@ Authors@R: c(
     person("Damir", "Pulatov", , "damirpolat@protonmail.com", role = c("cre", "aut")),
     person("Marc", "Becker", , "marcbecker@posteo.de", role = "aut",
            comment = c(ORCID = "0000-0002-8115-0400"))
-    )
+  )
 Description: Flexible AutoML system for the 'mlr3' ecosystem.
 License: LGPL-3
 URL: https://github.com/mlr-org/mlr3automl
@@ -23,6 +23,7 @@ Imports:
     data.table,
     e1071,
     future,
+    ggplot2,
     glmnet,
     kknn,
     lhs,
@@ -37,8 +38,13 @@ Imports:
     R6,
     ranger,
     rpart,
-    xgboost
+    xgboost,
+    utils,
+    stats,
+    ggparty,
+    partykit,
 Suggests:
+    mlr3viz,
     testthat (>= 3.0.0)
 Remotes:
     mlr-org/mlr3@learner_size,
@@ -60,4 +66,5 @@ Collate:
     'LearnerAutoBranch.R'
     'helper.R'
     'mlr_callbacks.R'
+    'reexports.R'
     'zzz.R'
