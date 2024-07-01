@@ -154,6 +154,8 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
         param_ids = search_space$ids()
         param_ids = grep(paste0("^", learner_id), param_ids, value = TRUE)
         walk(param_ids, function(param_id) {
+          # skip internal tuning parameter
+          if (param_id %in% c("xgboost.nrounds", "catboost.iterations", "lightgbm.num_iterations")) return()
           search_space$add_dep(
             id = param_id,
             on = "branch.selection",
