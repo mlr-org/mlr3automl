@@ -11,10 +11,10 @@ License: LGPL-3
 URL: https://github.com/mlr-org/mlr3automl
 BugReports: https://github.com/mlr-org/mlr3automl/issues
 Depends:
-    mlr3 (>= 0.14.0),
-    mlr3learners,
+    mlr3 (>= 0.20.0),
+    mlr3learners (>= 0.7.0),
     mlr3extralearners,
-    mlr3tuning,
+    mlr3tuning (>= 1.0.0),
     R (>= 3.1.0),
     rush
 Imports:
@@ -30,7 +30,7 @@ Imports:
     lightgbm,
     MASS,
     mlr3mbo,
-    mlr3misc (>= 0.9.4),
+    mlr3misc (>= 0.15.1),
     mlr3pipelines,
     mlr3tuningspaces,
     nnet,
@@ -64,6 +64,7 @@ RoxygenNote: 7.3.1
 Collate:
     'aaa.R'
     'LearnerAutoBranch.R'
+    'autoplot.R'
     'helper.R'
     'mlr_callbacks.R'
     'reexports.R'
