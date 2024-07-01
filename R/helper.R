@@ -1,8 +1,11 @@
-generate_initial_design = function(task_type, learner_ids, task, tuning_space) {
+generate_default_design = function(task_type, learner_ids, task, tuning_space, branch = TRUE) {
   map_dtr(learner_ids, function(learner_id) {
-    learner = lrn(sprintf("%s.%s", task_type, learner_id))
+    if (paste0(task_type, ".", learner_id) %nin% mlr_learners$keys()) {
+      return(data.table(branch.selection = learner_id))
+    }
 
-    token = tuning_space[grep(paste0("^", learner_id), names(tuning_space))]
+    learner = lrn(sprintf("%s.%s", task_type, learner_id))
+    token = tuning_space[[learner_id]]
 
     # learner without tuning space
     if (!length(token)) {
@@ -13,16 +16,40 @@ generate_initial_design = function(task_type, learner_ids, task, tuning_space) {
     learner$param_set$set_values(.values = token)
     search_space = learner$param_set$search_space()
     xss = default_values(learner, search_space = search_space, task = task)
-    has_logscale = map_lgl(search_space$params, function(param) get_private(param)$.has_logscale)
+    has_logscale = map_lgl(search_space$params$.trafo, function(x) identical(x, exp))
     xdt = as.data.table(map_if(xss, has_logscale, function(value) if (value > 0) log(value) else value))
 
-    # fix nrounds
-    if (learner_id == "xgboost") {
-      set(xdt, j = "nrounds", value = 50L)
+    setnames(xdt, sprintf("%s.%s", learner_id, names(xdt)))
+
+    if (branch) {
+      set(xdt, j = "branch.selection", value = learner_id)
+    }
+    xdt
+  }, .fill = TRUE)
+}
+
+generate_lhs_design = function(size, task_type, learner_ids, tuning_space, branch = TRUE) {
+  if (!size) return(data.table())
+  learner_ids = learner_ids[learner_ids %in% names(tuning_space)]
+
+  map_dtr(learner_ids, function(learner_id) {
+    learner = lrn(sprintf("%s.%s", task_type, learner_id))
+
+    token = tuning_space[[learner_id]]
+    # learner without tuning space
+    if (!length(token)) {
+      return(data.table(branch.selection = learner_id))
     }
 
+    names(token) = gsub(paste0("^", learner_id, "."), "", names(token))
+    learner$param_set$set_values(.values = token)
+    search_space = learner$param_set$search_space()
+    xdt = generate_design_lhs(search_space, size)$data
     setnames(xdt, sprintf("%s.%s", learner_id, names(xdt)))
-    set(xdt, j = "branch.selection", value = learner_id)
+    if (branch) {
+      set(xdt, j = "branch.selection", value = learner_id)
+    }
+    xdt
   }, .fill = TRUE)
 }
 
@@ -101,45 +128,40 @@ default_surrogate = function(instance = NULL, learner = NULL, n_learner = NULL, 
   }
 }
 
-defaults = list(
-  # glmnet
-  glmnet.s     = 0.01,
-  glmnet.alpha = 1,
-  
-  # kknn
-  kknn.k = 7,
-  kknn.distance = 2,
-  kknn.kernel = "optimal",
-  
-  # nnet
-  nnet.maxit = 100,
-  nnet.decay = 0,
-  nnet.size  = 3,
-  
-  # ranger
-  ranger.mtry.ratio      = 0.5, # no default
-  ranger.replace         = TRUE,
-  ranger.sample.fraction = 1e-1, # no default
-  ranger.num.trees       = 500,
-  
-  # rpart
-  rpart.minsplit  = 20,
-  rpart.minbucket = 1, # no default
-  rpart.cp        = 0.01,
-  
-  # svm
-  svm.cost    = 1,
-  svm.kernel  = "radial",
-  svm.degree  = 3,
-  svm.gamma   = 1e-4, # no default
-  
-  # xgboost
-  xgboost.eta               = 0.3,
-  xgboost.max_depth         = 6,
-  xgboost.colsample_bytree  = 1,
-  xgboost.colsample_bylevel = 1,
-  xgboost.lambda            = 1,
-  xgboost.alpha             = 0,
-  xgboost.subsample         = 1,
-  xgboost.nrounds           = 1 # no default
-)
+cb_timeout_xgboost = function(timeout) {
+  callback = function(env = parent.frame()) {
+    if (is.null(env$start_time)) {
+      env$start_time <- Sys.time()
+    }
+
+    if (difftime(Sys.time(), env$start_time, units = "secs") > timeout) {
+      message("Timeout reached")
+      env$stop_condition <- TRUE
+    } else {
+      env$stop_condition <- FALSE
+    }
+  }
+  attr(callback, 'call') = match.call()
+  attr(callback, 'name') = 'cb_timeout_xgboost'
+  callback
+}
+
+
+cb_timeout_lightgbm <- function(timeout) {
+
+  callback = function(env) {
+    if (!exists("start_time")) start_time <<- Sys.time()
+
+    if (difftime(Sys.time(), start_time, units = "secs") > timeout) {
+      message("Timeout reached")
+      env$met_early_stop = TRUE
+    } else {
+      env$met_early_stop = FALSE
+    }
+  }
+
+  attr(callback, "call") <- match.call()
+  attr(callback, "name") <- "cb_timeout_lightgbm"
+
+  return(callback)
+}
