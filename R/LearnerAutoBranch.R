@@ -128,47 +128,21 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
       graph_learner$fallback = lrn("classif.featureless", predict_type = pv$measure$predict_type)
       graph_learner$encapsulate = c(train = "callr", predict = "callr")
       graph_learner$timeout = c(train = pv$learner_timeout, predict = pv$learner_timeout)
+      set_validate(graph_learner, "test", ids = intersect(learner_ids, c("xgboost", "catboost", "lightgbm")))
 
-      # holdout task
-      if (any(c("xgboost", "catboost", "lightgbm") %in% learner_ids)) {
-
-        # holdout task
-        splits = partition(task, ratio = 0.9, stratify = TRUE)
-        holdout_task = task$clone()
-        holdout_task$filter(splits$test)
-        task$set_row_roles(splits$test, "holdout")
-        lg$debug("Creating holdout task with %i rows", holdout_task$nrow)
-
-        if ("xgboost" %in% learner_ids) {
-          # xgboost
-          preproc = po("removeconstants", id = "pre_removeconstants") %>>%
-            po("imputeoor", id = "xgboost_imputeoor") %>>%
-            po("fixfactors", id = "xgboost_fixfactors") %>>%
-            po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "xgboost_imputesample") %>>%
-            po("encodeimpact", id = "xgboost_encode") %>>%
-            po("removeconstants", id = "xgboost_post_removeconstants")
-          preproc$train(task)
-          graph_learner$param_set$values$xgboost.holdout_task = preproc$predict(holdout_task)[[1]]
-          graph_learner$param_set$values$xgboost.callbacks = list(cb_timeout_xgboost(pv$learner_timeout * 0.8))
-          graph_learner$param_set$values$xgboost.eval_metric = pv$xgboost_eval_metric
-          lg$debug("Applying holdout task to xgboost")
-        }
-
-        if ("catboost" %in% learner_ids) {
-          # catboost
-          preproc = po("colapply", applicator = as.numeric, affect_columns = selector_type("integer"))
-          graph_learner$param_set$values$catboost.holdout_task = preproc$train(list(holdout_task))[[1]]
-          graph_learner$param_set$values$catboost.eval_metric = pv$catboost_eval_metric
-          lg$debug("Applying holdout task to catboost")
-        }
-
-        if ("lightgbm" %in% learner_ids) {
-          # lightgbm
-          graph_learner$param_set$values$lightgbm.holdout_task = holdout_task$clone()
-          graph_learner$param_set$values$lightgbm.eval = pv$lightgbm_eval_metric
-          graph_learner$param_set$values$lightgbm.callbacks = list(cb_timeout_lightgbm(pv$learner_timeout * 0.8))
-        }
+      # set early stopping
+      if ("xgboost" %in% learner_ids) {
+        graph_learner$param_set$values$xgboost.callbacks = list(cb_timeout_xgboost(pv$learner_timeout * 0.8))
+        graph_learner$param_set$values$xgboost.eval_metric = pv$xgboost_eval_metric
       }
+      if ("catboost" %in% learner_ids) {
+        graph_learner$param_set$values$catboost.eval_metric = pv$catboost_eval_metric
+      }
+      if ("lightgbm" %in% learner_ids) {
+        graph_learner$param_set$values$lightgbm.callbacks = list(cb_timeout_lightgbm(pv$learner_timeout * 0.8))
+        graph_learner$param_set$values$lightgbm.eval = pv$lightgbm_eval_metric
+      }
+
 
       # initialize search space
       tuning_space = unlist(unname(self$tuning_space[learner_ids[learner_ids %in% names(self$tuning_space)]]), recursive = FALSE)
@@ -196,7 +170,7 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
       tuner$param_set$set_values(initial_design = initial_xdt)
 
       # initialize auto tuner
-      self$instance = TuningInstanceAsyncSingleCrit$new(
+      self$instance = ti_async(
         task = task,
         learner = graph_learner,
         resampling = resampling,
@@ -213,7 +187,7 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
 
       # fit final model
       lg$debug("Learner '%s' fits final model", self$id)
-      if (any(c("xgboost", "catboost", "lightgbm") %in% learner_ids)) task$set_row_roles(splits$test, "use")
+      set_validate(graph_learner, NULL, ids = intersect(learner_ids, c("xgboost", "catboost", "lightgbm")))
       graph_learner$param_set$set_values(.values = self$instance$result_learner_param_vals)
       graph_learner$timeout = c(train = Inf, predict = Inf)
       graph_learner$train(task)
@@ -441,13 +415,15 @@ tuning_space = list(
     xgboost.colsample_bylevel = to_tune(1e-1, 1),
     xgboost.lambda            = to_tune(1e-3, 1e3, logscale = TRUE),
     xgboost.alpha             = to_tune(1e-3, 1e3, logscale = TRUE),
-    xgboost.subsample         = to_tune(1e-1, 1)
+    xgboost.subsample         = to_tune(1e-1, 1),
+    xgboost.nrounds           = to_tune(1, 5000, internal = TRUE)
   ),
 
   catboost = list(
     catboost.depth          = to_tune(5, 8),
     catboost.learning_rate  = to_tune(5e-3, 0.2, logscale = TRUE),
-    catboost.l2_leaf_reg    = to_tune(1, 5)
+    catboost.l2_leaf_reg    = to_tune(1, 5),
+    catboost.iterations     = to_tune(1, 500, internal = TRUE)
   ),
 
 
@@ -455,7 +431,8 @@ tuning_space = list(
     lightgbm.learning_rate    = to_tune(5e-3, 0.2, logscale = TRUE),
     lightgbm.feature_fraction = to_tune(0.75, 1),
     lightgbm.min_data_in_leaf = to_tune(2, 60),
-    lightgbm.num_leaves       = to_tune(16, 96)
+    lightgbm.num_leaves       = to_tune(16, 96),
+    lightgbm.num_iterations   = to_tune(1, 5000, internal = TRUE)
   )
 )
 
