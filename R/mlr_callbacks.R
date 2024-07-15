@@ -8,7 +8,7 @@ load_callback_branch_nrounds = function() {
     },
 
     on_eval_after_resample = function(callback, context) {
-      states = get_private(context$resample_result)$.data$learner_states(get_private(context$resample_result)$.view)
+      states = mlr3misc::get_private(context$resample_result)$.data$learner_states(mlr3misc::get_private(context$resample_result)$.view)
 
       callback$state$max_nrounds = max(map_dbl(states, function(state) {
         if (!inherits(state$model$xgboost, "NO_OP")) {
@@ -58,7 +58,7 @@ load_callback_nrounds = function() {
     },
 
     on_eval_after_resample = function(callback, context) {
-      states = get_private(context$resample_result)$.data$learner_states(get_private(context$resample_result)$.view)
+      states = mlr3misc::get_private(context$resample_result)$.data$learner_states(mlr3misc::get_private(context$resample_result)$.view)
 
       callback$state$max_nrounds = max(map_dbl(states, function(state) {
         if (inherits(state$model$xgboost, "NO_OP") || is.null(state$model$xgboost$model$best_iteration)) {
