@@ -16,22 +16,18 @@ LearnerClassifAutoSVM = R6Class("LearnerClassifAutoSVM",
     initialize = function(id = "classif.automl_svm") {
       param_set = ps(
         # learner
+        learner_id = p_uty(),
         learner_timeout = p_int(lower = 1L, default = 900L),
-        xgboost_eval_metric = p_uty(),
-        catboost_eval_metric = p_uty(),
-        lightgbm_eval_metric = p_uty(),
         # system
         max_nthread = p_int(lower = 1L, default = 1L),
         max_memory = p_int(lower = 1L, default = 32000L),
         # large data
         large_data_size = p_int(lower = 1L, default = 1e6),
-        large_data_learner_ids = p_uty(),
         large_data_nthread = p_int(lower = 1L, default = 4L),
         # small data
         small_data_size = p_int(lower = 1L, default = 5000L),
         small_data_resampling = p_uty(),
         max_cardinality = p_int(lower = 1L, default = 100L),
-        extra_trees_max_cardinality = p_int(lower = 1L, default = 40L),
         # tuner
         resampling = p_uty(),
         terminator = p_uty(),
@@ -41,6 +37,7 @@ LearnerClassifAutoSVM = R6Class("LearnerClassifAutoSVM",
         store_benchmark_result = p_lgl(default = FALSE))
 
       param_set$set_values(
+        learner_id = "svm",
         learner_timeout = 900L,
         max_nthread = 1L,
         max_memory = 32000L,
@@ -77,7 +74,6 @@ LearnerClassifAutoSVM = R6Class("LearnerClassifAutoSVM",
 
       super$initialize(
         id = id,
-        learner_id = "svm",
         task_type = "classif",
         param_set = param_set,
         graph = graph,

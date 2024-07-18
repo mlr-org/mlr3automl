@@ -5,9 +5,6 @@
 #'
 #' @param id (`character(1)`)\cr
 #'   Identifier for the new instance.
-#' @param learner_id\cr
-#'   Identifier for the [Learner][mlr3::Learner] used in the AutoML pipeline.
-#'   Currently supported: `"svm"`.
 #' @param task_type (`character(1)`)\cr
 #'   Type of task, e.g. `"regr"` or `"classif"`.
 #'   Must be an element of [mlr_reflections$task_types$type][mlr_reflections].
@@ -23,9 +20,6 @@ LearnerAutoSingle = R6Class("LearnerAutoSingle",
   inherit = Learner,
   public = list(
 
-    #' @field learner_id (`character(1)`).
-    learner_id = NULL,
-
     #' @field graph ([mlr3pipelines::Graph]).
     graph = NULL,
 
@@ -40,7 +34,6 @@ LearnerAutoSingle = R6Class("LearnerAutoSingle",
     initialize = function(id, learner_id, task_type, param_set, graph, tuning_space) {
       self$graph = assert_graph(graph)
       self$tuning_space = assert_list(tuning_space)
-      self$learner_id = assert_choice(learner_id, c("svm"))
       # packages
       packages = unique(c("mlr3tuning", "mlr3learners", "mlr3pipelines", "mlr3mbo", "mlr3automl", graph$packages))
 
@@ -59,6 +52,7 @@ LearnerAutoSingle = R6Class("LearnerAutoSingle",
   private = list(
     .train = function(task) {
       pv = self$param_set$values
+      learner_id = pv$learner_id
       graph = self$graph
 
       lg$debug("Training '%s' on task '%s'", self$id, task$id)
@@ -70,7 +64,7 @@ LearnerAutoSingle = R6Class("LearnerAutoSingle",
 
       # set number of threads
       lg$debug("Setting number of threads per learner to %i", pv$max_nthread)
-      set_threads(graph$pipeops[[self$learner_id]]$learner, pv$max_nthread)
+      set_threads(graph$pipeops[[learner_id]]$learner, pv$max_nthread)
 
       # small data resampling
       resampling = if (task$nrow < pv$small_data_size) {
@@ -94,7 +88,7 @@ LearnerAutoSingle = R6Class("LearnerAutoSingle",
         })
       }
 
-      if (self$learner_id == "extra_trees" && any(cardinality > pv$extra_trees_max_cardinality)) {
+      if (learner_id == "extra_trees" && any(cardinality > pv$extra_trees_max_cardinality)) {
         lg$debug("Reducing number of factor levels to %i for extra trees", pv$extra_trees_max_cardinality)
         graph$pipeops$extra_trees_collapse$param_set$values$target_level_count = pv$extra_trees_max_cardinality
       }
@@ -106,19 +100,19 @@ LearnerAutoSingle = R6Class("LearnerAutoSingle",
       graph_learner$fallback = lrn("classif.featureless", predict_type = pv$measure$predict_type)
       graph_learner$encapsulate = c(train = "callr", predict = "callr")
       graph_learner$timeout = c(train = pv$learner_timeout, predict = pv$learner_timeout)
-      if (self$learner_id %in% c("xgboost", "catboost", "lightgbm")) {
-        set_validate(graph_learner, "test", ids = self$learner_id)
+      if (learner_id %in% c("xgboost", "catboost", "lightgbm")) {
+        set_validate(graph_learner, "test", ids = learner_id)
       }
       
       # set early stopping
-      if (self$learner_id == "xgboost") {
+      if (learner_id == "xgboost") {
         graph_learner$param_set$values$xgboost.callbacks = list(cb_timeout_xgboost(pv$learner_timeout * 0.8))
         graph_learner$param_set$values$xgboost.eval_metric = pv$xgboost_eval_metric
       }
-      if (self$learner_id == "catboost") {
+      if (learner_id == "catboost") {
         graph_learner$param_set$values$catboost.eval_metric = pv$catboost_eval_metric
       }
-      if (self$learner_id == "lightgbm") {
+      if (learner_id == "lightgbm") {
         graph_learner$param_set$values$lightgbm.callbacks = list(cb_timeout_lightgbm(pv$learner_timeout * 0.8))
         graph_learner$param_set$values$lightgbm.eval = pv$lightgbm_eval_metric
       }
@@ -130,8 +124,8 @@ LearnerAutoSingle = R6Class("LearnerAutoSingle",
       search_space = graph_scratch$param_set$search_space()
 
       # initial design
-      lhs_xdt = generate_lhs_design(pv$lhs_size, self$task_type, self$learner_id, self$tuning_space)
-      default_xdt = generate_default_design(self$task_type, self$learner_id, task, self$tuning_space)
+      lhs_xdt = generate_lhs_design(pv$lhs_size, self$task_type, learner_id, self$tuning_space)
+      default_xdt = generate_default_design(self$task_type, learner_id, task, self$tuning_space)
       initial_xdt = rbindlist(list(lhs_xdt, default_xdt), use.names = TRUE, fill = TRUE)
       tuner$param_set$set_values(initial_design = initial_xdt)
 
@@ -154,8 +148,8 @@ LearnerAutoSingle = R6Class("LearnerAutoSingle",
 
       # fit final model
       lg$debug("Learner '%s' fits final model", self$id)
-      if (self$learner_id %in% c("xgboost", "catboost", "lightgbm")) {
-        set_validate(graph_learner, NULL, ids = self$learner_id)
+      if (learner_id %in% c("xgboost", "catboost", "lightgbm")) {
+        set_validate(graph_learner, NULL, ids = learner_id)
       }
       graph_learner$param_set$set_values(.values = self$instance$result_learner_param_vals)
       graph_learner$timeout = c(train = Inf, predict = Inf)
