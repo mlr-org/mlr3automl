@@ -128,7 +128,11 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
       graph_learner$fallback = lrn("classif.featureless", predict_type = pv$measure$predict_type)
       graph_learner$encapsulate = c(train = "callr", predict = "callr")
       graph_learner$timeout = c(train = pv$learner_timeout, predict = pv$learner_timeout)
-      set_validate(graph_learner, "test", ids = intersect(learner_ids, c("xgboost", "catboost", "lightgbm")))
+
+      learners_with_validation = intersect(learner_ids, c("xgboost", "catboost", "lightgbm"))
+      if (length(learners_with_validation) > 0) {
+        set_validate(graph_learner, "test", ids = learners_with_validation)
+      }
 
       # set early stopping
       if ("xgboost" %in% learner_ids) {
@@ -189,7 +193,9 @@ LearnerAutoBranch = R6Class("LearnerAutoBranch",
 
       # fit final model
       lg$debug("Learner '%s' fits final model", self$id)
-      set_validate(graph_learner, NULL, ids = intersect(learner_ids, c("xgboost", "catboost", "lightgbm")))
+      if (length(learners_with_validation) > 0) {
+        set_validate(graph_learner, NULL, ids = intersect(learner_ids, c("xgboost", "catboost", "lightgbm")))
+      }
       graph_learner$param_set$set_values(.values = self$instance$result_learner_param_vals)
       graph_learner$timeout = c(train = Inf, predict = Inf)
       graph_learner$train(task)
