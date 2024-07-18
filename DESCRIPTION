@@ -63,6 +63,9 @@ RoxygenNote: 7.3.1
 Collate:
     'aaa.R'
     'LearnerAutoBranch.R'
+    'LearnerAutoSingle.R'
+    'LearnerClassifAutoBranch.R'
+    'LearnerClassifAutoSVM.R'
     'autoplot.R'
     'helper.R'
     'mlr_callbacks.R'

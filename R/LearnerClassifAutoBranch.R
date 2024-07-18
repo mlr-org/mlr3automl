@@ -1,4 +1,4 @@
-#' @title Classification Auto Learner
+#' @title Classification Auto Learner with Multiple Learners
 #'
 #' @description
 #' Classification Auto learner.
@@ -13,7 +13,7 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
 
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
-    initialize = function(id = "classif.automl") {
+    initialize = function(id = "classif.automl_branch") {
       param_set = ps(
         # learner
         learner_ids = p_uty(),
