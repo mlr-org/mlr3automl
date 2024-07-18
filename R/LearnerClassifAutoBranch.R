@@ -60,9 +60,23 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         lhs_size = 4L,
         store_benchmark_result = FALSE)
 
+      super$initialize(
+        id = id,
+        task_type = "classif",
+        param_set = param_set,
+        # graph will be initialized afterwards
+        graph = Graph$new(),
+        tuning_space = tuning_space)
+    },
+
+    #' @description
+    # Constructs the graph after initialization, so that only learners specified by the `learner_ids` parameter are used.
+    build_graph = function() {
+      learner_ids = self$param_set$values$learner_ids
+      branches = list()
       # glmnet
-      branch_glmnet =
-        po("removeconstants", id = "glmnet_removeconstants") %>>%
+      if ("glmnet" %in% learner_ids) {
+        branch_glmnet = po("removeconstants", id = "glmnet_removeconstants") %>>%
         po("imputehist", id = "glmnet_imputehist") %>>%
         po("imputeoor", id = "glmnet_imputeoor") %>>%
         po("fixfactors", id = "glmnet_fixfactors") %>>%
@@ -71,9 +85,12 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         po("encode", method = "one-hot", id = "glmnet_encode") %>>%
         po("removeconstants", id = "glmnet_post_removeconstants") %>>%
         lrn("classif.glmnet", id = "glmnet")
+        branches <- c(branches, branch_glmnet)
+      }       
 
       # kknn
-      branch_kknn = po("removeconstants", id = "kknn_removeconstants") %>>%
+      if ("kknn" %in% learner_ids) {
+        branch_kknn = po("removeconstants", id = "kknn_removeconstants") %>>%
         po("imputehist", id = "kknn_imputehist") %>>%
         po("imputeoor", id = "kknn_imputeoor") %>>%
         po("fixfactors", id = "kknn_fixfactors") %>>%
@@ -81,9 +98,12 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         po("collapsefactors", target_level_count = 100, id = "kknn_collapse") %>>%
         po("removeconstants", id = "kknn_post_removeconstants") %>>%
         lrn("classif.kknn", id = "kknn")
+        branches <- c(branches, branch_kknn)
+      }
 
       # lda
-      branch_lda = po("removeconstants", id = "lda_removeconstants") %>>%
+      if ("lda" %in% learner_ids) {
+        branch_lda = po("removeconstants", id = "lda_removeconstants") %>>%
         po("imputehist", id = "lda_imputehist") %>>%
         po("imputeoor", id = "lda_imputeoor") %>>%
         po("fixfactors", id = "lda_fixfactors") %>>%
@@ -91,9 +111,12 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         po("collapsefactors", target_level_count = 100, id = "lda_collapse") %>>%
         po("removeconstants", id = "lda_post_removeconstants") %>>%
         lrn("classif.lda", id = "lda")
+        branches <- c(branches, branch_lda)
+      }
 
       # nnet
-      branch_nnet = po("removeconstants", id = "nnet_removeconstants") %>>%
+      if ("nnet" %in% learner_ids) {
+        branch_nnet = po("removeconstants", id = "nnet_removeconstants") %>>%
         po("imputehist", id = "nnet_imputehist") %>>%
         po("imputeoor", id = "nnet_imputeoor") %>>%
         po("fixfactors", id = "nnet_fixfactors") %>>%
@@ -101,18 +124,25 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         po("collapsefactors", target_level_count = 100, id = "nnet_collapse") %>>%
         po("removeconstants", id = "nnet_post_removeconstants") %>>%
         lrn("classif.nnet", id = "nnet")
+        branches <- c(branches, branch_nnet)
+      }
 
       # ranger
-      branch_ranger = po("removeconstants", id = "ranger_removeconstants") %>>%
+      if ("ranger" %in% learner_ids) {
+        branch_ranger = po("removeconstants", id = "ranger_removeconstants") %>>%
         po("imputeoor", id = "ranger_imputeoor") %>>%
         po("fixfactors", id = "ranger_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "ranger_imputesample") %>>%
         po("collapsefactors", target_level_count = 100, id = "ranger_collapse") %>>%
         po("removeconstants", id = "ranger_post_removeconstants") %>>%
-        lrn("classif.ranger", id = "ranger", num.trees = 2000) # use upper bound of search space for memory estimation
+        # use upper bound of search space for memory estimation
+        lrn("classif.ranger", id = "ranger", num.trees = 2000)
+        branches <- c(branches, branch_ranger)
+      }
 
       # svm
-      branch_svm = po("removeconstants", id = "svm_removeconstants") %>>%
+      if ("svm" %in% learner_ids) {
+        branch_svm = po("removeconstants", id = "svm_removeconstants") %>>%
         po("imputehist", id = "svm_imputehist") %>>%
         po("imputeoor", id = "svm_imputeoor") %>>%
         po("fixfactors", id = "svm_fixfactors") %>>%
@@ -121,53 +151,57 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
         po("encode", method = "one-hot", id = "svm_encode") %>>%
         po("removeconstants", id = "svm_post_removeconstants") %>>%
         lrn("classif.svm", id = "svm", type = "C-classification")
+        branches <- c(branches, branch_svm)
+      }
 
       # xgboost
-      branch_xgboost = po("removeconstants", id = "xgboost_removeconstants") %>>%
+      if ("xgboost" %in% learner_ids) {
+        branch_xgboost = po("removeconstants", id = "xgboost_removeconstants") %>>%
         po("imputeoor", id = "xgboost_imputeoor") %>>%
         po("fixfactors", id = "xgboost_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "xgboost_imputesample") %>>%
         po("encodeimpact", id = "xgboost_encode") %>>%
         po("removeconstants", id = "xgboost_post_removeconstants") %>>%
         lrn("classif.xgboost", id = "xgboost", nrounds = 5000, early_stopping_rounds = 10)
+        branches <- c(branches, branch_xgboost)
+      }
 
       # catboost
-      branch_catboost = po("colapply", applicator = as.numeric, affect_columns = selector_type("integer")) %>>%
+      if ("catboost" %in% learner_ids) {
+        branch_catboost = po("colapply", id = "catboost_colapply", applicator = as.numeric, affect_columns = selector_type("integer")) %>>%
         lrn("classif.catboost", id = "catboost", iterations = 500, early_stopping_rounds = 10, use_best_model = TRUE)
+        branches <- c(branches, branch_catboost)
+      }
 
       # extra trees
-      branch_extra_trees = po("removeconstants", id = "extra_trees_removeconstants") %>>%
+      if ("extra_trees" %in% learner_ids) {
+        branch_extra_trees = po("removeconstants", id = "extra_trees_removeconstants") %>>%
         po("imputeoor", id = "extra_trees_imputeoor") %>>%
         po("fixfactors", id = "extra_trees_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "extra_trees_imputesample") %>>%
         po("collapsefactors", target_level_count = 40, id = "extra_trees_collapse") %>>%
         po("removeconstants", id = "extra_trees_post_removeconstants") %>>%
         lrn("classif.ranger", id = "extra_trees", splitrule = "extratrees", num.trees = 100, replace = FALSE, sample.fraction = 1)
+        branches <- c(branches, branch_extra_trees)
+      }
 
       # lightgbm
-      branch_lightgbm = lrn("classif.lightgbm", id = "lightgbm", num_iterations = 5000, early_stopping_rounds = 10)
+      if ("lightgbm" %in% learner_ids) {
+        branch_lightgbm = lrn("classif.lightgbm", id = "lightgbm", num_iterations = 5000, early_stopping_rounds = 10)
+        branches <- c(branches, branch_lightgbm)
+      }
 
       # branch graph
-      graph = po("branch", options = learner_ids) %>>%
-        gunion(list(
-          branch_glmnet,
-          branch_kknn,
-          branch_lda,
-          branch_nnet,
-          branch_ranger,
-          branch_svm,
-          branch_xgboost,
-          branch_catboost,
-          branch_extra_trees,
-          branch_lightgbm)) %>>%
+      self$graph = po("branch", options = learner_ids) %>>%
+        gunion(branches) %>>%
         po("unbranch", options = learner_ids)
+    }
+  ),
 
-      super$initialize(
-        id = id,
-        task_type = "classif",
-        param_set = param_set,
-        graph = graph,
-        tuning_space = tuning_space)
+  private = list(
+    .train = function(task) {
+      self$build_graph()
+      super$.train(task)
     }
   )
 )

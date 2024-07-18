@@ -16,13 +16,44 @@ test_that("lhs design is generated", {
   expect_data_table(xdt, nrows = 80, ncols = n_hp + 1)
 })
 
+test_that("graph is empty at initialization", {
+  learner = lrn("classif.automl_branch",
+    small_data_size = 100,
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 6))
+
+  expect_list(learner$graph$pipeops, len = 0)
+})
+
+test_that("no learner is used unless specified", {
+  learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm")
+  measure = msr("classif.ce")
+  terminator = trm("evals", n_evals = 6)
+
+  walk(learner_ids, function(selected_id) {
+    learner = lrn("classif.automl_branch",
+      learner_ids = selected_id,
+      small_data_size = 100,
+      measure = measure,
+      terminator = terminator)
+
+    learner$build_graph()
+
+    pipeop_names = names(learner$graph$pipeops)
+    pipeop_names = pipeop_names[pipeop_names %nin% c("branch", "unbranch")]
+    lapply(pipeop_names, function(name) {
+      expect_match(name, paste0("^", selected_id))
+    })
+  })
+})
+
 test_that("glmnet works", {
   rush_plan(n_workers = 2)
   lgr::get_logger("mlr3automl")$set_threshold("debug")
 
   task = tsk("penguins")
   learner = lrn("classif.automl_branch",
-    learner_ids = "glmnet",
+    learner_ids = c("glmnet", "svm"),
     small_data_size = 100,
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 6)
