@@ -200,7 +200,10 @@ LearnerClassifAutoBranch = R6Class("LearnerClassifAutoBranch",
 
   private = list(
     .train = function(task) {
-      self$build_graph()
+      # avoid building the graph twice
+      if (length(self$graph$pipeops) == 0) {
+        self$build_graph()
+      }
       super$.train(task)
     }
   )
