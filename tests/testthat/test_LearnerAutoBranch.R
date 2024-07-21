@@ -53,7 +53,7 @@ test_that("glmnet works", {
 
   task = tsk("penguins")
   learner = lrn("classif.automl_branch",
-    learner_ids = c("glmnet", "svm"),
+    learner_ids = "glmnet",
     small_data_size = 100,
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 6)
