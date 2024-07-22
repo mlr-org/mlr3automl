@@ -176,7 +176,7 @@ test_that("catboost works", {
 
   expect_class(learner$train(task), "LearnerClassifAutoBranch")
   expect_equal(learner$model$instance$result$branch.selection, "catboost")
-  expect_numeric(learner$model$instance$archive$data$max_nrounds, lower = 1)
+  expect_numeric(learner$model$instance$archive$data$internal_tuned_values$catboost.iterations, lower = 1)
 })
 
 test_that("extra_trees works", {
