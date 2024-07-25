@@ -1,6 +1,6 @@
 #' @title Plots for Auto Learners
 #'
-#' @param object ([mlr3automl::LearnerClassifAutoBranch]).
+#' @param object ([mlr3automl::LearnerClassifAuto]).
 #' @param type (character(1)):\cr
 #'  Type of the plot.
 #' @param add_arrow (`logical(1)`)\cr
@@ -22,7 +22,7 @@
 #' @return [ggplot2::ggplot()].
 #'
 #' @export
-autoplot.LearnerClassifAutoBranch = function(object, type = "marginal", add_arrow = TRUE, cols_x = NULL, trafo = FALSE, batch = NULL, theme = theme_minimal(), ...) { # nolint
+autoplot.LearnerClassifAuto = function(object, type = "marginal", add_arrow = TRUE, cols_x = NULL, trafo = FALSE, batch = NULL, theme = theme_minimal(), ...) { # nolint
   assert_flag(trafo)
 
   require_namespaces("mlr3viz")

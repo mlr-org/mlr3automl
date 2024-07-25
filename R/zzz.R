@@ -25,11 +25,6 @@ register_mlr3 = function() {
   # nocov start
   register_namespace_callback(pkgname, "mlr3", register_mlr3)
 
-  # callbacks
-  x = utils::getFromNamespace("mlr_callbacks", ns = "mlr3misc")
-  x$add("mlr3automl.branch_nrounds", load_callback_branch_nrounds)
-  x$add("mlr3automl.nrounds", load_callback_nrounds)
-
   # setup logger
   lg = lgr::get_logger(pkgname)
   assign("lg", lg, envir = parent.env(environment()))
