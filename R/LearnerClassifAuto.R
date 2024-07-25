@@ -16,7 +16,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
     #' @field tuning_space (`list()`).
     tuning_space = NULL,
 
-    #' @field instance ([TuningInstanceRushSingleCrit]).
+    #' @field instance ([mlr3tuning::TuningInstanceAsyncSingleCrit]).
     instance = NULL,
 
     #' @description
@@ -218,7 +218,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         task = task,
         learner = graph_learner,
         resampling = resampling,
-        measure = pv$measure,
+        measures = pv$measure,
         terminator = pv$terminator,
         search_space = search_space,
         callbacks = pv$callbacks,

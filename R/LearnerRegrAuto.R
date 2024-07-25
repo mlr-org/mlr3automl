@@ -17,7 +17,7 @@ LearnerRegrAuto = R6Class("LearnerRegrAuto",
     #' @field tuning_space (`list()`).
     tuning_space = NULL,
 
-    #' @field instance ([TuningInstanceRushSingleCrit]).
+    #' @field instance ([mlr3tuning::TuningInstanceAsyncSingleCrit]).
     instance = NULL,
 
     #' @description

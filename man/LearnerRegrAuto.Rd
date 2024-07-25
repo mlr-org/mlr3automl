@@ -16,7 +16,7 @@ Regression auto learner.
 
 \item{\code{tuning_space}}{(\code{list()}).}
 
-\item{\code{instance}}{(\link{TuningInstanceRushSingleCrit}).}
+\item{\code{instance}}{(\link[mlr3tuning:TuningInstanceAsyncSingleCrit]{mlr3tuning::TuningInstanceAsyncSingleCrit}).}
 }
 \if{html}{\out{</div>}}
 }
