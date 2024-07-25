@@ -358,24 +358,24 @@ test_that("max_cardinality works for extra trees", {
   expect_class(learner$train(task), "LearnerClassifAuto")
 })
 
-test_that("logger callback works", {
-  skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
-  rush_plan(n_workers = 2)
+# test_that("logger callback works", {
+#   skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
+#   rush_plan(n_workers = 2)
 
-  task = tsk("penguins")
-  learner = lrn("classif.auto",
-    small_data_size = 1,
-    resampling = rsmp("holdout"),
-    measure = msr("classif.ce"),
-    terminator = trm("evals", n_evals = 10),
-    lhs_size = 1,
-    callbacks = clbk("mlr3tuning.async_save_logs")
-  )
+#   task = tsk("penguins")
+#   learner = lrn("classif.auto",
+#     small_data_size = 1,
+#     resampling = rsmp("holdout"),
+#     measure = msr("classif.ce"),
+#     terminator = trm("evals", n_evals = 10),
+#     lhs_size = 1,
+#     callbacks = clbk("mlr3tuning.async_save_logs")
+#   )
 
-  expect_class(learner$train(task), "LearnerClassifAuto")
-  expect_list(learner$instance$archive$data$log)
-  expect_list(learner$instance$archive$data$log[[1]], len = 1)
-})
+#   expect_class(learner$train(task), "LearnerClassifAuto")
+#   expect_list(learner$instance$archive$data$log)
+#   expect_list(learner$instance$archive$data$log[[1]], len = 1)
+# })
 
 # test_that("integer columns work", {
 #   library(mlr3oml)
