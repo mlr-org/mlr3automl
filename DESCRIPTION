@@ -56,6 +56,7 @@ Remotes:
     mlr-org/mlr3pipelines,
     catboost/catboost/catboost/R-package
 Config/testthat/edition: 3
+Config/testthat/parallel: false
 Encoding: UTF-8
 NeedsCompilation: no
 Roxygen: list(markdown = TRUE, r6 = TRUE)
