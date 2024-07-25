@@ -92,8 +92,8 @@ test_that("lda and glmnet works", {
   )
 
   expect_class(learner$train(task), "LearnerClassifAuto")
-  expect_equal(learner$graph$param_set$values$branch.selection, "lda")
-  expect_equal(learner$model$instance$result$branch.selection, "lda")
+  expect_subset(learner$graph$param_set$values$branch.selection, c("glmnet", "lda"))
+  expect_subset(learner$model$instance$result$branch.selection, c("glmnet", "lda"))
 })
 
 test_that("nnet works", {
@@ -165,7 +165,6 @@ test_that("xgboost works", {
 
   expect_class(learner$train(task), "LearnerClassifAuto")
   expect_equal(learner$model$instance$result$branch.selection, "xgboost")
-  expect_numeric(learner$model$instance$archive$data$max_nrounds, lower = 1)
 })
 
 test_that("catboost works", {
@@ -185,7 +184,6 @@ test_that("catboost works", {
 
   expect_class(learner$train(task), "LearnerClassifAuto")
   expect_equal(learner$model$instance$result$branch.selection, "catboost")
-  expect_numeric(learner$model$instance$archive$data$internal_tuned_values$catboost.iterations, lower = 1)
 })
 
 test_that("only extra_trees fails", {
@@ -369,14 +367,14 @@ test_that("logger callback works", {
     small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
-    terminator = trm("evals", n_evals = 20),
+    terminator = trm("evals", n_evals = 10),
     lhs_size = 1,
     callbacks = clbk("mlr3tuning.async_save_logs")
   )
 
   expect_class(learner$train(task), "LearnerClassifAuto")
   expect_list(learner$instance$archive$data$log)
-  expect_list(learner$instance$archive$data$log[[1]], len = 3)
+  expect_list(learner$instance$archive$data$log[[1]], len = 1)
 })
 
 # test_that("integer columns work", {

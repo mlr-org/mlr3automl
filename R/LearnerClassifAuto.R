@@ -121,6 +121,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         lg$debug("Task size larger than %i rows", pv$large_data_size)
 
         learner_ids = intersect(learner_ids, pv$large_data_learner_ids)
+        self$tuning_space = tuning_space[learner_ids]
         lg$debug("Keeping %i learner(s): %s", length(learner_ids), paste0(learner_ids, collapse = ","))
 
         lg$debug("Increasing number of threads per learner to %i", pv$large_data_nthread)
