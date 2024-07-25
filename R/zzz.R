@@ -1,8 +1,8 @@
-#' @import bbotk
 #' @import checkmate
 #' @import data.table
 #' @import mlr3
 #' @import mlr3learners
+#' @import mlr3extralearners
 #' @import mlr3mbo
 #' @import mlr3misc
 #' @import mlr3pipelines
@@ -10,25 +10,24 @@
 #' @import mlr3tuningspaces
 #' @import paradox
 #' @import R6
-#' @import ggplot2
+#' @importFrom rush rush_config
+#' @import lhs
+
 
 "_PACKAGE"
+
+utils::globalVariables("start_time")
+
 
 #' @include aaa.R
 register_mlr3 = function() {
   x = utils::getFromNamespace("mlr_learners", ns = "mlr3")
-
   iwalk(learners, function(obj, nm) x$add(nm, obj))
 }
 
 .onLoad = function(libname, pkgname) {
   # nocov start
   register_namespace_callback(pkgname, "mlr3", register_mlr3)
-
-  # callbacks
-  x = utils::getFromNamespace("mlr_callbacks", ns = "mlr3misc")
-  x$add("mlr3automl.branch_nrounds", load_callback_branch_nrounds)
-  x$add("mlr3automl.nrounds", load_callback_nrounds)
 
   # setup logger
   lg = lgr::get_logger(pkgname)

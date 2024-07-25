@@ -21,4 +21,4 @@
 ^CRAN-SUBMISSION$
 ^man/figures$
 .vscode
-^kaggle/$
+^kaggle$
