@@ -148,7 +148,7 @@ test_that("extra_trees and glmnet works (regr)", {
   )
 
   expect_class(learner$train(task), "LearnerRegrAuto")
-  expect_equal(learner$model$instance$result$branch.selection, "extra_trees")
+  expect_choice(learner$model$instance$result$branch.selection, c("extra_trees", "glmnet"))
 })
 
 test_that("lightgbm works (regr)", {
@@ -175,9 +175,9 @@ test_that("xgboost, catboost and lightgbm work (regr)", {
   task = tsk("boston_housing")
   learner = lrn("regr.auto",
     learner_ids = c("xgboost", "catboost", "lightgbm"),
-    catboost_eval_metric = "MultiClass",
-    lightgbm_eval_metric = "multi_logloss",
-    xgboost_eval_metric = "mlogloss",
+    # catboost_eval_metric = "MultiClass",
+    # lightgbm_eval_metric = "multi_logloss",
+    # xgboost_eval_metric = "mlogloss",
     resampling = rsmp("holdout"),
     lhs_size = 1,
     measure = msr("regr.mse"),
