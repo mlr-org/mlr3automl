@@ -25,12 +25,12 @@ LearnerRegrAuto = R6Class("LearnerRegrAuto",
     initialize = function(id = "classif.auto") {
       param_set = ps(
         # learner
-        learner_ids = p_uty(default = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm"),
+        learner_ids = p_uty(default = c("glmnet", "kknn", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm"),
           custom_check = function(x) {
-            if (all(x %in% c("lda", "extra_trees"))) {
-              return("Learner 'lda' and 'extra_trees' must be combined with other learners")
+            if (length(x) == 1 && x == "extra_trees") {
+              return("Learner 'extra_trees' must be combined with other learners")
             }
-            check_subset(x, c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm"))
+            check_subset(x, c("glmnet", "kknn", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm"))
         }),
         learner_timeout = p_int(lower = 1L, default = 900L),
         xgboost_eval_metric = p_uty(),
@@ -208,7 +208,7 @@ LearnerRegrAuto = R6Class("LearnerRegrAuto",
       })
 
       # initial design
-      lhs_xdt = generate_lhs_design(pv$lhs_size, self$task_type, setdiff(learner_ids, c("lda", "extra_trees")), self$tuning_space)
+      lhs_xdt = generate_lhs_design(pv$lhs_size, self$task_type, setdiff(learner_ids, "extra_trees"), self$tuning_space)
       default_xdt = generate_default_design(self$task_type, learner_ids, task, self$tuning_space)
       initial_xdt = rbindlist(list(lhs_xdt, default_xdt), use.names = TRUE, fill = TRUE)
       setorderv(initial_xdt, "branch.selection")
