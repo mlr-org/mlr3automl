@@ -89,7 +89,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
    .train = function(task) {
       pv = self$param_set$values
       learner_ids = pv$learner_ids
-      self$graph = build_graph(learner_ids)
+      self$graph = build_graph(learner_ids, task_type = "classif")
       self$tuning_space = tuning_space[learner_ids]
 
       lg$debug("Training '%s' on task '%s'", self$id, task$id)
@@ -251,131 +251,6 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
 
 #' @include aaa.R
 learners[["classif.auto"]] = LearnerClassifAuto
-
-build_graph = function(learner_ids) {
-  branches = list()
-  # glmnet
-  if ("glmnet" %in% learner_ids) {
-    branch_glmnet = po("removeconstants", id = "glmnet_removeconstants") %>>%
-      po("imputehist", id = "glmnet_imputehist") %>>%
-      po("imputeoor", id = "glmnet_imputeoor") %>>%
-      po("fixfactors", id = "glmnet_fixfactors") %>>%
-      po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "glmnet_imputesample") %>>%
-      po("collapsefactors", target_level_count = 100, id = "glmnet_collapse") %>>%
-      po("encode", method = "one-hot", id = "glmnet_encode") %>>%
-      po("removeconstants", id = "glmnet_post_removeconstants") %>>%
-      lrn("classif.glmnet", id = "glmnet")
-    branches = c(branches, branch_glmnet)
-  }
-
-  # kknn
-  if ("kknn" %in% learner_ids) {
-    branch_kknn = po("removeconstants", id = "kknn_removeconstants") %>>%
-      po("imputehist", id = "kknn_imputehist") %>>%
-      po("imputeoor", id = "kknn_imputeoor") %>>%
-      po("fixfactors", id = "kknn_fixfactors") %>>%
-      po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "kknn_imputesample") %>>%
-      po("collapsefactors", target_level_count = 100, id = "kknn_collapse") %>>%
-      po("removeconstants", id = "kknn_post_removeconstants") %>>%
-      lrn("classif.kknn", id = "kknn")
-    branches = c(branches, branch_kknn)
-  }
-
-  # lda
-  if ("lda" %in% learner_ids) {
-    branch_lda = po("removeconstants", id = "lda_removeconstants") %>>%
-      po("imputehist", id = "lda_imputehist") %>>%
-      po("imputeoor", id = "lda_imputeoor") %>>%
-      po("fixfactors", id = "lda_fixfactors") %>>%
-      po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "lda_imputesample") %>>%
-      po("collapsefactors", target_level_count = 100, id = "lda_collapse") %>>%
-      po("removeconstants", id = "lda_post_removeconstants") %>>%
-      lrn("classif.lda", id = "lda")
-    branches = c(branches, branch_lda)
-  }
-
-  # nnet
-  if ("nnet" %in% learner_ids) {
-    branch_nnet = po("removeconstants", id = "nnet_removeconstants") %>>%
-      po("imputehist", id = "nnet_imputehist") %>>%
-      po("imputeoor", id = "nnet_imputeoor") %>>%
-      po("fixfactors", id = "nnet_fixfactors") %>>%
-      po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "nnet_imputesample") %>>%
-      po("collapsefactors", target_level_count = 100, id = "nnet_collapse") %>>%
-      po("removeconstants", id = "nnet_post_removeconstants") %>>%
-      lrn("classif.nnet", id = "nnet")
-    branches = c(branches, branch_nnet)
-  }
-
-  # ranger
-  if ("ranger" %in% learner_ids) {
-    branch_ranger = po("removeconstants", id = "ranger_removeconstants") %>>%
-      po("imputeoor", id = "ranger_imputeoor") %>>%
-      po("fixfactors", id = "ranger_fixfactors") %>>%
-      po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "ranger_imputesample") %>>%
-      po("collapsefactors", target_level_count = 100, id = "ranger_collapse") %>>%
-      po("removeconstants", id = "ranger_post_removeconstants") %>>%
-      # use upper bound of search space for memory estimation
-      lrn("classif.ranger", id = "ranger", num.trees = 2000)
-    branches = c(branches, branch_ranger)
-  }
-
-  # svm
-  if ("svm" %in% learner_ids) {
-    branch_svm = po("removeconstants", id = "svm_removeconstants") %>>%
-      po("imputehist", id = "svm_imputehist") %>>%
-      po("imputeoor", id = "svm_imputeoor") %>>%
-      po("fixfactors", id = "svm_fixfactors") %>>%
-      po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "svm_imputesample") %>>%
-      po("collapsefactors", target_level_count = 100, id = "svm_collapse") %>>%
-      po("encode", method = "one-hot", id = "svm_encode") %>>%
-      po("removeconstants", id = "svm_post_removeconstants") %>>%
-      lrn("classif.svm", id = "svm", type = "C-classification")
-    branches = c(branches, branch_svm)
-  }
-
-  # xgboost
-  if ("xgboost" %in% learner_ids) {
-    branch_xgboost = po("removeconstants", id = "xgboost_removeconstants") %>>%
-      po("imputeoor", id = "xgboost_imputeoor") %>>%
-      po("fixfactors", id = "xgboost_fixfactors") %>>%
-      po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "xgboost_imputesample") %>>%
-      po("encodeimpact", id = "xgboost_encode") %>>%
-      po("removeconstants", id = "xgboost_post_removeconstants") %>>%
-      lrn("classif.xgboost", id = "xgboost", nrounds = 5000, early_stopping_rounds = 10)
-    branches = c(branches, branch_xgboost)
-  }
-
-  # catboost
-  if ("catboost" %in% learner_ids) {
-    branch_catboost = po("colapply", id = "catboost_colapply", applicator = as.numeric, affect_columns = selector_type("integer")) %>>%
-      lrn("classif.catboost", id = "catboost", iterations = 500, early_stopping_rounds = 10, use_best_model = TRUE)
-    branches = c(branches, branch_catboost)
-  }
-
-  # extra trees
-  if ("extra_trees" %in% learner_ids) {
-    branch_extra_trees = po("removeconstants", id = "extra_trees_removeconstants") %>>%
-      po("imputeoor", id = "extra_trees_imputeoor") %>>%
-      po("fixfactors", id = "extra_trees_fixfactors") %>>%
-      po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "extra_trees_imputesample") %>>%
-      po("collapsefactors", target_level_count = 40, id = "extra_trees_collapse") %>>%
-      po("removeconstants", id = "extra_trees_post_removeconstants") %>>%
-      lrn("classif.ranger", id = "extra_trees", splitrule = "extratrees", num.trees = 100, replace = FALSE, sample.fraction = 1)
-    branches = c(branches, branch_extra_trees)
-  }
-
-  # lightgbm
-  if ("lightgbm" %in% learner_ids) {
-    branch_lightgbm = lrn("classif.lightgbm", id = "lightgbm", num_iterations = 5000, early_stopping_rounds = 10)
-    branches = c(branches, branch_lightgbm)
-  }
-
-  # branch graph
-  po("branch", options = learner_ids) %>>%
-    gunion(branches) %>>%
-    po("unbranch", options = learner_ids)
-}
 
 tuning_space = list(
   glmnet = list(
