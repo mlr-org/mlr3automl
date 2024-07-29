@@ -62,4 +62,6 @@ Collate:
     'LearnerClassifAutoXgboost.R'
     'LearnerRegrAuto.R'
     'helper.R'
+    'build_graph.R'
+    'train_auto.R'
     'zzz.R'
