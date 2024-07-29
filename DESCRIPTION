@@ -58,6 +58,12 @@ RoxygenNote: 7.3.2
 Collate:
     'aaa.R'
     'LearnerClassifAuto.R'
+    'LearnerClassifAutoCatboost.R'
+    'LearnerClassifAutoGlmnet.R'
+    'LearnerClassifAutoKKNN.R'
+    'LearnerClassifAutoLightGBM.R'
+    'LearnerClassifAutoNnet.R'
+    'LearnerClassifAutoRanger.R'
     'LearnerClassifAutoSVM.R'
     'LearnerClassifAutoXgboost.R'
     'LearnerRegrAuto.R'
