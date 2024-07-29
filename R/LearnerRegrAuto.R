@@ -22,7 +22,7 @@ LearnerRegrAuto = R6Class("LearnerRegrAuto",
 
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
-    initialize = function(id = "classif.auto") {
+    initialize = function(id = "regr.auto") {
       param_set = ps(
         # learner
         learner_ids = p_uty(default = c("glmnet", "kknn", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm"),
