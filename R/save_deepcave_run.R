@@ -1,40 +1,91 @@
-save_deepcave_run = function(learner, path = "logs/mlr3automl") {
+#' @title Save Tuning History as a DeepCAVE Run
+#' 
+#' @description
+#' Exports information stored in a `TuningInstance` in a format recognized by [DeepCAVE](https://automl.github.io/DeepCAVE/main/index.html) as a run. Each run is stored as a folder containing five files `configs.json`, `configspace.json`, `history.jsonl`, `meta.json`, and `origins.json`.
+#' 
+#' @param instance ([TuningInstanceAsyncSingleCrit])
+#' Tuning instance to save.
+#' 
+#' @param path (`character(1)`)
+#' Path to save the run. Defaults to `"logs/mlr3automl`.
+#' 
+#' @param prefix (`character(1)`)
+#' Prefix for the name of a new subfolder under `path` for storing the current run.
+#' 
+#' @param overwrite (`character(1)`)
+#' If `FALSE` (default), creates a new subfolder to save the current run. If `TRUE`, all existing runs will be deleted.
+#' 
+#' @export
+save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run", overwrite = FALSE) {
+  # don't save untuned instance
+  if (!length(instance$result_learner_param_vals)) {
+    warning("No run is saved, because no tuning has been completed.")
+    return()
+  }
+
+  # create a subfolder for saving the current run
+  # original Python implementation see `Recorder._set_path()`
+  # (https://github.com/automl/DeepCAVE/blob/main/deepcave/runs/recorder.py)
+  if (!overwrite) {
+    new_idx = 0
+    for (fn in list.files(path)) {
+      if (!startsWith(fn, "prefix")) next
+      idx = last(strsplit(fn, "_")[[1]])
+      if (is.numeric(idx)) {
+        idx_int = as.integer(idx)
+        if (idx_int > new_idx) {
+          new_idx = idx_int
+        }
+      }
+    }
+    new_idx = new_idx + 1
+    run_path = file.path(path, paste0(prefix, "_", new_idx))
+  }
+
   jsonlite::write_json(
-    get_configspace(learner),
-    paste0(path, "/configspace.json"),
+    get_configspace(instance),
+    paste0(run_path, "/configspace.json"),
     auto_unbox = TRUE, pretty = TRUE, null = "null"
   )
   
   jsonlite::write_json(
-    get_configs(learner),
-    paste0(path, "/configs.json"),
+    get_configs(instance),
+    paste0(run_path, "/configs.json"),
     auto_unbox = TRUE, pretty = TRUE, null = "null"
   )
 
   jsonlite::write_json(
-    get_history(learner),
-    paste0(path, "/history.json"),
+    get_history(instance),
+    paste0(run_path, "/history.json"),
     auto_unbox = TRUE, pretty = TRUE, null = "null"
   )
 
   jsonlite::write_json(
-    get_meta(learner),
-    paste0(path, "/meta.json"),
+    get_meta(instance),
+    paste0(run_path, "/meta.json"),
     auto_unbox = TRUE, pretty = TRUE, null = "null"
   )
   
-  # origins.json
-  origins = rep(list(NULL), learner$instance$archive$n_evals)
-  names(origins) = seq(learner$instance$archive$n_evals) - 1
+  # create `origins.json` (a list of `null`s)
+  origins = rep(list(NULL), instance$instance$archive$n_evals)
+  names(origins) = seq(instance$instance$archive$n_evals) - 1
   jsonlite::write_json(
     origins,
-    paste0(path, "/origins.json"),
+    paste0(run_path, "/origins.json"),
     pretty = TRUE, null = "null"
   )
 }
 
-get_configspace = function(learner) {
-  n_params = nrow(learner$instance$search_space$data)
+
+# Prepare the list for converting to `configs.json`
+get_configs = function(learner){
+  list(TBD = "TBD")
+}
+
+
+# Prepare the list for converting to `configspace.json`
+get_configspace = function(instance) {
+  n_params = nrow(instance$search_space$data)
 
   hyperparameters_list = lapply(seq_len(n_params), function(i) {
     row = search_space$data[i, ]
@@ -48,7 +99,7 @@ get_configspace = function(learner) {
     # categorical params
     if (type == "categorical") {
       choices = unlist(row[["levels"]])
-      # TBD: default
+      # FIXME: the entry `default` is missing
       return(list(
         name = name,
         type = type,
@@ -64,7 +115,7 @@ get_configspace = function(learner) {
       lower = exp(lower)
       upper = exp(upper)
     }
-    # TBD: default
+    # FIXME: the entry `default` entry is missing
     return(list(
       name = name,
       type = type,
@@ -78,8 +129,9 @@ get_configspace = function(learner) {
     child = row[["id"]]
     parent = row[["on"]]
     
-    # `cond` (below) is a list of `Condition`s. Currently, there are only 'CondEqual' and 'CondAnyOf',
-    # which should not be used simultaneously. So this list should always contain only one entry.
+    # `cond` below is a list of `Condition`s.
+    # Currently, there are only 'CondEqual' and 'CondAnyOf', which should not be used simultaneously.
+    # So this list should always contain only one entry.
     cond = row[["cond"]][[1]]
     if (is(cond, "CondEqual")) {
         return(list(child = child, parent = parent, type = "EQ", value = cond$rhs))
@@ -94,13 +146,11 @@ get_configspace = function(learner) {
   ))
 }
 
-get_configs = function(learner){
-  list(TBD = "TBD")
-}
 
 get_history = function(learner){
   list(TBD = "TBD")
 }
+
 
 get_meta = function(learner){
   list(TBD = "TBD")
