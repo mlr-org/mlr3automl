@@ -18,7 +18,7 @@
 #' @export
 save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run", overwrite = FALSE) {
   # don't save untuned instance
-  if (!length(instance$result_learner_param_vals)) {
+  if (is.null(instance$result_learner_param_vals)) {
     warning("No run is saved, because no tuning has been completed.")
     return()
   }
@@ -40,6 +40,14 @@ save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run",
     }
     new_idx = new_idx + 1
     run_path = file.path(path, paste0(prefix, "_", new_idx))
+    dir.create(run_path)
+  } else {
+    run_path = file.path(path, prefix)
+    if (file.exists(run_path)) {
+      lapply(list.files(run_path, full.names = TRUE), file.remove)
+    } else{
+      dir.create(run_path)
+    }
   }
 
   jsonlite::write_json(
@@ -67,8 +75,8 @@ save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run",
   )
   
   # create `origins.json` (a list of `null`s)
-  origins = rep(list(NULL), instance$instance$archive$n_evals)
-  names(origins) = seq(instance$instance$archive$n_evals) - 1
+  origins = rep(list(NULL), instance$archive$n_evals)
+  names(origins) = seq(instance$archive$n_evals) - 1
   jsonlite::write_json(
     origins,
     paste0(run_path, "/origins.json"),
@@ -77,9 +85,24 @@ save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run",
 }
 
 
-# Prepare the list for converting to `configs.json`
-get_configs = function(learner){
-  list(TBD = "TBD")
+# Prepare the lists for converting to `configs.json`
+get_configs = function(instance){
+  param_ids = instance$search_space$data[, id]
+
+  configs_list = map(seq_len(instance$archive$n_evals), function(i) {
+    row = as.list(instance$archive$data[i, ])
+    tuned_params = grep(paste0("^", row[["branch.selection"]]), param_ids, value = TRUE)
+    walk(tuned_params, function(param) {
+      if (instance$search_space$is_logscale[[param]]) {
+        row[[param]] = exp(row[[param]])
+      }
+    })
+    return(row[c("branch.selection", tuned_params)])
+  })
+  names(configs_list) = seq_along(configs_list) - 1
+  jsonlite::toJSON(configs_list, auto_unbox = TRUE, null = "null", na = "null", pretty = TRUE)
+
+  return(configs_list)
 }
 
 
@@ -88,7 +111,7 @@ get_configspace = function(instance) {
   n_params = nrow(instance$search_space$data)
 
   hyperparameters_list = lapply(seq_len(n_params), function(i) {
-    row = search_space$data[i, ]
+    row = instance$search_space$data[i, ]
     name = row[["id"]]
     type = switch(row[["class"]],
       ParamFct = "categorical",
@@ -108,7 +131,7 @@ get_configspace = function(instance) {
     }
 
     # int / float params
-    is_logscale = search_space$is_logscale[[name]]
+    is_logscale = instance$search_space$is_logscale[[name]]
     lower = row[["lower"]]
     upper = row[["upper"]]
     if (is_logscale) {
@@ -125,7 +148,7 @@ get_configspace = function(instance) {
   })
 
   conditions_list = lapply(seq_len(n_params), function(i) {
-    row = search_space$deps[i, ]
+    row = instance$search_space$deps[i, ]
     child = row[["id"]]
     parent = row[["on"]]
     
@@ -147,11 +170,11 @@ get_configspace = function(instance) {
 }
 
 
-get_history = function(learner){
+get_history = function(instance){
   list(TBD = "TBD")
 }
 
 
-get_meta = function(learner){
+get_meta = function(instance){
   list(TBD = "TBD")
 }
