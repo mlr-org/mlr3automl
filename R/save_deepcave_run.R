@@ -84,8 +84,8 @@ save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run",
   close(con)
   
   # `origins.json` (a list of `null`s)
-  origins = rep(list(NULL), instance$archive$n_evals)
-  names(origins) = seq(instance$archive$n_evals) - 1
+  origins = rep(list(NULL), nrow(instance$archive$data))
+  names(origins) = seq(nrow(instance$archive$data)) - 1
   jsonlite::write_json(
     origins,
     paste0(run_path, "/origins.json"),
@@ -98,15 +98,15 @@ save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run",
 get_configs = function(instance){
   param_ids = instance$search_space$data[, id]
 
-  configs_list = map(seq_len(instance$archive$n_evals), function(i) {
-    row = as.list(instance$archive$data[i, ])
-    tuned_params = grep(paste0("^", row[["branch.selection"]]), param_ids, value = TRUE)
+  configs_list = map(seq_len(nrow(instance$archive$data)), function(i) {
+    config = as.list(instance$archive$data[i, ])
+    tuned_params = grep(paste0("^", config[["branch.selection"]]), param_ids, value = TRUE)
     walk(tuned_params, function(param) {
       if (instance$search_space$is_logscale[[param]]) {
-        row[[param]] = exp(row[[param]])
+        config[[param]] = exp(config[[param]])
       }
     })
-    return(row[c("branch.selection", tuned_params)])
+    return(discard(config[c("branch.selection", tuned_params)], is.na))
   })
   
   names(configs_list) = seq_along(configs_list) - 1
@@ -118,6 +118,7 @@ get_configs = function(instance){
 # Prepare the list for converting to `configspace.json`
 get_configspace = function(instance) {
   n_params = nrow(instance$search_space$data)
+  param_ids = instance$search_space$data[, id]
 
   hyperparameters_list = map(seq_len(n_params), function(i) {
     row = instance$search_space$data[i, ]
@@ -131,12 +132,13 @@ get_configspace = function(instance) {
     # categorical params
     if (type == "categorical") {
       choices = unlist(row[["levels"]])
-      # FIXME: the entry `default` is missing
+      # FIXME: `default` is wrong
       return(list(
         name = name,
         type = type,
         choices = choices,
-        weights = NULL
+        default = choices[[1]],
+        probabilisties = NULL
       ))
     }
 
@@ -144,33 +146,40 @@ get_configspace = function(instance) {
     is_logscale = instance$search_space$is_logscale[[name]]
     lower = row[["lower"]]
     upper = row[["upper"]]
+    default = mean(lower, upper)
     if (is_logscale) {
       lower = exp(lower)
       upper = exp(upper)
+      default = exp(default)
     }
-    # FIXME: the entry `default` entry is missing
+    # FIXME: default is wrong
     return(list(
       name = name,
       type = type,
       log = is_logscale,
       lower = lower,
-      upper = upper
+      upper = upper,
+      default = default,
+      q = NULL
     ))
   })
 
-  conditions_list = map(seq_len(n_params), function(i) {
-    row = instance$search_space$deps[i, ]
-    child = row[["id"]]
-    parent = row[["on"]]
+  conditions_list = map(setdiff(param_ids, "branch.selection"), function(param_id) {
+    dependency = instance$search_space$deps[id == param_id, ]
+    if (nrow(dependency) > 1) {
+      dependency = dependency[on != "branch.selection", ]
+    }
+    child = param_id
+    parent = dependency[["on"]]
     
     # `cond` below is a list of `Condition`s.
     # Currently, there are only 'CondEqual' and 'CondAnyOf', which should not be used simultaneously.
     # So this list should always contain only one entry.
-    cond = row[["cond"]][[1]]
+    cond = dependency[["cond"]][[1]]
     if (is(cond, "CondEqual")) {
         return(list(child = child, parent = parent, type = "EQ", value = cond$rhs))
-      }
-      return(list(child = child, parent = parent, type = "IN", values = cond$rhs))
+    }
+    return(list(child = child, parent = parent, type = "IN", values = cond$rhs))
   })
 
   return(list(
@@ -181,9 +190,11 @@ get_configspace = function(instance) {
 }
 
 get_history = function(instance) {
+  costs = instance$objective$codomain$data[, id]
+
   selected_cols = c(costs, "timestamp_xs", "timestamp_ys", "state")
   history_table = instance$archive$data[, ..selected_cols][, .(
-    config_id = seq_len(n_evals) - 1,
+    config_id = seq_len(nrow(instance$archive$data)) - 1,
     budget = 0,
     seed = -1,
     costs = lapply(transpose(.SD), c),
