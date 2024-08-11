@@ -62,17 +62,46 @@ save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run",
     auto_unbox = TRUE, pretty = TRUE, null = "null"
   )
 
-  jsonlite::write_json(
-    get_history(instance),
-    paste0(run_path, "/history.json"),
-    auto_unbox = TRUE, pretty = TRUE, null = "null"
-  )
+  # jsonlite::write_json(
+  #   get_history(instance),
+  #   paste0(run_path, "/history.json"),
+  #   auto_unbox = TRUE, pretty = TRUE, null = "null"
+  # )
 
   jsonlite::write_json(
     get_meta(instance),
     paste0(run_path, "/meta.json"),
     auto_unbox = TRUE, pretty = TRUE, null = "null"
   )
+
+  # stream out `history.jsonl`
+  n_evals = instance$archive$n_evals
+  # FIXME: make time an optional cost
+  costs = c(instance$objective$codomain$data[, id], "runtime_learners")
+  selected_cols = c(costs, "timestamp_xs", "timestamp_ys", "state")
+  history_table = instance$archive$data[, ..selected_cols][, .(
+    config_id = seq_len(n_evals) - 1,
+    budget = 0,
+    seed = -1,
+    costs = lapply(transpose(.SD), c),
+    # handle start and end time (time elapsed since first timestamp)
+    # see https://github.com/automl/DeepCAVE/blob/main/deepcave/runs/recorder.py
+    start_time = as.numeric(timestamp_xs - timestamp_xs[1]),
+    end_time = as.numeric(timestamp_ys - timestamp_ys[1]),
+    # state is either "finished" (SUCESS = 1) or "queued" (NOT_EVALUATED = 0)
+    # see https://github.com/automl/DeepCAVE/blob/main/deepcave/runs/status.py
+    state = ifelse(state == "finished", 1, 6),
+    additionals = list()
+  ), .SDcols = costs]
+  
+  con = file("history.jsonl", open = "w")
+  jsonlite::stream_out(
+    history_table,
+    con,
+    auto_unbox = TRUE, pretty = TRUE, null = "list", na = "null",
+    dataframe = "values"
+  )
+  close(con)
   
   # create `origins.json` (a list of `null`s)
   origins = rep(list(NULL), instance$archive$n_evals)
@@ -170,9 +199,9 @@ get_configspace = function(instance) {
 }
 
 
-get_history = function(instance){
-  list(TBD = "TBD")
-}
+# get_history = function(instance){
+#   list(TBD = "TBD")
+# }
 
 
 get_meta = function(instance){
