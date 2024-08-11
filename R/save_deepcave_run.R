@@ -97,18 +97,13 @@ save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run",
 # Prepare the lists for converting to `configs.json`
 get_configs = function(instance){
   param_ids = instance$search_space$data[, id]
+  logscale_params = param_ids[instance$search_space$is_logscale[param_ids]]
+  config_table = instance$archive$data[, param_ids, with = FALSE]
+  config_table[, (logscale_params) := lapply(.SD, exp), .SDcols = logscale_params]
 
-  configs_list = map(seq_len(nrow(instance$archive$data)), function(i) {
-    config = as.list(instance$archive$data[i, ])
-    tuned_params = grep(paste0("^", config[["branch.selection"]]), param_ids, value = TRUE)
-    walk(tuned_params, function(param) {
-      if (instance$search_space$is_logscale[[param]]) {
-        config[[param]] = exp(config[[param]])
-      }
-    })
-    return(discard(config[c("branch.selection", tuned_params)], is.na))
-  })
-  
+  configs_list = map(seq_len(nrow(config_table)), function(i) {
+    discard(as.list(config_table[i, ]), is.na)
+  })  
   names(configs_list) = seq_along(configs_list) - 1
 
   return(configs_list)
@@ -190,7 +185,7 @@ get_configspace = function(instance) {
 }
 
 get_history = function(instance) {
-  costs = instance$objective$codomain$data[, id]
+  costs = c(instance$objective$codomain$data[, id], "runtime_learners")
 
   selected_cols = c(costs, "timestamp_xs", "timestamp_ys", "state")
   history_table = instance$archive$data[, ..selected_cols][, .(
@@ -202,9 +197,9 @@ get_history = function(instance) {
     # see https://github.com/automl/DeepCAVE/blob/main/deepcave/runs/recorder.py
     start_time = as.numeric(timestamp_xs - timestamp_xs[1]),
     end_time = as.numeric(timestamp_ys - timestamp_ys[1]),
-    # state is either "finished" (SUCESS = 1) or "queued" (NOT_EVALUATED = 0)
+    # state is either "finished" <=> SUCESS = 1 or ABORTED = 0
     # see https://github.com/automl/DeepCAVE/blob/main/deepcave/runs/status.py
-    state = ifelse(state == "finished", 1, 6),
+    state = ifelse(state == "finished", 1, 5),
     additionals = list()
   ), .SDcols = costs]
 
