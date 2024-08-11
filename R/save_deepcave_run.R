@@ -50,54 +50,39 @@ save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run",
     }
   }
 
+
+  # `configspace.json`
   jsonlite::write_json(
     get_configspace(instance),
     paste0(run_path, "/configspace.json"),
     auto_unbox = TRUE, pretty = TRUE, null = "null"
   )
-  
+
+  # `configs.json` 
   jsonlite::write_json(
     get_configs(instance),
-    paste0(run_path, "/configs.json"),
+    file.path(run_path, "configs.json"),
     auto_unbox = TRUE, pretty = TRUE, null = "null"
   )
 
+  # `meta.json`
   jsonlite::write_json(
     get_meta(instance),
-    paste0(run_path, "/meta.json"),
+    file.path(run_path, "meta.json"),
     auto_unbox = TRUE, pretty = TRUE, null = "null"
   )
 
-  # stream out `history.jsonl`
-  n_evals = instance$archive$n_evals
-  # FIXME: make time an optional cost
-  costs = c(instance$objective$codomain$data[, id], "runtime_learners")
-  selected_cols = c(costs, "timestamp_xs", "timestamp_ys", "state")
-  history_table = instance$archive$data[, ..selected_cols][, .(
-    config_id = seq_len(n_evals) - 1,
-    budget = 0,
-    seed = -1,
-    costs = lapply(transpose(.SD), c),
-    # handle start and end time (time elapsed since first timestamp)
-    # see https://github.com/automl/DeepCAVE/blob/main/deepcave/runs/recorder.py
-    start_time = as.numeric(timestamp_xs - timestamp_xs[1]),
-    end_time = as.numeric(timestamp_ys - timestamp_ys[1]),
-    # state is either "finished" (SUCESS = 1) or "queued" (NOT_EVALUATED = 0)
-    # see https://github.com/automl/DeepCAVE/blob/main/deepcave/runs/status.py
-    state = ifelse(state == "finished", 1, 6),
-    additionals = list()
-  ), .SDcols = costs]
-  
+  # `history.jsonl` 
   con = file(file.path(run_path, "history.jsonl"), open = "w")
   jsonlite::stream_out(
-    history_table,
+    get_history(instance),
     con,
     auto_unbox = TRUE, pretty = TRUE, null = "list", na = "null",
     dataframe = "values"
   )
   close(con)
   
-  # create `origins.json` (a list of `null`s)
+  # `origins.json` (a list of `null`s)
   origins = rep(list(NULL), instance$archive$n_evals)
   names(origins) = seq(instance$archive$n_evals) - 1
   jsonlite::write_json(
@@ -122,8 +107,8 @@ get_configs = function(instance){
     })
     return(row[c("branch.selection", tuned_params)])
   })
+  
   names(configs_list) = seq_along(configs_list) - 1
-  jsonlite::toJSON(configs_list, auto_unbox = TRUE, null = "null", na = "null", pretty = TRUE)
 
   return(configs_list)
 }
@@ -133,7 +118,7 @@ get_configs = function(instance){
 get_configspace = function(instance) {
   n_params = nrow(instance$search_space$data)
 
-  hyperparameters_list = lapply(seq_len(n_params), function(i) {
+  hyperparameters_list = map(seq_len(n_params), function(i) {
     row = instance$search_space$data[i, ]
     name = row[["id"]]
     type = switch(row[["class"]],
@@ -150,7 +135,8 @@ get_configspace = function(instance) {
         name = name,
         type = type,
         choices = choices,
-        weights = NULL))
+        weights = NULL
+      ))
     }
 
     # int / float params
@@ -167,10 +153,11 @@ get_configspace = function(instance) {
       type = type,
       log = is_logscale,
       lower = lower,
-      upper = upper))
+      upper = upper
+    ))
   })
 
-  conditions_list = lapply(seq_len(n_params), function(i) {
+  conditions_list = map(seq_len(n_params), function(i) {
     row = instance$search_space$deps[i, ]
     child = row[["id"]]
     parent = row[["on"]]
@@ -192,6 +179,62 @@ get_configspace = function(instance) {
   ))
 }
 
+get_history = function(instance) {
+  selected_cols = c(costs, "timestamp_xs", "timestamp_ys", "state")
+  history_table = instance$archive$data[, ..selected_cols][, .(
+    config_id = seq_len(n_evals) - 1,
+    budget = 0,
+    seed = -1,
+    costs = lapply(transpose(.SD), c),
+    # handle start and end time (time elapsed since first timestamp)
+    # see https://github.com/automl/DeepCAVE/blob/main/deepcave/runs/recorder.py
+    start_time = as.numeric(timestamp_xs - timestamp_xs[1]),
+    end_time = as.numeric(timestamp_ys - timestamp_ys[1]),
+    # state is either "finished" (SUCESS = 1) or "queued" (NOT_EVALUATED = 0)
+    # see https://github.com/automl/DeepCAVE/blob/main/deepcave/runs/status.py
+    state = ifelse(state == "finished", 1, 6),
+    additionals = list()
+  ), .SDcols = costs]
+
+  return(history_table)
+}
+
 get_meta = function(instance){
-  list(TBD = "TBD")
+  costs = instance$objective$codomain$data[, id]
+
+  objectives_list = map(costs, function(cost) {
+    measure = msr(cost)
+
+    lower = measure$range[[1]]
+    if (is.finite(lower)) {
+      lock_lower = TRUE
+    } else {
+      lower = min(instance$archive$data[, ..cost])
+      lock_lower = FALSE
+    }
+
+    upper = measure$range[[2]]
+    if (is.finite(upper)) {
+      lock_upper = TRUE
+    } else {
+      upper = max(instance$archive$data[, ..cost])
+      lock_upper = FALSE
+    }
+
+    optimize = if (measure$minimize) {
+      "lower"
+    } else {
+      "upper"
+    }
+
+    return(list(name = cost, lower = lower, upper = upper,
+      lock_lower = lock_lower, lock_upper = lock_upper, optimize = optimize))
+
+  })  
+  
+  return(list(
+    objectives = objectives_list,
+    budgets = rep(list(0), instance$archive$n_evals),
+    seeds = list(-1)
+  ))
 }
