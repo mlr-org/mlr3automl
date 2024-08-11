@@ -94,7 +94,7 @@ save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run",
 }
 
 
-# Prepare the lists for converting to `configs.json`
+# Prepare the list for converting to `configs.json`
 get_configs = function(instance){
   param_ids = instance$search_space$data[, id]
   logscale_params = param_ids[instance$search_space$is_logscale[param_ids]]
@@ -115,9 +115,9 @@ get_configspace = function(instance) {
   n_params = nrow(instance$search_space$data)
   param_ids = instance$search_space$data[, id]
 
-  hyperparameters_list = map(seq_len(n_params), function(i) {
-    row = instance$search_space$data[i, ]
-    name = row[["id"]]
+  hyperparameters_list = map(param_ids, function(param_id) {
+    row = instance$search_space$data[id == param_id, ]
+
     type = switch(row[["class"]],
       ParamFct = "categorical",
       ParamLgl = "categorical",
@@ -127,29 +127,29 @@ get_configspace = function(instance) {
     # categorical params
     if (type == "categorical") {
       choices = unlist(row[["levels"]])
-      # FIXME: `default` is wrong
       return(list(
-        name = name,
+        name = param_id,
         type = type,
         choices = choices,
+        # FIXME: `default` is wrong
         default = choices[[1]],
         probabilisties = NULL
       ))
     }
 
     # int / float params
-    is_logscale = instance$search_space$is_logscale[[name]]
+    is_logscale = instance$search_space$is_logscale[[param_id]]
     lower = row[["lower"]]
     upper = row[["upper"]]
+    # FIXME: default is wrong
     default = mean(lower, upper)
     if (is_logscale) {
       lower = exp(lower)
       upper = exp(upper)
       default = exp(default)
     }
-    # FIXME: default is wrong
     return(list(
-      name = name,
+      name = param_id,
       type = type,
       log = is_logscale,
       lower = lower,
@@ -161,6 +161,9 @@ get_configspace = function(instance) {
 
   conditions_list = map(setdiff(param_ids, "branch.selection"), function(param_id) {
     dependency = instance$search_space$deps[id == param_id, ]
+    # `svm.degree` and `svm.gamma` depends on `svm.kernel` as well as `branch.selection`.
+    # DeepCAVE does not allow one parameter to be conditioned on multiple others.
+    # So remove their dependency on `branch.selection`.
     if (nrow(dependency) > 1) {
       dependency = dependency[on != "branch.selection", ]
     }
@@ -184,6 +187,7 @@ get_configspace = function(instance) {
   ))
 }
 
+# Prepare the data.table for converting to `history.jsonl`
 get_history = function(instance) {
   costs = c(instance$objective$codomain$data[, id], "runtime_learners")
 
@@ -192,12 +196,14 @@ get_history = function(instance) {
     config_id = seq_len(nrow(instance$archive$data)) - 1,
     budget = 0,
     seed = -1,
+    # combine costs into a list column
     costs = lapply(transpose(.SD), c),
     # handle start and end time (time elapsed since first timestamp)
     # see https://github.com/automl/DeepCAVE/blob/main/deepcave/runs/recorder.py
+    # start and end time here might having different meanings than the original implementation
     start_time = as.numeric(timestamp_xs - timestamp_xs[1]),
     end_time = as.numeric(timestamp_ys - timestamp_ys[1]),
-    # state is either "finished" <=> SUCESS = 1 or ABORTED = 0
+    # state is either "finished" <=> SUCESS = 1 or ABORTED = 5
     # see https://github.com/automl/DeepCAVE/blob/main/deepcave/runs/status.py
     state = ifelse(state == "finished", 1, 5),
     additionals = list()
@@ -206,7 +212,10 @@ get_history = function(instance) {
   return(history_table)
 }
 
+
+# Prepare the list for converting to 'meta.json'
 get_meta = function(instance){
+  # time is handled separately below
   costs = instance$objective$codomain$data[, id]
 
   objectives_list = map(costs, function(cost) {
@@ -236,8 +245,8 @@ get_meta = function(instance){
 
     return(list(name = cost, lower = lower, upper = upper,
       lock_lower = lock_lower, lock_upper = lock_upper, optimize = optimize))
-  })  
-  
+  })
+
   objectives_list = c(objectives_list, list(list(
     name = "time",
     lower = 0,
