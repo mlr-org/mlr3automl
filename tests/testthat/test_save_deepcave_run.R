@@ -16,14 +16,14 @@ test_that("run is saved", {
   expected_path = file.path(dir, "test-1-run_1")
   if (file.exists(expected_path)) {
     lapply(list.files(expected_path, full.names = TRUE), file.remove)
+    file.remove(expected_path)
   }
-  file.remove(expected_path)
 
   save_deepcave_run(learner$instance, path = dir, prefix = "test-1-run", overwrite = FALSE)
 
   expect_file_exists(file.path(expected_path, "configspace.json"))
   expect_file_exists(file.path(expected_path, "configs.json"))
-  # expect_file_exists(file.path(expected_path, "history.jsonl"))
+  expect_file_exists(file.path(expected_path, "history.jsonl"))
   expect_file_exists(file.path(expected_path, "meta.json"))
   expect_file_exists(file.path(expected_path, "origins.json"))
 })
@@ -54,7 +54,7 @@ test_that("overwriting works", {
 
   expect_file_exists(file.path(expected_path, "configspace.json"))
   expect_file_exists(file.path(expected_path, "configs.json"))
-  # expect_file_exists(file.path(expected_path, "history.jsonl"))
+  expect_file_exists(file.path(expected_path, "history.jsonl"))
   expect_file_exists(file.path(expected_path, "meta.json"))
   expect_file_exists(file.path(expected_path, "origins.json"))
 })

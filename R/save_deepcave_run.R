@@ -28,8 +28,8 @@ save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run",
   # (https://github.com/automl/DeepCAVE/blob/main/deepcave/runs/recorder.py)
   if (!overwrite) {
     new_idx = 0
-    for (fn in list.files(path)) {
-      if (!startsWith(fn, "prefix")) next
+    walk(list.files(path), function(fn) {
+      if (!startsWith(fn, "prefix")) return()
       idx = last(strsplit(fn, "_")[[1]])
       if (is.numeric(idx)) {
         idx_int = as.integer(idx)
@@ -37,7 +37,7 @@ save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run",
           new_idx = idx_int
         }
       }
-    }
+    })
     new_idx = new_idx + 1
     run_path = file.path(path, paste0(prefix, "_", new_idx))
     dir.create(run_path)
@@ -61,12 +61,6 @@ save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run",
     paste0(run_path, "/configs.json"),
     auto_unbox = TRUE, pretty = TRUE, null = "null"
   )
-
-  # jsonlite::write_json(
-  #   get_history(instance),
-  #   paste0(run_path, "/history.json"),
-  #   auto_unbox = TRUE, pretty = TRUE, null = "null"
-  # )
 
   jsonlite::write_json(
     get_meta(instance),
@@ -94,7 +88,7 @@ save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run",
     additionals = list()
   ), .SDcols = costs]
   
-  con = file("history.jsonl", open = "w")
+  con = file(file.path(run_path, "history.jsonl"), open = "w")
   jsonlite::stream_out(
     history_table,
     con,
@@ -197,12 +191,6 @@ get_configspace = function(instance) {
     forbiddens = list()
   ))
 }
-
-
-# get_history = function(instance){
-#   list(TBD = "TBD")
-# }
-
 
 get_meta = function(instance){
   list(TBD = "TBD")
