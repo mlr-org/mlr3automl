@@ -236,12 +236,20 @@ get_meta = function(instance){
 
     return(list(name = cost, lower = lower, upper = upper,
       lock_lower = lock_lower, lock_upper = lock_upper, optimize = optimize))
-
   })  
+  
+  objectives_list = c(objectives_list, list(list(
+    name = "time",
+    lower = 0,
+    upper = max(instance$archive$data[, runtime_learners]),
+    lock_lower = TRUE,
+    lock_upper = FALSE,
+    optimize = "lower"
+  )))
   
   return(list(
     objectives = objectives_list,
-    budgets = rep(list(0), instance$archive$n_evals),
+    budgets = list(0),
     seeds = list(-1)
   ))
 }
