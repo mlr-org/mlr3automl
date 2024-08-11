@@ -78,7 +78,8 @@ save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run",
     get_history(instance),
     con,
     auto_unbox = TRUE, pretty = TRUE, null = "list", na = "null",
-    dataframe = "values"
+    dataframe = "values",
+    verbose = FALSE
   )
   close(con)
   
