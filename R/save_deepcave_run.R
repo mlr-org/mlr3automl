@@ -96,7 +96,7 @@ save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run",
 
 # Prepare the list for converting to `configs.json`
 get_configs = function(instance){
-  param_ids = instance$search_space$data[, id]
+  param_ids = instance$search_space$data$id
   logscale_params = param_ids[instance$search_space$is_logscale[param_ids]]
   config_table = instance$archive$data[, param_ids, with = FALSE]
   config_table[, (logscale_params) := lapply(.SD, exp), .SDcols = logscale_params]
@@ -113,9 +113,10 @@ get_configs = function(instance){
 # Prepare the list for converting to `configspace.json`
 get_configspace = function(instance) {
   n_params = nrow(instance$search_space$data)
-  param_ids = instance$search_space$data[, id]
+  param_ids = instance$search_space$data$id
 
   hyperparameters_list = map(param_ids, function(param_id) {
+    id = NULL # resolve global variable note in R CDM check
     row = instance$search_space$data[id == param_id, ]
 
     type = switch(row[["class"]],
@@ -160,11 +161,13 @@ get_configspace = function(instance) {
   })
 
   conditions_list = map(setdiff(param_ids, "branch.selection"), function(param_id) {
+    id = NULL # resolve global variable note in R CDM check
     dependency = instance$search_space$deps[id == param_id, ]
     # `svm.degree` and `svm.gamma` depends on `svm.kernel` as well as `branch.selection`.
     # DeepCAVE does not allow one parameter to be conditioned on multiple others.
     # So remove their dependency on `branch.selection`.
     if (nrow(dependency) > 1) {
+      on = NULL # resolve global variable note in R CDM check
       dependency = dependency[on != "branch.selection", ]
     }
     child = param_id
@@ -174,7 +177,7 @@ get_configspace = function(instance) {
     # Currently, there are only 'CondEqual' and 'CondAnyOf', which should not be used simultaneously.
     # So this list should always contain only one entry.
     cond = dependency[["cond"]][[1]]
-    if (is(cond, "CondEqual")) {
+    if (class(cond)[[1]] == "CondEqual") {
         return(list(child = child, parent = parent, type = "EQ", value = cond$rhs))
     }
     return(list(child = child, parent = parent, type = "IN", values = cond$rhs))
@@ -189,10 +192,11 @@ get_configspace = function(instance) {
 
 # Prepare the data.table for converting to `history.jsonl`
 get_history = function(instance) {
-  costs = c(instance$objective$codomain$data[, id], "runtime_learners")
+  costs = c(instance$objective$codomain$data$id, "runtime_learners")
 
   selected_cols = c(costs, "timestamp_xs", "timestamp_ys", "state")
-  history_table = instance$archive$data[, ..selected_cols][, .(
+  timestamp_xs = timestamp_ys = state = NULL # resolve global variable note in R CDM check
+  history_table = instance$archive$data[, selected_cols, with = FALSE][, list(
     config_id = seq_len(nrow(instance$archive$data)) - 1,
     budget = 0,
     seed = -1,
@@ -216,7 +220,7 @@ get_history = function(instance) {
 # Prepare the list for converting to 'meta.json'
 get_meta = function(instance){
   # time is handled separately below
-  costs = instance$objective$codomain$data[, id]
+  costs = instance$objective$codomain$data$id
 
   objectives_list = map(costs, function(cost) {
     measure = msr(cost)
@@ -225,7 +229,7 @@ get_meta = function(instance){
     if (is.finite(lower)) {
       lock_lower = TRUE
     } else {
-      lower = min(instance$archive$data[, ..cost])
+      lower = min(instance$archive$data[, cost, with = FALSE])
       lock_lower = FALSE
     }
 
@@ -233,7 +237,7 @@ get_meta = function(instance){
     if (is.finite(upper)) {
       lock_upper = TRUE
     } else {
-      upper = max(instance$archive$data[, ..cost])
+      upper = max(instance$archive$data[, cost, with = FALSE])
       lock_upper = FALSE
     }
 
@@ -250,7 +254,7 @@ get_meta = function(instance){
   objectives_list = c(objectives_list, list(list(
     name = "time",
     lower = 0,
-    upper = max(instance$archive$data[, runtime_learners]),
+    upper = max(instance$archive$data[, "runtime_learners", with = FALSE]),
     lock_lower = TRUE,
     lock_upper = FALSE,
     optimize = "lower"
