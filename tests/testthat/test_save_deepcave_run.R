@@ -1,11 +1,8 @@
 test_that("run is saved without overwriting", {
   dir = tempdir()
-  prefix = "test-1-run"
-  dir.create(file.path(dir, prefix))
-  previous_run = file.path(dir, prefix, "run_1")
-  if (!file.exists(previous_run)) {
-    dir.create(previous_run)
-  }
+
+  previous_run = file.path(dir, "test-1-run_1")
+  dir.create(previous_run, showWarnings = FALSE)
   
   rush_plan(n_workers = 2)
   skip_if_not_installed("e1071")

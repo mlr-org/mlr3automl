@@ -60,7 +60,7 @@ save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run",
   # `configspace.json`
   jsonlite::write_json(
     get_configspace(instance),
-    paste0(run_path, "/configspace.json"),
+    file.path(run_path, "configspace.json"),
     auto_unbox = TRUE, pretty = TRUE, null = "null"
   )
 
@@ -94,7 +94,7 @@ save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run",
   names(origins) = seq(nrow(instance$archive$data)) - 1
   jsonlite::write_json(
     origins,
-    paste0(run_path, "/origins.json"),
+    file.path(run_path, "origins.json"),
     pretty = TRUE, null = "null"
   )
 }
