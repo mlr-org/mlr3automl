@@ -211,7 +211,7 @@ test_that("extra_trees and glmnet works", {
   )
 
   expect_class(learner$train(task), "LearnerClassifAuto")
-  expect_choice(learner$model$instance$result$branch.selection, c("extra_trees", "glmnet"))
+  expect_equal(learner$model$instance$result$branch.selection, "extra_trees")
 })
 
 test_that("lightgbm works", {
