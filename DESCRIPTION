@@ -62,5 +62,6 @@ Collate:
     'LearnerClassifAutoSVM.R'
     'LearnerClassifAutoXgboost.R'
     'LearnerRegrAuto.R'
+    'save_deepcave_run.R'
     'helper.R'
     'zzz.R'
