@@ -28,18 +28,24 @@ save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run",
   # (https://github.com/automl/DeepCAVE/blob/main/deepcave/runs/recorder.py)
   if (!overwrite) {
     new_idx = 0
-    walk(list.files(path), function(fn) {
-      if (!startsWith(fn, "prefix")) return()
-      idx = last(strsplit(fn, "_")[[1]])
-      if (is.numeric(idx)) {
+    for (fn in list.files(path)) {
+      if (!startsWith(fn, prefix)) next
+
+      splitted = strsplit(fn, "_")[[1]]
+      if (length(splitted) == 1) next # no run index attached
+
+      idx = suppressWarnings(last(splitted))
+      if (!is.na(idx)) { # idx is successfully coerced to a number
         idx_int = as.integer(idx)
         if (idx_int > new_idx) {
           new_idx = idx_int
         }
       }
-    })
+    }
+
     new_idx = new_idx + 1
     run_path = file.path(path, paste0(prefix, "_", new_idx))
+
     dir.create(run_path)
   } else {
     run_path = file.path(path, prefix)
