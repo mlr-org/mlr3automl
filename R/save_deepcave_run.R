@@ -140,7 +140,7 @@ get_configspace = function(instance) {
         choices = choices,
         # FIXME: `default` is wrong
         default = choices[[1]],
-        probabilisties = NULL
+        probabilities = NULL
       ))
     }
 
