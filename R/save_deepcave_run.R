@@ -149,7 +149,7 @@ get_configspace = function(instance) {
     lower = row[["lower"]]
     upper = row[["upper"]]
     # FIXME: default is wrong
-    default = mean(lower, upper)
+    default = lower
     if (is_logscale) {
       lower = exp(lower)
       upper = exp(upper)
