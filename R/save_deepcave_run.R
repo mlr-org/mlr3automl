@@ -83,7 +83,7 @@ save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run",
   jsonlite::stream_out(
     get_history(instance),
     con,
-    auto_unbox = TRUE, pretty = TRUE, null = "list", na = "null",
+    auto_unbox = FALSE, pretty = TRUE, null = "list", na = "null",
     dataframe = "values",
     verbose = FALSE
   )
@@ -198,7 +198,7 @@ get_configspace = function(instance) {
 
 # Prepare the data.table for converting to `history.jsonl`
 get_history = function(instance) {
-  costs = c(instance$objective$codomain$data$id, "runtime_learners")
+  costs = instance$objective$codomain$data$id
 
   selected_cols = c(costs, "timestamp_xs", "timestamp_ys", "state")
   timestamp_xs = timestamp_ys = state = NULL # resolve global variable note in R CDM check
@@ -225,7 +225,6 @@ get_history = function(instance) {
 
 # Prepare the list for converting to 'meta.json'
 get_meta = function(instance){
-  # time is handled separately below
   costs = instance$objective$codomain$data$id
 
   objectives_list = map(costs, function(cost) {
@@ -256,15 +255,6 @@ get_meta = function(instance){
     return(list(name = cost, lower = lower, upper = upper,
       lock_lower = lock_lower, lock_upper = lock_upper, optimize = optimize))
   })
-
-  objectives_list = c(objectives_list, list(list(
-    name = "time",
-    lower = 0,
-    upper = max(instance$archive$data[, "runtime_learners", with = FALSE]),
-    lock_lower = TRUE,
-    lock_upper = FALSE,
-    optimize = "lower"
-  )))
   
   return(list(
     objectives = objectives_list,
