@@ -103,8 +103,14 @@ save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run",
 # Prepare the list for converting to `configs.json`
 get_configs = function(instance){
   param_ids = instance$search_space$data$id
-  logscale_params = param_ids[instance$search_space$is_logscale[param_ids]]
+  # skip branch.selection if there is only one level
+  nbranches = instance$search_space$data[id == "branch.selection", "nlevels", with = FALSE]
+  if (nbranches == 1) {
+    param_ids = setdiff(param_ids, "branch.selection")
+  }
+
   config_table = instance$archive$data[, param_ids, with = FALSE]
+  logscale_params = param_ids[instance$search_space$is_logscale[param_ids]]
   config_table[, (logscale_params) := lapply(.SD, exp), .SDcols = logscale_params]
 
   configs_list = map(seq_len(nrow(config_table)), function(i) {
@@ -124,6 +130,9 @@ get_configspace = function(instance) {
   hyperparameters_list = map(param_ids, function(param_id) {
     id = NULL # resolve global variable note in R CDM check
     row = instance$search_space$data[id == param_id, ]
+
+    # skip branch.selection if there is only one branch
+    if (param_id == "branch.selection" && row[["nlevels"]] == 1) return()
 
     type = switch(row[["class"]],
       ParamFct = "categorical",
@@ -165,6 +174,8 @@ get_configspace = function(instance) {
       q = NULL
     ))
   })
+  hyperparameters_list = discard(hyperparameters_list, is.null)
+
 
   conditions_list = map(setdiff(param_ids, "branch.selection"), function(param_id) {
     id = NULL # resolve global variable note in R CDM check
@@ -178,6 +189,10 @@ get_configspace = function(instance) {
     }
     child = param_id
     parent = dependency[["on"]]
+
+    # remove dependency on branch.selection if there is only one branch
+    nbranches = instance$search_space$data[id == "branch.selection", "nlevels", with = FALSE]
+    if (parent == "branch.selection" && nbranches == 1) return()
     
     # `cond` below is a list of `Condition`s.
     # Currently, there are only 'CondEqual' and 'CondAnyOf', which should not be used simultaneously.
@@ -188,6 +203,7 @@ get_configspace = function(instance) {
     }
     return(list(child = child, parent = parent, type = "IN", values = cond$rhs))
   })
+  conditions_list = discard(conditions_list, is.null)
 
   return(list(
     hyperparameters = hyperparameters_list,
