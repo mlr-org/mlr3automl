@@ -16,6 +16,37 @@
 #' If `FALSE` (default), creates a new subfolder to save the current run. If `TRUE`, all existing runs will be deleted.
 #' 
 #' @export
+#' @examples
+#' \dontrun{
+#' rush_plan(n_workers = 2)
+#' task = tsk("penguins")
+#' 
+#' learner1 = lrn("classif.auto",
+#'   learner_ids = c("svm", "ranger"),
+#'   small_data_size = 1,
+#'   resampling = rsmp("holdout"),
+#'   measure = msr("classif.ce"),
+#'   terminator = trm("evals", n_evals = 6)
+#' )
+#' learner1$train(task)
+#' # save to `logs/mlr3automl/run_1`
+#' save_deepcave_run(learner1$instance)
+#' 
+#' # save to `logs/mlr3automl/run`
+#' # if this folder already exists, it will be overwritten
+#' save_deepcave_run(learner1$instance, overwrite = TRUE)
+#' 
+#' learner2 = lrn("classif.auto",
+#'   learner_ids = c("catboost", "xgboost"),
+#'   small_data_size = 1,
+#'   resampling = rsmp("holdout"),
+#'   measure = msr("classif.ce"),
+#'   terminator = trm("evals", n_evals = 6)
+#' )
+#' learner2$train(task)
+#' # save to `logs/mlr3automl/run_2`
+#' save_deepcave_run(learner2$instance)
+#' }
 save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run", overwrite = FALSE) {
   # don't save untuned instance
   if (is.null(instance$result_learner_param_vals)) {

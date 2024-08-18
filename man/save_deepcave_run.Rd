@@ -27,3 +27,35 @@ If \code{FALSE} (default), creates a new subfolder to save the current run. If \
 \description{
 Exports information stored in a \code{TuningInstance} in a format recognized by \href{https://automl.github.io/DeepCAVE/main/index.html}{DeepCAVE} as a run. Each run is stored as a folder containing five files \code{configs.json}, \code{configspace.json}, \code{history.jsonl}, \code{meta.json}, and \code{origins.json}.
 }
+\examples{
+\dontrun{
+rush_plan(n_workers = 2)
+task = tsk("penguins")
+
+learner1 = lrn("classif.auto",
+  learner_ids = c("svm", "ranger"),
+  small_data_size = 1,
+  resampling = rsmp("holdout"),
+  measure = msr("classif.ce"),
+  terminator = trm("evals", n_evals = 6)
+)
+learner1$train(task)
+# save to `logs/mlr3automl/run_1`
+save_deepcave_run(learner1$instance)
+
+# save to `logs/mlr3automl/run`
+# if this folder already exists, it will be overwritten
+save_deepcave_run(learner1$instance, overwrite = TRUE)
+
+learner2 = lrn("classif.auto",
+  learner_ids = c("catboost", "xgboost"),
+  small_data_size = 1,
+  resampling = rsmp("holdout"),
+  measure = msr("classif.ce"),
+  terminator = trm("evals", n_evals = 6)
+)
+learner2$train(task)
+# save to `logs/mlr3automl/run_2`
+save_deepcave_run(learner2$instance)
+}
+}
