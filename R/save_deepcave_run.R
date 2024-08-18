@@ -35,11 +35,11 @@ save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run",
       if (length(splitted) == 1) next # no run index attached
 
       idx = suppressWarnings(last(splitted))
-      if (!is.na(idx)) { # idx is successfully coerced to a number
-        idx_int = as.integer(idx)
-        if (idx_int > new_idx) {
-          new_idx = idx_int
-        }
+      if (is.na(idx)) next # idx cannot be coerced to a number
+
+      idx_int = as.integer(idx)
+      if (idx_int > new_idx) {
+        new_idx = idx_int
       }
     }
 
@@ -83,7 +83,9 @@ save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run",
   jsonlite::stream_out(
     get_history(instance),
     con,
-    auto_unbox = FALSE, pretty = TRUE, null = "list", na = "null",
+    # objectives must be a list, so do not auto unbox if a list has only one entry
+    auto_unbox = FALSE,
+    pretty = TRUE, null = "list", na = "null",
     dataframe = "values",
     verbose = FALSE
   )
@@ -103,19 +105,22 @@ save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run",
 # Prepare the list for converting to `configs.json`
 get_configs = function(instance){
   param_ids = instance$search_space$data$id
+
   # skip branch.selection if there is only one level
+  id = NULL # resolve global variable note in R CDM check
   nbranches = instance$search_space$data[id == "branch.selection", "nlevels", with = FALSE]
   if (nbranches == 1) {
     param_ids = setdiff(param_ids, "branch.selection")
   }
 
   config_table = instance$archive$data[, param_ids, with = FALSE]
+  # param values in deepcave are on the original scale, not the log scale
   logscale_params = param_ids[instance$search_space$is_logscale[param_ids]]
   config_table[, (logscale_params) := lapply(.SD, exp), .SDcols = logscale_params]
 
   configs_list = map(seq_len(nrow(config_table)), function(i) {
     discard(as.list(config_table[i, ]), is.na)
-  })  
+  })
   names(configs_list) = seq_along(configs_list) - 1
 
   return(configs_list)
@@ -124,7 +129,6 @@ get_configs = function(instance){
 
 # Prepare the list for converting to `configspace.json`
 get_configspace = function(instance) {
-  n_params = nrow(instance$search_space$data)
   param_ids = instance$search_space$data$id
 
   hyperparameters_list = map(param_ids, function(param_id) {
@@ -174,6 +178,7 @@ get_configspace = function(instance) {
       q = NULL
     ))
   })
+  # skipping branch.selection results in null entries => discard them
   hyperparameters_list = discard(hyperparameters_list, is.null)
 
 
@@ -203,6 +208,7 @@ get_configspace = function(instance) {
     }
     return(list(child = child, parent = parent, type = "IN", values = cond$rhs))
   })
+  # skipping branch.selection results in null entries => discard them
   conditions_list = discard(conditions_list, is.null)
 
   return(list(
