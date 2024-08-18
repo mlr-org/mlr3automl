@@ -77,13 +77,13 @@ save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run",
     new_idx = new_idx + 1
     run_path = file.path(path, paste0(prefix, "_", new_idx))
 
-    dir.create(run_path)
+    dir.create(run_path, recursive = TRUE)
   } else {
     run_path = file.path(path, prefix)
     if (file.exists(run_path)) {
       lapply(list.files(run_path, full.names = TRUE), file.remove)
     } else{
-      dir.create(run_path)
+      dir.create(run_path, recursive = TRUE)
     }
   }
 
