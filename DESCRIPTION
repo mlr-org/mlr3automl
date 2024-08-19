@@ -27,7 +27,8 @@ Imports:
     mlr3tuningspaces,
     paradox (>= 1.0.1),
     R6,
-    utils
+    utils,
+    jsonlite
 Suggests:
     catboost,
     e1071,
@@ -62,4 +63,5 @@ Collate:
     'LearnerClassifAutoXgboost.R'
     'LearnerRegrAuto.R'
     'helper.R'
+    'save_deepcave_run.R'
     'zzz.R'
