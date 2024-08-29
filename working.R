@@ -1,7 +1,7 @@
 rush_plan(n_workers = 3)
 task = tsk("spam")
 learner = lrn("classif.auto",
-  learner_ids = c("glmnet", "svm", "ranger"),
+  learner_ids = c("glmnet", "svm"),
   small_data_size = 1,
   resampling = rsmp("holdout"),
   measure = msr("classif.ce"),
