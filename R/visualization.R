@@ -1,13 +1,13 @@
 #' @title Cost-Over-Time Plot
 #' 
-#' @description Plots cost over time using [ggplot2].
+#' @description
 #' 
 #' @template archive
 #' @template theme
 #' 
 #' @export
 cost_over_time = function(archive, theme = ggplot2::theme_minimal()) {
-  # there should be only a single objective, e.g. `classif.ce`
+  # there should only be one objective, e.g. `classif.ce`
   cost = archive$codomain$data$id[[1]]
   
   .data = NULL
@@ -43,11 +43,13 @@ marginal_plot = function(archive, x = NULL, y = NULL, theme = ggplot2::theme_min
   assert_choice(x, param_ids)
   assert_choice(y, param_ids)
 
-  # there should be only a single objective, e.g. `classif.ce`
+  # there should only be one objective, e.g. `classif.ce`
   cost = archive$codomain$data$id[[1]]
 
-  .data = NULL 
-  g = ggplot2::ggplot(data = archive$data, ggplot2::aes(
+  data = na.omit(archive$data, cols = c(x, y))
+
+  .data = NULL
+  g = ggplot2::ggplot(data = data, ggplot2::aes(
       x = .data[[x]],
       y = .data[[y]],
       fill = .data[[cost]]

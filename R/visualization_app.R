@@ -11,15 +11,14 @@ visualize = function(archive) {
     sidebar = bslib::sidebar(
       shiny::conditionalPanel(
         "input.nav === 'Marginal Plots'",
-        shiny::selectInput("x",
-          label = "Select parameter for x-axis",
-          choices = param_ids,
-        ),
         shiny::selectInput("y",
           label = "Select parameter for y-axis",
           choices = param_ids,
+        ),
+        shiny::selectInput("x",
+          label = "Select parameter for x-axis",
+          choices = param_ids,
         )
-        # TBD: helpText
       )
     ),
     bslib::nav_panel(
@@ -54,4 +53,3 @@ visualize = function(archive) {
 
   shiny::shinyApp(ui = ui, server = server)
 }
-
