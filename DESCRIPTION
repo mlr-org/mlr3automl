@@ -18,8 +18,10 @@ Depends:
     R (>= 3.1.0),
     rush
 Imports:
+    bslib,
     checkmate,
     data.table,
+    ggplot2,
     lhs,
     mlr3mbo,
     mlr3misc (>= 0.15.1),
@@ -27,6 +29,7 @@ Imports:
     mlr3tuningspaces,
     paradox (>= 1.0.1),
     R6,
+    shiny,
     utils
 Suggests:
     catboost,
@@ -62,4 +65,6 @@ Collate:
     'LearnerClassifAutoXgboost.R'
     'LearnerRegrAuto.R'
     'helper.R'
+    'visualization_app.R'
+    'visualization.R'
     'zzz.R'
