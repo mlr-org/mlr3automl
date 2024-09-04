@@ -1,7 +1,7 @@
 rush_plan(n_workers = 3)
 task = tsk("spam")
 learner = lrn("classif.auto",
-  learner_ids = c("glmnet", "svm"),
+  learner_ids = c("ranger", "glmnet", "svm"),
   small_data_size = 1,
   resampling = rsmp("holdout"),
   measure = msr("classif.ce"),
@@ -9,20 +9,27 @@ learner = lrn("classif.auto",
 )
 learner$train(task)
 
-# instance = learner$instance
+archive = learner$instance$archive$clone(deep = TRUE)
 
+param_ids = archive$cols_x[startsWith(archive$cols_x, "glmnet")]
+branch = "glmnet"
 
-# cost over time plot
-cost_over_time = function(instance) {
-  archive_table = copy(learner$instance$archive$data)
-  set(archive_table, j = "config_id", value = seq_len(nrow(archive_table)))
+surrogate = default_surrogate(learner$instance)
+surrogate$archive = archive
+surrogate$update()
 
-  # there should be only a single objective, e.g. `classif.ce`
-  cost = instance$objective$codomain$data$id[[1]]
-  
-  ggplot2::ggplot(data = archive_table) +
-    ggplot2::geom_point(ggplot2::aes(x = config_id, y = .data[[cost]]))
-}
+predictor = iml::Predictor$new(
+  model = surrogate,
+  data = as.data.table(archive)[branch.selection == branch, param_ids, with = FALSE],
+  predict.function = function(model, newdata) {
+    model$predict(setDT(newdata)[, param_ids, with = FALSE])$mean
+  }
+)
 
-cost_over_time(instance) +
-  ggplot2::theme_bw()
+effects = iml::FeatureEffect$new(
+  predictor,
+  param_ids,
+  method = "pdp"
+)
+effects$plot() +
+  ggplot2::scale_fill_viridis_c()

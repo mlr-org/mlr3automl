@@ -219,8 +219,9 @@ partial_dependence_plot = function(
   type = "heatmap",
   theme = ggplot2::theme_minimal()
 ) {
-  archive = instance$archive$clone(deep = TRUE)
+  archive = instance$archive
   param_ids = c(x, y)
+  objective = archive$cols_y
   assert_subset(param_ids, archive$cols_x)
 
   branch = tstrsplit(param_ids, "\\.")[[1]]
@@ -242,11 +243,11 @@ partial_dependence_plot = function(
 
   # iml does not allow logical columns, so encode into factor
   # NOT WORKING
-  walk(param_ids, function(param_id) {
-    if (is.logical(archive$data[[param_id]])) {
-      set(archive$data, j = param_id, value = as.factor(archive$data[[param_id]]))
-    }
-  })
+  # walk(param_ids, function(param_id) {
+  #   if (is.logical(archive$data[[param_id]])) {
+  #     set(archive$data, j = param_id, value = as.factor(archive$data[[param_id]]))
+  #   }
+  # })
 
   surrogate = default_surrogate(instance)
   surrogate$archive = archive
@@ -255,9 +256,7 @@ partial_dependence_plot = function(
   predictor = iml::Predictor$new(
     model = surrogate,
     data = as.data.table(archive)[branch.selection == branch, param_ids, with = FALSE],
-    predict.function = function(model, newdata) {
-      model$predict(setDT(newdata)[, param_ids, with = FALSE])$mean
-    }
+    y = as.data.table(archive)[branch.selection = branch, objective, with = FALSE]
   )
 
   eff = iml::FeatureEffect$new(
@@ -268,7 +267,6 @@ partial_dependence_plot = function(
     grid.size = grid_size
   )
 
-  measure = archive$cols_y
   .data = NULL
 
   if (is.null(y)) {
