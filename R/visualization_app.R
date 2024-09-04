@@ -77,7 +77,7 @@ visualize = function(archive) {
 
     output$parallel_coordinates = renderPlot({
       if (is.null(input$cols_x)) return() # nothing selected
-      trafo = input$trafo == "yes"
+      trafo = input$trafo == "Yes"
       parallel_coordinates(archive, cols_x = input$cols_x, trafo = trafo)
     })
     shiny::observeEvent(input$unselect_all, {

@@ -8,12 +8,11 @@
 #' @export
 cost_over_time = function(archive, theme = ggplot2::theme_minimal()) {
   # there should only be one objective, e.g. `classif.ce`
-  measure = archive$codomain$data$id[[1]]
+  measure = archive$cols_y
   
   .data = NULL
-  n_configs = nrow(archive$data) 
   ggplot2::ggplot(data = archive$data, ggplot2::aes(
-      x = seq_len(n_configs),
+      x = seq_row(archive$data),
       y = .data[[measure]]
     )) +
     ggplot2::geom_point() +
@@ -43,17 +42,20 @@ marginal_plot = function(archive, x, y = NULL, theme = ggplot2::theme_minimal())
   assert_choice(x, param_ids)
   assert_choice(y, param_ids, null.ok = TRUE)
 
+  # use transformed values if trafo is set
+  x_trafo = paste0("x_domain_", x)
+
   # there should only be one objective, e.g. `classif.ce`
   measure = archive$cols_y
 
-  data = na.omit(archive$data, cols = c(x, y))
+  data = na.omit(as.data.table(archive), cols = c(x_trafo, y))
 
   .data = NULL
 
   # no param provided for y
   if (is.null(y)) {
     g = ggplot2:: ggplot(data = data, ggplot2::aes(
-      x = .data[[x]],
+      x = .data[[x_trafo]],
       y = .data[[measure]]
     )) +
     ggplot2::geom_point(alpha = 0.6) +
@@ -69,13 +71,13 @@ marginal_plot = function(archive, x, y = NULL, theme = ggplot2::theme_minimal())
 
   # param provided for y
   g = ggplot2::ggplot(data = data, ggplot2::aes(
-      x = .data[[x]],
+      x = .data[[x_trafo]],
       y = .data[[y]],
-      fill = .data[[measure]]
+      col = .data[[measure]]
     )) +
     ggplot2::geom_point(alpha = 0.6) +
-    ggplot2::scale_fill_viridis_c() +
-    ggplot2::labs(title = "Marginal plot") +
+    ggplot2::scale_color_viridis_c() +
+    ggplot2::labs(title = "Marginal plot", x = x) +
     theme
 
   if (archive$search_space$is_logscale[[x]]) {
@@ -129,17 +131,17 @@ parallel_coordinates = function(archive, cols_x = NULL, trafo = FALSE, theme = g
 
   # rescale
   data_n = data_n[, lapply(.SD, function(x) {
-    if (sd(x, na.rm = TRUE) > 0) {
-      (x - mean(x, na.rm = TRUE)) / sd(x, na.rm = TRUE)
-    } else {
+    if (sd(x, na.rm = TRUE) %in% c(0, NA)) {
       rep(0, length(x))
+    } else {
+      (x - mean(x, na.rm = TRUE)) / sd(x, na.rm = TRUE)
     }
   })]
   data_c = data_c[, lapply(.SD, function(x) {
-    if (sd(x, na.rm = TRUE) > 0) {
-      (x - mean(unique(x), na.rm = TRUE)) / sd(unique(x), na.rm = TRUE)
-    } else {
+    if (sd(x, na.rm = TRUE) %in% c(0, NA)) {
       rep(0, length(x))
+    } else {
+      (x - mean(unique(x), na.rm = TRUE)) / sd(unique(x), na.rm = TRUE)
     }
   })]
 
