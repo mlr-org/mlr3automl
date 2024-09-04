@@ -186,3 +186,114 @@ parallel_coordinates = function(archive, cols_x = NULL, trafo = FALSE, theme = g
     theme +
     ggplot2::theme(axis.title.x = ggplot2::element_blank())
 }
+
+
+#' @title Partial Dependence Plot
+#' 
+#' @description Creates a partial dependenc plot (PDP) via the `[iml]` package.
+#' 
+#' @param instance ([TuningInstanceSingleCritAsync])
+#'  Tuning instance, e.g., stored in the field `$instance` of any `mlr3automl` learner.
+#' @param x (`character(1)`)
+#'  Name of the parameter to be mapped to the x-axis.
+#' @param y (`character(1)`)
+#'  Name of the parameter to be mapped to the y-axis.
+#'  If `NULL` (default), the measure (e.g. `classif.ce`) is mapped to the y-axis.
+#' @param grid_size (`numeric(1)` | `numeric(2)`)
+#'  The size of the grid. See `grid.size` of `[iml::FeatureEffect]`.
+#' @param center_at (`numeric(1)`)
+#'  Value at which the plot was centered. Ignored in the case of two features.
+#'  See `center.at` of `[iml::FeatureEffect]`.
+#' @param type (`character(1)`)
+#'  Type of the two-parameter partial dependence plot. Possible options are listed below.
+#'  \itemize{
+#'    \item `"contour"`: Create a contour plot using `[ggplot2::geom_contour_filled]`. Only supported if both parameters are numerical.
+#'    \item `"heatmap"`: Create a heatmap using `[ggplot2::geom_raster]`. This is the default setting in `iml`
+#'  }
+#'  Ignored if only one parameter is provided.
+#' @template theme
+#'
+#' @export
+partial_dependence_plot = function(
+  instance, x, y = NULL, grid_size = 20, center_at = NULL,
+  type = "heatmap",
+  theme = ggplot2::theme_minimal()
+) {
+  archive = instance$archive$clone(deep = TRUE)
+  param_ids = c(x, y)
+  assert_subset(param_ids, archive$cols_x)
+
+  branch = tstrsplit(param_ids, "\\.")[[1]]
+  branch = unique(branch)
+  if (length(branch) > 1) {
+    stop("Parameters from different branches cannot be plotted in the same PDP.")
+  }
+  
+  if (!is.null(y)) {
+    assert_choice(type, c("contour", "heatmap"))
+  }
+
+  non_numeric = some(param_ids, function(param_id) {
+    !is.numeric(archive$data[[param_id]])
+  })
+  if (non_numeric && type == "contour") {
+    stop("Contour plot not supported for non-numeric parameters")
+  }
+
+  # iml does not allow logical columns, so encode into factor
+  # NOT WORKING
+  walk(param_ids, function(param_id) {
+    if (is.logical(archive$data[[param_id]])) {
+      set(archive$data, j = param_id, value = as.factor(archive$data[[param_id]]))
+    }
+  })
+
+  surrogate = default_surrogate(instance)
+  surrogate$archive = archive
+  surrogate$update()
+
+  predictor = iml::Predictor$new(
+    model = surrogate,
+    data = as.data.table(archive)[branch.selection == branch, param_ids, with = FALSE],
+    predict.function = function(model, newdata) {
+      model$predict(setDT(newdata)[, param_ids, with = FALSE])$mean
+    }
+  )
+
+  eff = iml::FeatureEffect$new(
+    predictor,
+    param_ids,
+    method = "pdp",
+    center.at = center_at,
+    grid.size = grid_size
+  )
+
+  measure = archive$cols_y
+  .data = NULL
+
+  if (is.null(y)) {
+    g = eff$plot() +
+      ggplot2::scale_fill_viridis_c(direction = -1) +
+      ggplot2::labs(fill = measure) +
+      theme
+    return(g)
+  }
+
+  g = switch(type,
+
+    contour = ggplot2::ggplot(eff$results, ggplot2::aes(
+        x = .data[[x]], y = .data[[y]], z = .data$.value
+      )) +
+      ggplot2::geom_contour_filled() +
+      ggplot2::scale_fill_viridis_d(direction = -1),
+
+    heatmap = ggplot2::ggplot(eff$results, ggplot2::aes(
+        x = .data[[x]], y = .data[[y]],
+        fill = .data$.value, color = .data$.value
+      )) +
+      ggplot2::geom_raster() +
+      ggplot2::scale_fill_viridis_c(direction = -1)
+  )
+  
+  g + ggplot2::labs(fill = measure) + theme
+}
