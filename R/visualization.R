@@ -207,8 +207,8 @@ parallel_coordinates = function(archive, cols_x = NULL, trafo = FALSE, theme = g
 #' @param type (`character(1)`)
 #'  Type of the two-parameter partial dependence plot. Possible options are listed below.
 #'  \itemize{
+#'    \item `"default"`: Use the default setting in `iml`.
 #'    \item `"contour"`: Create a contour plot using `[ggplot2::geom_contour_filled]`. Only supported if both parameters are numerical.
-#'    \item `"heatmap"`: Create a heatmap using `[ggplot2::geom_raster]`. This is the default setting in `iml`
 #'  }
 #'  Ignored if only one parameter is provided.
 #' @template theme
@@ -220,43 +220,47 @@ partial_dependence_plot = function(
   theme = ggplot2::theme_minimal()
 ) {
   archive = instance$archive
-  param_ids = c(x, y)
   objective = archive$cols_y
-  assert_subset(param_ids, archive$cols_x)
+  assert_subset(c(x, y), archive$cols_x)
 
-  branch = tstrsplit(param_ids, "\\.")[[1]]
+  branch = tstrsplit(c(x, y), "\\.")[[1]]
   branch = unique(branch)
   if (length(branch) > 1) {
     stop("Parameters from different branches cannot be plotted in the same PDP.")
   }
   
   if (!is.null(y)) {
-    assert_choice(type, c("contour", "heatmap"))
+    assert_choice(type, c("contour", "default"))
   }
 
-  non_numeric = some(param_ids, function(param_id) {
+  non_numeric = some(c(x, y), function(param_id) {
     !is.numeric(archive$data[[param_id]])
   })
   if (non_numeric && type == "contour") {
     stop("Contour plot not supported for non-numeric parameters")
   }
 
-  # iml does not allow logical columns, so encode into factor
-  # NOT WORKING
-  # walk(param_ids, function(param_id) {
-  #   if (is.logical(archive$data[[param_id]])) {
-  #     set(archive$data, j = param_id, value = as.factor(archive$data[[param_id]]))
-  #   }
-  # })
+  # use all parameters on the branch for surrogate model
+  # param_ids = archive$cols_x[startsWith(archive$cols_x, branch)]
+  param_ids = c(x, y)
 
   surrogate = default_surrogate(instance)
   surrogate$archive = archive
   surrogate$update()
 
+  # store the data.table format for later use in predict.function
+  prototype = archive$data[0, archive$cols_x, with = FALSE]
+
   predictor = iml::Predictor$new(
     model = surrogate,
     data = as.data.table(archive)[branch.selection == branch, param_ids, with = FALSE],
-    y = as.data.table(archive)[branch.selection = branch, objective, with = FALSE]
+    y = as.data.table(archive)[branch.selection == branch, objective, with = FALSE],
+    predict.function = function(model, newdata) {
+      setDT(newdata)
+      # reconstruct task layout from training to prevent error in imputeoor
+      newdata = merge(newdata, prototype, by = param_ids, all = TRUE)
+      return(model$predict(newdata)$mean)
+    }
   )
 
   eff = iml::FeatureEffect$new(
@@ -277,6 +281,8 @@ partial_dependence_plot = function(
     return(g)
   }
 
+  # x = param_ids[[1]]
+  # y = param_ids[[2]]
   g = switch(type,
 
     contour = ggplot2::ggplot(eff$results, ggplot2::aes(
@@ -285,13 +291,10 @@ partial_dependence_plot = function(
       ggplot2::geom_contour_filled() +
       ggplot2::scale_fill_viridis_d(direction = -1),
 
-    heatmap = ggplot2::ggplot(eff$results, ggplot2::aes(
-        x = .data[[x]], y = .data[[y]],
-        fill = .data$.value, color = .data$.value
-      )) +
-      ggplot2::geom_raster() +
-      ggplot2::scale_fill_viridis_c(direction = -1)
+    default = eff$plot()
   )
+
+  # TBD: remove existing scales, use viridis instead
   
-  g + ggplot2::labs(fill = measure) + theme
+  g + ggplot2::labs(fill = objective) + theme
 }
