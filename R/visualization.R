@@ -28,7 +28,7 @@ cost_over_time = function(archive, theme = ggplot2::theme_minimal()) {
 #' 
 #' @description
 #' 
-#' @template instance
+#' @param instance (`[mlr3tuning::TuningInstanceAsyncSingleCrit]`)
 #' @param x (`character(1)`)
 #'  Name of the parameter to be mapped to the x-axis.
 #' @param y (`character(1)`)
@@ -192,13 +192,11 @@ parallel_coordinates = function(archive, cols_x = NULL, trafo = FALSE, theme = g
 #' 
 #' @description Creates a partial dependenc plot (PDP) via the `[iml]` package.
 #' 
-#' @param instance ([TuningInstanceSingleCritAsync])
-#'  Tuning instance, e.g., stored in the field `$instance` of any `mlr3automl` learner.
+#' @param instance ([`mlr3tuning::TuningInstanceAsyncSingleCrit`])
 #' @param x (`character(1)`)
 #'  Name of the parameter to be mapped to the x-axis.
 #' @param y (`character(1)`)
 #'  Name of the parameter to be mapped to the y-axis.
-#'  If `NULL` (default), the measure (e.g. `classif.ce`) is mapped to the y-axis.
 #' @param grid_size (`numeric(1)` | `numeric(2)`)
 #'  The size of the grid. See `grid.size` of `[iml::FeatureEffect]`.
 #' @param center_at (`numeric(1)`)
@@ -216,14 +214,17 @@ parallel_coordinates = function(archive, cols_x = NULL, trafo = FALSE, theme = g
 #' @export
 partial_dependence_plot = function(
   instance, x, y = NULL, grid_size = 20, center_at = NULL,
-  type = "heatmap",
+  type = "default",
   theme = ggplot2::theme_minimal()
 ) {
   archive = instance$archive
   objective = archive$cols_y
-  assert_subset(c(x, y), archive$cols_x)
+  assert_choice(x, archive$cols_x)
+  assert_choice(y, archive$cols_x, null.ok = TRUE)
 
-  branch = tstrsplit(c(x, y), "\\.")[[1]]
+  param_ids = c(x, y)
+
+  branch = tstrsplit(param_ids, "\\.")[[1]]
   branch = unique(branch)
   if (length(branch) > 1) {
     stop("Parameters from different branches cannot be plotted in the same PDP.")
@@ -233,16 +234,12 @@ partial_dependence_plot = function(
     assert_choice(type, c("contour", "default"))
   }
 
-  non_numeric = some(c(x, y), function(param_id) {
+  non_numeric = some(param_ids, function(param_id) {
     !is.numeric(archive$data[[param_id]])
   })
   if (non_numeric && type == "contour") {
     stop("Contour plot not supported for non-numeric parameters")
   }
-
-  # use all parameters on the branch for surrogate model
-  # param_ids = archive$cols_x[startsWith(archive$cols_x, branch)]
-  param_ids = c(x, y)
 
   surrogate = default_surrogate(instance)
   surrogate$archive = archive
@@ -259,6 +256,15 @@ partial_dependence_plot = function(
       setDT(newdata)
       # reconstruct task layout from training to prevent error in imputeoor
       newdata = merge(newdata, prototype, by = param_ids, all = TRUE)
+      setcolorder(newdata, names(prototype))
+
+      # convert numeric to integer to match with training task
+      walk(param_ids, function(param_id) {
+        if (is.integer(archive$data[[param_id]])) {
+          set(newdata, j = param_id, value = as.integer(newdata[[param_id]]))
+        }
+      })
+
       return(model$predict(newdata)$mean)
     }
   )
@@ -273,16 +279,6 @@ partial_dependence_plot = function(
 
   .data = NULL
 
-  if (is.null(y)) {
-    g = eff$plot() +
-      ggplot2::scale_fill_viridis_c(direction = -1) +
-      ggplot2::labs(fill = measure) +
-      theme
-    return(g)
-  }
-
-  # x = param_ids[[1]]
-  # y = param_ids[[2]]
   g = switch(type,
 
     contour = ggplot2::ggplot(eff$results, ggplot2::aes(
@@ -291,10 +287,9 @@ partial_dependence_plot = function(
       ggplot2::geom_contour_filled() +
       ggplot2::scale_fill_viridis_d(direction = -1),
 
-    default = eff$plot()
+    default = eff$plot(rug = FALSE)
   )
 
   # TBD: remove existing scales, use viridis instead
-  
-  g + ggplot2::labs(fill = objective) + theme
+  g + ggplot2::scale_fill_viridis_c(name = objective) + theme
 }
