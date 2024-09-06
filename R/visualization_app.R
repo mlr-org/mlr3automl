@@ -119,7 +119,7 @@ visualize = function(instance) {
       if (is.null(input$pdp_x)) return()
       partial_dependence_plot(
         instance, x = input$pdp_x, y = input$pdp_y,
-        type = "default", grid_size = 20
+        type = "default"
       )      
     })
   }

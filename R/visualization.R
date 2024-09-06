@@ -197,11 +197,8 @@ parallel_coordinates = function(archive, cols_x = NULL, trafo = FALSE, theme = g
 #'  Name of the parameter to be mapped to the x-axis.
 #' @param y (`character(1)`)
 #'  Name of the parameter to be mapped to the y-axis.
-#' @param grid_size (`numeric(1)` | `numeric(2)`)
+#' @param grid.size (`numeric(1)` | `numeric(2)`)
 #'  The size of the grid. See `grid.size` of `[iml::FeatureEffect]`.
-#' @param center_at (`numeric(1)`)
-#'  Value at which the plot was centered. Ignored in the case of two features.
-#'  See `center.at` of `[iml::FeatureEffect]`.
 #' @param type (`character(1)`)
 #'  Type of the two-parameter partial dependence plot. Possible options are listed below.
 #'  \itemize{
@@ -213,7 +210,7 @@ parallel_coordinates = function(archive, cols_x = NULL, trafo = FALSE, theme = g
 #'
 #' @export
 partial_dependence_plot = function(
-  instance, x, y = NULL, grid_size = 20, center_at = NULL,
+  instance, x, y, grid.size = 20, center_at = NULL,
   type = "default",
   theme = ggplot2::theme_minimal()
 ) {
@@ -273,8 +270,7 @@ partial_dependence_plot = function(
     predictor,
     param_ids,
     method = "pdp",
-    center.at = center_at,
-    grid.size = grid_size
+    grid.size = grid.size
   )
 
   .data = NULL
@@ -287,6 +283,8 @@ partial_dependence_plot = function(
       ggplot2::geom_contour_filled() +
       ggplot2::scale_fill_viridis_d(direction = -1),
 
+    # FIXME: rug = TRUE causes error when, e.g., x = "svm.cost", y = "svm.degree"
+    # related to the problem that degree is missing for some instances?
     default = eff$plot(rug = FALSE)
   )
 
