@@ -1,9 +1,11 @@
 #' @title Shiny App for Visualizing AutoML Results
 #' 
-#' @template archive
+#' @param instance (`[mlr3tuning::TuningInstanceAsyncSingleCrit]`)
 #' @export
-visualize = function(archive) {
+visualize = function(instance) {
+  archive = instance$archive
   param_ids = archive$cols_x
+  branches = unique(archive$data$branch.selection)
 
   ui = bslib::page_navbar(
     id = "nav",
@@ -40,6 +42,23 @@ visualize = function(archive) {
           selected = "No",
           inline = TRUE
         )
+      ),
+      shiny::conditionalPanel(
+        "input.nav === 'Partial Dependence Plots'",
+        shiny::radioButtons("select_branch",
+          label = "Select branch:",
+          choices = branches
+        ),
+        shiny::selectInput("select_x",
+          label = "Select parameter for x-axis:",
+          choices = param_ids,
+          selected = param_ids[[1]]
+        ),
+        shiny::selectInput("select_y",
+          label = "Select parameter for y-axis:",
+          choices = param_ids,
+          selected = param_ids[[2]]
+        )
       )
     ),
     bslib::nav_panel(
@@ -55,8 +74,8 @@ visualize = function(archive) {
       bslib::card(shiny::plotOutput("parallel_coordinates"))
     ),
     bslib::nav_panel(
-      "Partial Dependency Plots",
-      bslib::card("TBD")
+      "Partial Dependence Plots",
+      bslib::card(shiny::plotOutput("pdp"))
     )
   )
 
@@ -85,6 +104,20 @@ visualize = function(archive) {
     })
     shiny::observeEvent(input$select_all, {
       shiny::updateCheckboxGroupInput(session, "cols_x", choices = param_ids, selected = param_ids)
+    })
+
+
+    shiny::observeEvent(input$select_branch, {
+      selectable_ids = param_ids[startsWith(param_ids, input$select_branch)]
+      shiny::updateSelectInput(session, "select_x", choices = selectable_ids, selected = selectable_ids[[1]])
+      shiny::updateSelectInput(session, "select_y", choices = selectable_ids, selected = selectable_ids[[2]])
+    })
+    output$pdp = renderPlot({
+      if (is.null(input$select_x)) return()
+      partial_dependence_plot(
+        instance, x = input$select_x, y = input$select_y,
+        type = "default", grid_size = 20
+      )      
     })
   }
 
