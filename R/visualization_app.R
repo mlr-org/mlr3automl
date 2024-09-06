@@ -10,33 +10,36 @@ visualize = function(instance) {
   ui = bslib::page_navbar(
     id = "nav",
     title = "Visualization for mlr3automl",
+    # TBD: cost over time: select timestamp_x / timestamp_y / config_id
     sidebar = bslib::sidebar(
       shiny::conditionalPanel(
+        # TBD: select branch, then parameter, as in PDP
         "input.nav === 'Marginal Plots'",
-        shiny::selectInput("y",
+        shiny::selectInput("mp_y",
           label = "Select parameter for y-axis",
           choices = c(param_ids, "NULL"),
         ),
-        shiny::selectInput("x",
+        shiny::selectInput("mp_x",
           label = "Select parameter for x-axis",
           choices = param_ids,
         )
       ),
       shiny::conditionalPanel(
+        # TBD: select branch, then parameter, as in PDP
         "input.nav === 'Parallel Coordinates'",
-        shiny::checkboxGroupInput("cols_x",
+        shiny::checkboxGroupInput("pc_cols_x",
           label = "Select hyperparameters to plot:",
           choices = param_ids,
           # select all by default
           selected = param_ids
         ),
-        shiny::actionButton("unselect_all",
+        shiny::actionButton("pc_unselect_all",
           label = "Unselect all"
         ),
-        shiny::actionButton("select_all",
+        shiny::actionButton("pc_select_all",
           label = "Select all"
         ),
-        shiny::radioButtons("trafo",
+        shiny::radioButtons("pc_trafo",
           label = "Apply transformation?",
           choices = list("No", "Yes"),
           selected = "No",
@@ -45,16 +48,16 @@ visualize = function(instance) {
       ),
       shiny::conditionalPanel(
         "input.nav === 'Partial Dependence Plots'",
-        shiny::radioButtons("select_branch",
+        shiny::radioButtons("pdp_branch",
           label = "Select branch:",
           choices = branches
         ),
-        shiny::selectInput("select_x",
+        shiny::selectInput("pdp_x",
           label = "Select parameter for x-axis:",
           choices = param_ids,
           selected = param_ids[[1]]
         ),
-        shiny::selectInput("select_y",
+        shiny::selectInput("pdp_y",
           label = "Select parameter for y-axis:",
           choices = param_ids,
           selected = param_ids[[2]]
@@ -87,35 +90,35 @@ visualize = function(instance) {
     })
 
     output$marginal_plot = renderPlot({
-      if (input$y == "NULL") {
-        marginal_plot(archive, x = input$x)
+      if (input$mp_y == "NULL") {
+        marginal_plot(archive, x = input$mp_x)
       } else {
-        marginal_plot(archive, x = input$x, y = input$y)
+        marginal_plot(archive, x = input$mp_x, y = input$mp_y)
       }
     })
 
     output$parallel_coordinates = renderPlot({
-      if (is.null(input$cols_x)) return() # nothing selected
-      trafo = input$trafo == "Yes"
-      parallel_coordinates(archive, cols_x = input$cols_x, trafo = trafo)
+      if (is.null(input$pc_cols_x)) return() # nothing selected
+      trafo = input$pc_trafo == "Yes"
+      parallel_coordinates(archive, cols_x = input$pc_cols_x, trafo = trafo)
     })
-    shiny::observeEvent(input$unselect_all, {
-      shiny::updateCheckboxGroupInput(session, "cols_x", choices = param_ids, selected = NULL)
+    shiny::observeEvent(input$pc_unselect_all, {
+      shiny::updateCheckboxGroupInput(session, "pc_cols_x", choices = param_ids, selected = NULL)
     })
-    shiny::observeEvent(input$select_all, {
-      shiny::updateCheckboxGroupInput(session, "cols_x", choices = param_ids, selected = param_ids)
+    shiny::observeEvent(input$pc_select_all, {
+      shiny::updateCheckboxGroupInput(session, "pc_cols_x", choices = param_ids, selected = param_ids)
     })
 
 
-    shiny::observeEvent(input$select_branch, {
-      selectable_ids = param_ids[startsWith(param_ids, input$select_branch)]
-      shiny::updateSelectInput(session, "select_x", choices = selectable_ids, selected = selectable_ids[[1]])
-      shiny::updateSelectInput(session, "select_y", choices = selectable_ids, selected = selectable_ids[[2]])
+    shiny::observeEvent(input$pdp_branch, {
+      selectable_ids = param_ids[startsWith(param_ids, input$pdp_branch)]
+      shiny::updateSelectInput(session, "pdp_x", choices = selectable_ids, selected = selectable_ids[[1]])
+      shiny::updateSelectInput(session, "pdp_y", choices = selectable_ids, selected = selectable_ids[[2]])
     })
     output$pdp = renderPlot({
-      if (is.null(input$select_x)) return()
+      if (is.null(input$pdp_x)) return()
       partial_dependence_plot(
-        instance, x = input$select_x, y = input$select_y,
+        instance, x = input$pdp_x, y = input$pdp_y,
         type = "default", grid_size = 20
       )      
     })
