@@ -291,3 +291,29 @@ partial_dependence_plot = function(
   # TBD: remove existing scales, use viridis instead
   g + ggplot2::scale_fill_viridis_c(name = objective) + theme
 }
+
+
+#' @title Pareto Front
+#' 
+#' @description Plots the Pareto front with x-axis representing the tuning objective (e.g. `"classif.ce`) and y-axis representing time (the `runtime_learners` column in the archive).
+#' 
+#' @param instance ([`mlr3tuning::TuningInstanceAsyncSingleCrit`])
+pareto_front = function(instance, theme = ggplot2::theme_minimal()) {
+  # adopted from `Archive$best()` for multi-crit
+  archive = instance$archive
+  tab = archive$finished_data
+  ymat = t(as.matrix(tab[, c(archive$cols_y, "runtime_learners"), with = FALSE]))
+  ymat = archive$codomain$maximization_to_minimization * ymat
+  best = tab[!bbotk::is_dominated(ymat)]
+  
+  .data = NULL
+  ggplot2::ggplot() +
+    ggplot2::geom_point(data = archive$data,
+      ggplot2::aes(x = .data[[archive$cols_y]], y = .data$runtime_learners),
+      alpha = 0.2
+    ) +
+    ggplot2::geom_step(data = best,
+      ggplot2::aes(x = .data[[archive$cols_y]], y = .data$runtime_learners)
+    ) +
+    theme
+}
