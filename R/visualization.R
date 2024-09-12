@@ -3,24 +3,35 @@
 #' @description
 #' 
 #' @template param_instance
+#' @param time (`character(1)`)\cr
+#'   Column in the archive to be interpreted as the time variable, e.g. "timestamp_xs", "timestamp_ys".
+#'   If `NULL` (default), the configuration ID will be used.
 #' @template param_theme
 #' 
 #' @export
-cost_over_time = function(archive, theme = ggplot2::theme_minimal()) {
+cost_over_time = function(archive, time = NULL, theme = ggplot2::theme_minimal()) {
   # there should only be one objective, e.g. `classif.ce`
-  measure = archive$cols_y
-  
+  objective = archive$cols_y
+
   .data = NULL
-  ggplot2::ggplot(data = archive$data, ggplot2::aes(
-      x = seq_row(archive$data),
-      y = .data[[measure]]
+  if (is.null(time)) {
+    x = seq_row(archive$data)
+    g = ggplot2::ggplot(data = as.data.table(archive), ggplot2::aes(
+      x = x,
+      y = .data[[objective]]
     )) +
-    ggplot2::geom_point() +
+    ggplot2::labs(x = "configuration ID")
+  } else {
+    assert_choice(time, names(as.data.table(archive)))
+    g = ggplot2::ggplot(data = as.data.table(archive), ggplot2::aes(
+      x = .data[[time]],
+      y = .data[[objective]]
+    ))
+  }
+  
+  
+  g + ggplot2::geom_point() +
     ggplot2::geom_line() +
-    ggplot2::labs(
-      title = "Cost over time",
-      x = "configuration ID"
-    ) +
     theme
 }
 

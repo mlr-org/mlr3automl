@@ -13,6 +13,13 @@ visualize = function(instance) {
 
     sidebar = bslib::sidebar(
       # TBD: cost over time: select timestamp_x / timestamp_y / config_id
+      shiny::conditionalPanel(
+        "input.nav === 'Cost Over Time'",
+        shiny::radioButtons("cot_x",
+          label = "Select x-axis:",
+          choices = c("configuration ID", "timestamp_xs", "timestamp_ys")
+        )
+      ),
       param_panel(
         "input.nav === 'Marginal Plots'",
         "mp",
@@ -81,7 +88,11 @@ visualize = function(instance) {
 
     # Cost over time
     output$cost_over_time = renderPlot({
-      cost_over_time(archive)
+      if (input$cot_x == "configuration ID") {
+        cost_over_time(archive)
+      } else {
+        cost_over_time(archive, time = input$cot_x)
+      }
     })
 
 
