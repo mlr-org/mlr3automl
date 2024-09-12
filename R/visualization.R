@@ -59,7 +59,6 @@ marginal_plot = function(archive, x, y = NULL, theme = ggplot2::theme_minimal())
       y = .data[[measure]]
     )) +
     ggplot2::geom_point(alpha = 0.6) +
-    ggplot2::labs(title = "Marginal plot") +
     theme
 
     if (archive$search_space$is_logscale[[x]]) {
@@ -77,7 +76,7 @@ marginal_plot = function(archive, x, y = NULL, theme = ggplot2::theme_minimal())
     )) +
     ggplot2::geom_point(alpha = 0.6) +
     ggplot2::scale_color_viridis_c() +
-    ggplot2::labs(title = "Marginal plot", x = x) +
+    ggplot2::labs(x = x) +
     theme
 
   if (archive$search_space$is_logscale[[x]]) {
