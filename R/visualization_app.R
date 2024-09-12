@@ -79,6 +79,10 @@ visualize = function(instance) {
     bslib::nav_panel(
       "Partial Dependence Plots",
       bslib::card(shiny::plotOutput("pdp"))
+    ),
+    bslib::nav_panel(
+      "Pareto Front",
+      bslib::card(shiny::plotOutput("pf"))
     )
   )
 
@@ -121,6 +125,11 @@ visualize = function(instance) {
         instance, x = input$pdp_x, y = input$pdp_y,
         type = "default"
       )      
+    })
+
+    
+    output$pf = renderPlot({
+      pareto_front(instance)
     })
   }
 
