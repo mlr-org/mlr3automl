@@ -2,8 +2,8 @@
 #' 
 #' @description
 #' 
-#' @template archive
-#' @template theme
+#' @template param_instance
+#' @template param_theme
 #' 
 #' @export
 cost_over_time = function(archive, theme = ggplot2::theme_minimal()) {
@@ -28,13 +28,13 @@ cost_over_time = function(archive, theme = ggplot2::theme_minimal()) {
 #' 
 #' @description
 #' 
-#' @param instance (`[mlr3tuning::TuningInstanceAsyncSingleCrit]`)
+#' @template param_instance
 #' @param x (`character(1)`)
 #'  Name of the parameter to be mapped to the x-axis.
 #' @param y (`character(1)`)
 #'  Name of the parameter to be mapped to the y-axis.
 #'  If `NULL` (default), the measure (e.g. `classif.ce`) is mapped to the y-axis.
-#' @template theme
+#' @template param_theme
 #' 
 #' @export
 marginal_plot = function(archive, x, y = NULL, theme = ggplot2::theme_minimal()) {
@@ -95,14 +95,14 @@ marginal_plot = function(archive, x, y = NULL, theme = ggplot2::theme_minimal())
 #' 
 #' @description Adapted from [mlr3viz::autoplot()] with `type == "parallel"`. Since the hyperparameters of each individual learner are conditioned on `branch.selection`, missing values are expected in the archive data. When standardizing the hyperparameter values (referred to as "x values" in the following to be consistent with `mlr3viz` documentation), `na.omit == TRUE` is used to compute `mean()` and `sd()`.
 #' 
-#' @template archive
+#' @template param_instance
 #' @param cols_x (`character()`)
 #'  Column names of x values.
 #'  By default, all untransformed x values from the search space are plotted.
 #' @param trafo (`character(1)`)
 #'  If `FALSE` (default), the untransformed x values are plotted.
 #'  If `TRUE`, the transformed x values are plotted.
-#' @template theme
+#' @template param_theme
 #'
 #' @export
 parallel_coordinates = function(archive, cols_x = NULL, trafo = FALSE, theme = ggplot2::theme_minimal()) {
@@ -192,7 +192,7 @@ parallel_coordinates = function(archive, cols_x = NULL, trafo = FALSE, theme = g
 #' 
 #' @description Creates a partial dependenc plot (PDP) via the `[iml]` package.
 #' 
-#' @param instance ([`mlr3tuning::TuningInstanceAsyncSingleCrit`])
+#' @template param_instance
 #' @param x (`character(1)`)
 #'  Name of the parameter to be mapped to the x-axis.
 #' @param y (`character(1)`)
@@ -206,7 +206,7 @@ parallel_coordinates = function(archive, cols_x = NULL, trafo = FALSE, theme = g
 #'    \item `"contour"`: Create a contour plot using `[ggplot2::geom_contour_filled]`. Only supported if both parameters are numerical.
 #'  }
 #'  Ignored if only one parameter is provided.
-#' @template theme
+#' @template param_theme
 #'
 #' @export
 partial_dependence_plot = function(
@@ -297,7 +297,10 @@ partial_dependence_plot = function(
 #' 
 #' @description Plots the Pareto front with x-axis representing the tuning objective (e.g. `"classif.ce`) and y-axis representing time (the `runtime_learners` column in the archive).
 #' 
-#' @param instance ([`mlr3tuning::TuningInstanceAsyncSingleCrit`])
+#' @template param_instance
+#' @template param_theme
+#' 
+#' @export
 pareto_front = function(instance, theme = ggplot2::theme_minimal()) {
   # adopted from `Archive$best()` for multi-crit
   archive = instance$archive
