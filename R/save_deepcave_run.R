@@ -135,11 +135,12 @@ save_deepcave_run = function(instance, path = "logs/mlr3automl", prefix = "run",
 
 # Prepare the list for converting to `configs.json`
 get_configs = function(instance){
-  param_ids = instance$search_space$data$id
+  archive = instance$archive
+  param_ids = archive$cols_x
 
   # skip branch.selection if there is only one level
   id = NULL # resolve global variable note in R CDM check
-  nbranches = instance$search_space$data[id == "branch.selection", "nlevels", with = FALSE]
+  nbranches = length(unique(archive$data$branch.selection))
   if (nbranches == 1) {
     param_ids = setdiff(param_ids, "branch.selection")
   }
@@ -149,7 +150,7 @@ get_configs = function(instance){
   logscale_params = param_ids[instance$search_space$is_logscale[param_ids]]
   config_table[, (logscale_params) := lapply(.SD, exp), .SDcols = logscale_params]
 
-  configs_list = map(seq_len(nrow(config_table)), function(i) {
+  configs_list = map(seq_row(config_table), function(i) {
     discard(as.list(config_table[i, ]), is.na)
   })
   names(configs_list) = seq_along(configs_list) - 1
@@ -160,7 +161,7 @@ get_configs = function(instance){
 
 # Prepare the list for converting to `configspace.json`
 get_configspace = function(instance) {
-  param_ids = instance$search_space$data$id
+  param_ids = instance$archive$cols_x
 
   hyperparameters_list = map(param_ids, function(param_id) {
     id = NULL # resolve global variable note in R CDM check
@@ -227,7 +228,7 @@ get_configspace = function(instance) {
     parent = dependency[["on"]]
 
     # remove dependency on branch.selection if there is only one branch
-    nbranches = instance$search_space$data[id == "branch.selection", "nlevels", with = FALSE]
+    nbranches = length(unique(archive$data$branch.selection))
     if (parent == "branch.selection" && nbranches == 1) return()
     
     # `cond` below is a list of `Condition`s.
@@ -251,12 +252,12 @@ get_configspace = function(instance) {
 
 # Prepare the data.table for converting to `history.jsonl`
 get_history = function(instance) {
-  costs = instance$objective$codomain$data$id
+  costs = instance$archive$cols_y
 
   selected_cols = c(costs, "timestamp_xs", "timestamp_ys", "state")
   timestamp_xs = timestamp_ys = state = NULL # resolve global variable note in R CDM check
   history_table = instance$archive$data[, selected_cols, with = FALSE][, list(
-    config_id = seq_len(nrow(instance$archive$data)) - 1,
+    config_id = seq_row(instance$archive$data) - 1,
     budget = 0,
     seed = -1,
     # combine costs into a list column
@@ -278,7 +279,7 @@ get_history = function(instance) {
 
 # Prepare the list for converting to 'meta.json'
 get_meta = function(instance){
-  costs = instance$objective$codomain$data$id
+  costs = instance$archive$cols_y
 
   objectives_list = map(costs, function(cost) {
     measure = msr(cost)
