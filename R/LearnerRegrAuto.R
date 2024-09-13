@@ -3,8 +3,8 @@
 #' @description
 #' Regression auto learner.
 #'
-#' @param id (`character(1)`)\cr
-#'   Identifier for the new instance.
+#' @template param_id
+#' @template param_learner_ids
 #'
 #' @export
 LearnerRegrAuto = R6Class("LearnerRegrAuto",

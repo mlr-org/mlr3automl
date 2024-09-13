@@ -60,6 +60,9 @@ Creates a new instance of this \link[R6:R6Class]{R6} class.
 \describe{
 \item{\code{id}}{(\code{character(1)})\cr
 Identifier for the new instance.}
+
+\item{\code{learner_ids}}{(\code{character()})\cr
+Learner that should be used.}
 }
 \if{html}{\out{</div>}}
 }

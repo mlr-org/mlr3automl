@@ -75,6 +75,7 @@ Collate:
     'LearnerRegrAutoXgboost.R'
     'build_graph.R'
     'helper.R'
+    'internal_measure.R'
     'memory_usage.R'
     'train_auto.R'
     'zzz.R'

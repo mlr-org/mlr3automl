@@ -4,6 +4,7 @@
 #' Classification auto learner.
 #'
 #' @template param_id
+#' @template param_learner_ids
 #'
 #' @export
 LearnerClassifAuto = R6Class("LearnerClassifAuto",
