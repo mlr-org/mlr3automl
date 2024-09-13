@@ -48,8 +48,6 @@ test_that("internal eval metric is found", {
   )
 
   learner$train(task)
-  expect_equal()
-
   expect_equal(learner$instance$archive$benchmark_result$resample_result(1)$learners[[1]]$model$catboost$param_vals$eval_metric, "Accuracy")
 
   learner = lrn("classif.auto_catboost",

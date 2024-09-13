@@ -64,38 +64,6 @@ test_that("kknn works", {
   expect_equal(learner$model$instance$result$branch.selection, "kknn")
 })
 
-test_that("only lda fails", {
-  rush_plan(n_workers = 2)
-
-  task = tsk("mtcars")
-  expect_error(lrn("regr.auto",
-    learner_ids = "lda",
-    small_data_size = 1,
-    resampling = rsmp("holdout"),
-    measure = msr("regr.rmse"),
-    terminator = trm("evals", n_evals = 6)
-  ), "must be combined with other learners")
-})
-
-test_that("lda and glmnet works", {
-  rush_plan(n_workers = 2)
-  skip_if_not_installed("glmnet")
-
-
-  task = tsk("mtcars")
-  learner = lrn("regr.auto",
-    learner_ids = c("lda", "glmnet"),
-    small_data_size = 1,
-    resampling = rsmp("holdout"),
-    measure = msr("regr.rmse"),
-    terminator = trm("evals", n_evals = 6)
-  )
-
-  expect_class(learner$train(task), "LearnerRegrAuto")
-  expect_subset(learner$graph$param_set$values$branch.selection, c("glmnet", "lda"))
-  expect_subset(learner$model$instance$result$branch.selection, c("glmnet", "lda"))
-})
-
 test_that("nnet works", {
   rush_plan(n_workers = 2)
   skip_if_not_installed("nnet")

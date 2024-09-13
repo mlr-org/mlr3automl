@@ -51,7 +51,7 @@ LearnerRegrAuto = R6Class("LearnerRegrAuto",
         small_data_resampling = p_uty(tags = c("train", "super")),
         # cardinality
         max_cardinality = p_int(lower = 1L, default = 100L, tags = c("train", "super")),
-        extra_trees_max_cardinality = p_int(lower = 1L, default = 40L, tags = c("train", "extratrees")),
+        extra_trees_max_cardinality = p_int(lower = 1L, default = 40L, tags = c("train", "extra_trees")),
         # tuner
         resampling = p_uty(tags = c("train", "super")),
         terminator = p_uty(tags = c("train", "super")),
