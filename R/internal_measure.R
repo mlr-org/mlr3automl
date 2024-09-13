@@ -1,3 +1,14 @@
+#' @title Internal Measure
+#'
+#' @description
+#' Internal measure.
+#'
+#' @param measure [mlr3::Measure]\cr
+#' Measure.
+#' @param task [mlr3::Task]\cr
+#' Task.
+#'
+#' @export
 xgboost_internal_measure = function(measure, task) {
   id = measure$id
 
@@ -28,6 +39,17 @@ xgboost_internal_measure = function(measure, task) {
   return(metric %??% NA_character_)
 }
 
+#' @title Internal Measure
+#'
+#' @description
+#' Internal measure.
+#'
+#' @param measure [mlr3::Measure]\cr
+#' Measure.
+#' @param task [mlr3::Task]\cr
+#' Task.
+#'
+#' @export
 catboost_internal_measure = function(measure, task) {
   id = measure$id
 
@@ -60,6 +82,17 @@ catboost_internal_measure = function(measure, task) {
   return(metric %??% NA_character_)
 }
 
+#' @title Internal Measure
+#'
+#' @description
+#' Internal measure.
+#'
+#' @param measure [mlr3::Measure]\cr
+#' Measure.
+#' @param task [mlr3::Task]\cr
+#' Task.
+#'
+#' @export
 lightgbm_internal_measure = function(measure, task) {
   id = measure$id
 
