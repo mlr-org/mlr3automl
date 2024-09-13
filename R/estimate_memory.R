@@ -5,9 +5,10 @@
 #'
 #' @param learner [mlr3::Learner]\cr
 #' The learner to estimate the memory usage for.
-#'
 #' @param task [mlr3::Task]\cr
 #' The task to estimate the memory usage for.
+#' @param ... (`any`)\cr
+#' Additional arguments.
 #'
 #' @return `numeric(1)`\cr
 #' The estimated memory usage in bytes.
