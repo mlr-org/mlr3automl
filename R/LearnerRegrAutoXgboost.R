@@ -6,8 +6,8 @@
 #' @template param_id
 #'
 #' @export
-LearnerClassifAutoXgboost = R6Class("LearnerClassifAutoXgboost",
-  inherit = LearnerClassifAuto,
+LearnerRegrAutoXgboost = R6Class("LearnerRegrAutoXgboost",
+  inherit = LearnerRegrAuto,
   public = list(
 
     #' @description
