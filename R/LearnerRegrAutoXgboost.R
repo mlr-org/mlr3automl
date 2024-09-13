@@ -1,7 +1,7 @@
-#' @title Classification XGBoost Auto Learner
+#' @title Regression XGBoost Auto Learner
 #'
 #' @description
-#' Classification auto learner.
+#' Regression auto learner.
 #'
 #' @template param_id
 #'
@@ -12,11 +12,11 @@ LearnerClassifAutoXgboost = R6Class("LearnerClassifAutoXgboost",
 
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
-    initialize = function(id = "classif.auto_xgboost") {
+    initialize = function(id = "regr.auto_xgboost") {
       super$initialize(id = id, learner_ids = "xgboost")
     }
   )
 )
 
 #' @include aaa.R
-learners[["classif.auto_xgboost"]] = LearnerClassifAutoXgboost
+learners[["regr.auto_xgboost"]] = LearnerRegrAutoXgboost

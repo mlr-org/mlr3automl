@@ -13,7 +13,7 @@ LearnerClassifAutoGlmnet = R6Class("LearnerClassifAutoGlmnet",
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "classif.auto_glmnet") {
-      super$initialize(id = id)
+      super$initialize(id = id, learner_ids = "glmnet")
 
       # reduce parameter set to the relevant parameters
       private$.param_set = private$.param_set$subset(

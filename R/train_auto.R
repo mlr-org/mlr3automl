@@ -1,20 +1,18 @@
-train_auto = function(self, task, task_type) {
+train_auto = function(self, task) {
   pv = self$param_set$values
   learner_ids = pv$learner_ids
-  self$graph = build_graph(learner_ids, task_type)
-  self$tuning_space = tuning_space[learner_ids]
 
   lg$debug("Training '%s' on task '%s'", self$id, task$id)
 
   # initialize mbo tuner
-  tuner = tnr("adbo")
+  tuner = tnr("async_mbo")
 
   # remove learner based on memory limit
   lg$debug("Starting to select from %i learners: %s", length(learner_ids), paste0(learner_ids, collapse = ","))
 
   if (!is.null(pv$max_memory)) {
     memory_usage = map_dbl(learner_ids, function(learner_id) {
-      self$graph$pipeops[[learner_id]]$learner$estimate_memory_usage(task) / 1e6
+      estimate_memory(self$graph$pipeops[[learner_id]]$learner) / 1e6
     })
     learner_ids = learner_ids[memory_usage < pv$max_memory]
     lg$debug("Checking learners for memory limit of %i MB. Keeping %i learner(s): %s", pv$max_memory, length(learner_ids), paste0(learner_ids, collapse = ","))
@@ -134,7 +132,7 @@ train_auto = function(self, task, task_type) {
     measures = pv$measure,
     terminator = pv$terminator,
     search_space = search_space,
-    callbacks = pv$callbacks,
+    callbacks = c(pv$callbacks, clbk("mlr3mbo.exponential_lambda_decay")),
     store_benchmark_result = pv$store_benchmark_result
   )
 

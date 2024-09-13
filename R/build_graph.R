@@ -1,13 +1,6 @@
 build_graph = function(learner_ids, task_type) {
-  assert_choice(task_type, c("classif", "regr"))
-  learners_reg = c("glmnet", "kknn", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm")
-  if (task_type == "regr") {
-    assert_subset(learner_ids, learners_reg)
-  } else {
-    assert_subset(learner_ids, c(learners_reg, "lda"))
-  }
-
   branches = list()
+
   # glmnet
   if ("glmnet" %in% learner_ids) {
     branch_glmnet = po("removeconstants", id = "glmnet_removeconstants") %>>%

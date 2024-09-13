@@ -44,9 +44,9 @@ Suggests:
     xgboost
 Remotes:
     catboost/catboost/catboost/R-package,
-    mlr-org/mlr3@learner_size,
-    mlr-org/mlr3extralearners@mlr3automl,
-    mlr-org/mlr3learners@mlr3automl,
+    mlr-org/mlr3,
+    mlr-org/mlr3extralearners,
+    mlr-org/mlr3learners,
     mlr-org/mlr3mbo@adbo,
     mlr-org/mlr3pipelines
 Config/testthat/edition: 3
@@ -67,7 +67,8 @@ Collate:
     'LearnerClassifAutoSVM.R'
     'LearnerClassifAutoXgboost.R'
     'LearnerRegrAuto.R'
-    'helper.R'
     'build_graph.R'
+    'helper.R'
+    'memory_usage.R'
     'train_auto.R'
     'zzz.R'
