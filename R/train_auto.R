@@ -1,18 +1,18 @@
-train_auto = function(self, task) {
+train_auto = function(self, private, task) {
   pv = self$param_set$values
-  learner_ids = pv$learner_ids
+  learner_ids = private$.learner_ids
 
   lg$debug("Training '%s' on task '%s'", self$id, task$id)
 
   # initialize mbo tuner
-  tuner = tnr("async_mbo")
+  tuner = tnr("async_mbo", acq_function = acqf("cb", lambda = 3))
 
   # remove learner based on memory limit
   lg$debug("Starting to select from %i learners: %s", length(learner_ids), paste0(learner_ids, collapse = ","))
 
   if (!is.null(pv$max_memory)) {
     memory_usage = map_dbl(learner_ids, function(learner_id) {
-      estimate_memory(self$graph$pipeops[[learner_id]]$learner) / 1e6
+      estimate_memory(self$graph$pipeops[[learner_id]]$learner, task) / 1e6
     })
     learner_ids = learner_ids[memory_usage < pv$max_memory]
     lg$debug("Checking learners for memory limit of %i MB. Keeping %i learner(s): %s", pv$max_memory, length(learner_ids), paste0(learner_ids, collapse = ","))
@@ -75,8 +75,7 @@ train_auto = function(self, task) {
   graph_learner = as_learner(self$graph)
   graph_learner$id = "graph_learner"
   graph_learner$predict_type = pv$measure$predict_type
-  graph_learner$fallback = lrn(paste0(task_type, ".featureless"), predict_type = pv$measure$predict_type)
-  graph_learner$encapsulate = c(train = "callr", predict = "callr")
+  graph_learner$encapsulate("callr", lrn(paste0(graph_learner$task_type, ".featureless")))
   graph_learner$timeout = c(train = pv$learner_timeout, predict = pv$learner_timeout)
 
   learners_with_validation = intersect(learner_ids, c("xgboost", "catboost", "lightgbm"))
@@ -87,14 +86,22 @@ train_auto = function(self, task) {
   # set early stopping
   if ("xgboost" %in% learner_ids) {
     graph_learner$param_set$values$xgboost.callbacks = list(cb_timeout_xgboost(pv$learner_timeout * 0.8))
-    graph_learner$param_set$values$xgboost.eval_metric = pv$xgboost_eval_metric
+    eval_metric = pv$xgboost_eval_metric %??% xgboost_internal_measure(pv$measure, task)
+    if (is.na(eval_metric)) eval_metric = pv$xgboost_eval_metric
+    graph_learner$param_set$values$xgboost.eval_metric = eval_metric
   }
   if ("catboost" %in% learner_ids) {
-    graph_learner$param_set$values$catboost.eval_metric = pv$catboost_eval_metric
+    eval_metric = pv$catboost_eval_metric %??% catboost_internal_measure(pv$measure, task)
+    if (is.na(eval_metric)) {
+      stopf("No suitable catboost eval metric found for measure %s on task '%s'. Please set the `catboost_eval_metric` parameter.", pv$measure$id, task$id)
+    }
+    graph_learner$param_set$values$catboost.eval_metric = eval_metric
   }
   if ("lightgbm" %in% learner_ids) {
     graph_learner$param_set$values$lightgbm.callbacks = list(cb_timeout_lightgbm(pv$learner_timeout * 0.8))
-    graph_learner$param_set$values$lightgbm.eval = pv$lightgbm_eval_metric
+    eval_metric = pv$lightgbm_eval_metric %??% lightgbm_internal_measure(pv$measure, task)
+    if (is.na(eval_metric)) eval_metric = pv$lightgbm_eval_metric
+    graph_learner$param_set$values$lightgbm.eval = eval_metric
   }
 
   # initialize search space
@@ -133,7 +140,8 @@ train_auto = function(self, task) {
     terminator = pv$terminator,
     search_space = search_space,
     callbacks = c(pv$callbacks, clbk("mlr3mbo.exponential_lambda_decay")),
-    store_benchmark_result = pv$store_benchmark_result
+    store_benchmark_result = pv$store_benchmark_result,
+    store_models = pv$store_models
   )
 
   # tune

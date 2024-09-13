@@ -1,13 +1,13 @@
-test_that("LearnerClassifAutoSVM is initialized", {
-  learner = lrn("classif.auto_svm",
-    measure = msr("classif.ce"),
+test_that("LearnerRegrAutoSVM is initialized", {
+  learner = lrn("regr.auto_svm",
+    measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 10))
 
   expect_class(learner$graph, "Graph")
   expect_list(learner$tuning_space)
 })
 
-test_that("LearnerClassifAutoSVM is trained", {
+test_that("LearnerRegrAutoSVM is trained", {
   skip_on_cran()
   skip_if_not_installed("rush")
   flush_redis()
@@ -15,15 +15,15 @@ test_that("LearnerClassifAutoSVM is trained", {
   rush_plan(n_workers = 2)
   lgr::get_logger("mlr3automl")$set_threshold("debug")
 
-  task = tsk("penguins")
-  learner = lrn("classif.auto_svm",
+  task = tsk("mtcars")
+  learner = lrn("regr.auto_svm",
     small_data_size = 1,
     resampling = rsmp("holdout"),
-    measure = msr("classif.ce"),
+    measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 6)
   )
 
-  expect_class(learner$train(task), "LearnerClassifAutoSVM")
+  expect_class(learner$train(task), "LearnerRegrAutoSVM")
   expect_equal(learner$graph$param_set$values$branch.selection, "svm")
   expect_equal(learner$model$instance$result$branch.selection, "svm")
 })

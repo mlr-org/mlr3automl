@@ -1,13 +1,13 @@
-test_that("LearnerClassifAutoNnet is initialized", {
-  learner = lrn("classif.auto_nnet",
-    measure = msr("classif.ce"),
+test_that("LearnerRegrAutoNnet is initialized", {
+  learner = lrn("regr.auto_nnet",
+    measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 10))
 
   expect_class(learner$graph, "Graph")
   expect_list(learner$tuning_space)
 })
 
-test_that("LearnerClassifAutoNnet is trained", {
+test_that("LearnerRegrAutoNnet is trained", {
   skip_on_cran()
   skip_if_not_installed("rush")
   flush_redis()
@@ -15,15 +15,15 @@ test_that("LearnerClassifAutoNnet is trained", {
   rush_plan(n_workers = 2)
   lgr::get_logger("mlr3automl")$set_threshold("debug")
 
-  task = tsk("penguins")
-  learner = lrn("classif.auto_nnet",
+  task = tsk("mtcars")
+  learner = lrn("regr.auto_nnet",
     small_data_size = 1,
     resampling = rsmp("holdout"),
-    measure = msr("classif.ce"),
+    measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 6)
   )
 
-  expect_class(learner$train(task), "LearnerClassifAutoNnet")
+  expect_class(learner$train(task), "LearnerRegrAutoNnet")
   expect_equal(learner$graph$param_set$values$branch.selection, "nnet")
   expect_equal(learner$model$instance$result$branch.selection, "nnet")
 })

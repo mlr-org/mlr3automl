@@ -110,7 +110,7 @@ estimate_memory.LearnerRegrCatboost = function(learner, task, ...) {
 
   # data size
   data_set_size = task$nrow * task$ncol * 8
-  data_size = data_set_size * 5 + data_set_size / 4 * length(task$class_names)
+  data_size = data_set_size * 5 + data_set_size / 4
 
   return(histogram_size + data_size)
 }
@@ -144,8 +144,7 @@ estimate_memory.LearnerRegrLightGBM = function(learner, task, ...) {
 
   # data size
   data_set_size = task$nrow * task$ncol * 8
-  data_size = data_set_size * 5 + data_set_size / 4 * length(task$class_names)
-
+  data_size = data_set_size * 5 + data_set_size / 4
   return(histogram_size + data_size)
 }
 

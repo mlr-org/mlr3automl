@@ -58,7 +58,8 @@ LearnerRegrAuto = R6Class("LearnerRegrAuto",
         measure = p_uty(tags = c("train", "super")),
         lhs_size = p_int(lower = 1L, default = 4L, tags = c("train", "super")),
         callbacks = p_uty(tags = c("train", "super")),
-        store_benchmark_result = p_lgl(default = FALSE, tags = c("train", "super")))
+        store_benchmark_result = p_lgl(default = FALSE, tags = c("train", "super")),
+        store_models = p_lgl(default = FALSE, tags = c("train", "super")))
 
       param_set$set_values(
         learner_timeout = 900L,
@@ -75,7 +76,8 @@ LearnerRegrAuto = R6Class("LearnerRegrAuto",
         terminator = trm("run_time", secs = 14400L),
         measure = msr("regr.mse"),
         lhs_size = 4L,
-        store_benchmark_result = FALSE)
+        store_benchmark_result = FALSE,
+        store_models = FALSE)
 
       # subset to relevant parameters for selected learners
       param_set = param_set$subset(ids = unique(param_set$ids(any_tags = c("super", learner_ids))))
@@ -94,8 +96,10 @@ LearnerRegrAuto = R6Class("LearnerRegrAuto",
     }
   ),
   private = list(
+    .learner_ids = NULL,
+
     .train = function(task) {
-      train_auto(self, task)
+      train_auto(self, private, task)
     },
 
     .predict = function(task) {

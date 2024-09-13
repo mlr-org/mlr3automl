@@ -48,7 +48,11 @@ Regression auto learner.
 \subsection{Method \code{new()}}{
 Creates a new instance of this \link[R6:R6Class]{R6} class.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LearnerRegrAuto$new(id = "regr.auto")}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LearnerRegrAuto$new(
+  id = "regr.auto",
+  learner_ids = c("glmnet", "kknn", "nnet", "ranger", "svm", "xgboost", "catboost",
+    "extra_trees", "lightgbm")
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
