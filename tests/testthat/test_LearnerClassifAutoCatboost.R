@@ -13,7 +13,7 @@ test_that("LearnerClassifAutoCatboost is trained", {
   flush_redis()
 
   rush_plan(n_workers = 2)
-  lgr::get_logger("mlr3automl")$set_threshold("debug")
+
 
   task = tsk("penguins")
   learner = lrn("classif.auto_catboost",
@@ -35,7 +35,7 @@ test_that("internal eval metric is found", {
   flush_redis()
 
   rush_plan(n_workers = 2)
-  lgr::get_logger("mlr3automl")$set_threshold("debug")
+
 
   task = tsk("penguins")
   learner = lrn("classif.auto_catboost",

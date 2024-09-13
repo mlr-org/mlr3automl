@@ -13,7 +13,7 @@ test_that("LearnerRegrAutoLightGBM is trained", {
   flush_redis()
 
   rush_plan(n_workers = 2)
-  lgr::get_logger("mlr3automl")$set_threshold("debug")
+
 
   task = tsk("mtcars")
   learner = lrn("regr.auto_lightgbm",
