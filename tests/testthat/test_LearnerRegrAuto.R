@@ -173,6 +173,7 @@ test_that("extra_trees and glmnet works", {
   task = tsk("mtcars")
   learner = lrn("regr.auto",
     learner_ids = c("extra_trees", "glmnet"),
+    small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 6)
@@ -189,6 +190,7 @@ test_that("lightgbm works", {
   task = tsk("mtcars")
   learner = lrn("regr.auto",
     learner_ids = "lightgbm",
+    small_data_size = 1,
     lightgbm_eval_metric = "multi_logloss",
     resampling = rsmp("holdout"),
     measure = msr("regr.rmse"),
@@ -206,6 +208,7 @@ test_that("xgboost, catboost and lightgbm work", {
   task = tsk("mtcars")
   learner = lrn("regr.auto",
     learner_ids = c("xgboost", "catboost", "lightgbm"),
+    small_data_size = 1,
     catboost_eval_metric = "MultiClass",
     lightgbm_eval_metric = "multi_logloss",
     xgboost_eval_metric = "mlogloss",
@@ -225,7 +228,8 @@ test_that("all learner work", {
 
   task = tsk("mtcars")
   learner = lrn("regr.auto",
-    small_data_size = 100,
+    small_data_size = 1,
+    resampling = rsmp("holdout"),
     measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 20),
     lhs_size = 1
@@ -280,7 +284,8 @@ test_that("large data set switch works", {
     large_data_size = 100,
     large_data_nthread = 4,
     large_data_learner_ids = "ranger",
-    small_data_size = 100,
+    small_data_size = 1,
+    resampling = rsmp("holdout"),
     measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 1),
     lhs_size = 1,

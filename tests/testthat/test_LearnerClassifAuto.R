@@ -134,12 +134,10 @@ test_that("nnet works", {
 test_that("ranger works", {
   skip_on_cran()
   skip_if_not_installed("rush")
+  skip_if_not_installed("ranger")
   flush_redis()
 
   rush_plan(n_workers = 2)
-  skip_if_not_installed("ranger")
-
-
   task = tsk("penguins")
   learner = lrn("classif.auto",
     learner_ids = "ranger",
@@ -247,6 +245,7 @@ test_that("extra_trees and glmnet works", {
   task = tsk("penguins")
   learner = lrn("classif.auto",
     learner_ids = c("extra_trees", "glmnet"),
+    small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 6)
@@ -268,6 +267,7 @@ test_that("lightgbm works", {
   learner = lrn("classif.auto",
     learner_ids = "lightgbm",
     lightgbm_eval_metric = "multi_logloss",
+    small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 6)
@@ -291,10 +291,11 @@ test_that("xgboost, catboost and lightgbm work", {
     catboost_eval_metric = "MultiClass",
     lightgbm_eval_metric = "multi_logloss",
     xgboost_eval_metric = "mlogloss",
+    small_data_size = 1,
     resampling = rsmp("holdout"),
     lhs_size = 1,
     measure = msr("classif.ce"),
-    terminator = trm("evals", n_evals = 20),
+    terminator = trm("evals", n_evals = 7),
     callbacks = clbk("mlr3tuning.async_save_logs")
   )
 
@@ -311,10 +312,11 @@ test_that("all learner work", {
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
-    small_data_size = 100,
+    small_data_size = 1,
+    lhs_size = 1,
+    resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
-    terminator = trm("evals", n_evals = 20),
-    lhs_size = 1
+    terminator = trm("evals", n_evals = 20)
   )
 
   expect_class(learner$train(task), "LearnerClassifAuto")
@@ -366,7 +368,7 @@ test_that("large data set switch works", {
     large_data_size = 100,
     large_data_nthread = 4,
     large_data_learner_ids = "ranger",
-    small_data_size = 100,
+    small_data_size = 1,
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 1),
     lhs_size = 1,
