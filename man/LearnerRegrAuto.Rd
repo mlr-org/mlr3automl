@@ -2,9 +2,10 @@
 % Please edit documentation in R/LearnerRegrAuto.R
 \name{LearnerRegrAuto}
 \alias{LearnerRegrAuto}
-\title{Regression Auto Learner}
+\title{Regression AutoML Learner}
 \description{
-Regression auto learner.
+The \link{LearnerRegrAuto} is an automated machine learning (AutoML) system for regression tasks.
+It combines preprocessing, a switch between multiple learners and hyperparameter tuning to find the best model for the given task.
 }
 \section{Super class}{
 \code{\link[mlr3:Learner]{mlr3::Learner}} -> \code{LearnerRegrAuto}

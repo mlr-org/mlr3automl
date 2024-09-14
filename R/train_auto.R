@@ -86,12 +86,12 @@ train_auto = function(self, private, task) {
   # set early stopping
   if ("xgboost" %in% learner_ids) {
     graph_learner$param_set$values$xgboost.callbacks = list(cb_timeout_xgboost(pv$learner_timeout * 0.8))
-    eval_metric = pv$xgboost_eval_metric %??% xgboost_internal_measure(pv$measure, task)
+    eval_metric = pv$xgboost_eval_metric %??% internal_measure_xgboost(pv$measure, task)
     if (is.na(eval_metric)) eval_metric = pv$xgboost_eval_metric
     graph_learner$param_set$values$xgboost.eval_metric = eval_metric
   }
   if ("catboost" %in% learner_ids) {
-    eval_metric = pv$catboost_eval_metric %??% catboost_internal_measure(pv$measure, task)
+    eval_metric = pv$catboost_eval_metric %??% internal_measure_catboost(pv$measure, task)
     if (is.na(eval_metric)) {
       stopf("No suitable catboost eval metric found for measure %s on task '%s'. Please set the `catboost_eval_metric` parameter.", pv$measure$id, task$id)
     }
@@ -99,7 +99,7 @@ train_auto = function(self, private, task) {
   }
   if ("lightgbm" %in% learner_ids) {
     graph_learner$param_set$values$lightgbm.callbacks = list(cb_timeout_lightgbm(pv$learner_timeout * 0.8))
-    eval_metric = pv$lightgbm_eval_metric %??% lightgbm_internal_measure(pv$measure, task)
+    eval_metric = pv$lightgbm_eval_metric %??% internal_measure_lightgbm(pv$measure, task)
     if (is.na(eval_metric)) eval_metric = pv$lightgbm_eval_metric
     graph_learner$param_set$values$lightgbm.eval = eval_metric
   }

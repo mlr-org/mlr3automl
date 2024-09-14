@@ -49,4 +49,5 @@ The estimated memory usage in bytes.
 }
 \description{
 This function estimates the memory usage of a learner on a given task.
+Returns -Inf if the memory usage cannot be estimated.
 }

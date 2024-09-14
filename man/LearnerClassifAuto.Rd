@@ -2,9 +2,10 @@
 % Please edit documentation in R/LearnerClassifAuto.R
 \name{LearnerClassifAuto}
 \alias{LearnerClassifAuto}
-\title{Classification Auto Learner}
+\title{Classification AutoML Learner}
 \description{
-Classification auto learner.
+The \link{LearnerClassifAuto} is an automated machine learning (AutoML) system for classification tasks.
+It combines preprocessing, a switch between multiple learners and hyperparameter tuning to find the best model for the given task.
 }
 \section{Super class}{
 \code{\link[mlr3:Learner]{mlr3::Learner}} -> \code{LearnerClassifAuto}

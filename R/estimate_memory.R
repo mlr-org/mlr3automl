@@ -2,6 +2,7 @@
 #'
 #' @description
 #' This function estimates the memory usage of a learner on a given task.
+#' Returns -Inf if the memory usage cannot be estimated.
 #'
 #' @param learner [mlr3::Learner]\cr
 #' The learner to estimate the memory usage for.
@@ -12,7 +13,6 @@
 #'
 #' @return `numeric(1)`\cr
 #' The estimated memory usage in bytes.
-
 #' @export
 estimate_memory = function(learner, task, ...) {
   assert_task(task)

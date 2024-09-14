@@ -1,7 +1,8 @@
-#' @title Classification Auto Learner
+#' @title Classification AutoML Learner
 #'
 #' @description
-#' Classification auto learner.
+#' The [LearnerClassifAuto] is an automated machine learning (AutoML) system for classification tasks.
+#' It combines preprocessing, a switch between multiple learners and hyperparameter tuning to find the best model for the given task.
 #'
 #' @template param_id
 #' @template param_learner_ids

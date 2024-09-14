@@ -1,15 +1,18 @@
-#' @title Internal Measure
+#' @title Internal Measure XGBoost
 #'
 #' @description
-#' Internal measure.
+#' Function to get the internal xgboost measure for a given [mlr3::Task] and [mlr3::Measure].
+#' For example, the measure "classif.auc" will return "auc" for a binary classification task.
 #'
 #' @param measure [mlr3::Measure]\cr
-#' Measure.
+#' Measure to get the internal measure for.
 #' @param task [mlr3::Task]\cr
-#' Task.
+#' Task to get the internal measure for.
 #'
 #' @export
-xgboost_internal_measure = function(measure, task) {
+#' @examples
+#' internal_measure_xgboost(msr("classif.auc"), tsk("pima"))
+internal_measure_xgboost = function(measure, task) {
   id = measure$id
 
   metric = if (task$task_type == "regr") {
@@ -39,18 +42,21 @@ xgboost_internal_measure = function(measure, task) {
   return(metric %??% NA_character_)
 }
 
-#' @title Internal Measure
+#' @title Internal Measure Catboost
 #'
 #' @description
-#' Internal measure.
+#' Function to get the internal catboost measure for a given [mlr3::Task] and [mlr3::Measure].
+#' For example, the measure "classif.auc" will return "AUC" for a binary classification task.
 #'
 #' @param measure [mlr3::Measure]\cr
-#' Measure.
+#' Measure to get the internal measure for.
 #' @param task [mlr3::Task]\cr
-#' Task.
+#' Task to get the internal measure for.
 #'
 #' @export
-catboost_internal_measure = function(measure, task) {
+#' @examples
+#' internal_measure_catboost(msr("classif.auc"), tsk("pima"))
+internal_measure_catboost = function(measure, task) {
   id = measure$id
 
   metric = if (task$task_type == "regr") {
@@ -82,18 +88,21 @@ catboost_internal_measure = function(measure, task) {
   return(metric %??% NA_character_)
 }
 
-#' @title Internal Measure
+#' @title Internal Measure LightGBM
 #'
 #' @description
-#' Internal measure.
+#' Function to get the internal xgboost measure for a given [mlr3::Task] and [mlr3::Measure].
+#' For example, the measure "classif.auc" will return "auc" for a binary classification task.
 #'
 #' @param measure [mlr3::Measure]\cr
-#' Measure.
+#' Measure to get the internal measure for.
 #' @param task [mlr3::Task]\cr
-#' Task.
+#' Task to get the internal measure for.
 #'
 #' @export
-lightgbm_internal_measure = function(measure, task) {
+#' @examples
+#' internal_measure_lightgbm(msr("classif.auc"), tsk("pima"))
+internal_measure_lightgbm = function(measure, task) {
   id = measure$id
 
   metric = if (task$task_type == "regr") {
