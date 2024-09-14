@@ -1,13 +1,6 @@
 build_graph = function(learner_ids, task_type) {
-  assert_choice(task_type, c("classif", "regr"))
-  learners_reg = c("glmnet", "kknn", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm")
-  if (task_type == "regr") {
-    assert_subset(learner_ids, learners_reg)
-  } else {
-    assert_subset(learner_ids, c(learners_reg, "lda"))
-  }
-
   branches = list()
+
   # glmnet
   if ("glmnet" %in% learner_ids) {
     branch_glmnet = po("removeconstants", id = "glmnet_removeconstants") %>>%
@@ -181,22 +174,21 @@ tuning_space = list(
     xgboost.lambda            = to_tune(1e-3, 1e3, logscale = TRUE),
     xgboost.alpha             = to_tune(1e-3, 1e3, logscale = TRUE),
     xgboost.subsample         = to_tune(1e-1, 1),
-    xgboost.nrounds           = to_tune(1, 5000, internal = TRUE)
+    xgboost.nrounds           = to_tune(1, 10, internal = TRUE)
   ),
 
   catboost = list(
     catboost.depth          = to_tune(5, 8),
     catboost.learning_rate  = to_tune(5e-3, 0.2, logscale = TRUE),
     catboost.l2_leaf_reg    = to_tune(1, 5),
-    catboost.iterations     = to_tune(1, 500, internal = TRUE)
+    catboost.iterations     = to_tune(1, 10, internal = TRUE)
   ),
-
 
   lightgbm = list(
     lightgbm.learning_rate    = to_tune(5e-3, 0.2, logscale = TRUE),
     lightgbm.feature_fraction = to_tune(0.75, 1),
     lightgbm.min_data_in_leaf = to_tune(2, 60),
     lightgbm.num_leaves       = to_tune(16, 96),
-    lightgbm.num_iterations   = to_tune(1, 5000, internal = TRUE)
+    lightgbm.num_iterations   = to_tune(1, 10, internal = TRUE)
   )
 )

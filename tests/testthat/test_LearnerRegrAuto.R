@@ -1,13 +1,43 @@
-test_that("glmnet works (regr)", {
+test_that("initial design is generated", {
+  skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost"))
+
+  learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees")
+  xdt = generate_default_design(
+    task_type = "regr",
+    learner_ids,
+    task = tsk("sonar"),
+    tuning_space)
+  expect_data_table(xdt, nrows = length(learner_ids))
+})
+
+test_that("lhs design is generated", {
+  skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost"))
+
+  learner_ids =  c("glmnet", "kknn", "nnet", "ranger", "svm", "xgboost", "catboost")
+  xdt = generate_lhs_design(10, "regr", learner_ids, tuning_space)
+  expect_data_table(xdt, nrows = 70)
+})
+
+test_that("LearnerRegrAuto is initialized", {
+  learner = lrn("regr.auto",
+    measure = msr("regr.rmse"),
+    terminator = trm("evals", n_evals = 10))
+
+  expect_class(learner$graph, "Graph")
+  expect_list(learner$tuning_space)
+})
+
+test_that("glmnet works", {
   rush_plan(n_workers = 2)
   skip_if_not_installed("glmnet")
 
-  task = tsk("boston_housing")
+
+  task = tsk("mtcars")
   learner = lrn("regr.auto",
     learner_ids = "glmnet",
     small_data_size = 1,
     resampling = rsmp("holdout"),
-    measure = msr("regr.mse"),
+    measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 6)
   )
 
@@ -16,16 +46,16 @@ test_that("glmnet works (regr)", {
   expect_equal(learner$model$instance$result$branch.selection, "glmnet")
 })
 
-test_that("kknn works (regr)", {
+test_that("kknn works", {
   rush_plan(n_workers = 2)
   skip_if_not_installed("kknn")
 
-  task = tsk("boston_housing")
+  task = tsk("mtcars")
   learner = lrn("regr.auto",
     learner_ids = "kknn",
     small_data_size = 1,
     resampling = rsmp("holdout"),
-    measure = msr("regr.mse"),
+    measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 6)
   )
 
@@ -34,16 +64,16 @@ test_that("kknn works (regr)", {
   expect_equal(learner$model$instance$result$branch.selection, "kknn")
 })
 
-test_that("nnet works (regr)", {
+test_that("nnet works", {
   rush_plan(n_workers = 2)
   skip_if_not_installed("nnet")
 
-  task = tsk("boston_housing")
+  task = tsk("mtcars")
   learner = lrn("regr.auto",
     learner_ids = "nnet",
     resampling = rsmp("holdout"),
     small_data_size = 1,
-    measure = msr("regr.mse"),
+    measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 6)
   )
 
@@ -51,17 +81,17 @@ test_that("nnet works (regr)", {
   expect_equal(learner$model$instance$result$branch.selection, "nnet")
 })
 
-test_that("ranger works (regr)", {
+test_that("ranger works", {
   rush_plan(n_workers = 2)
   skip_if_not_installed("ranger")
 
 
-  task = tsk("boston_housing")
+  task = tsk("mtcars")
   learner = lrn("regr.auto",
     learner_ids = "ranger",
     small_data_size = 1,
     resampling = rsmp("holdout"),
-    measure = msr("regr.mse"),
+    measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 6)
   )
 
@@ -69,17 +99,17 @@ test_that("ranger works (regr)", {
   expect_equal(learner$model$instance$result$branch.selection, "ranger")
 })
 
-test_that("svm works (regr)", {
+test_that("svm works", {
   rush_plan(n_workers = 2)
   skip_if_not_installed("e1071")
 
 
-  task = tsk("boston_housing")
+  task = tsk("mtcars")
   learner = lrn("regr.auto",
     learner_ids = "svm",
     small_data_size = 1,
     resampling = rsmp("holdout"),
-    measure = msr("regr.mse"),
+    measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 6)
   )
 
@@ -87,17 +117,17 @@ test_that("svm works (regr)", {
   expect_equal(learner$model$instance$result$branch.selection, "svm")
 })
 
-test_that("xgboost works (regr)", {
+test_that("xgboost works", {
   skip_if_not_installed("xgboost")
   rush_plan(n_workers = 2)
 
-  task = tsk("boston_housing")
+  task = tsk("mtcars")
   learner = lrn("regr.auto",
     learner_ids = "xgboost",
     small_data_size = 1,
     xgboost_eval_metric = "mlogloss",
     resampling = rsmp("holdout"),
-    measure = msr("regr.mse"),
+    measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 6)
   )
 
@@ -105,17 +135,18 @@ test_that("xgboost works (regr)", {
   expect_equal(learner$model$instance$result$branch.selection, "xgboost")
 })
 
-test_that("catboost works (regr)", {
+test_that("catboost works", {
   skip_if_not_installed("catboost")
   rush_plan(n_workers = 2)
 
-  task = tsk("boston_housing")
+
+  task = tsk("mtcars")
   learner = lrn("regr.auto",
     learner_ids = "catboost",
     small_data_size = 1,
-    # catboost_eval_metric = "MultiClass",
+    catboost_eval_metric = "MultiClass",
     resampling = rsmp("holdout"),
-    measure = msr("regr.mse"),
+    measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 6)
   )
 
@@ -126,24 +157,24 @@ test_that("catboost works (regr)", {
 test_that("only extra_trees fails", {
   rush_plan(n_workers = 2)
 
-  task = tsk("boston_housing")
+  task = tsk("mtcars")
   expect_error(lrn("regr.auto",
     learner_ids = "extra_trees",
     resampling = rsmp("holdout"),
-    measure = msr("regr.mse"),
+    measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 6)
   ), "must be combined with other learners")
 })
 
-test_that("extra_trees and glmnet works (regr)", {
+test_that("extra_trees and glmnet works", {
   skip_if_not_installed("glmnet")
   rush_plan(n_workers = 2)
 
-  task = tsk("boston_housing")
+  task = tsk("mtcars")
   learner = lrn("regr.auto",
     learner_ids = c("extra_trees", "glmnet"),
     resampling = rsmp("holdout"),
-    measure = msr("regr.mse"),
+    measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 6)
   )
 
@@ -151,16 +182,16 @@ test_that("extra_trees and glmnet works (regr)", {
   expect_choice(learner$model$instance$result$branch.selection, c("extra_trees", "glmnet"))
 })
 
-test_that("lightgbm works (regr)", {
+test_that("lightgbm works", {
   skip_if_not_installed("lightgbm")
   rush_plan(n_workers = 2)
 
-  task = tsk("boston_housing")
+  task = tsk("mtcars")
   learner = lrn("regr.auto",
     learner_ids = "lightgbm",
     lightgbm_eval_metric = "multi_logloss",
     resampling = rsmp("holdout"),
-    measure = msr("regr.mse"),
+    measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 6)
   )
 
@@ -168,19 +199,19 @@ test_that("lightgbm works (regr)", {
   expect_equal(learner$model$instance$result$branch.selection, "lightgbm")
 })
 
-test_that("xgboost, catboost and lightgbm work (regr)", {
+test_that("xgboost, catboost and lightgbm work", {
   skip_if_not_installed(c("xgboost", "catboost", "lightgbm"))
   rush_plan(n_workers = 2)
 
-  task = tsk("boston_housing")
+  task = tsk("mtcars")
   learner = lrn("regr.auto",
     learner_ids = c("xgboost", "catboost", "lightgbm"),
-    # catboost_eval_metric = "MultiClass",
-    # lightgbm_eval_metric = "multi_logloss",
-    # xgboost_eval_metric = "mlogloss",
+    catboost_eval_metric = "MultiClass",
+    lightgbm_eval_metric = "multi_logloss",
+    xgboost_eval_metric = "mlogloss",
     resampling = rsmp("holdout"),
     lhs_size = 1,
-    measure = msr("regr.mse"),
+    measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 20),
     callbacks = clbk("mlr3tuning.async_save_logs")
   )
@@ -188,14 +219,14 @@ test_that("xgboost, catboost and lightgbm work (regr)", {
   expect_class(learner$train(task), "LearnerRegrAuto")
 })
 
-test_that("all learner work (regr)", {
+test_that("all learner work", {
   skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
   rush_plan(n_workers = 2)
 
-  task = tsk("boston_housing")
+  task = tsk("mtcars")
   learner = lrn("regr.auto",
     small_data_size = 100,
-    measure = msr("regr.mse"),
+    measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 20),
     lhs_size = 1
   )
@@ -213,7 +244,7 @@ test_that("all learner work (regr)", {
 #   learner = lrn("regr.auto",
 #     max_memory = 50,
 #     small_data_size = 100,
-#     measure = msr("regr.mse"),
+#     measure = msr("regr.rmse"),
 #     terminator = trm("evals", n_evals = 20),
 #     resampling = rsmp("holdout"),
 #     lhs_size = 1
@@ -222,15 +253,15 @@ test_that("all learner work (regr)", {
 #   learner$train(task)
 # })
 
-test_that("small data set switch works (regr)", {
-  skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost", "lightgbm"))
+test_that("small data set switch works", {
+  skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
   rush_plan(n_workers = 2)
 
-  task = tsk("boston_housing")
+  task = tsk("mtcars")
   learner = lrn("regr.auto",
     small_data_size = 1000,
     small_data_resampling = rsmp("cv", folds = 2),
-    measure = msr("regr.mse"),
+    measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 1),
     lhs_size = 1,
     store_benchmark_result = TRUE
@@ -240,17 +271,17 @@ test_that("small data set switch works (regr)", {
   expect_equal(learner$model$instance$archive$benchmark_result$resamplings$resampling[[1]]$iters, 2)
 })
 
-test_that("large data set switch works (regr)", {
-  skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost", "lightgbm"))
+test_that("large data set switch works", {
+  skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
   rush_plan(n_workers = 2)
 
-  task = tsk("boston_housing")
+  task = tsk("mtcars")
   learner = lrn("regr.auto",
     large_data_size = 100,
     large_data_nthread = 4,
     large_data_learner_ids = "ranger",
     small_data_size = 100,
-    measure = msr("regr.mse"),
+    measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 1),
     lhs_size = 1,
     store_benchmark_result = TRUE
@@ -260,16 +291,16 @@ test_that("large data set switch works (regr)", {
   expect_set_equal(learner$model$instance$archive$data$branch.selection, "ranger")
 })
 
-test_that("max_cardinality works (regr)", {
-  skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost", "lightgbm"))
+test_that("max_cardinality works", {
+  skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
   rush_plan(n_workers = 2)
 
-  task = tsk("boston_housing")
+  task = tsk("mtcars")
   learner = lrn("regr.auto",
     small_data_size = 1,
     resampling = rsmp("holdout"),
     max_cardinality = 2,
-    measure = msr("regr.mse"),
+    measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 1),
     lhs_size = 1
   )
@@ -277,20 +308,73 @@ test_that("max_cardinality works (regr)", {
   expect_class(learner$train(task), "LearnerRegrAuto")
 })
 
-test_that("max_cardinality works for extra trees (regr)", {
-  skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost", "lightgbm"))
+test_that("max_cardinality works for extra trees", {
+  skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
   rush_plan(n_workers = 2)
 
-  task = tsk("boston_housing")
+  task = tsk("mtcars")
   learner = lrn("regr.auto",
     small_data_size = 1,
     resampling = rsmp("holdout"),
     max_cardinality = 3,
     extra_trees_max_cardinality = 2,
-    measure = msr("regr.mse"),
+    measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 1),
     lhs_size = 1
   )
 
   expect_class(learner$train(task), "LearnerRegrAuto")
 })
+
+# test_that("logger callback works", {
+#   skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
+#   rush_plan(n_workers = 2)
+
+#   task = tsk("mtcars")
+#   learner = lrn("regr.auto",
+#     small_data_size = 1,
+#     resampling = rsmp("holdout"),
+#     measure = msr("regr.rmse"),
+#     terminator = trm("evals", n_evals = 10),
+#     lhs_size = 1,
+#     callbacks = clbk("mlr3tuning.async_save_logs")
+#   )
+
+#   expect_class(learner$train(task), "LearnerRegrAuto")
+#   expect_list(learner$instance$archive$data$log)
+#   expect_list(learner$instance$archive$data$log[[1]], len = 1)
+# })
+
+# test_that("integer columns work", {
+#   library(mlr3oml)
+#   rush_plan(n_workers = 2)
+
+
+#   task = tsk("oml", data_id = 1464)
+#   learner = lrn("regr.auto",
+#     learner_ids = "catboost",
+#     small_data_size = 100,
+#     measure = msr("regr.rmse"),
+#     terminator = trm("evals", n_evals = 20),
+#     lhs_size = 1
+#   )
+
+#   expect_class(learner$train(task), "LearnerRegrAuto")
+# })
+
+# test_that("constant columns work", {
+#   library(mlr3oml)
+#   rush_plan(n_workers = 2, lgr_thresholds = c(mlr3 = "info"))
+
+
+#   task = tsk("oml", data_id = 41143)
+#   learner = lrn("regr.auto",
+#     learner_ids = "catboost",
+#     small_data_size = 100,
+#     measure = msr("regr.rmse"),
+#     terminator = trm("evals", n_evals = 20),
+#     lhs_size = 1
+#   )
+
+#   expect_class(learner$train(task), "LearnerRegrAuto")
+# })

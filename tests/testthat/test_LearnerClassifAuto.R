@@ -23,14 +23,17 @@ test_that("LearnerClassifAuto is initialized", {
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 10))
 
-  expect_null(learner$graph)
-  expect_null(learner$tuning_space)
+  expect_class(learner$graph, "Graph")
+  expect_list(learner$tuning_space)
 })
 
 test_that("glmnet works", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  flush_redis()
+
   rush_plan(n_workers = 2)
   skip_if_not_installed("glmnet")
-
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
@@ -47,6 +50,10 @@ test_that("glmnet works", {
 })
 
 test_that("kknn works", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  flush_redis()
+
   rush_plan(n_workers = 2)
   skip_if_not_installed("kknn")
 
@@ -65,6 +72,10 @@ test_that("kknn works", {
 })
 
 test_that("only lda fails", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  flush_redis()
+
   rush_plan(n_workers = 2)
 
   task = tsk("penguins")
@@ -78,9 +89,12 @@ test_that("only lda fails", {
 })
 
 test_that("lda and glmnet works", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  flush_redis()
+
   rush_plan(n_workers = 2)
   skip_if_not_installed("glmnet")
-
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
@@ -97,6 +111,10 @@ test_that("lda and glmnet works", {
 })
 
 test_that("nnet works", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  flush_redis()
+
   rush_plan(n_workers = 2)
   skip_if_not_installed("nnet")
 
@@ -114,6 +132,10 @@ test_that("nnet works", {
 })
 
 test_that("ranger works", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  flush_redis()
+
   rush_plan(n_workers = 2)
   skip_if_not_installed("ranger")
 
@@ -132,6 +154,10 @@ test_that("ranger works", {
 })
 
 test_that("svm works", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  flush_redis()
+
   rush_plan(n_workers = 2)
   skip_if_not_installed("e1071")
 
@@ -150,6 +176,10 @@ test_that("svm works", {
 })
 
 test_that("xgboost works", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  flush_redis()
+
   skip_if_not_installed("xgboost")
   rush_plan(n_workers = 2)
 
@@ -168,9 +198,13 @@ test_that("xgboost works", {
 })
 
 test_that("catboost works", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  flush_redis()
+
+
   skip_if_not_installed("catboost")
   rush_plan(n_workers = 2)
-
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
@@ -187,6 +221,10 @@ test_that("catboost works", {
 })
 
 test_that("only extra_trees fails", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  flush_redis()
+
   rush_plan(n_workers = 2)
 
   task = tsk("penguins")
@@ -199,6 +237,10 @@ test_that("only extra_trees fails", {
 })
 
 test_that("extra_trees and glmnet works", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  flush_redis()
+
   skip_if_not_installed("glmnet")
   rush_plan(n_workers = 2)
 
@@ -215,6 +257,10 @@ test_that("extra_trees and glmnet works", {
 })
 
 test_that("lightgbm works", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  flush_redis()
+
   skip_if_not_installed("lightgbm")
   rush_plan(n_workers = 2)
 
@@ -232,6 +278,10 @@ test_that("lightgbm works", {
 })
 
 test_that("xgboost, catboost and lightgbm work", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  flush_redis()
+
   skip_if_not_installed(c("xgboost", "catboost", "lightgbm"))
   rush_plan(n_workers = 2)
 
@@ -252,7 +302,11 @@ test_that("xgboost, catboost and lightgbm work", {
 })
 
 test_that("all learner work", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
   skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
+  flush_redis()
+
   rush_plan(n_workers = 2)
 
   task = tsk("penguins")
