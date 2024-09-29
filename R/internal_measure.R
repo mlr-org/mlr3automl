@@ -65,7 +65,8 @@ internal_measure_catboost = function(measure, task) {
       "regr.rmsle" = "RMSLE",
       "regr.mae" = "MAE",
       "regr.mape" = "MAPE",
-      "regr.logloss" = "Logloss",
+      "regr.logloss" = "Logloss",  # Does this measure exist?
+      "regr.smape" = "SMAPE",
       NULL
     )
   } else if ("twoclass" %in% task$properties) {
@@ -73,6 +74,9 @@ internal_measure_catboost = function(measure, task) {
       "classif.ce" = "Accuracy",
       "classif.acc" = "Accuracy",
       "classif.auc" = "AUC",
+      "classif.logloss" = "Logloss",
+      "classif.precision" = "Precision",
+      "classif.recall" = "Recall",
       NULL
     )
   } else if ("multiclass" %in% task$properties) {
@@ -107,24 +111,26 @@ internal_measure_lightgbm = function(measure, task) {
 
   metric = if (task$task_type == "regr") {
     switch(id,
+      "regr.mse" = "mse",
       "regr.rmse" = "rmse",
       "regr.mae" = "mae",
       "regr.mape" = "mape",
-      "regr.logloss" = "logloss",
       NULL
     )
   } else if ("twoclass" %in% task$properties) {
     switch(id,
-      "classif.ce" = "error",
-      "classif.acc" = "error",
+      "classif.ce" = "binary_error",
+      "classif.acc" = "binary_error",
       "classif.auc" = "auc",
+      "classif.logloss" = "binary_logloss",
       NULL
     )
   } else if ("multiclass" %in% task$properties) {
     switch(id,
-      "classif.ce" = "merror",
-      "classif.acc" = "merror",
+      "classif.ce" = "multi_error",
+      "classif.acc" = "multi_error",
       "classif.auc" = "auc_mu",
+      "classif.logloss" = "multi_logloss",
       NULL
     )
   }
