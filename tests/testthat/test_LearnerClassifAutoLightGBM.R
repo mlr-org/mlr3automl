@@ -29,21 +29,21 @@ test_that("LearnerClassifAutoLightGBM is trained", {
   expect_equal(learner$model$instance$result$branch.selection, "lightgbm")
 })
 
-test_that("LearnerClassifAutoLightGBM internal eval metric is found", {
+test_that("LearnerClassifAutoLightGBM twoclass internal eval metric is found", {
   skip_on_cran()
   skip_if_not_installed("rush")
   flush_redis()
 
   rush_plan(n_workers = 2)
 
-  # twoclass
+
   task_twoclass = tsk("pima")
   msrs_twoclass = rbindlist(list(
     list(measure = "classif.ce", metric = "binary_error"),
     list(measure = "classif.acc", metric = "binary_error"),
     list(measure = "classif.logloss", metric = "binary_logloss"),
     list(measure = "classif.auc", metric = "auc")
-  ))  
+  ))
   walk(seq_row(msrs_twoclass), function(i) {
     learner = lrn("classif.auto_lightgbm",
       small_data_size = 1,
@@ -60,9 +60,17 @@ test_that("LearnerClassifAutoLightGBM internal eval metric is found", {
       # only for lightgbm, it is called `eval` instead of `eval.metric`
       msrs_twoclass$metric[[i]]
     )
-  })
+  })  
+})
 
-  # multi class  
+test_that("LearnerClassifAutoLightGBM multiclass internal eval metric is found", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  flush_redis()
+
+  rush_plan(n_workers = 2)
+
+
   task_multiclass = tsk("penguins")
   msrs_multiclass = rbindlist(list(
     list(measure = "classif.ce", metric = "multi_error"),

@@ -35,9 +35,9 @@ test_that("LearnerClassifAutoCatboost twoclass internal eval metric is found", {
   flush_redis()
 
   rush_plan(n_workers = 2)
+  
 
-  task = tsk("pima")
-
+  task_twoclass = tsk("pima")
   msrs_twoclass = rbindlist(list(
     list(measure = "classif.ce", metric = "Accuracy"),
     list(measure = "classif.acc", metric = "Accuracy"),
@@ -59,7 +59,7 @@ test_that("LearnerClassifAutoCatboost twoclass internal eval metric is found", {
       store_benchmark_result = TRUE,
       store_models = TRUE
     )
-    learner$train(task)
+    learner$train(task_twoclass)
 
     expect_equal(
       learner$instance$archive$benchmark_result$resample_result(1)$learners[[1]]$model$catboost$param_vals$eval_metric,
@@ -75,8 +75,8 @@ test_that("LearnerClassifAutoCatboost multiclass internal eval metric is found",
 
   rush_plan(n_workers = 2)
 
-  task_multiclass = tsk("penguins")
 
+  task_multiclass = tsk("penguins")
   msrs_multiclass = rbindlist(list(
     list(measure = "classif.ce", metric = "Accuracy"),
     list(measure = "classif.acc", metric = "Accuracy"),

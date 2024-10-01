@@ -29,14 +29,14 @@ test_that("LearnerClassifAutoXgboost is trained", {
   expect_equal(learner$model$instance$result$branch.selection, "xgboost")
 })
 
-test_that("LearnerClassifAutoXgboost internal eval metric is found", {
+test_that("LearnerClassifAutoXgboost twoclass internal eval metric is found", {
   skip_on_cran()
   skip_if_not_installed("rush")
   flush_redis()
 
   rush_plan(n_workers = 2)
 
-  # twoclass
+  
   task_twoclass = tsk("pima")
   msrs_twoclass = rbindlist(list(
     list(measure = "classif.ce", metric = "error"),
@@ -58,12 +58,19 @@ test_that("LearnerClassifAutoXgboost internal eval metric is found", {
 
     expect_equal(
       learner$instance$archive$benchmark_result$resample_result(1)$learners[[1]]$model$xgboost$param_vals$eval_metric,
-      # only for xgboost, it is called `eval` instead of `eval_metric`
       msrs_twoclass$metric[[i]]
     )
   })
+})
 
-  # multiclass
+test_that("LearnerClassifAutoXgboost multiclass internal eval metric is found", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  flush_redis()
+
+  rush_plan(n_workers = 2)
+
+  
   task_multiclass = tsk("penguins")
   msrs_multiclass = rbindlist(list(
     list(measure = "classif.ce", metric = "merror"),
@@ -85,7 +92,6 @@ test_that("LearnerClassifAutoXgboost internal eval metric is found", {
 
     expect_equal(
       learner$instance$archive$benchmark_result$resample_result(1)$learners[[1]]$model$xgboost$param_vals$eval_metric,
-      # only for xgboost, it is called `eval` instead of `eval_metric`
       msrs_multiclass$metric[[i]]
     )
   })
