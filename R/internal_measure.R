@@ -119,8 +119,8 @@ internal_measure_xgboost = function(measure, task) {
 
   metric = if (task$task_type == "regr") {
     switch(id,
-      "regr.mse" = "mse",
       "regr.rmse" = "rmse",
+      "regr.rmsle" = "rmsle",
       "regr.mae" = "mae",
       "regr.mape" = "mape",
       NULL
