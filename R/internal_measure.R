@@ -18,29 +18,34 @@ internal_measure_catboost = function(measure, task) {
   metric = if (task$task_type == "regr") {
     switch(id,
       "regr.rmse" = "RMSE",
-      "regr.rmsle" = "RMSLE",
       "regr.mae" = "MAE",
       "regr.mape" = "MAPE",
-      "regr.logloss" = "Logloss",  # Does this measure exist?
       "regr.smape" = "SMAPE",
+      "regr.medae" = "MedianAbsoluteError",
+      "rsq" = "R2",  # regr.rsq has id `rsq`
       NULL
     )
   } else if ("twoclass" %in% task$properties) {
     switch(id,
       "classif.ce" = "Accuracy",
       "classif.acc" = "Accuracy",
+      "classif.bacc" = "BalancedAccuracy",
       "classif.auc" = "AUC",
+      "classif.prauc" = "PRAUC",
+      "classif.bbrier" = "BrierScore",
       "classif.logloss" = "Logloss",
       "classif.precision" = "Precision",
       "classif.recall" = "Recall",
+      "classif.mcc" = "MCC",
       NULL
     )
   } else if ("multiclass" %in% task$properties) {
     switch(id,
       "classif.ce" = "Accuracy",
       "classif.acc" = "Accuracy",
-      "classif.auc" = "AUC",
-      "classif.logloss" = "MultiLogloss",
+      "classif.mauc_mu" = "AUC",
+      "classif.logloss" = "MultiClass",
+      "classif.mcc" = "MCC",
       NULL
     )
   }
