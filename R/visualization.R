@@ -309,7 +309,7 @@ partial_dependence_plot = function(
   )
 
   # TBD: remove existing scales, use viridis instead
-  g + ggplot2::scale_fill_viridis_c(name = objective) + theme
+  g + ggplot2::scale_fill_viridis_c(name = archive$cols_y, direction = -1) + theme
 }
 
 

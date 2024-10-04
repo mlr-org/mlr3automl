@@ -12,7 +12,6 @@ visualize = function(instance) {
     title = "Visualization for mlr3automl",
 
     sidebar = bslib::sidebar(
-      # TBD: cost over time: select timestamp_x / timestamp_y / config_id
       shiny::conditionalPanel(
         "input.nav === 'Cost Over Time'",
         shiny::radioButtons("cot_x",
@@ -27,7 +26,6 @@ visualize = function(instance) {
         param_ids
       ),
       shiny::conditionalPanel(
-        # TBD: select branch, then parameter, as in PDP
         "input.nav === 'Parallel Coordinates'",
         shiny::selectInput("pc_branch",
           label = "Select branch:",
@@ -56,7 +54,10 @@ visualize = function(instance) {
         "input.nav === 'Partial Dependence Plots'",
         "pdp",
         learner_ids,
-        param_ids
+        param_ids,
+        shiny::actionButton("pdp_process",
+          label = "Process"
+        )
       )
     ),
 
@@ -103,7 +104,7 @@ visualize = function(instance) {
       shiny::updateSelectInput(session, "mp_y", choices = selectable_ids, selected = selectable_ids[[2]])
     })
 
-    output$marginal_plot = renderPlot({
+    output$marginal_plot = shiny::renderPlot({
       if (input$mp_y == "NULL") {
         marginal_plot(archive, x = input$mp_x)
       } else {
@@ -123,7 +124,7 @@ visualize = function(instance) {
       )
     })
 
-    output$parallel_coordinates = renderPlot({
+    output$parallel_coordinates = shiny::renderPlot({
       if (is.null(input$pc_cols_x)) return() # nothing selected
       trafo = input$pc_trafo == "Yes"
       parallel_coordinates(archive, cols_x = input$pc_cols_x, trafo = trafo)
@@ -146,18 +147,26 @@ visualize = function(instance) {
       shiny::updateSelectInput(session, "pdp_x", choices = selectable_ids, selected = selectable_ids[[1]])
       shiny::updateSelectInput(session, "pdp_y", choices = selectable_ids, selected = selectable_ids[[2]])
     })
-
-    output$pdp = renderPlot({
-      if (is.null(input$pdp_x)) return()
-      partial_dependence_plot(
-        instance, x = input$pdp_x, y = input$pdp_y,
-        type = "default"
-      )      
-    })
+    
+    # generate plot only after pressing the "Process" button
+    # because it takes quite a while...
+    output$pdp = shiny::bindEvent(
+      shiny::renderPlot({
+        if (is.null(input$pdp_x)) return()
+        progress <- shiny::Progress$new()
+        on.exit(progress$close())
+        progress$set(message = "Making plot. Please wait.")
+        partial_dependence_plot(
+          instance, x = input$pdp_x, y = input$pdp_y,
+          type = "default"
+        )
+      }),
+      input$pdp_process
+    )
     
 
     # Pareto Front
-    output$pf = renderPlot({
+    output$pf = shiny::renderPlot({
       pareto_front(instance)
     })
   }
