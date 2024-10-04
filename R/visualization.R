@@ -225,13 +225,10 @@ partial_dependence_plot = function(
   theme = ggplot2::theme_minimal()
 ) {
   archive = instance$archive
-  objective = archive$cols_y
   assert_choice(x, archive$cols_x)
   assert_choice(y, archive$cols_x, null.ok = TRUE)
 
-  param_ids = c(x, y)
-
-  branch = tstrsplit(param_ids, "\\.")[[1]]
+  branch = tstrsplit(c(x, y), "\\.")[[1]]
   branch = unique(branch)
   if (length(branch) > 1) {
     stop("Parameters from different branches cannot be plotted in the same PDP.")
@@ -241,44 +238,57 @@ partial_dependence_plot = function(
     assert_choice(type, c("contour", "default"))
   }
 
-  non_numeric = some(param_ids, function(param_id) {
+  non_numeric = some(c(x, y), function(param_id) {
     !is.numeric(archive$data[[param_id]])
   })
   if (non_numeric && type == "contour") {
     stop("Contour plot not supported for non-numeric parameters")
   }
 
-  surrogate = default_surrogate(instance)
-  surrogate$archive = archive
-  surrogate$update()
+  # prepare data for surrogate model
+  archive_data = as.data.table(archive)[, c(archive$cols_x, archive$cols_y), with = FALSE]
+  archive_data = archive_data[!is.na(archive_data[[archive$cols_y]]), ]
+  archive_data[, archive$cols_x := lapply(.SD, function(col) {
+    # iml does not accept lgcl features
+    if (is.logical(col)) return(factor(col, levels = c(FALSE, TRUE)))
+    # also convert integer to double to avoid imputeoor error
+    if (is.integer(col)) return(as.numeric(col))
+    return(col)
+  }), .SDcols = archive$cols_x]
+  task = as_task_regr(archive_data, target = archive$cols_y)
 
-  # store the data.table format for later use in predict.function
-  prototype = archive$data[0, archive$cols_x, with = FALSE]
+  # train surrogate model
+  surrogate = po("imputeoor",
+    multiplier = 3,
+    affect_columns = selector_type(c("numeric", "character", "factor", "ordered"))
+  ) %>>% default_rf()
+  surrogate = GraphLearner$new(surrogate)
+  surrogate$train(task)
+
+  # # store the data.table format for later use in predict.function
+  # prototype = archive_data[0, archive$cols_x, with = FALSE]
+
+  # new data to compute PDP
+  pdp_data = generate_design_random(archive$search_space, n = 1e3)$data
+  # same type conversion as above
+  pdp_data[, archive$cols_x := lapply(.SD, function(col) {
+    if (is.logical(col)) return(factor(col, levels = c(FALSE, TRUE)))
+    if (is.integer(col)) return(as.numeric(col))
+    return(col)
+  }), .SDcols = archive$cols_x]
+  pdp_data_types = pdp_data[, lapply(.SD, storage.mode)]
 
   predictor = iml::Predictor$new(
     model = surrogate,
-    data = as.data.table(archive)[branch.selection == branch, param_ids, with = FALSE],
-    y = as.data.table(archive)[branch.selection == branch, objective, with = FALSE],
+    data = pdp_data[, archive$cols_x, with = FALSE],
     predict.function = function(model, newdata) {
-      setDT(newdata)
-      # reconstruct task layout from training to prevent error in imputeoor
-      newdata = merge(newdata, prototype, by = param_ids, all = TRUE)
-      setcolorder(newdata, names(prototype))
-
-      # convert numeric to integer to match with training task
-      walk(param_ids, function(param_id) {
-        if (is.integer(archive$data[[param_id]])) {
-          set(newdata, j = param_id, value = as.integer(newdata[[param_id]]))
-        }
-      })
-
-      return(model$predict(newdata)$mean)
+      model$predict_newdata(newdata)$response
     }
   )
 
   eff = iml::FeatureEffect$new(
     predictor,
-    param_ids,
+    c(x, y),
     method = "pdp",
     grid.size = grid.size
   )
