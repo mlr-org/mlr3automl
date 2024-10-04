@@ -48,11 +48,9 @@ Suggests:
     xgboost
 Remotes:
     catboost/catboost/catboost/R-package,
-    mlr-org/mlr3@learner_size,
-    mlr-org/mlr3extralearners@mlr3automl,
-    mlr-org/mlr3learners@mlr3automl,
-    mlr-org/mlr3mbo@adbo,
-    mlr-org/mlr3pipelines
+    mlr-org/mlr3,
+    mlr-org/mlr3extralearners,
+    mlr-org/mlr3mbo@adbo
 Config/testthat/edition: 3
 Config/testthat/parallel: false
 Encoding: UTF-8
@@ -62,10 +60,28 @@ RoxygenNote: 7.3.2
 Collate:
     'aaa.R'
     'LearnerClassifAuto.R'
+    'LearnerClassifAutoCatboost.R'
+    'LearnerClassifAutoGlmnet.R'
+    'LearnerClassifAutoKKNN.R'
+    'LearnerClassifAutoLightGBM.R'
+    'LearnerClassifAutoNnet.R'
+    'LearnerClassifAutoRanger.R'
     'LearnerClassifAutoSVM.R'
     'LearnerClassifAutoXgboost.R'
     'LearnerRegrAuto.R'
+    'LearnerRegrAutoCatboost.R'
+    'LearnerRegrAutoGlmnet.R'
+    'LearnerRegrAutoKKNN.R'
+    'LearnerRegrAutoLightGBM.R'
+    'LearnerRegrAutoNnet.R'
+    'LearnerRegrAutoRanger.R'
+    'LearnerRegrAutoSVM.R'
+    'LearnerRegrAutoXgboost.R'
+    'build_graph.R'
+    'estimate_memory.R'
     'helper.R'
+    'internal_measure.R'
+    'train_auto.R'
     'helpers_app.R'
     'visualization_app.R'
     'visualization.R'
