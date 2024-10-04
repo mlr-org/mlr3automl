@@ -207,8 +207,6 @@ parallel_coordinates = function(archive, cols_x = NULL, trafo = FALSE, theme = g
 #'  Name of the parameter to be mapped to the x-axis.
 #' @param y (`character(1)`)
 #'  Name of the parameter to be mapped to the y-axis.
-#' @param grid.size (`numeric(1)` | `numeric(2)`)
-#'  The size of the grid. See `grid.size` of `[iml::FeatureEffect]`.
 #' @param type (`character(1)`)
 #'  Type of the two-parameter partial dependence plot. Possible options are listed below.
 #'  \itemize{
@@ -217,11 +215,12 @@ parallel_coordinates = function(archive, cols_x = NULL, trafo = FALSE, theme = g
 #'  }
 #'  Ignored if only one parameter is provided.
 #' @template param_theme
+#' @param ... (anything)
+#'   Arguments passed to `[iml::FeatureEffect]`.
 #'
 #' @export
 partial_dependence_plot = function(
-  instance, x, y, grid.size = 20, center_at = NULL,
-  type = "default",
+  instance, x, y, type = "default",
   theme = ggplot2::theme_minimal()
 ) {
   archive = instance$archive
@@ -289,8 +288,7 @@ partial_dependence_plot = function(
   eff = iml::FeatureEffect$new(
     predictor,
     c(x, y),
-    method = "pdp",
-    grid.size = grid.size
+    method = "pdp"
   )
 
   .data = NULL
