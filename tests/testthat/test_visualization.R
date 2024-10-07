@@ -92,7 +92,7 @@ test_that("marginal plot works", {
   )
 })
 
-test_that("marginal plot throws error if params on different branches", {
+test_that("marginal plot accepts params on different branches", {
   task = tsk("penguins")
 
   set.seed(1453)
@@ -107,7 +107,8 @@ test_that("marginal plot throws error if params on different branches", {
     terminator = trm("evals", n_evals = 6)
   )
   learner$train(task)
-  expect_error(
+  expect_doppelganger(
+    "mp-different-branches",
     marginal_plot(learner$instance, x = "kknn.distance", y = "svm.cost")
   )
 })
