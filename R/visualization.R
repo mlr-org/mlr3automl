@@ -227,7 +227,8 @@ parallel_coordinates = function(
 #' @export
 partial_dependence_plot = function(
   instance, x, y, type = "default",
-  theme = ggplot2::theme_minimal()
+  theme = ggplot2::theme_minimal(),
+  ...
 ) {
   archive = instance$archive
   assert_choice(x, archive$cols_x)
@@ -294,7 +295,8 @@ partial_dependence_plot = function(
   eff = iml::FeatureEffect$new(
     predictor,
     c(x, y),
-    method = "pdp"
+    method = "pdp",
+    ...
   )
 
   .data = NULL
