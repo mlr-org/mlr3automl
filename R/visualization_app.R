@@ -90,9 +90,9 @@ visualize = function(instance) {
     # Cost over time
     output$cost_over_time = renderPlot({
       if (input$cot_x == "configuration ID") {
-        cost_over_time(archive)
+        cost_over_time(instance)
       } else {
-        cost_over_time(archive, time = input$cot_x)
+        cost_over_time(instance, time = input$cot_x)
       }
     })
 
@@ -106,9 +106,9 @@ visualize = function(instance) {
 
     output$marginal_plot = shiny::renderPlot({
       if (input$mp_y == "NULL") {
-        marginal_plot(archive, x = input$mp_x)
+        marginal_plot(instance, x = input$mp_x)
       } else {
-        marginal_plot(archive, x = input$mp_x, y = input$mp_y)
+        marginal_plot(instance, x = input$mp_x, y = input$mp_y)
       }
     })
 
@@ -127,7 +127,7 @@ visualize = function(instance) {
     output$parallel_coordinates = shiny::renderPlot({
       if (is.null(input$pc_cols_x)) return() # nothing selected
       trafo = input$pc_trafo == "Yes"
-      parallel_coordinates(archive, cols_x = input$pc_cols_x, trafo = trafo)
+      parallel_coordinates(instance, cols_x = input$pc_cols_x, trafo = trafo)
     })
 
     shiny::observeEvent(input$pc_unselect_all, {
