@@ -48,18 +48,20 @@ cost_over_time = function(instance, time = NULL, theme = ggplot2::theme_minimal(
 #' @template param_theme
 #' 
 #' @export
-marginal_plot = function(archive, x, y = NULL, theme = ggplot2::theme_minimal()) {
+marginal_plot = function(instance, x, y = NULL, theme = ggplot2::theme_minimal()) {
+  archive = instance$archive
   param_ids = archive$cols_x
   assert_choice(x, param_ids)
   assert_choice(y, param_ids, null.ok = TRUE)
 
   # use transformed values if trafo is set
   x_trafo = paste0("x_domain_", x)
+  y_trafo = if (!is.null(y)) paste0("x_domain_", y) else NULL
 
   # there should only be one objective, e.g. `classif.ce`
   measure = archive$cols_y
 
-  data = na.omit(as.data.table(archive), cols = c(x_trafo, y))
+  data = na.omit(as.data.table(archive), cols = c(x_trafo, y_trafo))
 
   .data = NULL
 
@@ -82,12 +84,12 @@ marginal_plot = function(archive, x, y = NULL, theme = ggplot2::theme_minimal())
   # param provided for y
   g = ggplot2::ggplot(data = data, ggplot2::aes(
       x = .data[[x_trafo]],
-      y = .data[[y]],
+      y = .data[[y_trafo]],
       col = .data[[measure]]
     )) +
     ggplot2::geom_point(alpha = 0.6) +
     ggplot2::scale_color_viridis_c() +
-    ggplot2::labs(x = x) +
+    ggplot2::labs(x = x, y = y) +
     theme
 
   if (archive$search_space$is_logscale[[x]]) {
