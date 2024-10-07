@@ -349,27 +349,42 @@ pareto_front = function(instance, theme = ggplot2::theme_minimal()) {
 #' 
 #' @export
 config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
+  requireNamespace("smacof", quietly = TRUE)
+
+  set.seed(1453)
+  rush_plan(n_workers = 2)
+  task = tsk("penguins")
+  learner = lrn("classif.auto_ranger",
+    small_data_size = 1,
+    resampling = rsmp("holdout"),
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 20)
+  )
+  learner$train(task)
+  instance = learner$instance
+
   archive = instance$archive
 
   # generate configs
-  n_random = 10
+  n_random = 100
   discretization = 10
   
   evaluated = as.data.table(archive)[, archive$cols_x, with = FALSE]
+  set(evaluated, j = "type", value = "evaluated")
+  incumbent_key = archive$best()$keys
+  set(evaluated, i = which(archive$data$keys == incumbent_key), j = "type", value = "incumbent")
+
   border = generate_design_grid(archive$search_space, resolution = 2)$data
+  set(border, j = "type", value = "border")
+
   random = sample_random_config(archive$search_space, d = discretization, n = n_random)
+  set(random, j = "type", value = "random")
   
   all_configs = rbind(evaluated, border, random)
   all_configs = unique(all_configs, by = archive$cols_x)
 
-  config_type = c(
-    rep("evaluated", nrow(evaluated)),
-    rep("border", nrow(border)),
-    rep("random", nrow(random))
-  )
-  incumbent_key = archive$best()$keys
-  config_type[which(archive$data$keys == incumbent_key)] = "incumbent"
-
+  config_type = all_configs$type
+  all_configs = all_configs[, -"type", with = FALSE]
 
   # encode config
   # https://github.com/automl/DeepCAVE/blob/58d6801508468841eda038803b12fa2bbf7a0cb8/deepcave/runs/__init__.py#L1189
@@ -388,7 +403,7 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
   
   # calculate distances
 
-  is_categorical = archive$data[, lapply(.SD, is.numeric), .SDcols = archive$cols_x]
+  is_categorical = !archive$data[, lapply(.SD, is.numeric), .SDcols = archive$cols_x]
   is_categorical = unlist(is_categorical)
 
   # get depth (number of parents + 1) for each param
@@ -408,7 +423,6 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
     d = abs(config1 - config2)
     d[is.nan(d)] = 1
     d[is_categorical & (d != 0)] = 1
-
     sum(d / depth)
   }
 
@@ -425,7 +439,39 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
     }
   }
 
-  #TBD: MDS
+  # MDS
+  diss_mat = as.dist(distances)
+  footprint = as.data.frame(smacof::mds(diss_mat)$conf)
+  setDT(footprint)
+  set(footprint, j = "config_type", value = config_type)
+  set(footprint, j = "is_incumbent", value = config_type == "incumbent")
+
+  .data = NULL
+  ggplot2::ggplot() +
+    ggplot2::geom_point(
+      data = footprint,
+      ggplot2::aes(
+        x = .data$D1, y = .data$D2,
+        col = .data$config_type,
+        shape = .data$is_incumbent
+      )
+    ) +
+    ggplot2::scale_color_manual(
+      breaks = c("border", "random", "evaluated", "incumbent"),
+      values = c("green", "purple", "orange", "red")
+    ) +
+    ggplot2::scale_shape_manual(
+      breaks = c(FALSE, TRUE),
+      values = c(4, 17)
+    ) +
+    ggplot2::labs(col = "type") +
+    ggplot2::guides(shape = FALSE) +
+    theme +
+    ggplot2::theme(
+      axis.title = ggplot2::element_blank(),
+      axis.text = ggplot2::element_blank(),
+      axis.ticks = ggplot2::element_blank()
+    )
 }
 
 # Implementation of the `sample_random_config` function in DeepCAVE
@@ -451,4 +497,3 @@ sample_random_config = function(param_set, d, n) {
 
   return(samples)
 }
-
