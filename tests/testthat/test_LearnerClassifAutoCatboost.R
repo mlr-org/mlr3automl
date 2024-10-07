@@ -43,7 +43,7 @@ test_that("LearnerClassifAutoCatboost twoclass internal eval metric is found", {
     list(measure = "classif.acc", metric = "Accuracy"),
     list(measure = "classif.bacc", metric = "BalancedAccuracy"),
     list(measure = "classif.auc", metric = "AUC"),
-    list(measure = "classif.prauc", metric = "aucpr"),
+    list(measure = "classif.prauc", metric = "PRAUC"),
     list(measure = "classif.bbrier", metric = "BrierScore"),
     list(measure = "classif.logloss", metric = "Logloss"),
     list(measure = "classif.precision", metric = "Precision"),
