@@ -117,7 +117,11 @@ marginal_plot = function(instance, x, y = NULL, theme = ggplot2::theme_minimal()
 #' @template param_theme
 #'
 #' @export
-parallel_coordinates = function(archive, cols_x = NULL, trafo = FALSE, theme = ggplot2::theme_minimal()) {
+parallel_coordinates = function(
+  instance, cols_x = NULL, trafo = FALSE,
+  theme = ggplot2::theme_minimal()
+) {
+  archive = instance$archive
   assert_subset(cols_x, c(archive$cols_x, paste0("x_domain_", archive$cols_x)))
   assert_flag(trafo)
 
