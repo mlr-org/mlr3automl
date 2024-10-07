@@ -9,7 +9,8 @@
 #' @template param_theme
 #' 
 #' @export
-cost_over_time = function(archive, time = NULL, theme = ggplot2::theme_minimal()) {
+cost_over_time = function(instance, time = NULL, theme = ggplot2::theme_minimal()) {
+  archive = instance$archive
   # there should only be one objective, e.g. `classif.ce`
   objective = archive$cols_y
 
@@ -28,7 +29,6 @@ cost_over_time = function(archive, time = NULL, theme = ggplot2::theme_minimal()
       y = .data[[objective]]
     ))
   }
-  
   
   g + ggplot2::geom_point() +
     ggplot2::geom_line() +
