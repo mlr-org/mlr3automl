@@ -45,7 +45,7 @@ test_that("marginal plot works", {
     marginal_plot(learner_glmnet$instance, x = "glmnet.alpha", y = "glmnet.s")
   )
   vdiffr::expect_doppelganger(
-    "mp-numeric-numeric",
+    "mp-numeric-numeric2",
     marginal_plot(learner_glmnet$instance, x = "glmnet.s", y = "glmnet.alpha")
   )
 
@@ -107,7 +107,7 @@ test_that("marginal plot accepts params on different branches", {
     terminator = trm("evals", n_evals = 6)
   )
   learner$train(task)
-  expect_doppelganger(
+  vdiffr::expect_doppelganger(
     "mp-different-branches",
     marginal_plot(learner$instance, x = "kknn.distance", y = "svm.cost")
   )
@@ -129,7 +129,7 @@ test_that("marginal plot handles dependence", {
   learner_svm$train(task)
   vdiffr::expect_doppelganger(
     "mp-dependence",
-    marginal_plot(learner$instance, x = "svm.kernel", y = "svm.degree")
+    marginal_plot(learner_svm$instance, x = "svm.kernel", y = "svm.degree")
   )
 })
 
