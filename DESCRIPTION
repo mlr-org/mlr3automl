@@ -46,7 +46,8 @@ Suggests:
     ranger,
     rpart,
     testthat (>= 3.0.0),
-    xgboost
+    xgboost,
+    vdiffr
 Remotes:
     catboost/catboost/catboost/R-package,
     mlr-org/mlr3,
