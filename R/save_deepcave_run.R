@@ -145,7 +145,7 @@ get_configs = function(instance){
     param_ids = setdiff(param_ids, "branch.selection")
   }
 
-  config_table = instance$archive$data[, param_ids, with = FALSE]
+  config_table = archive$data[, param_ids, with = FALSE]
   # param values in deepcave are on the original scale, not the log scale
   logscale_params = param_ids[instance$search_space$is_logscale[param_ids]]
   config_table[, (logscale_params) := lapply(.SD, exp), .SDcols = logscale_params]
@@ -161,7 +161,8 @@ get_configs = function(instance){
 
 # Prepare the list for converting to `configspace.json`
 get_configspace = function(instance) {
-  param_ids = instance$archive$cols_x
+  archive = instance$archive
+  param_ids = archive$cols_x
 
   hyperparameters_list = map(param_ids, function(param_id) {
     id = NULL # resolve global variable note in R CDM check
@@ -252,12 +253,13 @@ get_configspace = function(instance) {
 
 # Prepare the data.table for converting to `history.jsonl`
 get_history = function(instance) {
-  costs = instance$archive$cols_y
+  archive = instance$archive
+  costs = archive$cols_y
 
   selected_cols = c(costs, "timestamp_xs", "timestamp_ys", "state")
   timestamp_xs = timestamp_ys = state = NULL # resolve global variable note in R CDM check
-  history_table = instance$archive$data[, selected_cols, with = FALSE][, list(
-    config_id = seq_row(instance$archive$data) - 1,
+  history_table = archive$data[, selected_cols, with = FALSE][, list(
+    config_id = seq_row(archive$data) - 1,
     budget = 0,
     seed = -1,
     # combine costs into a list column
@@ -279,7 +281,8 @@ get_history = function(instance) {
 
 # Prepare the list for converting to 'meta.json'
 get_meta = function(instance){
-  costs = instance$archive$cols_y
+  archive = instance$archive
+  costs = archive$cols_y
 
   objectives_list = map(costs, function(cost) {
     measure = msr(cost)
@@ -288,7 +291,7 @@ get_meta = function(instance){
     if (is.finite(lower)) {
       lock_lower = TRUE
     } else {
-      lower = min(instance$archive$data[, cost, with = FALSE])
+      lower = min(archive$data[, cost, with = FALSE])
       lock_lower = FALSE
     }
 
@@ -296,7 +299,7 @@ get_meta = function(instance){
     if (is.finite(upper)) {
       lock_upper = TRUE
     } else {
-      upper = max(instance$archive$data[, cost, with = FALSE])
+      upper = max(archive$data[, cost, with = FALSE])
       lock_upper = FALSE
     }
 
