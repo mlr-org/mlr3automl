@@ -5,7 +5,7 @@ Authors@R: c(
     person("Damir", "Pulatov", , "damirpolat@protonmail.com", role = c("cre", "aut")),
     person("Marc", "Becker", , "marcbecker@posteo.de", role = "aut",
            comment = c(ORCID = "0000-0002-8115-0400")),
-    person("Baisu", "Zhou", "baisu.zhou@outlook.com", role = "aut")
+    person("Baisu", "Zhou", , "baisu.zhou@outlook.com", role = "aut")
   )
 Description: Flexible AutoML system for the 'mlr3' ecosystem.
 License: LGPL-3
@@ -19,6 +19,7 @@ Depends:
     R (>= 3.1.0),
     rush
 Imports:
+    bbotk,
     bslib,
     checkmate,
     data.table,
@@ -32,6 +33,7 @@ Imports:
     paradox (>= 1.0.1),
     R6,
     shiny,
+    stats,
     utils
 Suggests:
     catboost,
@@ -82,9 +84,9 @@ Collate:
     'build_graph.R'
     'estimate_memory.R'
     'helper.R'
+    'helpers_app.R'
     'internal_measure.R'
     'train_auto.R'
-    'helpers_app.R'
-    'visualization_app.R'
     'visualization.R'
+    'visualization_app.R'
     'zzz.R'

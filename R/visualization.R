@@ -1,6 +1,6 @@
 #' @title Cost-Over-Time Plot
 #' 
-#' @description
+#' @description Plots the cost (objective) over time, where the time variable can be set by the user.
 #' 
 #' @template param_instance
 #' @param time (`character(1)`)\cr
@@ -35,9 +35,9 @@ cost_over_time = function(instance, time = NULL, theme = ggplot2::theme_minimal(
     theme
 }
 
-#' @title Marginal Plot for Hyperparameters
+#' @title Marginal Plot
 #' 
-#' @description
+#' @description Creates 2D marginal plots for evaluated configurations.
 #' 
 #' @template param_instance
 #' @param x (`character(1)`)
@@ -105,7 +105,7 @@ marginal_plot = function(instance, x, y = NULL, theme = ggplot2::theme_minimal()
 
 #' @title Parallel Coordinates Plot
 #' 
-#' @description Adapted from [mlr3viz::autoplot()] with `type == "parallel"`. Since the hyperparameters of each individual learner are conditioned on `branch.selection`, missing values are expected in the archive data. When standardizing the hyperparameter values (referred to as "x values" in the following to be consistent with `mlr3viz` documentation), `na.omit == TRUE` is used to compute `mean()` and `sd()`.
+#' @description Adapted from [mlr3viz::autoplot()] with `type == "parallel"`. Since the hyperparameters of each individual learner are conditioned on `branch.selection`, missing values are expected in the archive data. When standardizing the hyperparameter values (referred to as "x values" in the following to be consistent with `mlr3viz` documentation), `na.omit == TRUE` is used to compute `mean()` and `stats::sd()`.
 #' 
 #' @template param_instance
 #' @param cols_x (`character()`)
@@ -147,17 +147,17 @@ parallel_coordinates = function(
 
   # rescale
   data_n = data_n[, lapply(.SD, function(x) {
-    if (sd(x, na.rm = TRUE) %in% c(0, NA)) {
+    if (stats::sd(x, na.rm = TRUE) %in% c(0, NA)) {
       rep(0, length(x))
     } else {
-      (x - mean(x, na.rm = TRUE)) / sd(x, na.rm = TRUE)
+      (x - mean(x, na.rm = TRUE)) / stats::sd(x, na.rm = TRUE)
     }
   })]
   data_c = data_c[, lapply(.SD, function(x) {
-    if (sd(x, na.rm = TRUE) %in% c(0, NA)) {
+    if (stats::sd(x, na.rm = TRUE) %in% c(0, NA)) {
       rep(0, length(x))
     } else {
-      (x - mean(unique(x), na.rm = TRUE)) / sd(unique(x), na.rm = TRUE)
+      (x - mean(unique(x), na.rm = TRUE)) / stats::sd(unique(x), na.rm = TRUE)
     }
   })]
 
@@ -181,6 +181,7 @@ parallel_coordinates = function(
   data = merge(data, data_y, by = "id")
   setorderv(data, "x")
 
+  .data = NULL
   ggplot2::ggplot(data,
     mapping = ggplot2::aes(
       x = .data[["x"]],

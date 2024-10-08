@@ -24,6 +24,7 @@ Useful links:
 Authors:
 \itemize{
   \item Marc Becker \email{marcbecker@posteo.de} (\href{https://orcid.org/0000-0002-8115-0400}{ORCID})
+  \item Baisu Zhou \email{baisu.zhou@outlook.com}
 }
 
 }

@@ -84,11 +84,11 @@ visualize = function(instance) {
   )
 
   server = function(input, output, session) {
-    session$onSessionEnded(stopApp)
+    session$onSessionEnded(shiny::stopApp)
 
 
     # Cost over time
-    output$cost_over_time = renderPlot({
+    output$cost_over_time = shiny::renderPlot({
       if (input$cot_x == "configuration ID") {
         cost_over_time(instance)
       } else {
