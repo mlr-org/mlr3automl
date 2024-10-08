@@ -1,32 +1,44 @@
+---
+output: github_document
+---
+
+```{r, include = FALSE}
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+set.seed(1)
+options(
+    datatable.print.nrows = 10,
+    datatable.print.class = FALSE,
+    datatable.print.keys = FALSE,
+    width = 100)
+# mute load messages
+library("mlr3automl")
+```
 
 # mlr3automl <img src="man/figures/logo.png" align="right" width = "120" />
 
-Package website: [release](https://mlr3automl.mlr-org.com/) \|
-[dev](https://mlr3automl.mlr-org.com/dev/)
+Package website: [release](https://mlr3automl.mlr-org.com/) | [dev](https://mlr3automl.mlr-org.com/dev/)
 
 <!-- badges: start -->
-
 [![r-cmd-check](https://github.com/mlr-org/mlr3automl/actions/workflows/r-cmd-check.yml/badge.svg)](https://github.com/mlr-org/mlr3automl/actions/workflows/r-cmd-check.yml)
-[![CRAN
-Status](https://www.r-pkg.org/badges/version-ago/mlr3automl)](https://cran.r-project.org/package=mlr3automl)
+[![CRAN Status](https://www.r-pkg.org/badges/version-ago/mlr3automl)](https://cran.r-project.org/package=mlr3automl)
 [![StackOverflow](https://img.shields.io/badge/stackoverflow-mlr3-orange.svg)](https://stackoverflow.com/questions/tagged/mlr3)
 [![Mattermost](https://img.shields.io/badge/chat-mattermost-orange.svg)](https://lmmisld-lmu-stats-slds.srv.mwn.de/mlr_invite/)
 <!-- badges: end -->
 
-*mlr3automl* is the Automated Machine Learning (AutoML) package of the
-[mlr3](https://mlr-org.com/) ecosystem.
+*mlr3automl* is the Automated Machine Learning (AutoML) package of the [mlr3](https://mlr-org.com/) ecosystem.
 
 ## Installation
 
 Install the development version from GitHub:
 
-``` r
+```{r eval = FALSE}
 remotes::install_github("mlr-org/mlr3automl")
 ```
 
 ## Examples
 
-``` r
+```{r eval = FALSE}
 library("mlr3automl")
 
 rush_plan(n_workers = 2)

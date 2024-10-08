@@ -6,6 +6,8 @@
 \alias{mlr3automl-package}
 \title{mlr3automl: AutoML extention for 'mlr3'}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 Flexible AutoML system for the 'mlr3' ecosystem.
 }
 \seealso{
