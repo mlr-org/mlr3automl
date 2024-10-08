@@ -366,7 +366,7 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
   archive = instance$archive
 
   # generate configs
-  n_random = 100
+  n_random = nrow(archive$data) * 10
   discretization = 10
   
   evaluated = as.data.table(archive)[, archive$cols_x, with = FALSE]
@@ -427,13 +427,34 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
   }
 
   # get pairwise distances
+
+  # # compute rejection threshold
+  # # first, compute max distance
+  # # https://github.com/automl/DeepCAVE/blob/58d6801508468841eda038803b12fa2bbf7a0cb8/deepcave/evaluators/footprint.py#L349
+  # max_distance = sum(!is_categorical)
+  # # then compute threshold
+  # # https://github.com/automl/DeepCAVE/blob/58d6801508468841eda038803b12fa2bbf7a0cb8/deepcave/evaluators/footprint.py#L142
+  # rejection_rate = 0.01
+  # rejection_threshold = max_distance * rejection_rate
+  # # compute distance from each config to the rest
+  # # if distance < rejection threshold, remove the config
+  # # https://github.com/automl/DeepCAVE/blob/58d6801508468841eda038803b12fa2bbf7a0cb8/deepcave/evaluators/footprint.py#L454
   n_configs = nrow(all_configs)
-  distances = matrix(0, nrow = n_configs, ncol = n_configs)
+  # keep_config = !logical(n_configs)  # init to TRUE for all configs
+  distances = matrix(NA, nrow = n_configs, ncol = n_configs)
   for (i in seq_len(n_configs - 1)) {
     config1 = unlist(all_configs[i])
     for (j in seq(i + 1, n_configs)) {
       config2 = unlist(all_configs[j])
       d = get_distance(config1, config2)
+      # # keep all evaluated configs
+      # if (config_type[[i]] != "evaluated") {
+      #   # reject if distance below threshold
+      #   if (d < rejection_threshold) {
+      #     keep_config[[i]] = FALSE
+      #     break
+      #   }
+      # }
       distances[i, j] = d
       distances[j, i] = d
     }
@@ -443,11 +464,44 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
   diss_mat = as.dist(distances)
   footprint = as.data.frame(smacof::mds(diss_mat)$conf)
   setDT(footprint)
+
+  # train on objective
+  evaluated = config_type %in% c("evaluated", "incumbent")
+  training_data = cbind(
+    footprint[evaluated, ],
+    archive$data[, archive$cols_y, with = FALSE]
+  )
+  task = as_task_regr(
+    training_data,
+    target = archive$cols_y
+  )
+  surrogate = default_rf()
+  surrogate$train(task)
+
+  # train on area is not yet supported
+
+  # predict on grid
+  grid_size = 80
+  x_min = min(footprint$D1)
+  x_max = max(footprint$D1)
+  y_min = min(footprint$D2)
+  y_max = max(footprint$D2)
+  xs = seq(x_min, x_max, length.out = grid_size)
+  ys = seq(y_min, y_max, length.out = grid_size)
+  grid_points = expand.grid(xs, ys)
+  names(grid_points) = c("D1", "D2")
+  pred = surrogate$predict_newdata(grid_points)$response
+  grid_points[[archive$cols_y]] = pred
+
+  # plot
   set(footprint, j = "config_type", value = config_type)
   set(footprint, j = "is_incumbent", value = config_type == "incumbent")
-
   .data = NULL
   ggplot2::ggplot() +
+    ggplot2::geom_raster(
+        data = grid_points,
+        ggplot2::aes(x = .data$D1, y = .data$D2, fill = .data[[archive$cols_y]])
+    ) +
     ggplot2::geom_point(
       data = footprint,
       ggplot2::aes(
@@ -456,6 +510,7 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
         shape = .data$is_incumbent
       )
     ) +
+    ggplot2::scale_fill_gradient() +
     ggplot2::scale_color_manual(
       breaks = c("border", "random", "evaluated", "incumbent"),
       values = c("green", "purple", "orange", "red")
@@ -465,7 +520,7 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
       values = c(4, 17)
     ) +
     ggplot2::labs(col = "type") +
-    ggplot2::guides(shape = FALSE) +
+    ggplot2::guides(shape = "none") +
     theme +
     ggplot2::theme(
       axis.title = ggplot2::element_blank(),
