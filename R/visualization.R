@@ -275,7 +275,15 @@ partial_dependence_plot = function(
   # prototype = archive_data[0, archive$cols_x, with = FALSE]
 
   # new data to compute PDP
-  pdp_data = generate_design_random(archive$search_space, n = 1e3)$data
+  # https://github.com/automl/DeepCAVE/blob/58d6801508468841eda038803b12fa2bbf7a0cb8/deepcave/plugins/hyperparameter/pdp.py#L334
+  samples_per_param = 10
+  num_samples = samples_per_param * nrow(archive_data)
+  max_samples = 10000
+  if (num_samples > max_samples) {
+    num_samples = max_samples
+  }
+
+  pdp_data = generate_design_random(archive$search_space, n = num_samples)$data
   # same type conversion as above
   pdp_data[, archive$cols_x := lapply(.SD, function(col) {
     if (is.logical(col)) return(factor(col, levels = c(FALSE, TRUE)))
@@ -307,15 +315,16 @@ partial_dependence_plot = function(
         x = .data[[x]], y = .data[[y]], z = .data$.value
       )) +
       ggplot2::geom_contour_filled() +
-      ggplot2::scale_fill_viridis_d(direction = -1),
+      ggplot2::scale_fill_viridis_d(),
 
     # FIXME: rug = TRUE causes error when, e.g., x = "svm.cost", y = "svm.degree"
     # related to the problem that degree is missing for some instances?
     default = eff$plot(rug = FALSE)
+      + ggplot2::scale_fill_viridis_c(name = archive$cols_y)
   )
 
   # TBD: remove existing scales, use viridis instead
-  g + ggplot2::scale_fill_viridis_c(name = archive$cols_y, direction = -1) + theme
+  g + theme
 }
 
 
