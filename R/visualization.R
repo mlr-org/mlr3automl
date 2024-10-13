@@ -351,18 +351,6 @@ pareto_front = function(instance, theme = ggplot2::theme_minimal()) {
 config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
   requireNamespace("smacof", quietly = TRUE)
 
-  set.seed(1453)
-  rush_plan(n_workers = 2)
-  task = tsk("penguins")
-  learner = lrn("classif.auto_ranger",
-    small_data_size = 1,
-    resampling = rsmp("holdout"),
-    measure = msr("classif.ce"),
-    terminator = trm("evals", n_evals = 20)
-  )
-  learner$train(task)
-  instance = learner$instance
-
   archive = instance$archive
 
   # generate configs
@@ -427,34 +415,14 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
   }
 
   # get pairwise distances
-
-  # # compute rejection threshold
-  # # first, compute max distance
-  # # https://github.com/automl/DeepCAVE/blob/58d6801508468841eda038803b12fa2bbf7a0cb8/deepcave/evaluators/footprint.py#L349
-  # max_distance = sum(!is_categorical)
-  # # then compute threshold
-  # # https://github.com/automl/DeepCAVE/blob/58d6801508468841eda038803b12fa2bbf7a0cb8/deepcave/evaluators/footprint.py#L142
-  # rejection_rate = 0.01
-  # rejection_threshold = max_distance * rejection_rate
-  # # compute distance from each config to the rest
-  # # if distance < rejection threshold, remove the config
-  # # https://github.com/automl/DeepCAVE/blob/58d6801508468841eda038803b12fa2bbf7a0cb8/deepcave/evaluators/footprint.py#L454
+  # rejection and retrying are not yet implemented
   n_configs = nrow(all_configs)
-  # keep_config = !logical(n_configs)  # init to TRUE for all configs
   distances = matrix(NA, nrow = n_configs, ncol = n_configs)
   for (i in seq_len(n_configs - 1)) {
     config1 = unlist(all_configs[i])
     for (j in seq(i + 1, n_configs)) {
       config2 = unlist(all_configs[j])
       d = get_distance(config1, config2)
-      # # keep all evaluated configs
-      # if (config_type[[i]] != "evaluated") {
-      #   # reject if distance below threshold
-      #   if (d < rejection_threshold) {
-      #     keep_config[[i]] = FALSE
-      #     break
-      #   }
-      # }
       distances[i, j] = d
       distances[j, i] = d
     }
@@ -497,6 +465,7 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
   set(footprint, j = "config_type", value = config_type)
   set(footprint, j = "is_incumbent", value = config_type == "incumbent")
   .data = NULL
+  
   ggplot2::ggplot() +
     ggplot2::geom_raster(
         data = grid_points,
