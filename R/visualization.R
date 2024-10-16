@@ -350,6 +350,7 @@ pareto_front = function(instance, theme = ggplot2::theme_minimal()) {
 #' @export
 config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
   requireNamespace("smacof", quietly = TRUE)
+  set.seed(0)
 
   archive = instance$archive
 
@@ -419,9 +420,9 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
   n_configs = nrow(all_configs)
   distances = matrix(NA, nrow = n_configs, ncol = n_configs)
   for (i in seq_len(n_configs - 1)) {
-    config1 = unlist(all_configs[i])
+    config1 = unlist(all_configs[i, ])
     for (j in seq(i + 1, n_configs)) {
-      config2 = unlist(all_configs[j])
+      config2 = unlist(all_configs[j, ])
       d = get_distance(config1, config2)
       distances[i, j] = d
       distances[j, i] = d
@@ -479,7 +480,10 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
         shape = .data$is_incumbent
       )
     ) +
-    ggplot2::scale_fill_gradient() +
+    ggplot2::scale_fill_gradient(
+      low = "#56B1F7",
+      high = "#132B43"
+    ) +
     ggplot2::scale_color_manual(
       breaks = c("border", "random", "evaluated", "incumbent"),
       values = c("green", "purple", "orange", "red")
