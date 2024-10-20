@@ -368,7 +368,7 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
   set(border, j = "type", value = "border")
 
   # discretization is not yet implemented
-  random = sample_random_config(configspace, d = NULL, n = n_random)
+  random = generate_design_random(configspace, n = n_random)$data
   set(random, j = "type", value = "random")
   
   all_configs = rbind(evaluated, border, random)
@@ -379,7 +379,6 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
 
   # encode config
   all_configs = encode_configs(all_configs, configspace)
-  
   
   # calculate distances
   is_categorical = !(configspace$class %in% c("ParamDbl", "ParamInt"))

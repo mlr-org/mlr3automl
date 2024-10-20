@@ -6,6 +6,8 @@
 #'   Configs to encode, either generated via `sample_random_configs` or `sample_border_configs` or extracted from the tuning archive via `archive$data[, archive$cols_x, with = FALSE]`.
 #' @param configspace (`[paradox::ParamSet]`)
 #'   Configuration space, e.g. `archive$search_space`.
+#' 
+#' @return `[data.table::data.table]` of the same size as `configs`.
 encode_configs = function(configs, configspace) {
   assert_data_table(configs)
   assert_param_set(configspace)
@@ -44,6 +46,7 @@ encode_configs = function(configs, configspace) {
 #' @description See https://github.com/automl/DeepCAVE/blob/58d6801508468841eda038803b12fa2bbf7a0cb8/deepcave/evaluators/footprint.py#L524.
 #' 
 #' @param configspace (`[paradox::ParamSet]`)
+#' @return `numeric()` of the same length as the number of params in `configspace`.
 get_depth = function(configspace) {
   depth = table(configspace$deps$id) + 1
   depth = c(branch.selection = 1, depth)
@@ -59,7 +62,9 @@ get_depth = function(configspace) {
 #' @param config2 (`numeric`)
 #' @param is_categorical (`logical`)
 #' @param depth (`numeric`)
-#'   Obtained by calling `[get_depth]`.
+#'   Obtained by calling `[get_depth()]`.
+#' 
+#' @return `numeric(1)`
 get_distance = function(config1, config2, is_categorical, depth) {
   assert_true(length(config1) == length(config2))
   d = abs(config1 - config2)
@@ -74,25 +79,28 @@ get_distance = function(config1, config2, is_categorical, depth) {
 #' @description See https://github.com/automl/DeepCAVE/blob/58d6801508468841eda038803b12fa2bbf7a0cb8/deepcave/utils/configspace.py#L79.
 #' @param configspace (`[paradox::ParamSet]`)
 #' @param d (`integer(1)`)\cr
-#'   Number of discretized values, same as in `sample_random_config`
-#' @param n (`integer(1)`)\cr
-#'   Sample size.
+#'   Number of discretized values, same as in `sample_random_config`. Different to the DeepCAVE implementation, here `d` must be provided. If no discretization is needed, simply use `[paradox::generate_design_random]()`.
+#' 
+#' @return `[paradox::SampleHierarchical]`
 sample_random_config = function(configspace, d, n) {
   assert_param_set(configspace)
   assert_count(d, positive = TRUE, null.ok = TRUE)
   assert_count(n, positive = TRUE)
 
-  if (is.null(d)) {
-    return(generate_design_random(configspace, n)$data)
-  }
+  # if (is.null(d)) {
+  #   return(generate_design_random(configspace, n)$data)
+  # }
 
   subspaces = configspace$subspaces()
-  samples = map_dtc(subspaces, function(subspace) {
+  samplers = map(subspaces, function(subspace) {
     # take the first and only column from the grid design data.table
     # to get a vector to sample from
     possible_values = generate_design_grid(subspace, resolution = d)$data[[1]]
-    sample(possible_values, n, replace = TRUE)
+    Sampler1DRfun$new(subspace, function(n) {
+      sample(possible_values, n, replace = TRUE)
+    })
   })
+  sampler = SamplerHierarchical$new(configspace, samplers)
 
-  return(samples)
+  return(sampler)
 }
