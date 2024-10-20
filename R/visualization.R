@@ -353,6 +353,7 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
   set.seed(0)
 
   archive = instance$archive
+  configspace = archive$search_space
 
   # generate configs
   n_random = nrow(archive$data) * 10
@@ -363,10 +364,11 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
   incumbent_key = archive$best()$keys
   set(evaluated, i = which(archive$data$keys == incumbent_key), j = "type", value = "incumbent")
 
-  border = generate_design_grid(archive$search_space, resolution = 2)$data
+  border = generate_design_grid(configspace, resolution = 2)$data
   set(border, j = "type", value = "border")
 
-  random = sample_random_config(archive$search_space, d = discretization, n = n_random)
+  # discretization is not yet implemented
+  random = sample_random_config(configspace, d = NULL, n = n_random)
   set(random, j = "type", value = "random")
   
   all_configs = rbind(evaluated, border, random)
@@ -376,46 +378,12 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
   all_configs = all_configs[, -"type", with = FALSE]
 
   # encode config
-  # https://github.com/automl/DeepCAVE/blob/58d6801508468841eda038803b12fa2bbf7a0cb8/deepcave/runs/__init__.py#L1189
-  all_configs[, archive$cols_x := lapply(.SD, function(col) {
-    # non-numeric to numeric
-    if (!is.numeric(col)) {
-      col = as.numeric(factor(col))
-      # categorical values should be between 0 and 1
-      col = col / length(unique(col))
-    }
-    # NAs should be encoded as -0.5
-    col[is.na(col)] = - 0.5
-    return(col)
-  }), .SDcols = archive$cols_x]
+  all_configs = encode_configs(all_configs, configspace)
   
   
   # calculate distances
-
-  is_categorical = !archive$data[, lapply(.SD, is.numeric), .SDcols = archive$cols_x]
-  is_categorical = unlist(is_categorical)
-
-  # get depth (number of parents + 1) for each param
-  # https://github.com/automl/DeepCAVE/blob/58d6801508468841eda038803b12fa2bbf7a0cb8/deepcave/evaluators/footprint.py#L524
-  # Theoretically, if a param has two parents and each parent depends on branch.selection,
-  # then the param has depth 2. But we don't have such cases (yet).
-  # if a param appears twice in the deps table, it has two parents, otherwise one
-  # depth := num of parents + 1
-  depth = table(archive$search_space$deps$id) + 1
-  depth = c(branch.selection = 1, depth)
-
-  # Implementation of the `Footprint._get_distance` function in DeepCAVE
-  # https://github.com/automl/DeepCAVE/blob/58d6801508468841eda038803b12fa2bbf7a0cb8/deepcave/evaluators/footprint.py#L371
-  # config1, config2: numeric vectors of the same length
-  get_distance = function(config1, config2) {
-    assert_true(length(config1) == length(config2))
-    d = abs(config1 - config2)
-    d[is.nan(d)] = 1
-    d[is_categorical & (d != 0)] = 1
-    sum(d / depth)
-  }
-
-  # get pairwise distances
+  is_categorical = !(configspace$class %in% c("ParamDbl", "ParamInt"))
+  depth = get_depth(configspace)
   # rejection and retrying are not yet implemented
   n_configs = nrow(all_configs)
   distances = matrix(NA, nrow = n_configs, ncol = n_configs)
@@ -423,7 +391,7 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
     config1 = unlist(all_configs[i, ])
     for (j in seq(i + 1, n_configs)) {
       config2 = unlist(all_configs[j, ])
-      d = get_distance(config1, config2)
+      d = get_distance(config1, config2, is_categorical, depth)
       distances[i, j] = d
       distances[j, i] = d
     }
@@ -500,28 +468,4 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
       axis.text = ggplot2::element_blank(),
       axis.ticks = ggplot2::element_blank()
     )
-}
-
-# Implementation of the `sample_random_config` function in DeepCAVE
-# https://github.com/automl/DeepCAVE/blob/58d6801508468841eda038803b12fa2bbf7a0cb8/deepcave/utils/configspace.py#L79
-# d: same as `sample_random_config`
-# n: sample size
-sample_random_config = function(param_set, d, n) {
-  assert_param_set(param_set)
-  assert_count(d, positive = TRUE, null.ok = TRUE)
-  assert_count(n, positive = TRUE)
-
-  if (is.null(d)) {
-    return(generate_design_random(param_set, n)$data)
-  }
-
-  subspaces = param_set$subspaces()
-  samples = map_dtc(subspaces, function(subspace) {
-    # take the first and only column from the grid design data.table
-    # to get a vector to sample from
-    possible_values = generate_design_grid(subspace, resolution = d)$data[[1]]
-    sample(possible_values, n, replace = TRUE)
-  })
-
-  return(samples)
 }
