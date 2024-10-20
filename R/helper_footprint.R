@@ -73,34 +73,101 @@ get_distance = function(config1, config2, is_categorical, depth) {
   sum(d / depth)
 }
 
-
-#' @title  Implementation of the `sample_random_config` function in DeepCAVE
+#' @title Implementation of `Footprint._get_max_distance`
 #' 
-#' @description See https://github.com/automl/DeepCAVE/blob/58d6801508468841eda038803b12fa2bbf7a0cb8/deepcave/utils/configspace.py#L79.
+#' @description See https://github.com/automl/DeepCAVE/blob/58d6801508468841eda038803b12fa2bbf7a0cb8/deepcave/evaluators/footprint.py#L349. Just counts the number of numerical params.
+#' 
 #' @param configspace (`[paradox::ParamSet]`)
-#' @param d (`integer(1)`)\cr
-#'   Number of discretized values, same as in `sample_random_config`. Different to the DeepCAVE implementation, here `d` must be provided. If no discretization is needed, simply use `[paradox::generate_design_random]()`.
 #' 
-#' @return `[paradox::SampleHierarchical]`
-sample_random_config = function(configspace, d, n) {
-  assert_param_set(configspace)
-  assert_count(d, positive = TRUE, null.ok = TRUE)
-  assert_count(n, positive = TRUE)
+#' @return `numeric(1)`
+get_max_distance = function(configspace) {
+  sum(configspace$is_number)
+}
 
-  # if (is.null(d)) {
-  #   return(generate_design_random(configspace, n)$data)
-  # }
 
-  subspaces = configspace$subspaces()
-  samplers = map(subspaces, function(subspace) {
-    # take the first and only column from the grid design data.table
-    # to get a vector to sample from
-    possible_values = generate_design_grid(subspace, resolution = d)$data[[1]]
-    Sampler1DRfun$new(subspace, function(n) {
-      sample(possible_values, n, replace = TRUE)
-    })
+#' @title Discretized 1D Uniform Sampler
+#' 
+#' @description
+#' Implements the DeepCAVE samplers `[sample_random_config](https://github.com/automl/DeepCAVE/blob/58d6801508468841eda038803b12fa2bbf7a0cb8/deepcave/utils/configspace.py#L79)` and `[sample_border_config](https://github.com/automl/DeepCAVE/blob/58d6801508468841eda038803b12fa2bbf7a0cb8/deepcave/utils/configspace.py#L36)`.
+#' 
+#' @param param ([`ParamSet`])\cr
+#'   Domain / support of the distribution we want to sample from.
+#'   Must be one-dimensional.
+#' 
+Sampler1DUnifDisc = R6Class("Sampler1DUnifDisc", inherit = paradox::Sampler1D,
+  public = list(
+    #' @description
+    #' Creates a new instance of this [R6][R6::R6Class] class.
+    #' @param d (`numeric(1)` | NULL)\cr
+    #'   Number (>= 2) of discrete values to sample from. If `d = 2`, one gets the border sampler.
+    #'   Ignored for categorical params.
+    initialize = function(param, d = NULL) {
+      super$initialize(param)
+      assert_param_set(self$param, no_untyped = TRUE, must_bounded = TRUE)
+      private$.d = d
+
+      if (self$param$is_categ) {
+        private$.choices = self$param$levels[[1]]
+      } else {
+        private$.choices = generate_design_grid(param, resolution = d)$data[[1]]
+      }
+    }
+  ),
+
+  active = list(
+    #' @field d (`numeric(1)` | NULL)\cr
+    #'   Number of discrete values to sample from.
+    d = function(v) if (missing(v)) private$.d else private$.d = assert_int(d, lower = 2),
+
+    #' @field choices (`numeric()` | `integer()` | `factor()` | `logical()`)\cr
+    #'   Possible values to sample from.
+    choices = function(v) if (missing(v)) private$.choices else stop("Cannot overwrite choices. Change d instead.")
+  ),
+
+  private = list(
+    .d = NULL,
+    .choices = NULL,
+    .sample = function(n) {
+      s = sample(private$.choices, n, replace = TRUE)
+      super$as_dt_col(s)
+    }
+  )
+)
+
+#' @title Get Border/Random Generator
+#' 
+#' @description Creates a `SamplerHierarchical` for generating border/random configs.
+#'
+#' @param d (`numeric(1)` | NULL)\cr
+#'   Number of discrete values to sample from. If `NULL`, all values are used. If `d = 2`, only borders are used.
+#' 
+#' @return `SamplerHierarchical`.
+get_generator = function(configspace, d = NULL) {
+  assert_int(d, lower = 2, null.ok = TRUE)
+
+  if (is.null(d)) {
+    return(SamplerUniform$new(configspace))
+  }
+
+  samplers = map(configspace$subspaces(), function(subspace) {
+    Sampler1DUnifDisc$new(subspace, d)
   })
-  sampler = SamplerHierarchical$new(configspace, samplers)
+  return(SamplerHierarchical$new(configspace, samplers))
+}
 
-  return(sampler)
+#' @title Get new distances
+#' 
+#' @description If new_config is not rejected, return a vector of distances between new_config and old configs. If new_config is rejected, return NULL.
+get_new_distances = function(configs, new_config, metric, rejection_threshold) {
+  new_distances = numeric(nrow(configs))
+  for (i in seq_row(configs)) {
+    old_config = unlist(configs[i, ])
+    d = metric(old_config, new_config)
+    if (d < rejection_threshold) {
+      return(NULL)
+    }
+    new_distances[[i]] = d
+  }
+
+  return(new_distances)
 }

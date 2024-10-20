@@ -350,51 +350,95 @@ pareto_front = function(instance, theme = ggplot2::theme_minimal()) {
 #' @export
 config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
   requireNamespace("smacof", quietly = TRUE)
-  set.seed(0)
+  # set.seed(0)
 
   archive = instance$archive
-  configspace = archive$search_space
+  configspace = instance$search_space
 
-  # generate configs
+  # some constants
   n_random = nrow(archive$data) * 10
   discretization = 10
-  
-  evaluated = as.data.table(archive)[, archive$cols_x, with = FALSE]
-  set(evaluated, j = "type", value = "evaluated")
+  rejection_rate = 0.01
+  retries = 3  # stopping criterion for adding border/random configs
+
+  # compute rejection threshold
+  max_distance = get_max_distance(configspace)
+  rejection_threshold = max_distance * rejection_rate
+
+  # get encoded configs
+  evaluated = archive$data[, archive$cols_x, with = FALSE]
+  evaluated = encode_configs(evaluated, configspace)
+
+  # get the incumbent
+  config_types = rep("evaluated", nrow(evaluated))
   incumbent_key = archive$best()$keys
-  set(evaluated, i = which(archive$data$keys == incumbent_key), j = "type", value = "incumbent")
-
-  border = generate_design_grid(configspace, resolution = 2)$data
-  set(border, j = "type", value = "border")
-
-  # discretization is not yet implemented
-  random = generate_design_random(configspace, n = n_random)$data
-  set(random, j = "type", value = "random")
+  config_types[archive$data$keys == incumbent_key] = "incumbent" 
   
-  all_configs = rbind(evaluated, border, random)
-  all_configs = unique(all_configs, by = archive$cols_x)
-
-  config_type = all_configs$type
-  all_configs = all_configs[, -"type", with = FALSE]
-
-  # encode config
-  all_configs = encode_configs(all_configs, configspace)
-  
-  # calculate distances
-  is_categorical = !(configspace$class %in% c("ParamDbl", "ParamInt"))
-  depth = get_depth(configspace)
-  # rejection and retrying are not yet implemented
-  n_configs = nrow(all_configs)
+  # init distances
+  configs = evaluated
+  n_configs = nrow(evaluated)
   distances = matrix(NA, nrow = n_configs, ncol = n_configs)
-  for (i in seq_len(n_configs - 1)) {
-    config1 = unlist(all_configs[i, ])
-    for (j in seq(i + 1, n_configs)) {
-      config2 = unlist(all_configs[j, ])
-      d = get_distance(config1, config2, is_categorical, depth)
-      distances[i, j] = d
-      distances[j, i] = d
+
+  border_generator = get_generator(configspace, d = 2)
+  random_generator = get_generator(configspace, d = discretization)
+
+  # now the border and random configs are added
+  tries = 0
+  # TBD: logger? (for how many configs have been added)
+  is_categorical = configspace$is_categ
+  depth = get_depth(configspace)
+  metric = function(config1, config2) {
+    get_distance(config1, config2, is_categorical, depth)
+  }
+
+  tries = 0
+  repeat {
+    # generate and encode new configs
+    new_configs = rbind(
+      border_generator$sample(1)$data,
+      random_generator$sample(1)$data
+    )
+    new_configs = encode_configs(new_configs, configspace)
+    new_config_types = c("border", "random")
+
+    counter = 0
+    # compute distances, reject or accept
+    for (i in seq_row(new_configs)) {
+      new_distances = get_new_distances(
+        configs,
+        unlist(new_configs[i, ]),
+        metric,
+        rejection_threshold
+      )
+      # rejected <=> new_distances is null
+      if (is.null(new_distances)) {
+        next
+      }
+      
+      counter = counter + 1
+      n_configs = n_configs + 1
+      configs = rbind(configs, new_configs[i, ])
+      config_types = c(config_types, new_config_types[[i]])
+      # update distances
+      distances = rbind(distances, new_distances)
+      distances = cbind(distances, c(new_distances, NA))
+    }
+
+    # stopping criteria
+    if (counter == 0) {  # no new config added
+      tries = tries + 1
+    } else {
+      tries = 0
+    }
+    if (tries > retries) {
+      # 3 consecutive iterations with no config added => stop
+      break
+    }
+    if (n_configs > 4000) {
+      break
     }
   }
+
 
   # MDS
   diss_mat = as.dist(distances)
@@ -402,7 +446,7 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
   setDT(footprint)
 
   # train on objective
-  evaluated = config_type %in% c("evaluated", "incumbent")
+  evaluated = config_types %in% c("evaluated", "incumbent")
   training_data = cbind(
     footprint[evaluated, ],
     archive$data[, archive$cols_y, with = FALSE]
@@ -430,8 +474,8 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
   grid_points[[archive$cols_y]] = pred
 
   # plot
-  set(footprint, j = "config_type", value = config_type)
-  set(footprint, j = "is_incumbent", value = config_type == "incumbent")
+  set(footprint, j = "config_type", value = config_types)
+  set(footprint, j = "is_incumbent", value = config_types == "incumbent")
   .data = NULL
   
   ggplot2::ggplot() +
