@@ -441,8 +441,16 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
     }
   }
 
+  # library(reticulate)
+  # use_condaenv("DeepCAVE")
+  # manifold = import("sklearn.manifold")
+  # mds = manifold$MDS(n_components=2L, dissimilarity="precomputed", random_state=0L)
+  # distances[is.na(distances)] = 0
+  # footprint = mds$fit_transform(distances, )
+  # footprint = as.data.table(footprint)
+  # names(footprint) = c("D1", "D2")
 
-  # MDS
+  MDS
   diss_mat = as.dist(distances)
   footprint = as.data.frame(smacof::mds(diss_mat)$conf)
   setDT(footprint)
@@ -507,7 +515,7 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
     ) +
     ggplot2::labs(col = "type") +
     ggplot2::guides(shape = "none") +
-    theme +
+    # theme +
     ggplot2::theme(
       axis.title = ggplot2::element_blank(),
       axis.text = ggplot2::element_blank(),
