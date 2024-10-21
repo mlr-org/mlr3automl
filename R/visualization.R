@@ -423,7 +423,7 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
       config_types = c(config_types, new_config_types[[i]])
       # update distances
       distances = rbind(distances, new_distances)
-      distances = cbind(distances, c(new_distances, NA))
+      distances = cbind(distances, c(new_distances, 0))
     }
 
     # stopping criteria
@@ -450,7 +450,7 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
   # footprint = as.data.table(footprint)
   # names(footprint) = c("D1", "D2")
 
-  MDS
+  # MDS
   diss_mat = as.dist(distances)
   footprint = as.data.frame(smacof::mds(diss_mat)$conf)
   setDT(footprint)
@@ -515,7 +515,7 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
     ) +
     ggplot2::labs(col = "type") +
     ggplot2::guides(shape = "none") +
-    # theme +
+    theme +
     ggplot2::theme(
       axis.title = ggplot2::element_blank(),
       axis.text = ggplot2::element_blank(),

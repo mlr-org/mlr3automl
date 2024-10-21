@@ -83,7 +83,7 @@ get_distance = function(config1, config2, is_categorical, depth) {
 #' @return `matrix`
 get_distances = function(configs, metric) {
   n_configs = nrow(configs)
-  distances = matrix(NA, nrow = n_configs, ncol = n_configs)
+  distances = matrix(0, nrow = n_configs, ncol = n_configs)
   for (i in seq_len(n_configs - 1)) {
     for (j in seq(i + 1, n_configs)) {
       d = metric(unlist(configs[i, ]), unlist(configs[j, ]))
