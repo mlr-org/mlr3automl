@@ -373,11 +373,20 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
   config_types = rep("evaluated", nrow(evaluated))
   incumbent_key = archive$best()$keys
   config_types[archive$data$keys == incumbent_key] = "incumbent" 
+
+  # partially evaluate get_distance
+  is_categorical = configspace$is_categ
+  depth = get_depth(configspace)
+  metric = function(config1, config2) {
+    get_distance(config1, config2, is_categorical, depth)
+  }
   
   # init distances
   configs = evaluated
   n_configs = nrow(evaluated)
-  distances = matrix(NA, nrow = n_configs, ncol = n_configs)
+  # distances = matrix(NA, nrow = n_configs, ncol = n_configs)
+  # get distances between evaluated configs
+  distances = get_distances(evaluated, metric)
 
   border_generator = get_generator(configspace, d = 2)
   random_generator = get_generator(configspace, d = discretization)
@@ -385,13 +394,6 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
   # now the border and random configs are added
   tries = 0
   # TBD: logger? (for how many configs have been added)
-  is_categorical = configspace$is_categ
-  depth = get_depth(configspace)
-  metric = function(config1, config2) {
-    get_distance(config1, config2, is_categorical, depth)
-  }
-
-  tries = 0
   repeat {
     # generate and encode new configs
     new_configs = rbind(

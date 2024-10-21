@@ -1,3 +1,13 @@
+test_that("get_distances works", {
+  configs = rbindlist(list(
+    list(a = 1, b = 1),
+    list(a = 2, b = 1)
+  ))
+  metric = function(x, y) sum(abs(x - y))
+  expected_distances = matrix(c(NA, 1, 1, NA), nrow = 2)
+  expect_identical(get_distances(configs, metric), expected_distances)
+})
+
 test_that("new distances calculation works", {
   configs = rbindlist(list(
     list(a = 1, b = 1),

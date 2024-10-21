@@ -73,6 +73,27 @@ get_distance = function(config1, config2, is_categorical, depth) {
   sum(d / depth)
 }
 
+#' @title Get distances between configs
+#' 
+#' @description Only use this for evaluated.
+#' 
+#' @param configs (`data.table`)
+#' @param metric (`function`)\cr
+#'   Distance function that takes in two numeric vectors and returns a numeric distance.#' 
+#' @return `matrix`
+get_distances = function(configs, metric) {
+  n_configs = nrow(configs)
+  distances = matrix(NA, nrow = n_configs, ncol = n_configs)
+  for (i in seq_len(n_configs - 1)) {
+    for (j in seq(i + 1, n_configs)) {
+      d = metric(unlist(configs[i, ]), unlist(configs[j, ]))
+      distances[i, j] = d
+      distances[j, i] = d
+    }
+  }
+  return(distances)
+}
+
 #' @title Implementation of `Footprint._get_max_distance`
 #' 
 #' @description See https://github.com/automl/DeepCAVE/blob/58d6801508468841eda038803b12fa2bbf7a0cb8/deepcave/evaluators/footprint.py#L349. Just counts the number of numerical params.
@@ -146,7 +167,7 @@ get_generator = function(configspace, d = NULL) {
   assert_int(d, lower = 2, null.ok = TRUE)
 
   if (is.null(d)) {
-    return(SamplerUniform$new(configspace))
+    return(SamplerUnif$new(configspace))
   }
 
   samplers = map(configspace$subspaces(), function(subspace) {
