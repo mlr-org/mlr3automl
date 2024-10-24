@@ -388,8 +388,10 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
   # get distances between evaluated configs
   distances = get_distances(evaluated, metric)
 
-  border_generator = get_generator(configspace, d = 2)
-  random_generator = get_generator(configspace, d = discretization)
+  # border_generator = get_generator(configspace, d = 2)
+  # random_generator = get_generator(configspace, d = discretization)
+  border = generate_design_grid(configspace, resolution = 2)$data
+  random = generate_design_random(configspace, n = 4000)$data
 
   # now the border and random configs are added
   tries = 0
@@ -397,8 +399,8 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
   repeat {
     # generate and encode new configs
     new_configs = rbind(
-      border_generator$sample(1)$data,
-      random_generator$sample(1)$data
+      border[sample.int(nrow(border), 1), ],
+      random[sample.int(nrow(random), 1), ]
     )
     new_configs = encode_configs(new_configs, configspace)
     new_config_types = c("border", "random")

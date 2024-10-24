@@ -1,6 +1,7 @@
+devtools::load_all()
 set.seed(1453)
 
-rush_plan(n_workers = 2)
+rush_plan(n_workers = 1)
 task = tsk("penguins")
 learner = lrn("classif.auto",
   learner_ids = c("glmnet", "xgboost"),
@@ -11,3 +12,5 @@ learner = lrn("classif.auto",
 )
 
 learner$train(task)
+
+res <- config_footprint(learner$instance)
