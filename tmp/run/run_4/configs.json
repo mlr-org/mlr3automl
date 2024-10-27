@@ -1,0 +1,114 @@
+{
+  "0": {
+    "branch.selection": "glmnet",
+    "glmnet.alpha": 0.9675,
+    "glmnet.s": 18.0493
+  },
+  "1": {
+    "branch.selection": "glmnet",
+    "glmnet.alpha": 0.113,
+    "glmnet.s": 0.0073
+  },
+  "2": {
+    "branch.selection": "glmnet",
+    "glmnet.alpha": 0.2502,
+    "glmnet.s": 192.0617
+  },
+  "3": {
+    "branch.selection": "glmnet",
+    "glmnet.alpha": 0.6501,
+    "glmnet.s": 0.026
+  },
+  "4": {
+    "branch.selection": "glmnet",
+    "glmnet.alpha": 1,
+    "glmnet.s": 0.01
+  },
+  "5": {
+    "branch.selection": "svm",
+    "svm.cost": 0.0285,
+    "svm.kernel": "linear"
+  },
+  "6": {
+    "branch.selection": "svm",
+    "svm.cost": 0.0023,
+    "svm.gamma": 51.8829,
+    "svm.kernel": "radial"
+  },
+  "7": {
+    "branch.selection": "svm",
+    "svm.cost": 37.2853,
+    "svm.gamma": 0.0118,
+    "svm.kernel": "sigmoid"
+  },
+  "8": {
+    "branch.selection": "svm",
+    "svm.cost": 229.2144,
+    "svm.degree": 2,
+    "svm.gamma": 1039.2664,
+    "svm.kernel": "polynomial"
+  },
+  "9": {
+    "branch.selection": "svm",
+    "svm.cost": 1,
+    "svm.gamma": 0.1429,
+    "svm.kernel": "radial"
+  },
+  "10": {
+    "branch.selection": "svm",
+    "svm.cost": 0.0007,
+    "svm.gamma": 22.108,
+    "svm.kernel": "radial"
+  },
+  "11": {
+    "branch.selection": "svm",
+    "svm.cost": 0.0728,
+    "svm.gamma": 0.7817,
+    "svm.kernel": "sigmoid"
+  },
+  "12": {
+    "branch.selection": "glmnet",
+    "glmnet.alpha": 0.4923,
+    "glmnet.s": 0.611
+  },
+  "13": {
+    "branch.selection": "svm",
+    "svm.cost": 0.3196,
+    "svm.gamma": 0.198,
+    "svm.kernel": "radial"
+  },
+  "14": {
+    "branch.selection": "svm",
+    "svm.cost": 0.0091,
+    "svm.gamma": 0.507,
+    "svm.kernel": "radial"
+  },
+  "15": {
+    "branch.selection": "svm",
+    "svm.cost": 0.8355,
+    "svm.gamma": 0.2859,
+    "svm.kernel": "radial"
+  },
+  "16": {
+    "branch.selection": "svm",
+    "svm.cost": 0.6146,
+    "svm.degree": 3,
+    "svm.gamma": 0.3785,
+    "svm.kernel": "polynomial"
+  },
+  "17": {
+    "branch.selection": "svm",
+    "svm.cost": 0.0196,
+    "svm.kernel": "linear"
+  },
+  "18": {
+    "branch.selection": "svm",
+    "svm.cost": 0.014,
+    "svm.kernel": "linear"
+  },
+  "19": {
+    "branch.selection": "svm",
+    "svm.cost": 0.0126,
+    "svm.kernel": "linear"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "objectives": [
+    {
+      "name": "classif.ce",
+      "lower": 0,
+      "upper": 1,
+      "lock_lower": true,
+      "lock_upper": true,
+      "optimize": "lower"
+    }
+  ],
+  "budgets": [
+    0
+  ],
+  "seeds": [
+    -1
+  ]
+}

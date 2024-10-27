@@ -5,7 +5,7 @@ flush_redis()
 rush_plan(n_workers = 1)
 task = tsk("penguins")
 learner = lrn("classif.auto",
-  learner_ids = c("kknn", "glmnet"),
+  learner_ids = c("glmnet", "svm"),
   small_data_size = 1,
   resampling = rsmp("holdout"),
   measure = msr("classif.ce"),
@@ -13,6 +13,7 @@ learner = lrn("classif.auto",
 )
 
 learner$train(task)
+save_deepcave_run(learner$instance, path = "tmp/run")
 
 library(reticulate)
 use_condaenv("DeepCAVE")

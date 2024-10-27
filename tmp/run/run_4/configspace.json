@@ -1,0 +1,102 @@
+{
+  "hyperparameters": [
+    {
+      "name": "branch.selection",
+      "type": "categorical",
+      "choices": ["glmnet", "svm"],
+      "default": "glmnet",
+      "probabilities": null
+    },
+    {
+      "name": "glmnet.alpha",
+      "type": "uniform_float",
+      "log": false,
+      "lower": 0,
+      "upper": 1,
+      "default": 0,
+      "q": null
+    },
+    {
+      "name": "glmnet.s",
+      "type": "uniform_float",
+      "log": true,
+      "lower": 0.0001,
+      "upper": 10000,
+      "default": 0.0001,
+      "q": null
+    },
+    {
+      "name": "svm.cost",
+      "type": "uniform_float",
+      "log": true,
+      "lower": 0.0001,
+      "upper": 10000,
+      "default": 0.0001,
+      "q": null
+    },
+    {
+      "name": "svm.degree",
+      "type": "uniform_int",
+      "log": false,
+      "lower": 2,
+      "upper": 5,
+      "default": 2,
+      "q": null
+    },
+    {
+      "name": "svm.gamma",
+      "type": "uniform_float",
+      "log": true,
+      "lower": 0.0001,
+      "upper": 10000,
+      "default": 0.0001,
+      "q": null
+    },
+    {
+      "name": "svm.kernel",
+      "type": "categorical",
+      "choices": ["polynomial", "radial", "sigmoid", "linear"],
+      "default": "polynomial",
+      "probabilities": null
+    }
+  ],
+  "conditions": [
+    {
+      "child": "glmnet.alpha",
+      "parent": "branch.selection",
+      "type": "EQ",
+      "value": "glmnet"
+    },
+    {
+      "child": "glmnet.s",
+      "parent": "branch.selection",
+      "type": "EQ",
+      "value": "glmnet"
+    },
+    {
+      "child": "svm.cost",
+      "parent": "branch.selection",
+      "type": "EQ",
+      "value": "svm"
+    },
+    {
+      "child": "svm.degree",
+      "parent": "svm.kernel",
+      "type": "EQ",
+      "value": "polynomial"
+    },
+    {
+      "child": "svm.gamma",
+      "parent": "svm.kernel",
+      "type": "IN",
+      "values": ["polynomial", "radial", "sigmoid"]
+    },
+    {
+      "child": "svm.kernel",
+      "parent": "branch.selection",
+      "type": "EQ",
+      "value": "svm"
+    }
+  ],
+  "forbiddens": []
+}
