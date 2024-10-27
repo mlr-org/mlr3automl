@@ -374,27 +374,55 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
   all_configs = rbind(evaluated, border, random)
   all_configs = unique(all_configs, by = archive$cols_x)
 
-  config_type = all_configs$type
+  config_types = all_configs$type
   all_configs = all_configs[, -"type", with = FALSE]
 
   # encode config
   all_configs = encode_configs(all_configs, configspace)
   
   # calculate distances
-  is_categorical = !(configspace$class %in% c("ParamDbl", "ParamInt"))
+  is_categorical = configspace$is_categ
   depth = get_depth(configspace)
-  # rejection and retrying are not yet implemented
   n_configs = nrow(all_configs)
-  distances = matrix(NA, nrow = n_configs, ncol = n_configs)
-  for (i in seq_len(n_configs - 1)) {
-    config1 = unlist(all_configs[i, ])
-    for (j in seq(i + 1, n_configs)) {
-      config2 = unlist(all_configs[j, ])
-      d = get_distance(config1, config2, is_categorical, depth)
+  rejection_threshold = sum(configspace$is_number) * 0.01  
+  rejected = logical(n_configs)
+  distances = matrix(0, nrow = n_configs, ncol = n_configs)
+
+  # compute distances for evaluated configs
+  n_evaluated = nrow(evaluated)
+  for (i in seq_len(n_evaluated)) {
+    for (j in seq(i + 1, n_evaluated)) {
+      d = get_distance(
+        unlist(all_configs[i, ]),
+        unlist(all_configs[j, ]),
+        is_categorical,
+        depth
+      )
       distances[i, j] = d
       distances[j, i] = d
     }
   }
+
+  # add new configs
+  for (i in seq(n_evaluated + 1, n_configs)) {
+    new_config = unlist(all_configs[i, ])
+    for (j in seq(1, i - 1)) {
+      if (rejected[[j]]) next
+
+      old_config = unlist(all_configs[j, ])
+      d = get_distance(new_config, old_config, is_categorical, depth)
+      if (d < rejection_threshold) {
+        rejected[[i]] = TRUE
+        next
+      }
+      
+      distances[i, j] = d
+      distances[j, i] = d
+    }
+  }
+
+  distances = distances[!rejected, !rejected]
+  config_types = config_types[!rejected]
 
   # MDS
   diss_mat = as.dist(distances)
@@ -402,7 +430,7 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
   setDT(footprint)
 
   # train on objective
-  evaluated = config_type %in% c("evaluated", "incumbent")
+  evaluated = config_types %in% c("evaluated", "incumbent")
   training_data = cbind(
     footprint[evaluated, ],
     archive$data[, archive$cols_y, with = FALSE]
@@ -430,8 +458,8 @@ config_footprint = function(instance, theme = ggplot2::theme_minimal()) {
   grid_points[[archive$cols_y]] = pred
 
   # plot
-  set(footprint, j = "config_type", value = config_type)
-  set(footprint, j = "is_incumbent", value = config_type == "incumbent")
+  set(footprint, j = "config_type", value = config_types)
+  set(footprint, j = "is_incumbent", value = config_types == "incumbent")
   .data = NULL
   
   ggplot2::ggplot() +
