@@ -31,6 +31,8 @@ Imports:
     mlr3tuningspaces,
     paradox (>= 1.0.1),
     R6,
+    utils,
+    jsonlite,
     shiny,
     utils
 Suggests:
@@ -84,6 +86,7 @@ Collate:
     'helper.R'
     'internal_measure.R'
     'train_auto.R'
+    'save_deepcave_run.R'
     'helper_app.R'
     'helper_footprint.R'
     'visualization_app.R'
