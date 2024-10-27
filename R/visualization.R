@@ -9,7 +9,7 @@
 #' @template param_theme
 #' 
 #' @export
-cost_over_time = function(instance, time = NULL, theme = ggplot2::theme_minimal()) {
+cost_over_time = function(instance, time = NULL, theme = ggplot2::theme_minimal(base_size = 14)) {
   archive = instance$archive
   # there should only be one objective, e.g. `classif.ce`
   objective = archive$cols_y
@@ -48,7 +48,7 @@ cost_over_time = function(instance, time = NULL, theme = ggplot2::theme_minimal(
 #' @template param_theme
 #' 
 #' @export
-marginal_plot = function(instance, x, y = NULL, theme = ggplot2::theme_minimal()) {
+marginal_plot = function(instance, x, y = NULL, theme = ggplot2::theme_minimal(base_size = 14)) {
   archive = instance$archive
   param_ids = archive$cols_x
   assert_choice(x, param_ids)
@@ -119,7 +119,7 @@ marginal_plot = function(instance, x, y = NULL, theme = ggplot2::theme_minimal()
 #' @export
 parallel_coordinates = function(
   instance, cols_x = NULL, trafo = FALSE,
-  theme = ggplot2::theme_minimal()
+  theme = ggplot2::theme_minimal(base_size = 14)
 ) {
   archive = instance$archive
   assert_subset(cols_x, c(archive$cols_x, paste0("x_domain_", archive$cols_x)))
@@ -228,7 +228,7 @@ parallel_coordinates = function(
 #' @export
 partial_dependence_plot = function(
   instance, x, y, type = "default",
-  theme = ggplot2::theme_minimal(),
+  theme = ggplot2::theme_minimal(base_size = 14),
   ...
 ) {
   archive = instance$archive
@@ -337,7 +337,7 @@ partial_dependence_plot = function(
 #' @template param_theme
 #' 
 #' @export
-pareto_front = function(instance, theme = ggplot2::theme_minimal()) {
+pareto_front = function(instance, theme = ggplot2::theme_minimal(base_size = 14)) {
   # adopted from `Archive$best()` for multi-crit
   archive = instance$archive
   tab = archive$finished_data
