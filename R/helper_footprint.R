@@ -23,6 +23,9 @@ encode_configs = function(configs, configspace) {
     if (is_numerical) {
       lower = configspace$lower[[param_id]]
       upper = configspace$upper[[param_id]]
+      if (configspace$is_logscale[[param_id]]) {
+        param_vals = log(round(exp(param_vals), 4))
+      }
       param_vals = (param_vals - lower) / (upper - lower)
     }
 
@@ -117,39 +120,56 @@ get_max_distance = function(configspace) {
 #' 
 Sampler1DUnifDisc = R6Class("Sampler1DUnifDisc", inherit = paradox::Sampler1D,
   public = list(
+    d = NULL,
+    choices = NULL,
+
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     #' @param d (`numeric(1)` | NULL)\cr
-    #'   Number (>= 2) of discrete values to sample from. If `d = 2`, one gets the border sampler.
-    #'   Ignored for categorical params.
+    #'   Number (>= 3) of discrete values to sample from.
+    #'   Ignored for categorical or log-scale params.
     initialize = function(param, d = NULL) {
       super$initialize(param)
       assert_param_set(self$param, no_untyped = TRUE, must_bounded = TRUE)
-      private$.d = d
+      self$d = d
 
       if (self$param$is_categ) {
-        private$.choices = self$param$levels[[1]]
+        self$choices = self$param$levels[[1]]
       } else {
-        private$.choices = generate_design_grid(param, resolution = d)$data[[1]]
+        if (!self$param$is_logscale) {
+          self$choices = seq(self$param$lower, self$param$upper, length.out = d)
+          if (self$param$class == "ParamInt") {
+            self$choices = as.integer(self$choices)
+          }
+        } else {
+          values = numeric()
+          value = self$param$lower
+          while (value < self$param$upper) {
+            values = c(values, value)
+            value = value + log(10)
+          }
+          if (!(self$param$upper %in% values)) {
+            values = c(values, self$param$upper)
+          }
+          self$choices = values
+        }
       }
-    }
+    }  
   ),
 
   active = list(
     #' @field d (`numeric(1)` | NULL)\cr
     #'   Number of discrete values to sample from.
-    d = function(v) if (missing(v)) private$.d else private$.d = assert_int(d, lower = 2),
+    # d = function(v) if (missing(v)) private$.d else private$.d = assert_int(v, lower = 2),
 
     #' @field choices (`numeric()` | `integer()` | `factor()` | `logical()`)\cr
     #'   Possible values to sample from.
-    choices = function(v) if (missing(v)) private$.choices else stop("Cannot overwrite choices. Change d instead.")
+    # choices = function(v) if (missing(v)) private$.choices else private$.choices = assert_vector(v)
   ),
 
   private = list(
-    .d = NULL,
-    .choices = NULL,
     .sample = function(n) {
-      s = sample(private$.choices, n, replace = TRUE)
+      s = sample(self$choices, n, replace = TRUE)
       super$as_dt_col(s)
     }
   )
