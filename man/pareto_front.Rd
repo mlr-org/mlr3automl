@@ -4,7 +4,7 @@
 \alias{pareto_front}
 \title{Pareto Front}
 \usage{
-pareto_front(instance, theme = ggplot2::theme_minimal())
+pareto_front(instance, theme = ggplot2::theme_minimal(base_size = 14))
 }
 \arguments{
 \item{instance}{(\verb{[TuningInstanceAsyncSingleCrit]})\cr

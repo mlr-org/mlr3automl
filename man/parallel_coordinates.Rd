@@ -8,7 +8,7 @@ parallel_coordinates(
   instance,
   cols_x = NULL,
   trafo = FALSE,
-  theme = ggplot2::theme_minimal()
+  theme = ggplot2::theme_minimal(base_size = 14)
 )
 }
 \arguments{

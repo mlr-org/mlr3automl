@@ -4,7 +4,12 @@
 \alias{marginal_plot}
 \title{Marginal Plot}
 \usage{
-marginal_plot(instance, x, y = NULL, theme = ggplot2::theme_minimal())
+marginal_plot(
+  instance,
+  x,
+  y = NULL,
+  theme = ggplot2::theme_minimal(base_size = 14)
+)
 }
 \arguments{
 \item{instance}{(\verb{[TuningInstanceAsyncSingleCrit]})\cr

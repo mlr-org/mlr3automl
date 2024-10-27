@@ -9,7 +9,7 @@ partial_dependence_plot(
   x,
   y,
   type = "default",
-  theme = ggplot2::theme_minimal(),
+  theme = ggplot2::theme_minimal(base_size = 14),
   ...
 )
 }
