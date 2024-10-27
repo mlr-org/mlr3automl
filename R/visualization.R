@@ -6,32 +6,58 @@
 #' @param time (`character(1)`)\cr
 #'   Column in the archive to be interpreted as the time variable, e.g. "timestamp_xs", "timestamp_ys".
 #'   If `NULL` (default), the configuration ID will be used.
+#' @param incumbent (`logical(1)`)\cr
+#'   Whether to plot the incumbent points only. Defaults to `TRUE`.
 #' @template param_theme
 #' 
 #' @export
-cost_over_time = function(instance, time = NULL, theme = ggplot2::theme_minimal(base_size = 14)) {
+cost_over_time = function(
+  instance, time = NULL, incumbent = TRUE,
+  theme = ggplot2::theme_minimal(base_size = 14)
+) {
   archive = instance$archive
-  # there should only be one objective, e.g. `classif.ce`
-  objective = archive$cols_y
+  archive_data = as.data.table(archive)
+  set(archive_data, j = "config_id", value = seq_row(archive_data))
+  archive_data = archive_data[archive_data$state == "finished"]
+  assert_choice(time, names(archive_data), null.ok = TRUE)
+
+  x = if (is.null(time)) {
+    archive_data$config_id
+  } else {
+    archive_data[[time]]
+  }
+  xlabel = time %??% "configuration ID"
 
   .data = NULL
-  if (is.null(time)) {
-    x = seq_row(archive$data)
-    g = ggplot2::ggplot(data = as.data.table(archive), ggplot2::aes(
+  if (!incumbent) {
+    g = ggplot2::ggplot(data = archive_data, ggplot2::aes(
       x = x,
-      y = .data[[objective]]
+      y = .data[[archive$cols_y]]
     )) +
-    ggplot2::labs(x = "configuration ID")
-  } else {
-    assert_choice(time, names(as.data.table(archive)))
-    g = ggplot2::ggplot(data = as.data.table(archive), ggplot2::aes(
-      x = .data[[time]],
-      y = .data[[objective]]
-    ))
-  }
-  
-  g + ggplot2::geom_point() +
+    ggplot2::geom_point() +
     ggplot2::geom_line() +
+    ggplot2::labs(x = xlabel) +
+    theme
+    return(g)
+  }
+
+  # if incumbent, plot the best objective at each time point
+  dt = data.table(x, archive_data[[archive$cols_y]])
+  names(dt) = c("time", "objective")
+  min_or_max = if (archive$codomain$maximization_to_minimization == 1) {
+    min
+  } else {
+    max
+  }
+  objective = NULL  # avoid RMD check issue
+  dt[, objective := min_or_max(objective), by = "time"]
+  dt = unique(dt, by = "time")
+
+  .data = NULL
+  ggplot2::ggplot(dt, ggplot2::aes(x = .data$time, y = .data$objective)) +
+    ggplot2::geom_point() +
+    ggplot2::geom_line() +
+    ggplot2::labs(x = xlabel, y = archive$cols_y) +
     theme
 }
 

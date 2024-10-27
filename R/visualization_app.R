@@ -17,6 +17,10 @@ visualize = function(instance) {
         shiny::radioButtons("cot_x",
           label = "Select x-axis:",
           choices = c("configuration ID", "timestamp_xs", "timestamp_ys")
+        ),
+        shiny::checkboxInput("cot_incumbent",
+          label = "Plot incumbent",
+          value = TRUE
         )
       ),
       param_panel(
@@ -90,9 +94,9 @@ visualize = function(instance) {
     # Cost over time
     output$cost_over_time = shiny::renderPlot({
       if (input$cot_x == "configuration ID") {
-        cost_over_time(instance)
+        cost_over_time(instance, incumbent = input$cot_incumbent)
       } else {
-        cost_over_time(instance, time = input$cot_x)
+        cost_over_time(instance, time = input$cot_x, incumbent = input$cot_incumbent)
       }
     })
 
