@@ -112,14 +112,16 @@ marginal_plot = function(
       y = .data[[archive$cols_y]]
     )) +
     ggplot2::geom_point(alpha = 0.6) +
-    ggplot2::labs(x = xname) +
-    ggplot2::scale_x_continuous(
-      expand = c(0.01, 0.01),
-      transform = if (archive$search_space$is_logscale[[xname]]) "log10" else "identity"
-    ) +
-    theme
+    ggplot2::labs(x = xname)
 
-    return(g)
+    if (archive$search_space$is_number[[xname]]) {
+      g = g + ggplot2::scale_x_continuous(
+        expand = c(0.01, 0.01),
+        transform = if (archive$search_space$is_logscale[[xname]]) "log10" else "identity"
+      )
+    }
+
+    return(g + theme)
   }
 
   # param provided for y, but surface is FALSE
@@ -132,20 +134,24 @@ marginal_plot = function(
       stroke = 0.5
     ) +
     ggplot2::geom_point(alpha = 0.6) +
-    ggplot2::scale_x_continuous(
-      expand = c(0.01, 0.01),
-      transform = if (archive$search_space$is_logscale[[xname]]) "log10" else "identity"
-    ) +
-    ggplot2::scale_y_continuous(
-      expand = c(0.01, 0.01),
-      transform = if (archive$search_space$is_logscale[[yname]]) "log10" else "identity"
-    ) +
     ggplot2::guides(fill = ggplot2::guide_colorbar(barwidth = 0.5, barheight = 10)) +
     ggplot2::scale_fill_viridis_c() +
-    ggplot2::labs(x = xname, y = yname) +
-    theme
+    ggplot2::labs(x = xname, y = yname)
 
-    return(g)
+    if (archive$search_space$is_number[[xname]]) {
+      g = g + ggplot2::scale_x_continuous(
+        expand = c(0.01, 0.01),
+        transform = if (archive$search_space$is_logscale[[xname]]) "log10" else "identity"
+      )
+    }
+    if (archive$search_space$is_number[[yname]]) {
+      g = g + ggplot2::scale_y_continuous(
+        expand = c(0.01, 0.01),
+        transform = if (archive$search_space$is_logscale[[yname]]) "log10" else "identity"
+      )
+    }
+
+    return(g + theme)
   }
 
   # surface is TRUE
@@ -188,20 +194,24 @@ marginal_plot = function(
       stroke = 0.5,
       alpha = 0.8
     ) +
-    ggplot2::scale_x_continuous(
-      expand = c(0.01, 0.01),
-      transform = if (archive$search_space$is_logscale[[xname]]) "log10" else "identity"
-    ) +
-    ggplot2::scale_y_continuous(
-      expand = c(0.01, 0.01),
-      transform = if (archive$search_space$is_logscale[[yname]]) "log10" else "identity"
-    ) +
     ggplot2::guides(fill = ggplot2::guide_colorbar(barwidth = 0.5, barheight = 10)) +
     ggplot2::scale_fill_viridis_c() +
-    ggplot2::labs(x = xname, y = yname) +
-    theme
+    ggplot2::labs(x = xname, y = yname)
   
-  return(g)
+  if (archive$search_space$is_number[[xname]]) {
+    g = g + ggplot2::scale_x_continuous(
+      expand = c(0.01, 0.01),
+      transform = if (archive$search_space$is_logscale[[xname]]) "log10" else "identity"
+    )
+  }
+  if (archive$search_space$is_number[[yname]]) {
+    g = g + ggplot2::scale_y_continuous(
+      expand = c(0.01, 0.01),
+      transform = if (archive$search_space$is_logscale[[yname]]) "log10" else "identity"
+    ) 
+  }
+  
+  return(g + theme)
 }
 
 
