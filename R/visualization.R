@@ -78,7 +78,7 @@ cost_over_time = function(
 #'   If `TRUE` (default), interpolate the prediction surface with a surrogate model.
 #'   Ignored if `y` is provided.
 #'   Not supported for categorical parameters.
-#' @param grid_resolution (`numeric()`)\cr
+#' @param grid_resolution (`numeric(1)`)\cr
 #'   Number of grid points per axis for the surface plot.
 #'   Ignored if `y` is not provided or `surface` is set to `FALSE`.
 #'   Not supported for categorical parameters.

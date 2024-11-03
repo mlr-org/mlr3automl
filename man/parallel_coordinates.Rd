@@ -20,7 +20,7 @@ For \link{mlr3automl} learners, the tuning instance is stored in the field \verb
 Column names of x values.
 By default, all untransformed x values from the search space are plotted.}
 
-\item{trafo}{(\code{character(1)})
+\item{trafo}{(\code{logical(1)})
 If \code{FALSE} (default), the untransformed x values are plotted.
 If \code{TRUE}, the transformed x values are plotted.}
 
