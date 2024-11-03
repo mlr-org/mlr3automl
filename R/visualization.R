@@ -66,65 +66,141 @@ cost_over_time = function(
 #' @description Creates 2D marginal plots for evaluated configurations.
 #' 
 #' @template param_instance
-#' @param x (`character(1)`)
+#' @param x (`character(1)`)\cr
 #'  Name of the parameter to be mapped to the x-axis.
-#' @param y (`character(1)`)
+#' @param y (`character(1)`)\cr
 #'  Name of the parameter to be mapped to the y-axis.
 #'  If `NULL` (default), the measure (e.g. `classif.ce`) is mapped to the y-axis.
+#' @param trafo (`logical(1)`)
+#'  If `FALSE`, the untransformed parameter values are plotted.
+#'  If `TRUE` (default), the transformed values are plotted.
+#' @param surface (`character(1)`)\cr
+#'   If `TRUE` (default), interpolate the prediction surface with a surrogate model.
+#'   Ignored if `y` is provided.
+#'   Not supported for categorical parameters.
+#' @param grid_resolution (`numeric()`)\cr
+#'   Number of grid points per axis for the surface plot.
+#'   Ignored if `y` is not provided or `surface` is set to `FALSE`.
+#'   Not supported for categorical parameters.
 #' @template param_theme
 #' 
 #' @export
-marginal_plot = function(instance, x, y = NULL, theme = ggplot2::theme_minimal(base_size = 14)) {
+marginal_plot = function(
+  instance, x, y = NULL, trafo = TRUE,
+  surface = TRUE, grid_resolution = 100,
+  theme = ggplot2::theme_minimal(base_size = 14)
+) {
   archive = instance$archive
-  param_ids = archive$cols_x
+  param_ids = setdiff(archive$cols_x, "branch.selection")
   assert_choice(x, param_ids)
   assert_choice(y, param_ids, null.ok = TRUE)
 
   # use transformed values if trafo is set
-  x_trafo = paste0("x_domain_", x)
-  y_trafo = if (!is.null(y)) paste0("x_domain_", y) else NULL
+  xname = x
+  yname = y
+  x = if (trafo) paste0("x_domain_", x) else x
+  y = if (trafo && !is.null(y)) paste0("x_domain_", y) else NULL
 
-  # there should only be one objective, e.g. `classif.ce`
-  measure = archive$cols_y
-
-  data = na.omit(as.data.table(archive), cols = c(x_trafo, y_trafo))
+  data = na.omit(as.data.table(archive), cols = c(x, y, archive$cols_y))
 
   .data = NULL
 
   # no param provided for y
   if (is.null(y)) {
-    g = ggplot2:: ggplot(data = data, ggplot2::aes(
-      x = .data[[x_trafo]],
-      y = .data[[measure]]
+    g = ggplot2::ggplot(data = data, ggplot2::aes(
+      x = .data[[x]],
+      y = .data[[archive$cols_y]]
     )) +
     ggplot2::geom_point(alpha = 0.6) +
+    ggplot2::labs(x = xname) +
+    ggplot2::scale_x_continuous(
+      expand = c(0.01, 0.01),
+      transform = if (archive$search_space$is_logscale[[xname]]) "log10" else "identity"
+    ) +
     theme
-
-    if (archive$search_space$is_logscale[[x]]) {
-      g = g + ggplot2::scale_x_log10()
-    }
 
     return(g)
   }
 
-  # param provided for y
-  g = ggplot2::ggplot(data = data, ggplot2::aes(
-      x = .data[[x_trafo]],
-      y = .data[[y_trafo]],
-      col = .data[[measure]]
-    )) +
+  # param provided for y, but surface is FALSE
+  if (!surface) {
+    g = ggplot2::ggplot(
+      data = data,
+      ggplot2::aes(x = .data[[x]], y = .data[[y]], fill = .data[[archive$cols_y]]),
+      shape = 21,
+      size = 3,
+      stroke = 0.5
+    ) +
     ggplot2::geom_point(alpha = 0.6) +
-    ggplot2::scale_color_viridis_c() +
-    ggplot2::labs(x = x, y = y) +
+    ggplot2::scale_x_continuous(
+      expand = c(0.01, 0.01),
+      transform = if (archive$search_space$is_logscale[[xname]]) "log10" else "identity"
+    ) +
+    ggplot2::scale_y_continuous(
+      expand = c(0.01, 0.01),
+      transform = if (archive$search_space$is_logscale[[yname]]) "log10" else "identity"
+    ) +
+    ggplot2::guides(fill = ggplot2::guide_colorbar(barwidth = 0.5, barheight = 10)) +
+    ggplot2::scale_fill_viridis_c() +
+    ggplot2::labs(x = xname, y = yname) +
     theme
 
-  if (archive$search_space$is_logscale[[x]]) {
-    g = g + ggplot2::scale_x_log10()
-  }
-  if (archive$search_space$is_logscale[[y]]) {
-    g = g + ggplot2::scale_y_log10()
+    return(g)
   }
 
+  # surface is TRUE
+  assert_data_table(data[, x, with = FALSE], types = "numeric")
+  assert_data_table(data[, y, with = FALSE], types = "numeric")
+  assert_number(grid_resolution)
+
+  # adopted from https://github.com/mlr-org/mlr3viz/blob/db6e547bf25220e710599456f564494cbdfe6e68/R/OptimInstanceBatchSingleCrit.R#L268-L310
+  surrogate_data = data[, c(x, y, archive$cols_y), with = FALSE]
+  task = mlr3::TaskRegr$new("surface", surrogate_data, target = archive$cols_y)
+  surrogate = lrn("regr.ranger")
+  surrogate$train(task)
+  # assert_learner(surrogate, task)
+
+  x_min = archive$search_space$lower[[xname]]
+  x_max = archive$search_space$upper[[xname]]
+  y_min = archive$search_space$lower[[yname]]
+  y_max = archive$search_space$upper[[yname]]
+
+  x_grid = seq(x_min, x_max, by = (x_max - x_min) / grid_resolution)
+  y_grid = seq(y_min, y_max, by = (y_max - y_min) / grid_resolution)
+
+  x_grid = if (trafo && archive$search_space$is_logscale[[xname]]) exp(x_grid) else x_grid
+  y_grid = if (trafo && archive$search_space$is_logscale[[yname]]) exp(y_grid) else y_grid
+
+  data_i = set_names(expand.grid(x_grid, y_grid), c(x, y))
+
+  setDT(data_i)[, (archive$cols_y) := surrogate$predict_newdata(data_i)$response]
+
+  g = ggplot2::ggplot() +
+    ggplot2::geom_raster(
+      data = data_i,
+      ggplot2::aes(x = .data[[x]], y = .data[[y]], fill = .data[[archive$cols_y]])
+    ) +
+    ggplot2::geom_point(
+      data,
+      mapping = ggplot2::aes(x = .data[[x]], y = .data[[y]], fill = .data[[archive$cols_y]]),
+      shape = 21,
+      size = 3,
+      stroke = 0.5,
+      alpha = 0.8
+    ) +
+    ggplot2::scale_x_continuous(
+      expand = c(0.01, 0.01),
+      transform = if (archive$search_space$is_logscale[[xname]]) "log10" else "identity"
+    ) +
+    ggplot2::scale_y_continuous(
+      expand = c(0.01, 0.01),
+      transform = if (archive$search_space$is_logscale[[yname]]) "log10" else "identity"
+    ) +
+    ggplot2::guides(fill = ggplot2::guide_colorbar(barwidth = 0.5, barheight = 10)) +
+    ggplot2::scale_fill_viridis_c() +
+    ggplot2::labs(x = xname, y = yname) +
+    theme
+  
   return(g)
 }
 
@@ -137,7 +213,7 @@ marginal_plot = function(instance, x, y = NULL, theme = ggplot2::theme_minimal(b
 #' @param cols_x (`character()`)
 #'  Column names of x values.
 #'  By default, all untransformed x values from the search space are plotted.
-#' @param trafo (`character(1)`)
+#' @param trafo (`logical(1)`)
 #'  If `FALSE` (default), the untransformed x values are plotted.
 #'  If `TRUE`, the transformed x values are plotted.
 #' @template param_theme
