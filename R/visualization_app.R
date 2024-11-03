@@ -27,7 +27,13 @@ visualize = function(instance) {
         "input.nav === 'Marginal Plots'",
         "mp",
         learner_ids,
-        param_ids
+        param_ids,
+        shiny::radioButtons("mp_surface",
+          label = "Plot surface?",
+          choices = list("No", "Yes"),
+          selected = "No",
+          inline = TRUE
+        )
       ),
       shiny::conditionalPanel(
         "input.nav === 'Parallel Coordinates'",
@@ -109,10 +115,11 @@ visualize = function(instance) {
     })
 
     output$marginal_plot = shiny::renderPlot({
+      surface = input$mp_surface == "Yes"
       if (input$mp_y == "NULL") {
-        marginal_plot(instance, x = input$mp_x)
+        marginal_plot(instance, x = input$mp_x, surface = surface)
       } else {
-        marginal_plot(instance, x = input$mp_x, y = input$mp_y)
+        marginal_plot(instance, x = input$mp_x, y = input$mp_y, surface = surface)
       }
     })
 
