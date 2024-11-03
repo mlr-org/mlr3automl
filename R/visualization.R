@@ -41,16 +41,16 @@ cost_over_time = function(
     return(g)
   }
 
-  # if incumbent, plot the best objective at each time point
+  # if incumbent:
   dt = data.table(x, archive_data[[archive$cols_y]])
   names(dt) = c("time", "objective")
   min_or_max = if (archive$codomain$maximization_to_minimization == 1) {
-    min
+    cummin
   } else {
-    max
+    cummax
   }
   objective = NULL  # avoid RMD check issue
-  dt[, objective := min_or_max(objective), by = "time"]
+  dt[, objective := min_or_max(objective)]
   dt = unique(dt, by = "time")
 
   .data = NULL
