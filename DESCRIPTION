@@ -11,10 +11,10 @@ License: LGPL-3
 URL: https://github.com/mlr-org/mlr3automl
 BugReports: https://github.com/mlr-org/mlr3automl/issues
 Depends:
-    mlr3 (>= 0.20.0),
+    mlr3 (>= 0.21.1),
     mlr3extralearners,
-    mlr3learners (>= 0.7.0),
-    mlr3tuning (>= 1.0.0),
+    mlr3learners (>= 0.8.0),
+    mlr3tuning (>= 1.2.0),
     R (>= 3.1.0),
     rush
 Imports:
@@ -44,7 +44,6 @@ Suggests:
     xgboost
 Remotes:
     catboost/catboost/catboost/R-package,
-    mlr-org/mlr3,
     mlr-org/mlr3extralearners,
     mlr-org/mlr3mbo@adbo
 Config/testthat/edition: 3

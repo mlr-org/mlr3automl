@@ -5,7 +5,7 @@ train_auto = function(self, private, task) {
   lg$debug("Training '%s' on task '%s'", self$id, task$id)
 
   # initialize mbo tuner
-  tuner = tnr("async_mbo", acq_function = acqf("cb", lambda = 3))
+  tuner = tnr("adbo")
 
   # remove learner based on memory limit
   lg$debug("Starting to select from %i learners: %s", length(learner_ids), paste0(learner_ids, collapse = ","))
@@ -139,7 +139,7 @@ train_auto = function(self, private, task) {
     measures = pv$measure,
     terminator = pv$terminator,
     search_space = search_space,
-    callbacks = c(pv$callbacks, clbk("mlr3mbo.exponential_lambda_decay")),
+    callbacks = pv$callbacks,
     store_benchmark_result = pv$store_benchmark_result,
     store_models = pv$store_models
   )
