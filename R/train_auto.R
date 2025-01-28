@@ -75,7 +75,9 @@ train_auto = function(self, private, task) {
   graph_learner = as_learner(self$graph)
   graph_learner$id = "graph_learner"
   graph_learner$predict_type = pv$measure$predict_type
-  graph_learner$encapsulate("callr", lrn(paste0(graph_learner$task_type, ".featureless")))
+  fallback = lrn(paste0(graph_learner$task_type, ".featureless"))
+  fallback$predict_type = pv$measure$predict_type
+  graph_learner$encapsulate(method = "callr", fallback = fallback)
   graph_learner$timeout = c(train = pv$learner_timeout, predict = pv$learner_timeout)
 
   learners_with_validation = intersect(learner_ids, c("xgboost", "catboost", "lightgbm"))
