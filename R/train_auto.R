@@ -103,7 +103,7 @@ train_auto = function(self, private, task) {
     graph_learner$param_set$values$lightgbm.callbacks = list(cb_timeout_lightgbm(pv$learner_timeout * 0.8))
     eval_metric = pv$lightgbm_eval_metric %??% internal_measure_lightgbm(pv$measure, task)
     if (is.na(eval_metric)) eval_metric = pv$lightgbm_eval_metric
-    graph_learner$param_set$values$lightgbm.eval = eval_metric
+    graph_learner$param_set$values$lightgbm.eval = eval_metric  # maybe change this to `lightgbm.eval_metric` for consistency?
   }
 
   # initialize search space
