@@ -95,14 +95,14 @@ build_graph = function(learner_ids, task_type) {
       po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "xgboost_imputesample") %>>%
       po("encodeimpact", id = "xgboost_encode") %>>%
       po("removeconstants", id = "xgboost_post_removeconstants") %>>%
-      lrn(paste0(task_type, ".xgboost"), id = "xgboost", nrounds = 5000, early_stopping_rounds = 10)
+      lrn(paste0(task_type, ".xgboost"), id = "xgboost", nrounds = 5000, early_stopping_rounds = 100)
     branches = c(branches, branch_xgboost)
   }
 
   # catboost
   if ("catboost" %in% learner_ids) {
     branch_catboost = po("colapply", id = "catboost_colapply", applicator = as.numeric, affect_columns = selector_type("integer")) %>>%
-      lrn(paste0(task_type, ".catboost"), id = "catboost", iterations = 500, early_stopping_rounds = 10, use_best_model = TRUE)
+      lrn(paste0(task_type, ".catboost"), id = "catboost", iterations = 500, early_stopping_rounds = 100, use_best_model = TRUE)
     branches = c(branches, branch_catboost)
   }
 
@@ -120,7 +120,7 @@ build_graph = function(learner_ids, task_type) {
 
   # lightgbm
   if ("lightgbm" %in% learner_ids) {
-    branch_lightgbm = lrn(paste0(task_type, ".lightgbm"), id = "lightgbm", num_iterations = 5000, early_stopping_rounds = 10)
+    branch_lightgbm = lrn(paste0(task_type, ".lightgbm"), id = "lightgbm", num_iterations = 5000, early_stopping_rounds = 100)
     branches = c(branches, branch_lightgbm)
   }
 
