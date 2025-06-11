@@ -124,6 +124,13 @@ build_graph = function(learner_ids, task_type) {
     branches = c(branches, branch_lightgbm)
   }
 
+  # tabpfn
+  if ("tabpfn" %in% learner_ids) {
+    branch_tabpfn = po("colapply", id = "tabpfn_colapply", applicator = as.numeric, affect_columns = selector_all()) %>>%
+      lrn(paste0(task_type, ".tabpfn"), id = "tabpfn")
+    branches = c(branches, branch_tabpfn)
+  }
+
   # branch graph
   po("branch", options = learner_ids) %>>%
     gunion(branches) %>>%
@@ -190,5 +197,12 @@ tuning_space = list(
     lightgbm.min_data_in_leaf = to_tune(2, 60),
     lightgbm.num_leaves       = to_tune(16, 96),
     lightgbm.num_iterations   = to_tune(1, 10, internal = TRUE)
+  ),
+
+  tabpfn = list(
+    tabpfn.n_estimators           = to_tune(1, 8),
+    tabpfn.softmax_temperature    = to_tune(0.1, 1.0),
+    tabpfn.balance_probabilities  = to_tune(c(TRUE, FALSE)),
+    tabpfn.average_before_softmax = to_tune(c(TRUE, FALSE))
   )
 )
