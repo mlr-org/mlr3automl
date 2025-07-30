@@ -46,7 +46,7 @@ Suggests:
     xgboost
 Remotes:
     catboost/catboost/catboost/R-package,
-    mlr-org/mlr3extralearners
+    mlr-org/mlr3extralearners@tabpfn_fix
 Config/testthat/edition: 3
 Config/testthat/parallel: false
 Encoding: UTF-8

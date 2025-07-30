@@ -201,8 +201,8 @@ tuning_space = list(
 
   tabpfn = list(
     tabpfn.n_estimators           = to_tune(1, 8),
-    tabpfn.softmax_temperature    = to_tune(0.1, 1.0),
-    tabpfn.balance_probabilities  = to_tune(c(TRUE, FALSE)),
-    tabpfn.average_before_softmax = to_tune(c(TRUE, FALSE))
+    tabpfn.softmax_temperature    = to_tune(0.75, 1.0),
+    tabpfn.balance_probabilities  = to_tune(),
+    tabpfn.average_before_softmax = to_tune()
   )
 )

@@ -106,6 +106,11 @@ train_auto = function(self, private, task) {
     graph_learner$param_set$values$lightgbm.eval = eval_metric  # maybe change this to `lightgbm.eval_metric` for consistency?
   }
 
+  # remove tabpfn default seed
+  if ("tabpfn" %in% learner_ids) {
+    graph_learner$param_set$values$tabpfn.random_state = "None"
+  }
+
   # initialize search space
   tuning_space = unlist(unname(self$tuning_space), recursive = FALSE)
   graph_scratch = graph_learner$clone(deep = TRUE)
