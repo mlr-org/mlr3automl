@@ -40,6 +40,7 @@ Suggests:
     mlr3viz,
     nnet,
     ranger,
+    reticulate,
     rpart,
     testthat (>= 3.0.0),
     xgboost
@@ -62,6 +63,7 @@ Collate:
     'LearnerClassifAutoNnet.R'
     'LearnerClassifAutoRanger.R'
     'LearnerClassifAutoSVM.R'
+    'LearnerClassifAutoTabPFN.R'
     'LearnerClassifAutoXgboost.R'
     'LearnerRegrAuto.R'
     'LearnerRegrAutoCatboost.R'
@@ -71,6 +73,7 @@ Collate:
     'LearnerRegrAutoNnet.R'
     'LearnerRegrAutoRanger.R'
     'LearnerRegrAutoSVM.R'
+    'LearnerRegrAutoTabPFN.R'
     'LearnerRegrAutoXgboost.R'
     'build_graph.R'
     'estimate_memory.R'

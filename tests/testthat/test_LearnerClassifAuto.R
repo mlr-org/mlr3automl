@@ -302,10 +302,31 @@ test_that("xgboost, catboost and lightgbm work", {
   expect_class(learner$train(task), "LearnerClassifAuto")
 })
 
+test_that("tabpfn works", {
+  skip_on_cran()
+  skip_if_not_installed(c("rush", "reticulate"))
+  flush_redis()
+
+  rush_plan(n_workers = 2)
+
+  task = tsk("iris")
+  learner = lrn("classif.auto",
+    learner_ids = "tabpfn",
+    small_data_size = 1,
+    resampling = rsmp("holdout"),
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 6)
+  )
+
+  expect_class(learner$train(task), "LearnerClassifAuto")
+  expect_equal(learner$model$instance$result$branch.selection, "tabpfn")
+  expect_true(all(learner$instance$archive$finished_data$errors == 0))
+})
+
 test_that("all learner work", {
   skip_on_cran()
   skip_if_not_installed("rush")
-  skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
+  skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm", "reticulate"))
   flush_redis()
 
   rush_plan(n_workers = 2)

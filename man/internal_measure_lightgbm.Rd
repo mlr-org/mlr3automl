@@ -14,7 +14,7 @@ Measure to get the internal measure for.}
 Task to get the internal measure for.}
 }
 \description{
-Function to get the internal xgboost measure for a given \link[mlr3:Task]{mlr3::Task} and \link[mlr3:Measure]{mlr3::Measure}.
+Function to get the internal lightgbm measure for a given \link[mlr3:Task]{mlr3::Task} and \link[mlr3:Measure]{mlr3::Measure}.
 For example, the measure "classif.auc" will return "auc" for a binary classification task.
 }
 \examples{
