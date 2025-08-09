@@ -22,7 +22,7 @@ internal_measure_catboost = function(measure, task) {
       "regr.mape" = "MAPE",
       "regr.smape" = "SMAPE",
       "regr.medae" = "MedianAbsoluteError",
-      "rsq" = "R2",  # regr.rsq has id `rsq`
+      "regr.rsq" = "R2",  # regr.rsq has id `rsq`
       NULL
     )
   } else if ("twoclass" %in% task$properties) {
