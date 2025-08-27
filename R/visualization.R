@@ -1,0 +1,470 @@
+#' @title Cost-Over-Time Plot
+#' 
+#' @description Plots the cost (objective) over time, where the time variable can be set by the user.
+#' 
+#' @template param_instance
+#' @param time (`character(1)`)\cr
+#'   Column in the archive to be interpreted as the time variable, e.g. "timestamp_xs", "timestamp_ys".
+#'   If `NULL` (default), the configuration ID will be used.
+#' @param incumbent (`logical(1)`)\cr
+#'   Whether to plot the incumbent points only. Defaults to `TRUE`.
+#' @template param_theme
+#' 
+#' @export
+cost_over_time = function(
+  instance, time = NULL, incumbent = TRUE,
+  theme = ggplot2::theme_minimal(base_size = 14)
+) {
+  archive = instance$archive
+  archive_data = as.data.table(archive)
+  set(archive_data, j = "config_id", value = seq_row(archive_data))
+  archive_data = archive_data[archive_data$state == "finished"]
+  assert_choice(time, names(archive_data), null.ok = TRUE)
+
+  x = if (is.null(time)) {
+    archive_data$config_id
+  } else {
+    archive_data[[time]]
+  }
+  xlabel = time %??% "configuration ID"
+
+  .data = NULL
+  if (!incumbent) {
+    g = ggplot2::ggplot(data = archive_data, ggplot2::aes(
+      x = x,
+      y = .data[[archive$cols_y]]
+    )) +
+    ggplot2::geom_point() +
+    ggplot2::geom_line() +
+    ggplot2::labs(x = xlabel) +
+    theme
+    return(g)
+  }
+
+  # if incumbent:
+  dt = data.table(x, archive_data[[archive$cols_y]])
+  names(dt) = c("time", "objective")
+  min_or_max = if (archive$codomain$maximization_to_minimization == 1) {
+    cummin
+  } else {
+    cummax
+  }
+  objective = NULL  # avoid RMD check issue
+  dt[, objective := min_or_max(objective)]
+  dt = unique(dt, by = "time")
+
+  .data = NULL
+  ggplot2::ggplot(dt, ggplot2::aes(x = .data$time, y = .data$objective)) +
+    ggplot2::geom_point() +
+    ggplot2::geom_line() +
+    ggplot2::labs(x = xlabel, y = archive$cols_y) +
+    theme
+}
+
+#' @title Marginal Plot
+#' 
+#' @description Creates 2D marginal plots for evaluated configurations.
+#' 
+#' @template param_instance
+#' @param x (`character(1)`)\cr
+#'  Name of the parameter to be mapped to the x-axis.
+#' @param y (`character(1)`)\cr
+#'  Name of the parameter to be mapped to the y-axis.
+#'  If `NULL` (default), the measure (e.g. `classif.ce`) is mapped to the y-axis.
+#' @param trafo (`logical(1)`)
+#'  If `FALSE`, the untransformed parameter values are plotted.
+#'  If `TRUE` (default), the transformed values are plotted.
+#' @param surface (`character(1)`)\cr
+#'   If `TRUE` (default), interpolate the prediction surface with a surrogate model.
+#'   Ignored if `y` is provided.
+#'   Not supported for categorical parameters.
+#' @param grid_resolution (`numeric(1)`)\cr
+#'   Number of grid points per axis for the surface plot.
+#'   Ignored if `y` is not provided or `surface` is set to `FALSE`.
+#'   Not supported for categorical parameters.
+#' @template param_theme
+#' 
+#' @export
+marginal_plot = function(
+  instance, x, y = NULL, trafo = TRUE,
+  surface = TRUE, grid_resolution = 100,
+  theme = ggplot2::theme_minimal(base_size = 14)
+) {
+  archive = instance$archive
+  param_ids = setdiff(archive$cols_x, "branch.selection")
+  assert_choice(x, param_ids)
+  assert_choice(y, param_ids, null.ok = TRUE)
+
+  # use transformed values if trafo is set
+  xname = x
+  yname = y
+  x = if (trafo) paste0("x_domain_", x) else x
+  y = if (trafo && !is.null(y)) paste0("x_domain_", y) else NULL
+
+  data = na.omit(as.data.table(archive), cols = c(x, y, archive$cols_y))
+
+  .data = NULL
+
+  # no param provided for y
+  if (is.null(y)) {
+    g = ggplot2::ggplot(data = data, ggplot2::aes(
+      x = .data[[x]],
+      y = .data[[archive$cols_y]]
+    )) +
+    ggplot2::geom_point(alpha = 0.6) +
+    ggplot2::labs(x = xname)
+
+    if (archive$search_space$is_number[[xname]]) {
+      g = g + ggplot2::scale_x_continuous(
+        expand = c(0.01, 0.01),
+        transform = if (archive$search_space$is_logscale[[xname]]) "log10" else "identity"
+      )
+    }
+
+    return(g + theme)
+  }
+
+  # param provided for y, but surface is FALSE
+  if (!surface) {
+    g = ggplot2::ggplot(
+      data = data,
+      ggplot2::aes(x = .data[[x]], y = .data[[y]], fill = .data[[archive$cols_y]]),
+      shape = 21,
+      size = 3,
+      stroke = 0.5
+    ) +
+    ggplot2::geom_point(alpha = 0.6) +
+    ggplot2::guides(fill = ggplot2::guide_colorbar(barwidth = 0.5, barheight = 10)) +
+    ggplot2::scale_fill_viridis_c() +
+    ggplot2::labs(x = xname, y = yname)
+
+    if (archive$search_space$is_number[[xname]]) {
+      g = g + ggplot2::scale_x_continuous(
+        expand = c(0.01, 0.01),
+        transform = if (archive$search_space$is_logscale[[xname]]) "log10" else "identity"
+      )
+    }
+    if (archive$search_space$is_number[[yname]]) {
+      g = g + ggplot2::scale_y_continuous(
+        expand = c(0.01, 0.01),
+        transform = if (archive$search_space$is_logscale[[yname]]) "log10" else "identity"
+      )
+    }
+
+    return(g + theme)
+  }
+
+  # surface is TRUE
+  assert_data_table(data[, x, with = FALSE], types = "numeric")
+  assert_data_table(data[, y, with = FALSE], types = "numeric")
+  assert_number(grid_resolution)
+
+  # adopted from https://github.com/mlr-org/mlr3viz/blob/db6e547bf25220e710599456f564494cbdfe6e68/R/OptimInstanceBatchSingleCrit.R#L268-L310
+  surrogate_data = data[, c(x, y, archive$cols_y), with = FALSE]
+  task = mlr3::TaskRegr$new("surface", surrogate_data, target = archive$cols_y)
+  surrogate = lrn("regr.ranger")
+  surrogate$train(task)
+  # assert_learner(surrogate, task)
+
+  x_min = archive$search_space$lower[[xname]]
+  x_max = archive$search_space$upper[[xname]]
+  y_min = archive$search_space$lower[[yname]]
+  y_max = archive$search_space$upper[[yname]]
+
+  x_grid = seq(x_min, x_max, by = (x_max - x_min) / grid_resolution)
+  y_grid = seq(y_min, y_max, by = (y_max - y_min) / grid_resolution)
+
+  x_grid = if (trafo && archive$search_space$is_logscale[[xname]]) exp(x_grid) else x_grid
+  y_grid = if (trafo && archive$search_space$is_logscale[[yname]]) exp(y_grid) else y_grid
+
+  data_i = set_names(expand.grid(x_grid, y_grid), c(x, y))
+
+  setDT(data_i)[, (archive$cols_y) := surrogate$predict_newdata(data_i)$response]
+
+  g = ggplot2::ggplot() +
+    ggplot2::geom_raster(
+      data = data_i,
+      ggplot2::aes(x = .data[[x]], y = .data[[y]], fill = .data[[archive$cols_y]])
+    ) +
+    ggplot2::geom_point(
+      data,
+      mapping = ggplot2::aes(x = .data[[x]], y = .data[[y]], fill = .data[[archive$cols_y]]),
+      shape = 21,
+      size = 3,
+      stroke = 0.5,
+      alpha = 0.8
+    ) +
+    ggplot2::guides(fill = ggplot2::guide_colorbar(barwidth = 0.5, barheight = 10)) +
+    ggplot2::scale_fill_viridis_c() +
+    ggplot2::labs(x = xname, y = yname)
+  
+  if (archive$search_space$is_number[[xname]]) {
+    g = g + ggplot2::scale_x_continuous(
+      expand = c(0.01, 0.01),
+      transform = if (archive$search_space$is_logscale[[xname]]) "log10" else "identity"
+    )
+  }
+  if (archive$search_space$is_number[[yname]]) {
+    g = g + ggplot2::scale_y_continuous(
+      expand = c(0.01, 0.01),
+      transform = if (archive$search_space$is_logscale[[yname]]) "log10" else "identity"
+    ) 
+  }
+  
+  return(g + theme)
+}
+
+
+#' @title Parallel Coordinates Plot
+#' 
+#' @description Adapted from [mlr3viz::autoplot()] with `type == "parallel"`. Since the hyperparameters of each individual learner are conditioned on `branch.selection`, missing values are expected in the archive data. When standardizing the hyperparameter values (referred to as "x values" in the following to be consistent with `mlr3viz` documentation), `na.omit == TRUE` is used to compute `mean()` and `stats::sd()`.
+#' 
+#' @template param_instance
+#' @param cols_x (`character()`)
+#'  Column names of x values.
+#'  By default, all untransformed x values from the search space are plotted.
+#' @param trafo (`logical(1)`)
+#'  If `FALSE` (default), the untransformed x values are plotted.
+#'  If `TRUE`, the transformed x values are plotted.
+#' @template param_theme
+#'
+#' @export
+parallel_coordinates = function(
+  instance, cols_x = NULL, trafo = FALSE,
+  theme = ggplot2::theme_minimal(base_size = 14)
+) {
+  archive = instance$archive
+  assert_subset(cols_x, c(archive$cols_x, paste0("x_domain_", archive$cols_x)))
+  assert_flag(trafo)
+
+  if (is.null(cols_x)) {
+    cols_x = archive$cols_x
+  }
+  if (trafo) {
+    cols_x = paste0("x_domain_", cols_x)
+  }
+  cols_y = archive$cols_y
+
+  data = as.data.table(archive)
+  data = data[, c(cols_x, cols_y), with = FALSE]
+  x_axis = data.table(x = seq(names(data)), variable = names(data))
+
+  # split data
+  data_l = data[, .SD, .SDcols = which(sapply(data, function(x) is.character(x) || is.logical(x)))]
+  data_n = data[, .SD, .SDcols = which(sapply(data, is.numeric))]
+  data_y = data[, cols_y, with = FALSE]
+
+  # factor columns to numeric
+  data_c = data_l[, lapply(.SD, function(x) as.numeric(as.factor(x)))]
+
+  # rescale
+  data_n = data_n[, lapply(.SD, function(x) {
+    if (stats::sd(x, na.rm = TRUE) %in% c(0, NA)) {
+      rep(0, length(x))
+    } else {
+      (x - mean(x, na.rm = TRUE)) / stats::sd(x, na.rm = TRUE)
+    }
+  })]
+  data_c = data_c[, lapply(.SD, function(x) {
+    if (stats::sd(x, na.rm = TRUE) %in% c(0, NA)) {
+      rep(0, length(x))
+    } else {
+      (x - mean(unique(x), na.rm = TRUE)) / stats::sd(unique(x), na.rm = TRUE)
+    }
+  })]
+
+  # to long format
+  set(data_n, j = "id", value = seq_row(data_n))
+  set(data_y, j = "id", value = seq_row(data_y))
+  data_n = melt(data_n, measure.var = setdiff(names(data_n), "id"))
+
+  if (nrow(data_c)) {
+    # Skip if no factor column is present
+    set(data_c, j = "id", value = seq_row(data_c))
+    data_c = melt(data_c, measure.var = setdiff(names(data_c), "id"))
+    data_l = data_l[, lapply(.SD, as.character)] # Logical to character
+    data_l = melt(data_l, measure.var = names(data_l), value.name = "label")[, "label"]
+    set(data_c, j = "label", value = data_l)
+  }
+
+  # merge
+  data = rbindlist(list(data_c, data_n), fill = TRUE)
+  data = merge(data, x_axis, by = "variable")
+  data = merge(data, data_y, by = "id")
+  setorderv(data, "x")
+
+  .data = NULL
+  ggplot2::ggplot(data,
+    mapping = ggplot2::aes(
+      x = .data[["x"]],
+      y = .data[["value"]])) +
+    ggplot2::geom_line(
+      mapping = ggplot2::aes(
+        group = .data$id,
+        color = .data[[cols_y]]),
+      linewidth = 1) +
+    ggplot2::geom_vline(ggplot2::aes(xintercept = x)) +
+    {
+      if (nrow(data_c)) ggplot2::geom_label(
+        mapping = ggplot2::aes(label = .data$label),
+        data = data[!is.na(data$label), ])
+    } +
+    ggplot2::scale_x_continuous(breaks = x_axis$x, labels = x_axis$variable) +
+    ggplot2::scale_color_viridis_c() +
+    ggplot2::guides(color = ggplot2::guide_colorbar(barwidth = 0.5, barheight = 10)) +
+    theme +
+    ggplot2::theme(axis.title.x = ggplot2::element_blank())
+}
+
+
+#' @title Partial Dependence Plot
+#' 
+#' @description Creates a partial dependenc plot (PDP) via the `[iml]` package.
+#' 
+#' @template param_instance
+#' @param x (`character(1)`)
+#'  Name of the parameter to be mapped to the x-axis.
+#' @param y (`character(1)`)
+#'  Name of the parameter to be mapped to the y-axis.
+#' @param type (`character(1)`)
+#'  Type of the two-parameter partial dependence plot. Possible options are listed below.
+#'  \itemize{
+#'    \item `"default"`: Use the default setting in `iml`.
+#'    \item `"contour"`: Create a contour plot using `[ggplot2::geom_contour_filled]`. Only supported if both parameters are numerical.
+#'  }
+#'  Ignored if only one parameter is provided.
+#' @template param_theme
+#' @param ... (anything)
+#'   Arguments passed to `[iml::FeatureEffect]`.
+#'
+#' @export
+partial_dependence_plot = function(
+  instance, x, y, type = "default",
+  theme = ggplot2::theme_minimal(base_size = 14),
+  ...
+) {
+  archive = instance$archive
+  assert_choice(x, archive$cols_x)
+  assert_choice(y, archive$cols_x, null.ok = TRUE)
+
+  branch = tstrsplit(c(x, y), "\\.")[[1]]
+  branch = unique(branch)
+  if (length(branch) > 1) {
+    stop("Parameters from different branches cannot be plotted in the same PDP.")
+  }
+  
+  if (!is.null(y)) {
+    assert_choice(type, c("contour", "default"))
+  }
+
+  non_numeric = some(c(x, y), function(param_id) {
+    !is.numeric(archive$data[[param_id]])
+  })
+  if (non_numeric && type == "contour") {
+    stop("Contour plot not supported for non-numeric parameters")
+  }
+
+  # prepare data for surrogate model
+  archive_data = as.data.table(archive)[, c(archive$cols_x, archive$cols_y), with = FALSE]
+  archive_data = archive_data[!is.na(archive_data[[archive$cols_y]]), ]
+  archive_data[, archive$cols_x := lapply(.SD, function(col) {
+    # iml does not accept lgcl features
+    if (is.logical(col)) return(factor(col, levels = c(FALSE, TRUE)))
+    # also convert integer to double to avoid imputeoor error
+    if (is.integer(col)) return(as.numeric(col))
+    return(col)
+  }), .SDcols = archive$cols_x]
+  task = as_task_regr(archive_data, target = archive$cols_y)
+
+  # train surrogate model
+  surrogate = po("imputeoor",
+    multiplier = 3,
+    affect_columns = selector_type(c("numeric", "character", "factor", "ordered"))
+  ) %>>% default_rf()
+  surrogate = GraphLearner$new(surrogate)
+  surrogate$train(task)
+
+  # # store the data.table format for later use in predict.function
+  # prototype = archive_data[0, archive$cols_x, with = FALSE]
+
+  # new data to compute PDP
+  # https://github.com/automl/DeepCAVE/blob/58d6801508468841eda038803b12fa2bbf7a0cb8/deepcave/plugins/hyperparameter/pdp.py#L334
+  samples_per_param = 10
+  num_samples = samples_per_param * nrow(archive_data)
+  max_samples = 10000
+  if (num_samples > max_samples) {
+    num_samples = max_samples
+  }
+
+  pdp_data = generate_design_random(archive$search_space, n = num_samples)$data
+  # same type conversion as above
+  pdp_data[, archive$cols_x := lapply(.SD, function(col) {
+    if (is.logical(col)) return(factor(col, levels = c(FALSE, TRUE)))
+    if (is.integer(col)) return(as.numeric(col))
+    return(col)
+  }), .SDcols = archive$cols_x]
+  pdp_data_types = pdp_data[, lapply(.SD, storage.mode)]
+
+  predictor = iml::Predictor$new(
+    model = surrogate,
+    data = pdp_data[, archive$cols_x, with = FALSE],
+    predict.function = function(model, newdata) {
+      model$predict_newdata(newdata)$response
+    }
+  )
+
+  eff = iml::FeatureEffect$new(
+    predictor,
+    c(x, y),
+    method = "pdp",
+    ...
+  )
+
+  .data = NULL
+
+  g = switch(type,
+
+    contour = ggplot2::ggplot(eff$results, ggplot2::aes(
+        x = .data[[x]], y = .data[[y]], z = .data$.value
+      )) +
+      ggplot2::geom_contour_filled() +
+      ggplot2::scale_fill_viridis_d(),
+
+    # FIXME: rug = TRUE causes error when, e.g., x = "svm.cost", y = "svm.degree"
+    # related to the problem that degree is missing for some instances?
+    default = eff$plot(rug = FALSE)
+      + ggplot2::scale_fill_viridis_c(name = archive$cols_y)
+  )
+
+  # TBD: remove existing scales, use viridis instead
+  g + theme
+}
+
+
+#' @title Pareto Front
+#' 
+#' @description Plots the Pareto front with x-axis representing the tuning objective (e.g. `"classif.ce`) and y-axis representing time (the `runtime_learners` column in the archive).
+#' 
+#' @template param_instance
+#' @template param_theme
+#' 
+#' @export
+pareto_front = function(instance, theme = ggplot2::theme_minimal(base_size = 14)) {
+  # adopted from `Archive$best()` for multi-crit
+  archive = instance$archive
+  tab = archive$finished_data
+  ymat = t(as.matrix(tab[, c(archive$cols_y, "runtime_learners"), with = FALSE]))
+  ymat = archive$codomain$maximization_to_minimization * ymat
+  best = tab[!bbotk::is_dominated(ymat)]
+  
+  .data = NULL
+  ggplot2::ggplot() +
+    ggplot2::geom_point(data = archive$data,
+      ggplot2::aes(x = .data[[archive$cols_y]], y = .data$runtime_learners),
+      alpha = 0.2
+    ) +
+    ggplot2::geom_step(data = best,
+      ggplot2::aes(x = .data[[archive$cols_y]], y = .data$runtime_learners)
+    ) +
+    theme
+}

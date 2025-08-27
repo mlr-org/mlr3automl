@@ -19,8 +19,12 @@ Depends:
     R (>= 3.1.0),
     rush (>= 0.3.0)
 Imports:
+    bbotk,
+    bslib,
     checkmate,
     data.table,
+    ggplot2,
+    iml,
     lhs,
     mlr3mbo (>= 0.2.8),
     mlr3misc (>= 0.15.1),
@@ -28,6 +32,8 @@ Imports:
     mlr3tuningspaces,
     paradox (>= 1.0.1),
     R6,
+    shiny,
+    stats,
     utils
 Suggests:
     catboost,
@@ -42,7 +48,8 @@ Suggests:
     ranger,
     rpart,
     testthat (>= 3.0.0),
-    xgboost
+    xgboost,
+    vdiffr
 Remotes:
     catboost/catboost/catboost/R-package,
     mlr-org/mlr3extralearners
@@ -75,6 +82,9 @@ Collate:
     'build_graph.R'
     'estimate_memory.R'
     'helper.R'
+    'helpers_app.R'
     'internal_measure.R'
     'train_auto.R'
+    'visualization.R'
+    'visualization_app.R'
     'zzz.R'
