@@ -5,7 +5,7 @@ train_auto = function(self, private, task) {
   lg$debug("Training '%s' on task '%s'", self$id, task$id)
 
   # initialize mbo tuner
-  tuner = tnr("adbo")
+  tuner = tnr("async_mbo")
 
   # remove learner based on memory limit
   lg$debug("Starting to select from %i learners: %s", length(learner_ids), paste0(learner_ids, collapse = ","))
@@ -72,13 +72,15 @@ train_auto = function(self, private, task) {
   }
 
   # initialize graph learner
-  graph_learner = as_learner(self$graph)
+  graph_learner = as_learner(self$graph, clone = TRUE)
   graph_learner$id = "graph_learner"
   graph_learner$predict_type = pv$measure$predict_type
-  fallback = lrn(paste0(graph_learner$task_type, ".featureless"))
-  fallback$predict_type = pv$measure$predict_type
-  graph_learner$encapsulate(method = "callr", fallback = fallback)
-  graph_learner$timeout = c(train = pv$learner_timeout, predict = pv$learner_timeout)
+  if (pv$encapsulate_learner) {
+    fallback = lrn(paste0(graph_learner$task_type, ".featureless"))
+    fallback$predict_type = pv$measure$predict_type
+    graph_learner$encapsulate(method = "callr", fallback = fallback)
+    graph_learner$timeout = c(train = pv$learner_timeout, predict = pv$learner_timeout)
+  }
 
   learners_with_validation = intersect(learner_ids, c("xgboost", "catboost", "lightgbm"))
   if (length(learners_with_validation)) {
@@ -133,7 +135,7 @@ train_auto = function(self, private, task) {
   setorderv(initial_xdt, "branch.selection")
   tuner$param_set$set_values(initial_design = initial_xdt)
 
-  # initialize auto tuner
+  # tuning instance
   self$instance = ti_async(
     task = task,
     learner = graph_learner,
@@ -146,6 +148,21 @@ train_auto = function(self, private, task) {
     store_models = pv$store_models
   )
 
+  # configure tuner
+  tuner$surrogate = default_surrogate(self$instance, force_random_forest = TRUE)
+  tuner$surrogate$param_set$set_values(catch_errors = pv$encapsulate_mbo)
+
+  if (!pv$encapsulate_mbo) {
+    tuner$surrogate$learner$encapsulate(method = "none")
+  }
+
+  tuner$acq_function = acqf("stochastic_cb", lambda = 1.96, rate = 0.1, period = 25L)
+  tuner$acq_optimizer = acqo(
+    optimizer = bbotk::opt("random_search", batch_size = 1000L),
+    terminator = trm("evals", n_evals = 10000L),
+    catch_errors = pv$encapsulate_mbo)
+
+
   # tune
   lg$debug("Learner '%s' starts tuning phase", self$id)
   tuner$optimize(self$instance)
@@ -154,6 +171,8 @@ train_auto = function(self, private, task) {
   lg$debug("Learner '%s' fits final model", self$id)
   if (length(learners_with_validation)) {
     set_validate(graph_learner, NULL, ids = intersect(learner_ids, c("xgboost", "catboost", "lightgbm")))
+    graph_learner$param_set$values$xgboost.callbacks = NULL
+    graph_learner$param_set$values$lightgbm.callbacks = NULL
   }
   graph_learner$param_set$set_values(.values = self$instance$result_learner_param_vals, .insert = FALSE)
   graph_learner$timeout = c(train = Inf, predict = Inf)
