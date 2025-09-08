@@ -63,8 +63,8 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         store_benchmark_result = p_lgl(default = FALSE, tags = c("train", "super")),
         store_models = p_lgl(default = FALSE, tags = c("train", "super")),
         # debugging
-        encapsulate_learner = p_lgl(default = FALSE, tags = c("train", "super")),
-        encapsulate_mbo = p_lgl(default = FALSE, tags = c("train", "super"))
+        encapsulate_learner = p_lgl(default = TRUE, tags = c("train", "super")),
+        encapsulate_mbo = p_lgl(default = TRUE, tags = c("train", "super"))
       )
 
       param_set$set_values(
@@ -84,8 +84,8 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         lhs_size = 4L,
         store_benchmark_result = FALSE,
         store_models = FALSE,
-        encapsulate_learner = FALSE,
-        encapsulate_mbo = FALSE)
+        encapsulate_learner = TRUE,
+        encapsulate_mbo = TRUE)
 
       # subset to relevant parameters for selected learners
       param_set = param_set$subset(ids = unique(param_set$ids(any_tags = c("super", learner_ids))))

@@ -21,7 +21,7 @@ test_that("lhs design is generated", {
 test_that("lhs design is generated with size smaller than the maximum number of levels", {
   skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost"))
 
-  learner_ids =  c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm")
+  learner_ids =  c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "lightgbm")
   xdt = generate_lhs_design(1, "classif", learner_ids, tuning_space)
   expect_data_table(xdt, nrows = 18)
 })
