@@ -75,6 +75,7 @@ train_auto = function(self, private, task) {
   graph_learner = as_learner(self$graph, clone = TRUE)
   graph_learner$id = "graph_learner"
   graph_learner$predict_type = pv$measure$predict_type
+  browser()
   if (pv$encapsulate_learner) {
     fallback = lrn(paste0(graph_learner$task_type, ".featureless"))
     fallback$predict_type = pv$measure$predict_type

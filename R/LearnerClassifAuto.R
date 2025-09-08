@@ -108,6 +108,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
     .learner_ids = NULL,
 
    .train = function(task) {
+
       train_auto(self, private, task)
     },
 
