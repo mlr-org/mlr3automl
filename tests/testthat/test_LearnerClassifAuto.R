@@ -423,6 +423,23 @@ test_that("max_cardinality works for extra trees", {
   expect_class(learner$train(task), "LearnerClassifAuto")
 })
 
+test_that("resample works", {
+  skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
+  rush_plan(n_workers = 2)
+
+  task = tsk("penguins")
+  learner = lrn("classif.auto",
+    small_data_size = 1,
+    resampling = rsmp("holdout"),
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 1),
+    lhs_size = 1
+  )
+
+  rr = resample(task, learner, rsmp("cv", folds = 2), store_models = TRUE)
+  expect_resample_result(rr)
+})
+
 # test_that("logger callback works", {
 #   skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
 #   rush_plan(n_workers = 2)
