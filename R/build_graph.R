@@ -111,6 +111,19 @@ build_graph = function(learner_ids, task_type) {
     branches = c(branches, branch_lightgbm)
   }
 
+  # fastai
+  if ("fastai" %in% learner_ids) {
+    branch_fastai =  po("removeconstants", id = "fastai_removeconstants") %>>%
+      po("imputeoor", id = "fastai_imputeoor") %>>%
+      po("fixfactors", id = "fastai_fixfactors") %>>%
+      po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "fastai_imputesample") %>>%
+      po("encodeimpact", id = "fastai_encode") %>>%
+      po("removeconstants", id = "fastai_post_removeconstants") %>>%
+      lrn(paste0(task_type, ".fastai"), id = "fastai", layers = c(200, 200), n_epoch = 10, patience = 1)
+    branches = c(branches, branch_fastai)
+  }
+
+
   # branch graph
   po("branch", options = learner_ids) %>>%
     gunion(branches) %>>%
@@ -171,5 +184,9 @@ tuning_space = list(
     lightgbm.min_data_in_leaf = to_tune(2, 60),
     lightgbm.num_leaves       = to_tune(16, 96),
     lightgbm.num_iterations   = to_tune(1, 10, internal = TRUE)
+  ),
+
+  fastai = list(
+    fastai.lr = to_tune(1e-4, 1e-1, logscale = TRUE)
   )
 )

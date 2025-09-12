@@ -27,9 +27,9 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(
       id = "classif.auto",
-      learner_ids = c("glmnet", "kknn", "lda", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm")
+      learner_ids = c("glmnet", "kknn", "lda", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm", "fastai")
       ) {
-      assert_subset(learner_ids, c("glmnet", "kknn", "lda", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm"))
+      assert_subset(learner_ids, c("glmnet", "kknn", "lda", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm", "fastai"))
       if (all(learner_ids %in% c("lda", "extra_trees"))) {
         stop("Learner 'lda' and 'extra_trees' must be combined with other learners")
       }
@@ -43,6 +43,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         xgboost_eval_metric = p_uty(tags = c("train", "xgboost")),
         catboost_eval_metric = p_uty(tags = c("train", "catboost")),
         lightgbm_eval_metric = p_uty(tags = c("train", "lightgbm")),
+        fastai_eval_metric = p_uty(tags = c("train", "fastai")),
         # system
         max_nthread = p_int(lower = 1L, default = 1L, tags = c("train", "catboost", "lightgbm", "ranger", "xgboost")),
         max_memory = p_int(lower = 1L, default = 32000L, tags = c("train", "catboost", "lightgbm", "ranger", "xgboost")),
@@ -74,7 +75,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         max_nthread = 1L,
         max_memory = 32000L,
         large_data_size = 1e6L,
-        large_data_learner_ids = intersect(c("lda", "ranger", "xgboost", "catboost", "extra_trees", "lightgbm"), private$.learner_ids),
+        large_data_learner_ids = intersect(c("lda", "ranger", "xgboost", "catboost", "extra_trees", "lightgbm", "fastai"), private$.learner_ids),
         large_data_nthread = 4L,
         small_data_size = 5000L,
         small_data_resampling = rsmp("cv", folds = 10L),

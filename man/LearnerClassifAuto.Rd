@@ -122,7 +122,7 @@ Creates a new instance of this \link[R6:R6Class]{R6} class.
 \if{html}{\out{<div class="r">}}\preformatted{LearnerClassifAuto$new(
   id = "classif.auto",
   learner_ids = c("glmnet", "kknn", "lda", "ranger", "svm", "xgboost", "catboost",
-    "extra_trees", "lightgbm")
+    "extra_trees", "lightgbm", "fastai")
 )}\if{html}{\out{</div>}}
 }
 

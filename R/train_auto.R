@@ -82,7 +82,7 @@ train_auto = function(self, private, task) {
     graph_learner$timeout = c(train = pv$learner_timeout, predict = pv$learner_timeout)
   }
 
-  learners_with_validation = intersect(learner_ids, c("xgboost", "catboost", "lightgbm"))
+  learners_with_validation = intersect(learner_ids, c("xgboost", "catboost", "lightgbm", "fastai"))
   if (length(learners_with_validation)) {
     set_validate(graph_learner, "test", ids = learners_with_validation)
   }
@@ -107,6 +107,11 @@ train_auto = function(self, private, task) {
     if (is.na(eval_metric)) eval_metric = pv$lightgbm_eval_metric
     graph_learner$param_set$values$lightgbm.eval = eval_metric  # maybe change this to `lightgbm.eval_metric` for consistency?
   }
+  if ("fastai" %in% learner_ids) {
+    eval_metric = pv$fastai_eval_metric #%??% internal_measure_fastai(pv$measure, task)
+    if (is.na(eval_metric)) eval_metric = pv$fastai_eval_metric
+    graph_learner$param_set$values$fastai.eval_metric = eval_metric
+  }
 
   # initialize search space
   tuning_space = unlist(unname(self$tuning_space), recursive = FALSE)
@@ -119,7 +124,7 @@ train_auto = function(self, private, task) {
     param_ids = grep(paste0("^", learner_id), param_ids, value = TRUE)
     walk(param_ids, function(param_id) {
       # skip internal tuning parameter
-      if (param_id %in% c("xgboost.nrounds", "catboost.iterations", "lightgbm.num_iterations")) return()
+      if (param_id %in% c("xgboost.nrounds", "catboost.iterations", "lightgbm.num_iterations", "fastai.n_epoch")) return()
       search_space$add_dep(
         id = param_id,
         on = "branch.selection",
