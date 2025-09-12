@@ -1,7 +1,7 @@
 test_that("initial design is generated", {
-  skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost"))
+  skip_if_not_installed(c("glmnet", "kknn", "ranger", "e1071", "xgboost", "catboost"))
 
-  learner_ids = c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "extra_trees")
+  learner_ids = c("glmnet", "kknn", "lda", "ranger", "svm", "xgboost", "catboost", "extra_trees")
   xdt = generate_default_design(
     task_type = "regr",
     learner_ids,
@@ -11,17 +11,17 @@ test_that("initial design is generated", {
 })
 
 test_that("lhs design is generated", {
-  skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost"))
+  skip_if_not_installed(c("glmnet", "kknn", "ranger", "e1071", "xgboost", "catboost"))
 
-  learner_ids =  c("glmnet", "kknn", "nnet", "ranger", "svm", "xgboost", "catboost")
+  learner_ids =  c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost")
   xdt = generate_lhs_design(10, "regr", learner_ids, tuning_space)
   expect_data_table(xdt, nrows = 70)
 })
 
 test_that("lhs design is generated with size smaller than the maximum number of levels", {
-  skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost"))
+  skip_if_not_installed(c("glmnet", "kknn", "ranger", "e1071", "xgboost", "catboost"))
 
-  learner_ids =  c("glmnet", "kknn",  "nnet", "ranger", "svm", "xgboost", "catboost", "lightgbm")
+  learner_ids =  c("glmnet", "kknn",  "ranger", "svm", "xgboost", "catboost", "lightgbm")
   xdt = generate_lhs_design(1, "regr", learner_ids, tuning_space)
   expect_data_table(xdt, nrows = 20)
 })
@@ -41,10 +41,6 @@ test_that("glmnet works", {
 
 test_that("kknn works", {
   test_regr_learner("kknn", n_evals = 10)
-})
-
-test_that("nnet works", {
-  test_regr_learner("nnet")
 })
 
 test_that("ranger works", {
@@ -90,7 +86,7 @@ test_that("xgboost, catboost and lightgbm work", {
 })
 
 test_that("all learner work", {
-  skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
+  skip_if_not_installed(c("glmnet", "kknn", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
   rush_plan(n_workers = 2)
 
   task = tsk("mtcars")
@@ -110,7 +106,7 @@ test_that("all learner work", {
 })
 
 # test_that("memory limit works", {
-#   skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
+#   skip_if_not_installed(c("glmnet", "kknn", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
 #   rush_plan(n_workers = 2)
 
 #   task = tsk("spam")
@@ -152,7 +148,7 @@ test_that("small data set switch works", {
 test_that("large data set switch works", {
   skip_on_cran()
   skip_if_not_installed("rush")
-  skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
+  skip_if_not_installed(c("glmnet", "kknn", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
   flush_redis()
 
 
@@ -222,7 +218,7 @@ test_that("max_cardinality works for extra trees", {
 })
 
 # test_that("logger callback works", {
-#   skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
+#   skip_if_not_installed(c("glmnet", "kknn", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
 #   rush_plan(n_workers = 2)
 
 #   task = tsk("mtcars")

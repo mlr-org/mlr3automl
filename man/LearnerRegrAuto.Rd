@@ -121,7 +121,7 @@ Creates a new instance of this \link[R6:R6Class]{R6} class.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{LearnerRegrAuto$new(
   id = "regr.auto",
-  learner_ids = c("glmnet", "kknn", "nnet", "ranger", "svm", "xgboost", "catboost",
+  learner_ids = c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost",
     "extra_trees", "lightgbm")
 )}\if{html}{\out{</div>}}
 }
