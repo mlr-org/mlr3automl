@@ -7,6 +7,73 @@
 The \link{LearnerClassifAuto} is an automated machine learning (AutoML) system for classification tasks.
 It combines preprocessing, a switch between multiple learners and hyperparameter tuning to find the best model for the given task.
 }
+\section{Parameters}{
+
+\describe{
+\item{learner_timeout}{(\code{integer(1)})\cr
+Timeout for training and predicting with a single learner.}
+\item{xgboost_eval_metric}{(\code{character(1)})\cr
+Early stopping eval metric for XGBoost.
+If \code{NULL}, attempting to match the internal XGBoost eval metric with the mlr3  \code{measure}}.
+\item{catboost_eval_metric}{(\code{character(1)})\cr
+Early stopping eval metric for CatBoost.
+If \code{NULL}, attempting to match the internal CatBoost eval metric with the mlr3 \code{measure}.}
+\item{lightgbm_eval_metric}{(\code{character(1)})\cr
+Early stopping eval metric for LightGBM.
+If \code{NULL}, attempting to match the internal LightGBM eval metric with the mlr3 \code{measure}.}
+\item{max_nthread}{(\code{integer(1)})\cr
+Maximum number of threads to use for model training.}
+\item{max_memory}{(\code{integer(1)})\cr
+Maximum memory to use for model training.}
+\item{large_data_size}{(\code{integer(1)})\cr
+Threshold value for the data set size from which special rules apply.
+Only the learners specified in \code{large_data_learner_ids} will be considered.
+These learners can use up to \code{large_data_nthread} threads.}
+\item{large_data_learner_ids}{(\code{character()})\cr
+Learners to consider for model training on large data sets.}
+\item{large_data_nthread}{(\code{integer(1)})\cr
+Maximum number of threads to use for model training on large data sets.}
+\item{small_data_size}{(\code{integer(1)})\cr
+Threshold value for the data set size from which special rules apply.
+Only the learners specified in \code{small_data_learner_ids} will be considered.
+These learners can use up to \code{small_data_nthread} threads.}
+\item{small_data_resampling}{(\link[mlr3:Resampling]{mlr3::Resampling})\cr
+Resampling strategy to use for model training on small data sets.}
+\item{max_cardinality}{(\code{integer(1)})\cr
+Maximum number of factor levels allowed.
+Collapses the rarest factors in the data set, until \code{max_cardinality} levels remain.}
+\item{extra_trees_max_cardinality}{(\code{integer(1)})\cr
+Maximum number of factor levels allowed for extra trees.
+Collapses the rarest factors in the data set, until \code{extra_trees_max_cardinality} levels remain.}
+\item{resampling}{(\link[mlr3:Resampling]{mlr3::Resampling})\cr
+Resampling strategy used for tuning.}
+\item{terminator}{(\link[bbotk:Terminator]{bbotk::Terminator})\cr
+Terminator criterion for tuning.}
+\item{measure}{(\link[mlr3:Measure]{mlr3::Measure})\cr
+Measure used for tuning.}
+\item{lhs_size}{(\code{integer(1)})\cr
+Size of the initial design used for mbo.}
+\item{callbacks}{(\link[mlr3tuning:CallbackAsyncTuning]{mlr3tuning::CallbackAsyncTuning})\cr
+Callbacks used for tuning.}
+\item{store_benchmark_result}{(\code{logical(1)})\cr
+Whether to store the benchmark result.}
+\item{store_models}{(\code{logical(1)})\cr
+Whether to store the models.}
+\item{encapsulate_learner}{(\code{logical(1)})\cr
+Whether to encapsulate the learner.
+Change to \code{FALSE} to debug.}
+\item{encapsulate_mbo}{(\code{logical(1)})\cr
+Whether to encapsulate the tuning.
+Change to \code{FALSE} to debug.}
+}
+
+\section{Debugging}{
+
+Set \code{options(bbotk.debug)} to run the tuning in the in the main session.
+Set \code{encapsulate_learner = FALSE} to remove encapsulation of the learner.
+Set \code{encapsulate_mbo = FALSE} to catch no errors in mbo.
+}
+
 \section{Super class}{
 \code{\link[mlr3:Learner]{mlr3::Learner}} -> \code{LearnerClassifAuto}
 }
@@ -32,6 +99,7 @@ It combines preprocessing, a switch between multiple learners and hyperparameter
 <details><summary>Inherited methods</summary>
 <ul>
 <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="base_learner"><a href='../../mlr3/html/Learner.html#method-Learner-base_learner'><code>mlr3::Learner$base_learner()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="configure"><a href='../../mlr3/html/Learner.html#method-Learner-configure'><code>mlr3::Learner$configure()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="encapsulate"><a href='../../mlr3/html/Learner.html#method-Learner-encapsulate'><code>mlr3::Learner$encapsulate()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="format"><a href='../../mlr3/html/Learner.html#method-Learner-format'><code>mlr3::Learner$format()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="help"><a href='../../mlr3/html/Learner.html#method-Learner-help'><code>mlr3::Learner$help()</code></a></span></li>
@@ -39,6 +107,7 @@ It combines preprocessing, a switch between multiple learners and hyperparameter
 <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="predict_newdata"><a href='../../mlr3/html/Learner.html#method-Learner-predict_newdata'><code>mlr3::Learner$predict_newdata()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="print"><a href='../../mlr3/html/Learner.html#method-Learner-print'><code>mlr3::Learner$print()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="reset"><a href='../../mlr3/html/Learner.html#method-Learner-reset'><code>mlr3::Learner$reset()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="selected_features"><a href='../../mlr3/html/Learner.html#method-Learner-selected_features'><code>mlr3::Learner$selected_features()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="train"><a href='../../mlr3/html/Learner.html#method-Learner-train'><code>mlr3::Learner$train()</code></a></span></li>
 </ul>
 </details>

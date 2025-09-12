@@ -6,6 +6,8 @@
 #'
 #' @template param_id
 #' @template param_learner_ids
+#' @template section_parameters
+#' @template section_debugging
 #'
 #' @export
 LearnerClassifAuto = R6Class("LearnerClassifAuto",
@@ -61,7 +63,11 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         lhs_size = p_int(lower = 1L, default = 4L, tags = c("train", "super")),
         callbacks = p_uty(tags = c("train", "super")),
         store_benchmark_result = p_lgl(default = FALSE, tags = c("train", "super")),
-        store_models = p_lgl(default = FALSE, tags = c("train", "super")))
+        store_models = p_lgl(default = FALSE, tags = c("train", "super")),
+        # debugging
+        encapsulate_learner = p_lgl(default = TRUE, tags = c("train", "super")),
+        encapsulate_mbo = p_lgl(default = TRUE, tags = c("train", "super"))
+      )
 
       param_set$set_values(
         learner_timeout = 900L,
@@ -79,7 +85,9 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         measure = msr("classif.ce"),
         lhs_size = 4L,
         store_benchmark_result = FALSE,
-        store_models = FALSE)
+        store_models = FALSE,
+        encapsulate_learner = TRUE,
+        encapsulate_mbo = TRUE)
 
       # subset to relevant parameters for selected learners
       param_set = param_set$subset(ids = unique(param_set$ids(any_tags = c("super", learner_ids))))
@@ -102,12 +110,28 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
     .learner_ids = NULL,
 
    .train = function(task) {
+
       train_auto(self, private, task)
     },
 
     .predict = function(task) {
       lg$debug("Predicting with '%s' on task '%s'", self$id, task$id)
       self$model$graph_learner$predict(task)
+    },
+
+    deep_clone = function(name, value) {
+      if (is.R6(value)) {
+        return(value$clone(deep = TRUE))
+      } else if (name == "state") {
+        if (!is.null(value)) {
+          value = list(
+            graph_learner = value$graph_learner$clone(deep = TRUE),
+            instance = value$instance$clone(deep = TRUE))
+        }
+        return(value)
+      } else {
+        super$deep_clone(name, value)
+      }
     }
   )
 )
