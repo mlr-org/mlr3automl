@@ -9,6 +9,7 @@ test_that("LearnerRegrAutoNnet is initialized", {
 
 test_that("LearnerRegrAutoNnet is trained", {
   skip_on_cran()
+  skip_if_not_installed("nnet")
   skip_if_not_installed("rush")
   flush_redis()
 
@@ -20,7 +21,10 @@ test_that("LearnerRegrAutoNnet is trained", {
     small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("regr.rmse"),
-    terminator = trm("evals", n_evals = 6)
+    terminator = trm("evals", n_evals = 6),
+    lhs_size = 1,
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE
   )
 
   expect_class(learner$train(task), "LearnerRegrAutoNnet")

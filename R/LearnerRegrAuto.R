@@ -6,8 +6,8 @@
 #'
 #' @template param_id
 #' @template param_learner_ids
-#' @template section_parameters
 #' @template section_debugging
+#' @template section_parameters
 #'
 #' @export
 LearnerRegrAuto = R6Class("LearnerRegrAuto",
