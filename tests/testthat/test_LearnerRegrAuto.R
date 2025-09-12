@@ -18,6 +18,14 @@ test_that("lhs design is generated", {
   expect_data_table(xdt, nrows = 70)
 })
 
+test_that("lhs design is generated with size smaller than the maximum number of levels", {
+  skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost"))
+
+  learner_ids =  c("glmnet", "kknn",  "nnet", "ranger", "svm", "xgboost", "catboost", "lightgbm")
+  xdt = generate_lhs_design(1, "regr", learner_ids, tuning_space)
+  expect_data_table(xdt, nrows = 20)
+})
+
 test_that("LearnerRegrAuto is initialized", {
   learner = lrn("regr.auto",
     measure = msr("regr.rmse"),
@@ -28,130 +36,33 @@ test_that("LearnerRegrAuto is initialized", {
 })
 
 test_that("glmnet works", {
-  rush_plan(n_workers = 2)
-  skip_if_not_installed("glmnet")
-
-
-  task = tsk("mtcars")
-  learner = lrn("regr.auto",
-    learner_ids = "glmnet",
-    small_data_size = 1,
-    resampling = rsmp("holdout"),
-    measure = msr("regr.rmse"),
-    terminator = trm("evals", n_evals = 6)
-  )
-
-  expect_class(learner$train(task), "LearnerRegrAuto")
-  expect_equal(learner$graph$param_set$values$branch.selection, "glmnet")
-  expect_equal(learner$model$instance$result$branch.selection, "glmnet")
+  test_regr_learner("glmnet")
 })
 
 test_that("kknn works", {
-  rush_plan(n_workers = 2)
-  skip_if_not_installed("kknn")
-
-  task = tsk("mtcars")
-  learner = lrn("regr.auto",
-    learner_ids = "kknn",
-    small_data_size = 1,
-    resampling = rsmp("holdout"),
-    measure = msr("regr.rmse"),
-    terminator = trm("evals", n_evals = 6)
-  )
-
-  expect_class(learner$train(task), "LearnerRegrAuto")
-  expect_equal(learner$graph$param_set$values$branch.selection, "kknn")
-  expect_equal(learner$model$instance$result$branch.selection, "kknn")
+  test_regr_learner("kknn", n_evals = 10)
 })
 
 test_that("nnet works", {
-  rush_plan(n_workers = 2)
-  skip_if_not_installed("nnet")
-
-  task = tsk("mtcars")
-  learner = lrn("regr.auto",
-    learner_ids = "nnet",
-    resampling = rsmp("holdout"),
-    small_data_size = 1,
-    measure = msr("regr.rmse"),
-    terminator = trm("evals", n_evals = 6)
-  )
-
-  expect_class(learner$train(task), "LearnerRegrAuto")
-  expect_equal(learner$model$instance$result$branch.selection, "nnet")
+  test_regr_learner("nnet")
 })
 
 test_that("ranger works", {
-  rush_plan(n_workers = 2)
-  skip_if_not_installed("ranger")
-
-
-  task = tsk("mtcars")
-  learner = lrn("regr.auto",
-    learner_ids = "ranger",
-    small_data_size = 1,
-    resampling = rsmp("holdout"),
-    measure = msr("regr.rmse"),
-    terminator = trm("evals", n_evals = 6)
-  )
-
-  expect_class(learner$train(task), "LearnerRegrAuto")
-  expect_equal(learner$model$instance$result$branch.selection, "ranger")
+  test_regr_learner("ranger")
 })
 
 test_that("svm works", {
-  rush_plan(n_workers = 2)
-  skip_if_not_installed("e1071")
-
-
-  task = tsk("mtcars")
-  learner = lrn("regr.auto",
-    learner_ids = "svm",
-    small_data_size = 1,
-    resampling = rsmp("holdout"),
-    measure = msr("regr.rmse"),
-    terminator = trm("evals", n_evals = 6)
-  )
-
-  expect_class(learner$train(task), "LearnerRegrAuto")
-  expect_equal(learner$model$instance$result$branch.selection, "svm")
+  test_regr_learner("svm")
 })
 
 test_that("xgboost works", {
-  skip_if_not_installed("xgboost")
-  rush_plan(n_workers = 2)
+  test_regr_learner("xgboost")
 
-  task = tsk("mtcars")
-  learner = lrn("regr.auto",
-    learner_ids = "xgboost",
-    small_data_size = 1,
-    xgboost_eval_metric = "mlogloss",
-    resampling = rsmp("holdout"),
-    measure = msr("regr.rmse"),
-    terminator = trm("evals", n_evals = 6)
-  )
-
-  expect_class(learner$train(task), "LearnerRegrAuto")
-  expect_equal(learner$model$instance$result$branch.selection, "xgboost")
 })
 
 test_that("catboost works", {
-  skip_if_not_installed("catboost")
-  rush_plan(n_workers = 2)
+  test_regr_learner("catboost")
 
-
-  task = tsk("mtcars")
-  learner = lrn("regr.auto",
-    learner_ids = "catboost",
-    small_data_size = 1,
-    catboost_eval_metric = "MultiClass",
-    resampling = rsmp("holdout"),
-    measure = msr("regr.rmse"),
-    terminator = trm("evals", n_evals = 6)
-  )
-
-  expect_class(learner$train(task), "LearnerRegrAuto")
-  expect_equal(learner$model$instance$result$branch.selection, "catboost")
 })
 
 test_that("only extra_trees fails", {
@@ -167,59 +78,15 @@ test_that("only extra_trees fails", {
 })
 
 test_that("extra_trees and glmnet works", {
-  skip_if_not_installed("glmnet")
-  rush_plan(n_workers = 2)
-
-  task = tsk("mtcars")
-  learner = lrn("regr.auto",
-    learner_ids = c("extra_trees", "glmnet"),
-    small_data_size = 1,
-    resampling = rsmp("holdout"),
-    measure = msr("regr.rmse"),
-    terminator = trm("evals", n_evals = 6)
-  )
-
-  expect_class(learner$train(task), "LearnerRegrAuto")
-  expect_choice(learner$model$instance$result$branch.selection, c("extra_trees", "glmnet"))
+  test_regr_learner(c("extra_trees", "glmnet"))
 })
 
 test_that("lightgbm works", {
-  skip_if_not_installed("lightgbm")
-  rush_plan(n_workers = 2)
-
-  task = tsk("mtcars")
-  learner = lrn("regr.auto",
-    learner_ids = "lightgbm",
-    small_data_size = 1,
-    lightgbm_eval_metric = "multi_logloss",
-    resampling = rsmp("holdout"),
-    measure = msr("regr.rmse"),
-    terminator = trm("evals", n_evals = 6)
-  )
-
-  expect_class(learner$train(task), "LearnerRegrAuto")
-  expect_equal(learner$model$instance$result$branch.selection, "lightgbm")
+  test_regr_learner("lightgbm")
 })
 
 test_that("xgboost, catboost and lightgbm work", {
-  skip_if_not_installed(c("xgboost", "catboost", "lightgbm"))
-  rush_plan(n_workers = 2)
-
-  task = tsk("mtcars")
-  learner = lrn("regr.auto",
-    learner_ids = c("xgboost", "catboost", "lightgbm"),
-    small_data_size = 1,
-    catboost_eval_metric = "MultiClass",
-    lightgbm_eval_metric = "multi_logloss",
-    xgboost_eval_metric = "mlogloss",
-    resampling = rsmp("holdout"),
-    lhs_size = 1,
-    measure = msr("regr.rmse"),
-    terminator = trm("evals", n_evals = 20),
-    callbacks = clbk("mlr3tuning.async_save_logs")
-  )
-
-  expect_class(learner$train(task), "LearnerRegrAuto")
+  test_regr_learner(c("xgboost", "catboost", "lightgbm"), n_evals = 20)
 })
 
 test_that("all learner work", {
@@ -232,7 +99,9 @@ test_that("all learner work", {
     resampling = rsmp("holdout"),
     measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 20),
-    lhs_size = 1
+    lhs_size = 1,
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE
   )
 
   expect_class(learner$train(task), "LearnerRegrAuto")
@@ -258,17 +127,22 @@ test_that("all learner work", {
 # })
 
 test_that("small data set switch works", {
-  skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
-  rush_plan(n_workers = 2)
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  skip_if_not_installed("glmnet")
+  flush_redis()
 
   task = tsk("mtcars")
   learner = lrn("regr.auto",
+    learner_ids = "glmnet",
     small_data_size = 1000,
     small_data_resampling = rsmp("cv", folds = 2),
     measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 1),
     lhs_size = 1,
-    store_benchmark_result = TRUE
+    store_benchmark_result = TRUE,
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE
   )
 
   expect_class(learner$train(task), "LearnerRegrAuto")
@@ -276,20 +150,25 @@ test_that("small data set switch works", {
 })
 
 test_that("large data set switch works", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
   skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
-  rush_plan(n_workers = 2)
+  flush_redis()
+
 
   task = tsk("mtcars")
   learner = lrn("regr.auto",
     large_data_size = 100,
-    large_data_nthread = 4,
+    large_data_nthread = 1,
     large_data_learner_ids = "ranger",
     small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 1),
     lhs_size = 1,
-    store_benchmark_result = TRUE
+    store_benchmark_result = TRUE,
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE
   )
 
   expect_class(learner$train(task), "LearnerRegrAuto")
@@ -297,7 +176,11 @@ test_that("large data set switch works", {
 })
 
 test_that("max_cardinality works", {
-  skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  skip_if_not_installed("glmnet")
+  flush_redis()
+
   rush_plan(n_workers = 2)
 
   task = tsk("mtcars")
@@ -314,18 +197,25 @@ test_that("max_cardinality works", {
 })
 
 test_that("max_cardinality works for extra trees", {
-  skip_if_not_installed(c("glmnet", "kknn", "nnet", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  skip_if_not_installed(c("glmnet", "ranger"))
+  flush_redis()
+
   rush_plan(n_workers = 2)
 
   task = tsk("mtcars")
   learner = lrn("regr.auto",
+    learner_ids = c("glmnet", "extra_trees"),
     small_data_size = 1,
     resampling = rsmp("holdout"),
     max_cardinality = 3,
     extra_trees_max_cardinality = 2,
     measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 1),
-    lhs_size = 1
+    lhs_size = 1,
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE
   )
 
   expect_class(learner$train(task), "LearnerRegrAuto")
