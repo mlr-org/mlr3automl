@@ -433,7 +433,8 @@ test_that("resample works", {
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 1),
-    lhs_size = 1
+    lhs_size = 1,
+    encapsulate_learner = FALSE
   )
 
   rr = resample(task, learner, rsmp("cv", folds = 2), store_models = TRUE)
