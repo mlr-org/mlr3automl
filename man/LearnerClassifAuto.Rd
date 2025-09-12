@@ -66,6 +66,12 @@ Change to \code{FALSE} to debug.}
 Whether to encapsulate the tuning.
 Change to \code{FALSE} to debug.}
 }
+
+\section{Debugging}{
+
+Set \code{options(bbotk.debug)} to run the tuning in the in the main session.
+Set \code{encapsulate_learner = FALSE} to remove encapsulation of the learner.
+Set \code{encapsulate_mbo = FALSE} to catch no errors in mbo.
 }
 
 \section{Super class}{
