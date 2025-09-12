@@ -45,7 +45,7 @@ generate_lhs_design = function(size, task_type, learner_ids, tuning_space, branc
     learner$param_set$set_values(.values = token)
     search_space = learner$param_set$search_space()
     # if there are categorical parameters, we need to sample at least the maximum number of levels
-    n_levels = search_space$nlevels[search_space$ids(class = "ParamFct")]
+    n_levels = search_space$nlevels[search_space$ids(class = c("ParamFct", "ParamLgl"))]
     xdt = generate_design_lhs(search_space, max(n_levels, size))$data
     setnames(xdt, sprintf("%s.%s", learner_id, names(xdt)))
     if (branch) {

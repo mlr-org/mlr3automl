@@ -23,7 +23,7 @@ test_that("lhs design is generated with size smaller than the maximum number of 
 
   learner_ids =  c("glmnet", "kknn", "lda", "nnet", "ranger", "svm", "xgboost", "catboost", "lightgbm")
   xdt = generate_lhs_design(1, "classif", learner_ids, tuning_space)
-  expect_data_table(xdt, nrows = 18)
+  expect_data_table(xdt, nrows = 21)
 })
 
 
