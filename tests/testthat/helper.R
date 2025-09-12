@@ -47,14 +47,16 @@ test_classif_learner = function(learner_id, n_evals = 6) {
   )
 
   expect_class(learner$train(task), "LearnerClassifAuto")
-  expect_equal(learner$graph$param_set$values$branch.selection, learner_id)
-  expect_equal(learner$model$instance$result$branch.selection, learner_id)
+  expect_subset(learner$model$instance$result$branch.selection, learner_id)
+  expect_set_equal(learner$model$instance$archive$data$branch.selection, learner_id)
 
   learner
 }
 
 test_regr_learner = function(learner_id, n_evals = 6) {
   skip_on_cran()
+   if ("extra_trees" %in% learner_id) learner_id = c(learner_id, "ranger")
+  skip_if_not_installed(setdiff(learner_id, c("lda", "extra_trees")))
   skip_if_not_installed(learner_id)
   skip_if_not_installed("rush")
   flush_redis()
@@ -74,8 +76,8 @@ test_regr_learner = function(learner_id, n_evals = 6) {
   )
 
   expect_class(learner$train(task), "LearnerRegrAuto")
-  expect_equal(learner$graph$param_set$values$branch.selection, learner_id)
-  expect_equal(learner$model$instance$result$branch.selection, learner_id)
+  expect_subset(learner$model$instance$result$branch.selection, learner_id)
+  expect_set_equal(learner$model$instance$archive$data$branch.selection, learner_id)
 
   learner
 }
