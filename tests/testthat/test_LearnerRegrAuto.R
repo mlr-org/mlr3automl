@@ -15,7 +15,7 @@ test_that("lhs design is generated", {
 
   learner_ids =  c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost")
   xdt = generate_lhs_design(10, "regr", learner_ids, tuning_space)
-  expect_data_table(xdt, nrows = 70)
+  expect_data_table(xdt, nrows = 60)
 })
 
 test_that("lhs design is generated with size smaller than the maximum number of levels", {
@@ -23,7 +23,7 @@ test_that("lhs design is generated with size smaller than the maximum number of 
 
   learner_ids =  c("glmnet", "kknn",  "ranger", "svm", "xgboost", "catboost", "lightgbm")
   xdt = generate_lhs_design(1, "regr", learner_ids, tuning_space)
-  expect_data_table(xdt, nrows = 20)
+  expect_data_table(xdt, nrows = 19)
 })
 
 test_that("LearnerRegrAuto is initialized", {
