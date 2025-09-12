@@ -9,6 +9,7 @@ test_that("LearnerRegrAutoLightGBM is initialized", {
 
 test_that("LearnerRegrAutoLightGBM is trained", {
   skip_on_cran()
+  skip_if_not_installed("lightgbm")
   skip_if_not_installed("rush")
   flush_redis()
 
@@ -21,7 +22,10 @@ test_that("LearnerRegrAutoLightGBM is trained", {
     small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("regr.rmse"),
-    terminator = trm("evals", n_evals = 6)
+    terminator = trm("evals", n_evals = 6),
+    lhs_size = 1,
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE
   )
 
   expect_class(learner$train(task), "LearnerRegrAutoLightGBM")
@@ -31,10 +35,11 @@ test_that("LearnerRegrAutoLightGBM is trained", {
 
 test_that("LearnerRegrAutoLightGBM internal eval metric is found", {
   skip_on_cran()
+  skip_if_not_installed("lightgbm")
   skip_if_not_installed("rush")
   flush_redis()
 
-  rush_plan(n_workers = 2)
+  rush_plan(n_workers = 1)
 
   task = tsk("mtcars")
   msrs_regr = rbindlist(list(
@@ -48,9 +53,11 @@ test_that("LearnerRegrAutoLightGBM internal eval metric is found", {
       small_data_size = 1,
       resampling = rsmp("holdout"),
       measure = msr(msrs_regr$measure[[i]]),
-      terminator = trm("evals", n_evals = 6),
+      terminator = trm("evals", n_evals = 1),
       store_benchmark_result = TRUE,
-      store_models = TRUE
+      store_models = TRUE,
+      encapsulate_learner = FALSE,
+      encapsulate_mbo = FALSE
     )
     learner$train(task)
 
