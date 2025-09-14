@@ -119,7 +119,7 @@ build_graph = function(learner_ids, task_type) {
       po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "fastai_imputesample") %>>%
       po("encodeimpact", id = "fastai_encode") %>>%
       po("removeconstants", id = "fastai_post_removeconstants") %>>%
-      lrn(paste0(task_type, ".fastai"), id = "fastai", layers = c(200, 200), patience = 1)
+      lrn(paste0(task_type, ".fastai"), id = "fastai", layers = c(200, 200), patience = 20)
     branches = c(branches, branch_fastai)
   }
 
