@@ -1,3 +1,19 @@
+test_that("default design is generated", {
+  skip_if_not_installed(c("catboost", "fastai"))
+
+  learner_ids =  c("catboost", "fastai")
+  xdt = generate_default_design(task_type = "classif", learner_ids, task = tsk("penguins"), tuning_space)
+  expect_data_table(xdt, nrows = 2)
+})
+
+test_that("lhs design is generated", {
+  skip_if_not_installed(c("catboost", "fastai"))
+
+  learner_ids =  c("catboost", "fastai")
+  xdt = generate_lhs_design(1, "classif", learner_ids, tuning_space)
+  expect_data_table(xdt, nrows = 4)
+})
+
 test_that("LearnerClassifAutoFastai is initialized", {
   learner = lrn("classif.auto_fastai",
     measure = msr("classif.ce"),
@@ -17,15 +33,13 @@ test_that("LearnerClassifAutoFastai is trained", {
 
   mirai::daemons(2)
 
-  options(bbotk.debug = TRUE)
-
   task = tsk("penguins")
   learner = lrn("classif.auto_fastai",
-    fastai_eval_metric = fastai::error_rate(),
+    fastai_eval_metric = "error_rate",
     small_data_size = 1,
-    resampling = rsmp("holdout"),
+    resampling = rsmp("cv", folds = 3),
     measure = msr("classif.ce"),
-    terminator = trm("evals", n_evals = 6),
+    terminator = trm("evals", n_evals = 20),
     lhs_size = 1,
     encapsulate_learner = FALSE,
     encapsulate_mbo = FALSE
@@ -34,8 +48,9 @@ test_that("LearnerClassifAutoFastai is trained", {
   expect_class(learner$train(task), "LearnerClassifAutoFastai")
   expect_equal(learner$graph$param_set$values$branch.selection, "fastai")
   expect_equal(learner$model$instance$result$branch.selection, "fastai")
-})
 
+  learner$instance$rush$processes_mirai[[1]]$stack.trace
+})
 
 # test_that("LearnerClassifAutoFastai is trained", {
 #   skip_on_cran()

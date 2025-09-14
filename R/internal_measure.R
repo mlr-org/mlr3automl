@@ -146,3 +146,43 @@ internal_measure_xgboost = function(measure, task) {
 
   return(metric %??% NA_character_)
 }
+
+#' @title Internal Measure FastAI
+#'
+#' @description
+#' Function to get the internal fastai measure for a given [mlr3::Task] and [mlr3::Measure].
+#' For example, the measure "classif.acc" will return "accuracy" for a binary classification task.
+#'
+#' @param measure [mlr3::Measure]\cr
+#' Measure to get the internal measure for.
+#' @param task [mlr3::Task]\cr
+#' Task to get the internal measure for.
+#'
+#' @export
+#' @examples
+#' internal_measure_fastai(msr("classif.acc"), tsk("pima"))
+internal_measure_fastai = function(measure, task) {
+  reticulate::py_require("fastai")
+  id = measure$id
+
+  metric =  if ("twoclass" %in% task$properties) {
+    switch(id,
+      "classif.ce" = "error_rate",
+      "classif.acc" = "accuracy",
+      "classif.bacc" = "BalancedAccuracy",
+      "classif.brier" = "BrierScore",
+      "classif.auc" = "RocAucBinary",
+      "classif.mcc" = "MatthewsCorrCoef",
+      NULL
+    )
+  } else if ("multiclass" %in% task$properties) {
+    switch(id,
+      "classif.ce" = "error_rate",
+      "classif.acc" = "accuracy",
+      "classif.mauc_aunp" = "RocAuc",
+      NULL
+    )
+  }
+
+  return(metric %??% NA_character_)
+}

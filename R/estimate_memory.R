@@ -149,5 +149,16 @@ estimate_memory.LearnerRegrLightGBM = function(learner, task, ...) {
   return(histogram_size + data_size)
 }
 
+#' @rdname estimate_memory
+#' @export
+estimate_memory.LearnerClassifFastai = function(learner, task, ...) {
+  pv = learner$param_set$get_values()
+
+  # data size
+  data_size = task$nrow * task$ncol * 8
+
+  return(data_size * 12)
+}
+
 
 

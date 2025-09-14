@@ -8,14 +8,14 @@ train_auto = function(self, private, task) {
   tuner = tnr("async_mbo")
 
   # remove learner based on memory limit
-  lg$debug("Starting to select from %i learners: %s", length(learner_ids), paste0(learner_ids, collapse = ","))
+  lg$info("Starting to select from %i learners: %s", length(learner_ids), paste0(learner_ids, collapse = ","))
 
   if (!is.null(pv$max_memory)) {
     memory_usage = map_dbl(learner_ids, function(learner_id) {
       estimate_memory(self$graph$pipeops[[learner_id]]$learner, task) / 1e6
     })
     learner_ids = learner_ids[memory_usage < pv$max_memory]
-    lg$debug("Checking learners for memory limit of %i MB. Keeping %i learner(s): %s", pv$max_memory, length(learner_ids), paste0(learner_ids, collapse = ","))
+    lg$info("Checking learners for memory limit of %i MB. Keeping %i learner(s): %s", pv$max_memory, length(learner_ids), paste0(learner_ids, collapse = ","))
   }
 
   # set number of threads
@@ -78,7 +78,7 @@ train_auto = function(self, private, task) {
   if (pv$encapsulate_learner) {
     fallback = lrn(paste0(graph_learner$task_type, ".featureless"))
     fallback$predict_type = pv$measure$predict_type
-    graph_learner$encapsulate(method = "callr", fallback = fallback)
+    graph_learner$encapsulate(method = "mirai", fallback = fallback)
     graph_learner$timeout = c(train = pv$learner_timeout, predict = pv$learner_timeout)
   }
 
@@ -108,8 +108,8 @@ train_auto = function(self, private, task) {
     graph_learner$param_set$values$lightgbm.eval = eval_metric  # maybe change this to `lightgbm.eval_metric` for consistency?
   }
   if ("fastai" %in% learner_ids) {
-    eval_metric = pv$fastai_eval_metric #%??% internal_measure_fastai(pv$measure, task)
-    if (is.na(eval_metric)) eval_metric = pv$fastai_eval_metric
+    eval_metric = pv$fastai_eval_metric %??% internal_measure_fastai(pv$measure, task)
+    # if (is.na(eval_metric)) eval_metric = pv$fastai_eval_metric
     graph_learner$param_set$values$fastai.eval_metric = eval_metric
   }
 
@@ -119,6 +119,13 @@ train_auto = function(self, private, task) {
   graph_scratch$param_set$set_values(.values = tuning_space)
   graph_scratch$param_set$set_values(branch.selection = to_tune(learner_ids))
   search_space = graph_scratch$param_set$search_space()
+
+  # add fastai search space
+  if ("fastai" %in% learner_ids) {
+    search_space = c(search_space, fastai_search_space_graph)
+  }
+
+  # add dependencies
   walk(learner_ids, function(learner_id) {
     param_ids = search_space$ids()
     param_ids = grep(paste0("^", learner_id), param_ids, value = TRUE)
@@ -132,6 +139,7 @@ train_auto = function(self, private, task) {
       )
     })
   })
+
 
   # initial design
   lhs_xdt = generate_lhs_design(pv$lhs_size, self$task_type, setdiff(learner_ids, c("lda", "extra_trees")), self$tuning_space)
@@ -174,8 +182,9 @@ train_auto = function(self, private, task) {
 
   # fit final model
   lg$debug("Learner '%s' fits final model", self$id)
+
   if (length(learners_with_validation)) {
-    set_validate(graph_learner, NULL, ids = intersect(learner_ids, c("xgboost", "catboost", "lightgbm")))
+    set_validate(graph_learner, NULL, ids = intersect(learner_ids, c("xgboost", "catboost", "lightgbm", "fastai")))
     graph_learner$param_set$values$xgboost.callbacks = NULL
     graph_learner$param_set$values$lightgbm.callbacks = NULL
   }

@@ -26,7 +26,9 @@ test_that("LearnerClassifAutoCatboost is trained", {
     terminator = trm("evals", n_evals = 6),
     lhs_size = 1,
     encapsulate_learner = FALSE,
-    encapsulate_mbo = FALSE
+    encapsulate_mbo = FALSE,
+    store_benchmark_result = TRUE,
+    store_models = TRUE
   )
 
   expect_class(learner$train(task), "LearnerClassifAutoCatboost")

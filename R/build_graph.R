@@ -119,7 +119,7 @@ build_graph = function(learner_ids, task_type) {
       po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "fastai_imputesample") %>>%
       po("encodeimpact", id = "fastai_encode") %>>%
       po("removeconstants", id = "fastai_post_removeconstants") %>>%
-      lrn(paste0(task_type, ".fastai"), id = "fastai", layers = c(200, 200), n_epoch = 10, patience = 1)
+      lrn(paste0(task_type, ".fastai"), id = "fastai", layers = c(200, 200), patience = 1)
     branches = c(branches, branch_fastai)
   }
 
@@ -187,6 +187,46 @@ tuning_space = list(
   ),
 
   fastai = list(
-    fastai.lr = to_tune(1e-4, 1e-1, logscale = TRUE)
+    fastai.lr = to_tune(1e-4, 1e-1, logscale = TRUE),
+    fastai.bs = to_tune(50, 500),
+    fastai.n_epoch = to_tune(1, 100, internal = TRUE)
   )
 )
+
+fastai_search_space = ps(
+  layers = p_fct(levels = list(c(200, 100), c(200, 100, 50), c(500, 200), c(500, 200, 100), c(1000, 500), c(1000, 500, 200)), default = "c(200, 100)")
+)
+
+fastai_search_space_graph = ps(
+  fastai.layers = p_fct(levels = list(c(200, 100), c(200, 100, 50), c(500, 200), c(500, 200, 100), c(1000, 500), c(1000, 500, 200)), default = "c(200, 100)")
+)
+
+# fastai_search_space = ps(
+#   n_layers = p_fct(levels = c("2", "3"), default = "2", trafo = function(x) as.integer(x)),
+#   layer_size_1 = p_int(lower = 50, upper = 500, default = 200, depends = n_layers %in% c("2", "3")),
+#   layer_size_2 = p_int(lower = 50, upper = 500, default = 200, depends = n_layers %in% c("2", "3")),
+#   layer_size_3 = p_int(lower = 50, upper = 500, default = 200, depends = n_layers == "3"),
+#   .extra_trafo = function(x, param_set) {
+#     x$layers = c(as.integer(x$layer_size_1), as.integer(x$layer_size_2), as.integer(x$layer_size_3))
+#     x$n_layers = NULL
+#     x$layer_size_1 = NULL
+#     x$layer_size_2 = NULL
+#     x$layer_size_3 = NULL
+#     x
+#   }
+# )
+
+# fastai_search_space_graph = ps(
+#   fastai.n_layers = p_fct(levels = c("2", "3"), default = "2", trafo = function(x) as.integer(x)),
+#   fastai.layer_size_1 = p_int(lower = 50, upper = 500, default = 200, depends = fastai.n_layers %in% c("2", "3")),
+#   fastai.layer_size_2 = p_int(lower = 50, upper = 500, default = 200, depends = fastai.n_layers %in% c("2", "3")),
+#   fastai.layer_size_3 = p_int(lower = 50, upper = 500, default = 200, depends = fastai.n_layers == "3"),
+#   .extra_trafo = function(x, param_set) {
+#     x$fastai.layers = c(as.integer(x$fastai.layer_size_1), as.integer(x$fastai.layer_size_2), as.integer(x$fastai.layer_size_3))
+#     x$fastai.n_layers = NULL
+#     x$fastai.layer_size_1 = NULL
+#     x$fastai.layer_size_2 = NULL
+#     x$fastai.layer_size_3 = NULL
+#     x
+#   }
+# )

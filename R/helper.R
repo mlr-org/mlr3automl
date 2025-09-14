@@ -15,12 +15,20 @@ generate_default_design = function(task_type, learner_ids, task, tuning_space, b
     names(token) = gsub(paste0("^", learner_id, "."), "", names(token))
     learner$param_set$set_values(.values = token)
     search_space = learner$param_set$search_space()
+    internal_tune_ids = search_space$ids(any_tags = "internal_tuning")
+    if (length(internal_tune_ids)) {
+      search_space = search_space$subset(setdiff(search_space$ids(), internal_tune_ids))
+    }
+
     xss = default_values(learner, search_space = search_space, task = task)
     has_logscale = map_lgl(search_space$params$.trafo, function(x) identical(x, exp))
     xdt = as.data.table(map_if(xss, has_logscale, function(value) if (value > 0) log(value) else value))
 
     setnames(xdt, sprintf("%s.%s", learner_id, names(xdt)))
 
+    if (learner_id == "fastai") {
+      xdt = cbind(xdt, data.table(fastai.n_layers = "2", fastai.layer_size_1 = 200, fastai.layer_size_2 = 200))
+    }
     if (branch) {
       set(xdt, j = "branch.selection", value = learner_id)
     }
@@ -44,6 +52,15 @@ generate_lhs_design = function(size, task_type, learner_ids, tuning_space, branc
     names(token) = gsub(paste0("^", learner_id, "."), "", names(token))
     learner$param_set$set_values(.values = token)
     search_space = learner$param_set$search_space()
+    internal_tune_ids = search_space$ids(any_tags = "internal_tuning")
+    if (length(internal_tune_ids)) {
+      search_space = search_space$subset(setdiff(search_space$ids(), internal_tune_ids))
+    }
+
+    if (learner_id == "fastai") {
+      search_space = c(search_space, fastai_search_space)
+    }
+
     # if there are categorical parameters, we need to sample at least the maximum number of levels
     n_levels = search_space$nlevels[search_space$ids(class = c("ParamFct", "ParamLgl"))]
     xdt = generate_design_lhs(search_space, max(n_levels, size))$data
