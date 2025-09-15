@@ -39,7 +39,6 @@ Suggests:
     lgr,
     MASS,
     mlr3viz,
-    nnet,
     ranger,
     rpart,
     testthat (>= 3.0.0),
@@ -62,7 +61,6 @@ Collate:
     'LearnerClassifAutoGlmnet.R'
     'LearnerClassifAutoKKNN.R'
     'LearnerClassifAutoLightGBM.R'
-    'LearnerClassifAutoNnet.R'
     'LearnerClassifAutoRanger.R'
     'LearnerClassifAutoSVM.R'
     'LearnerClassifAutoXgboost.R'
@@ -71,7 +69,6 @@ Collate:
     'LearnerRegrAutoGlmnet.R'
     'LearnerRegrAutoKKNN.R'
     'LearnerRegrAutoLightGBM.R'
-    'LearnerRegrAutoNnet.R'
     'LearnerRegrAutoRanger.R'
     'LearnerRegrAutoSVM.R'
     'LearnerRegrAutoXgboost.R'

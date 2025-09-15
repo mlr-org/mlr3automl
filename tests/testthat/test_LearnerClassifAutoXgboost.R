@@ -9,6 +9,7 @@ test_that("LearnerClassifAutoXgboost is initialized", {
 
 test_that("LearnerClassifAutoXgboost is trained", {
   skip_on_cran()
+  skip_if_not_installed("xgboost")
   skip_if_not_installed("rush")
   flush_redis()
 
@@ -21,7 +22,10 @@ test_that("LearnerClassifAutoXgboost is trained", {
     small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
-    terminator = trm("evals", n_evals = 3)
+    terminator = trm("evals", n_evals = 6),
+    lhs_size = 1,
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE
   )
 
   expect_class(learner$train(task), "LearnerClassifAutoXgboost")
@@ -31,12 +35,12 @@ test_that("LearnerClassifAutoXgboost is trained", {
 
 test_that("LearnerClassifAutoXgboost twoclass internal eval metric is found", {
   skip_on_cran()
+  skip_if_not_installed("xgboost")
   skip_if_not_installed("rush")
   flush_redis()
 
-  rush_plan(n_workers = 2)
+  rush_plan(n_workers = 1)
 
-  
   task_twoclass = tsk("pima")
   msrs_twoclass = rbindlist(list(
     list(measure = "classif.ce", metric = "error"),
@@ -50,9 +54,11 @@ test_that("LearnerClassifAutoXgboost twoclass internal eval metric is found", {
       small_data_size = 1,
       resampling = rsmp("holdout"),
       measure = msr(msrs_twoclass$measure[[i]]),
-      terminator = trm("evals", n_evals = 6),
+      terminator = trm("evals", n_evals = 1),
       store_benchmark_result = TRUE,
-      store_models = TRUE
+      store_models = TRUE,
+      encapsulate_learner = FALSE,
+      encapsulate_mbo = FALSE
     )
     learner$train(task_twoclass)
 
@@ -65,12 +71,12 @@ test_that("LearnerClassifAutoXgboost twoclass internal eval metric is found", {
 
 test_that("LearnerClassifAutoXgboost multiclass internal eval metric is found", {
   skip_on_cran()
+  skip_if_not_installed("xgboost")
   skip_if_not_installed("rush")
   flush_redis()
 
-  rush_plan(n_workers = 2)
+  rush_plan(n_workers = 1)
 
-  
   task_multiclass = tsk("penguins")
   msrs_multiclass = rbindlist(list(
     list(measure = "classif.ce", metric = "merror"),
@@ -84,9 +90,11 @@ test_that("LearnerClassifAutoXgboost multiclass internal eval metric is found", 
       small_data_size = 1,
       resampling = rsmp("holdout"),
       measure = msr(msrs_multiclass$measure[[i]]),
-      terminator = trm("evals", n_evals = 6),
+      terminator = trm("evals", n_evals = 1),
       store_benchmark_result = TRUE,
-      store_models = TRUE
+      store_models = TRUE,
+      encapsulate_learner = FALSE,
+      encapsulate_mbo = FALSE
     )
     learner$train(task_multiclass)
 

@@ -7,6 +7,13 @@
 The \link{LearnerRegrAuto} is an automated machine learning (AutoML) system for regression tasks.
 It combines preprocessing, a switch between multiple learners and hyperparameter tuning to find the best model for the given task.
 }
+\section{Debugging}{
+
+Set \code{options(bbotk.debug)} to run the tuning in the in the main session.
+Set \code{encapsulate_learner = FALSE} to remove encapsulation of the learner.
+Set \code{encapsulate_mbo = FALSE} to catch no errors in mbo.
+}
+
 \section{Parameters}{
 
 \describe{
@@ -66,12 +73,6 @@ Change to \code{FALSE} to debug.}
 Whether to encapsulate the tuning.
 Change to \code{FALSE} to debug.}
 }
-
-\section{Debugging}{
-
-Set \code{options(bbotk.debug)} to run the tuning in the in the main session.
-Set \code{encapsulate_learner = FALSE} to remove encapsulation of the learner.
-Set \code{encapsulate_mbo = FALSE} to catch no errors in mbo.
 }
 
 \section{Super class}{
@@ -120,7 +121,7 @@ Creates a new instance of this \link[R6:R6Class]{R6} class.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{LearnerRegrAuto$new(
   id = "regr.auto",
-  learner_ids = c("glmnet", "kknn", "nnet", "ranger", "svm", "xgboost", "catboost",
+  learner_ids = c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost",
     "extra_trees", "lightgbm")
 )}\if{html}{\out{</div>}}
 }

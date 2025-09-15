@@ -42,19 +42,6 @@ build_graph = function(learner_ids, task_type) {
     branches = c(branches, branch_lda)
   }
 
-  # nnet
-  if ("nnet" %in% learner_ids) {
-    branch_nnet = po("removeconstants", id = "nnet_removeconstants") %>>%
-      po("imputehist", id = "nnet_imputehist") %>>%
-      po("imputeoor", id = "nnet_imputeoor") %>>%
-      po("fixfactors", id = "nnet_fixfactors") %>>%
-      po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "nnet_imputesample") %>>%
-      po("collapsefactors", target_level_count = 100, id = "nnet_collapse") %>>%
-      po("removeconstants", id = "nnet_post_removeconstants") %>>%
-      lrn(paste0(task_type, ".nnet"), id = "nnet")
-    branches = c(branches, branch_nnet)
-  }
-
   # ranger
   if ("ranger" %in% learner_ids) {
     branch_ranger = po("removeconstants", id = "ranger_removeconstants") %>>%
@@ -145,12 +132,6 @@ tuning_space = list(
   lda = list(),
 
   extra_trees = list(),
-
-  nnet = list(
-      nnet.maxit = to_tune(1e1, 1e3, logscale = TRUE),
-      nnet.decay = to_tune(1e-4, 1e-1, logscale = TRUE),
-      nnet.size  = to_tune(2, 50, logscale = TRUE)
-  ),
 
   ranger = list(
     ranger.mtry.ratio      = to_tune(0, 1),

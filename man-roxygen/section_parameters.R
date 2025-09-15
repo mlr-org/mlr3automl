@@ -55,3 +55,6 @@
 #'   \item{encapsulate_mbo}{(`logical(1)`)\cr
 #'   Whether to encapsulate the tuning.
 #'   Change to `FALSE` to debug.}
+#' }
+
+
