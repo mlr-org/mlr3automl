@@ -63,7 +63,7 @@ test_regr_learner = function(learner_id, n_evals = 6) {
 
   rush_plan(n_workers = 2)
 
-  task = tsk("mtcars")
+  task = tsk("california_housing")$filter(sample(1000))
   learner = lrn("regr.auto",
     learner_ids = learner_id,
     small_data_size = 1,

@@ -11,6 +11,7 @@
 \alias{estimate_memory.LearnerRegrCatboost}
 \alias{estimate_memory.LearnerClassifLightGBM}
 \alias{estimate_memory.LearnerRegrLightGBM}
+\alias{estimate_memory.LearnerClassifFastai}
 \title{Estimate Memory Usage of a Learner}
 \usage{
 estimate_memory(learner, task, ...)
@@ -32,6 +33,8 @@ estimate_memory(learner, task, ...)
 \method{estimate_memory}{LearnerClassifLightGBM}(learner, task, ...)
 
 \method{estimate_memory}{LearnerRegrLightGBM}(learner, task, ...)
+
+\method{estimate_memory}{LearnerClassifFastai}(learner, task, ...)
 }
 \arguments{
 \item{learner}{\link[mlr3:Learner]{mlr3::Learner}\cr
