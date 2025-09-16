@@ -42,19 +42,6 @@ build_graph = function(learner_ids, task_type) {
     branches = c(branches, branch_lda)
   }
 
-  # nnet
-  if ("nnet" %in% learner_ids) {
-    branch_nnet = po("removeconstants", id = "nnet_removeconstants") %>>%
-      po("imputehist", id = "nnet_imputehist") %>>%
-      po("imputeoor", id = "nnet_imputeoor") %>>%
-      po("fixfactors", id = "nnet_fixfactors") %>>%
-      po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "nnet_imputesample") %>>%
-      po("collapsefactors", target_level_count = 100, id = "nnet_collapse") %>>%
-      po("removeconstants", id = "nnet_post_removeconstants") %>>%
-      lrn(paste0(task_type, ".nnet"), id = "nnet")
-    branches = c(branches, branch_nnet)
-  }
-
   # ranger
   if ("ranger" %in% learner_ids) {
     branch_ranger = po("removeconstants", id = "ranger_removeconstants") %>>%
@@ -95,14 +82,14 @@ build_graph = function(learner_ids, task_type) {
       po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "xgboost_imputesample") %>>%
       po("encodeimpact", id = "xgboost_encode") %>>%
       po("removeconstants", id = "xgboost_post_removeconstants") %>>%
-      lrn(paste0(task_type, ".xgboost"), id = "xgboost", nrounds = 5000, early_stopping_rounds = 10)
+      lrn(paste0(task_type, ".xgboost"), id = "xgboost", nrounds = 5000, early_stopping_rounds = 100)
     branches = c(branches, branch_xgboost)
   }
 
   # catboost
   if ("catboost" %in% learner_ids) {
     branch_catboost = po("colapply", id = "catboost_colapply", applicator = as.numeric, affect_columns = selector_type("integer")) %>>%
-      lrn(paste0(task_type, ".catboost"), id = "catboost", iterations = 500, early_stopping_rounds = 10, use_best_model = TRUE)
+      lrn(paste0(task_type, ".catboost"), id = "catboost", iterations = 500, early_stopping_rounds = 100, use_best_model = TRUE)
     branches = c(branches, branch_catboost)
   }
 
@@ -120,7 +107,7 @@ build_graph = function(learner_ids, task_type) {
 
   # lightgbm
   if ("lightgbm" %in% learner_ids) {
-    branch_lightgbm = lrn(paste0(task_type, ".lightgbm"), id = "lightgbm", num_iterations = 5000, early_stopping_rounds = 10)
+    branch_lightgbm = lrn(paste0(task_type, ".lightgbm"), id = "lightgbm", num_iterations = 5000, early_stopping_rounds = 100)
     branches = c(branches, branch_lightgbm)
   }
 
@@ -146,12 +133,6 @@ tuning_space = list(
 
   extra_trees = list(),
 
-  nnet = list(
-      nnet.maxit = to_tune(1e1, 1e3, logscale = TRUE),
-      nnet.decay = to_tune(1e-4, 1e-1, logscale = TRUE),
-      nnet.size  = to_tune(2, 50, logscale = TRUE)
-  ),
-
   ranger = list(
     ranger.mtry.ratio      = to_tune(0, 1),
     ranger.replace         = to_tune(),
@@ -174,14 +155,14 @@ tuning_space = list(
     xgboost.lambda            = to_tune(1e-3, 1e3, logscale = TRUE),
     xgboost.alpha             = to_tune(1e-3, 1e3, logscale = TRUE),
     xgboost.subsample         = to_tune(1e-1, 1),
-    xgboost.nrounds           = to_tune(1, 10, internal = TRUE)
+    xgboost.nrounds           = to_tune(1, 5000, internal = TRUE)
   ),
 
   catboost = list(
     catboost.depth          = to_tune(5, 8),
     catboost.learning_rate  = to_tune(5e-3, 0.2, logscale = TRUE),
     catboost.l2_leaf_reg    = to_tune(1, 5),
-    catboost.iterations     = to_tune(1, 10, internal = TRUE)
+    catboost.iterations     = to_tune(1, 1000, internal = TRUE)
   ),
 
   lightgbm = list(
@@ -189,6 +170,6 @@ tuning_space = list(
     lightgbm.feature_fraction = to_tune(0.75, 1),
     lightgbm.min_data_in_leaf = to_tune(2, 60),
     lightgbm.num_leaves       = to_tune(16, 96),
-    lightgbm.num_iterations   = to_tune(1, 10, internal = TRUE)
+    lightgbm.num_iterations   = to_tune(1, 5000, internal = TRUE)
   )
 )

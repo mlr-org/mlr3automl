@@ -9,18 +9,21 @@ test_that("LearnerRegrAutoGlmnet is initialized", {
 
 test_that("LearnerRegrAutoGlmnet is trained", {
   skip_on_cran()
+  skip_if_not_installed("glmnet")
   skip_if_not_installed("rush")
   flush_redis()
 
   rush_plan(n_workers = 2)
 
-
-  task = tsk("mtcars")
+  task = tsk("california_housing")$filter(sample(1000))
   learner = lrn("regr.auto_glmnet",
     small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("regr.rmse"),
-    terminator = trm("evals", n_evals = 6)
+    terminator = trm("evals", n_evals = 6),
+    lhs_size = 1,
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE
   )
 
   expect_class(learner$train(task), "LearnerRegrAutoGlmnet")

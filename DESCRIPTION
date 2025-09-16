@@ -4,24 +4,26 @@ Version: 0.0.1
 Authors@R: c(
     person("Damir", "Pulatov", , "damirpolat@protonmail.com", role = c("cre", "aut")),
     person("Marc", "Becker", , "marcbecker@posteo.de", role = "aut",
-           comment = c(ORCID = "0000-0002-8115-0400"))
+           comment = c(ORCID = "0000-0002-8115-0400")),
+    person("Baisu", "Zhou", , "baisu.zhou@outlook.com", role = "aut")
   )
 Description: Flexible AutoML system for the 'mlr3' ecosystem.
 License: LGPL-3
 URL: https://github.com/mlr-org/mlr3automl
 BugReports: https://github.com/mlr-org/mlr3automl/issues
 Depends:
-    mlr3 (>= 0.20.0),
+    mlr3 (>= 1.1.0),
     mlr3extralearners,
-    mlr3learners (>= 0.7.0),
-    mlr3tuning (>= 1.0.0),
+    mlr3learners (>= 0.12.0),
+    mlr3tuning (>= 1.4.0.9000),
     R (>= 3.1.0),
-    rush
+    rush (>= 0.3.0)
 Imports:
+    bbotk (>= 1.6.0.9000),
     checkmate,
     data.table,
     lhs,
-    mlr3mbo,
+    mlr3mbo (>= 0.2.8),
     mlr3misc (>= 0.15.1),
     mlr3pipelines,
     mlr3tuningspaces,
@@ -37,7 +39,6 @@ Suggests:
     lgr,
     MASS,
     mlr3viz,
-    nnet,
     ranger,
     rpart,
     testthat (>= 3.0.0),
@@ -45,15 +46,15 @@ Suggests:
     pryr
 Remotes:
     catboost/catboost/catboost/R-package,
-    mlr-org/mlr3,
     mlr-org/mlr3extralearners,
-    mlr-org/mlr3mbo@adbo
+    mlr-org/bbotk,
+    mlr-org/mlr3tuning
 Config/testthat/edition: 3
 Config/testthat/parallel: false
 Encoding: UTF-8
 NeedsCompilation: no
 Roxygen: list(markdown = TRUE, r6 = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Collate:
     'aaa.R'
     'LearnerClassifAuto.R'
@@ -61,7 +62,6 @@ Collate:
     'LearnerClassifAutoGlmnet.R'
     'LearnerClassifAutoKKNN.R'
     'LearnerClassifAutoLightGBM.R'
-    'LearnerClassifAutoNnet.R'
     'LearnerClassifAutoRanger.R'
     'LearnerClassifAutoSVM.R'
     'LearnerClassifAutoXgboost.R'
@@ -70,7 +70,6 @@ Collate:
     'LearnerRegrAutoGlmnet.R'
     'LearnerRegrAutoKKNN.R'
     'LearnerRegrAutoLightGBM.R'
-    'LearnerRegrAutoNnet.R'
     'LearnerRegrAutoRanger.R'
     'LearnerRegrAutoSVM.R'
     'LearnerRegrAutoXgboost.R'

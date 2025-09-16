@@ -13,8 +13,17 @@ Status](https://www.r-pkg.org/badges/version-ago/mlr3automl)](https://cran.r-pro
 [![Mattermost](https://img.shields.io/badge/chat-mattermost-orange.svg)](https://lmmisld-lmu-stats-slds.srv.mwn.de/mlr_invite/)
 <!-- badges: end -->
 
-*mlr3automl* is the Automated Machine Learning (AutoML) package of the
-[mlr3](https://mlr-org.com/) ecosystem.
+**mlr3automl** is the Automated Machine Learning (AutoML) package of the
+[mlr3](https://mlr-org.com/) ecosystem. It automatically selects the
+most suitable machine learning algorithm and tunes its hyperparameters
+for a given task. The package includes 10 learners from the
+`mlr3learners` package, ranging from simple models like `glmnet` to more
+powerful algorithms such as `ranger` and `xgboost`. Leveraging the
+`mlr3pipelines` package, it constructs sophisticated preprocessing
+graphs with multiple parallel branches, which are jointly optimized
+using the `mlr3tuning` package. The optimization is driven by
+Asynchronous Decentralized Bayesian Optimization (ADBO), enabling
+efficient and scalable AutoML.
 
 ## Installation
 
