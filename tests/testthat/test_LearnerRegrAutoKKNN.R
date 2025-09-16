@@ -15,7 +15,7 @@ test_that("LearnerRegrAutoKKNN is trained", {
 
   rush_plan(n_workers = 2)
 
-  task = tsk("mtcars")
+  task = tsk("california_housing")$filter(sample(1000))
   learner = lrn("regr.auto_kknn",
     small_data_size = 1,
     resampling = rsmp("holdout"),

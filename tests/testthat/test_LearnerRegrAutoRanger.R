@@ -15,7 +15,7 @@ test_that("LearnerRegrAutoRanger is trained", {
 
   rush_plan(n_workers = 2)
 
-  task = tsk("mtcars")
+  task = tsk("california_housing")$filter(sample(1000))
   learner = lrn("regr.auto_ranger",
     small_data_size = 1,
     resampling = rsmp("holdout"),

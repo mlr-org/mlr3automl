@@ -15,7 +15,7 @@ test_that("LearnerRegrAutoXgboost is trained", {
 
   rush_plan(n_workers = 2)
 
-  task = tsk("mtcars")
+  task = tsk("california_housing")$filter(sample(1000))
   learner = lrn("regr.auto_xgboost",
     xgboost_eval_metric = "rmse",
     small_data_size = 1,
@@ -40,7 +40,7 @@ test_that("LearnerRegrAutoXgboost internal eval metric is found", {
 
   rush_plan(n_workers = 1)
 
-  task = tsk("mtcars")
+  task = tsk("california_housing")$filter(sample(1000))
   msrs_regr = rbindlist(list(
     list(measure = "regr.rmse", metric = "rmse"),
     list(measure = "regr.rmsle", metric = "rmsle"),
