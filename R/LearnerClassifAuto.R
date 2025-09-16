@@ -27,9 +27,9 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(
       id = "classif.auto",
-      learner_ids = c("glmnet", "kknn", "lda", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm", "fastai")
+      learner_ids = c("glmnet", "kknn", "lda", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm", "fastai", "mlp")
       ) {
-      assert_subset(learner_ids, c("glmnet", "kknn", "lda", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm", "fastai"))
+      assert_subset(learner_ids, c("glmnet", "kknn", "lda", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm", "fastai", "mlp"))
       if (all(learner_ids %in% c("lda", "extra_trees"))) {
         stop("Learner 'lda' and 'extra_trees' must be combined with other learners")
       }

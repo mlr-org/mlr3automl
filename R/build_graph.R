@@ -123,6 +123,18 @@ build_graph = function(learner_ids, task_type) {
     branches = c(branches, branch_fastai)
   }
 
+  # mlp
+  if ("mlp" %in% learner_ids) {
+    branch_mlp = po("removeconstants", id = "mlp_removeconstants") %>>%
+      po("imputeoor", id = "mlp_imputeoor") %>>%
+      po("fixfactors", id = "mlp_fixfactors") %>>%
+      po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "mlp_imputesample") %>>%
+      po("encodeimpact", id = "mlp_encode") %>>%
+      po("removeconstants", id = "mlp_post_removeconstants") %>>%
+      lrn(paste0(task_type, ".mlp"), id = "mlp")
+    branches = c(branches, branch_mlp)
+  }
+
 
   # branch graph
   po("branch", options = learner_ids) %>>%
@@ -190,6 +202,16 @@ tuning_space = list(
     fastai.lr = to_tune(1e-4, 1e-1, logscale = TRUE),
     fastai.bs = to_tune(50, 500),
     fastai.n_epoch = to_tune(1, 100, internal = TRUE)
+  ),
+
+  mlp = list(
+    mlp.n_layers          = to_tune(1, 16),
+    mlp.neurons           = to_tune(levels = 1:1024),
+    mlp.p                 = to_tune(0, 0.5),
+    mlp.opt.lr            = to_tune(1e-5, 1e-2, logscale = TRUE),
+    mlp.opt.weight_decay  = to_tune(1e-6, 1e-3, logscale = TRUE),
+    mlp.epochs            = to_tune(lower = 1L, upper = 100L, internal = TRUE),
+    mlp.patience          = 17L
   )
 )
 
