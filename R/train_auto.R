@@ -20,7 +20,7 @@ train_auto = function(self, private, task) {
 
   # set number of threads
   if (!is.null(pv$max_nthread)) {
-    lg$debug("Setting number of threads per learner to %i", pv$max_nthread)
+    lg$info("Setting number of threads per learner to %i", pv$max_nthread)
     walk(learner_ids, function(learner_id) {
       set_threads(self$graph$pipeops[[learner_id]]$learner, pv$max_nthread)
     })
@@ -28,26 +28,26 @@ train_auto = function(self, private, task) {
 
   # reduce number of workers on large data sets
   if (!is.null(pv$large_data_size) && task$nrow * task$ncol > pv$large_data_size) {
-    lg$debug("Task size larger than %i rows", pv$large_data_size)
+    lg$info("Task size larger than %i rows", pv$large_data_size)
 
     learner_ids = intersect(learner_ids, pv$large_data_learner_ids)
     self$tuning_space = tuning_space[learner_ids]
-    lg$debug("Keeping %i learner(s): %s", length(learner_ids), paste0(learner_ids, collapse = ","))
+    lg$info("Keeping %i learner(s): %s", length(learner_ids), paste0(learner_ids, collapse = ","))
 
-    lg$debug("Increasing number of threads per learner to %i", pv$large_data_nthread)
+    lg$info("Increasing number of threads per learner to %i", pv$large_data_nthread)
     walk(learner_ids, function(learner_id) {
       set_threads(self$graph$pipeops[[learner_id]]$learner, pv$large_data_nthread)
     })
     n_workers = rush_config()$n_workers
     n = max(1, floor(n_workers / pv$large_data_nthread))
     tuner$param_set$set_values(n_workers = n)
-    lg$debug("Reducing number of workers to %i", n)
+    lg$info("Reducing number of workers to %i", n)
   }
 
   # small data resampling
   resampling = if (!is.null(pv$small_data_size) && task$nrow < pv$small_data_size) {
-    lg$debug("Task has less than %i rows", pv$small_data_size)
-    lg$debug("Using small data set resampling with %i iterations", pv$small_data_resampling$iters)
+    lg$info("Task has less than %i rows", pv$small_data_size)
+    lg$info("Using small data set resampling with %i iterations", pv$small_data_resampling$iters)
     pv$small_data_resampling
   } else {
     pv$resampling
@@ -56,7 +56,7 @@ train_auto = function(self, private, task) {
   # cardinality
   cardinality = map_int(task$col_info$levels, length)
   if (!is.null(pv$max_cardinality) && any(cardinality > pv$max_cardinality)) {
-    lg$debug("Reducing number of factor levels to %i", pv$max_cardinality)
+    lg$info("Reducing number of factor levels to %i", pv$max_cardinality)
 
     # collapse factors
     pipeop_ids = names(self$graph$pipeops)
@@ -67,7 +67,7 @@ train_auto = function(self, private, task) {
   }
 
   if ("extra_trees" %in% learner_ids && any(cardinality > pv$extra_trees_max_cardinality))  {
-    lg$debug("Reducing number of factor levels to %i for extra trees", pv$extra_trees_max_cardinality)
+    lg$info("Reducing number of factor levels to %i for extra trees", pv$extra_trees_max_cardinality)
     self$graph$pipeops$extra_trees_collapse$param_set$values$target_level_count = pv$extra_trees_max_cardinality
   }
 
@@ -177,11 +177,11 @@ train_auto = function(self, private, task) {
 
 
   # tune
-  lg$debug("Learner '%s' starts tuning phase", self$id)
+  lg$info("Learner '%s' starts tuning phase", self$id)
   tuner$optimize(self$instance)
 
   # fit final model
-  lg$debug("Learner '%s' fits final model", self$id)
+  lg$info("Learner '%s' fits final model", self$id)
 
   if (length(learners_with_validation)) {
     set_validate(graph_learner, NULL, ids = intersect(learner_ids, c("xgboost", "catboost", "lightgbm", "fastai")))
