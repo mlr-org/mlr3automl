@@ -45,6 +45,7 @@ Suggests:
     xgboost
 Remotes:
     catboost/catboost/catboost/R-package,
+    eagerai/fastai,
     mlr-org/mlr3extralearners@fastai_v2,
     mlr-org/mlr3,
     mlr-org/bbotk,

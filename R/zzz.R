@@ -30,7 +30,7 @@ register_mlr3 = function() {
   register_namespace_callback(pkgname, "mlr3", register_mlr3)
 
   # setup logger
-  lg = lgr::get_logger(pkgname)
+  lg = lgr::get_logger("mlr3/mlr3automl")
   assign("lg", lg, envir = parent.env(environment()))
   f = function(event) {
     event$msg = paste0("[mlr3automl] ", event$msg)
