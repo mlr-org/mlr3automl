@@ -16,7 +16,7 @@ test_that("LearnerRegrAutoSVM is trained", {
   rush_plan(n_workers = 2)
 
 
-  task = tsk("mtcars")
+  task = tsk("california_housing")$filter(sample(1000))
   learner = lrn("regr.auto_svm",
     small_data_size = 1,
     resampling = rsmp("holdout"),

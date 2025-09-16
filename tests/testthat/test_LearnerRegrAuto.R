@@ -64,7 +64,7 @@ test_that("catboost works", {
 test_that("only extra_trees fails", {
   rush_plan(n_workers = 2)
 
-  task = tsk("mtcars")
+  task = tsk("california_housing")$filter(sample(1000))
   expect_error(lrn("regr.auto",
     learner_ids = "extra_trees",
     resampling = rsmp("holdout"),
@@ -89,7 +89,7 @@ test_that("all learner work", {
   skip_if_not_installed(c("glmnet", "kknn", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
   rush_plan(n_workers = 2)
 
-  task = tsk("mtcars")
+  task = tsk("california_housing")$filter(sample(1000))
   learner = lrn("regr.auto",
     small_data_size = 1,
     resampling = rsmp("holdout"),
@@ -128,7 +128,7 @@ test_that("small data set switch works", {
   skip_if_not_installed("glmnet")
   flush_redis()
 
-  task = tsk("mtcars")
+  task = tsk("california_housing")$filter(sample(1000))
   learner = lrn("regr.auto",
     learner_ids = "glmnet",
     small_data_size = 1000,
@@ -152,7 +152,7 @@ test_that("large data set switch works", {
   flush_redis()
 
 
-  task = tsk("mtcars")
+  task = tsk("california_housing")$filter(sample(1000))
   learner = lrn("regr.auto",
     large_data_size = 100,
     large_data_nthread = 1,
@@ -179,7 +179,7 @@ test_that("max_cardinality works", {
 
   rush_plan(n_workers = 2)
 
-  task = tsk("mtcars")
+  task = tsk("california_housing")$filter(sample(1000))
   learner = lrn("regr.auto",
     small_data_size = 1,
     resampling = rsmp("holdout"),
@@ -200,7 +200,7 @@ test_that("max_cardinality works for extra trees", {
 
   rush_plan(n_workers = 2)
 
-  task = tsk("mtcars")
+  task = tsk("california_housing")$filter(sample(1000))
   learner = lrn("regr.auto",
     learner_ids = c("glmnet", "extra_trees"),
     small_data_size = 1,
@@ -221,7 +221,7 @@ test_that("max_cardinality works for extra trees", {
 #   skip_if_not_installed(c("glmnet", "kknn", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
 #   rush_plan(n_workers = 2)
 
-#   task = tsk("mtcars")
+#   task = tsk("california_housing")$filter(sample(1000))
 #   learner = lrn("regr.auto",
 #     small_data_size = 1,
 #     resampling = rsmp("holdout"),
