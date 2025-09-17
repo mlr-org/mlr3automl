@@ -33,7 +33,7 @@ AutoMlp = R6Class("AutoMlp",
     },
 
     estimate_memory = function(task) {
-      memory_size = task$nrow * task$ncol * 10 / 1e6
+      memory_size = task$nrow * task$ncol * 8 * 10 / 1e6
       lg$info("Mlp memory size: %s MB", round(memory_size))
       memory_size
     },

@@ -69,7 +69,7 @@ Auto = R6Class("Auto",
 
       if (task$nrow < 1e4) return(max_early_stopping_rounds)
 
-      max(min_early_stopping_rounds, 1e4 / task$nrow * max_early_stopping_rounds)
+      floor((max(min_early_stopping_rounds, 1e4 / task$nrow * max_early_stopping_rounds)))
     },
 
     #' @description

@@ -107,9 +107,9 @@ test_that("lightgbm works", {
   test_classif_learner("lightgbm")
 })
 
-# test_that("mlp works", {
-#   test_classif_learner("mlp")
-# })
+test_that("mlp works", {
+  test_classif_learner("mlp")
+})
 
 # test_that("fastai works", {
 #   test_classif_learner("fastai")
