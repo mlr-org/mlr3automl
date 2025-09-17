@@ -7,6 +7,10 @@ train_auto = function(self, private, task) {
   # initialize mbo tuner
   tuner = tnr("async_mbo")
 
+  if ("fastai" %in% learner_ids) {
+    assert_python_packages("fastai")
+  }
+
   # remove learner based on memory limit
   lg$info("Starting to select from %i learners: %s", length(learner_ids), paste0(learner_ids, collapse = ","))
 

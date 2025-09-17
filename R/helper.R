@@ -110,3 +110,11 @@ cb_timeout_lightgbm <- function(timeout) {
   return(callback)
 }
 
+assert_python_packages = function(packages, python_version = NULL) {
+  reticulate::py_require(packages, python_version = python_version)
+  available = map_lgl(packages, reticulate::py_module_available)
+  if (any(!available)) {
+    stopf("Package %s not available.", packages[!available])
+  }
+  invisible(packages)
+}
