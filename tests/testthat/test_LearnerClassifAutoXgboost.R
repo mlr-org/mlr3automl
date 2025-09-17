@@ -12,7 +12,8 @@ test_that("LearnerClassifAutoXgboost is trained", {
   skip_if_not_installed("rush")
   flush_redis()
 
-  rush_plan(n_workers = 2)
+    rush_plan(n_workers = 2, worker_type = "remote")
+  mirai::daemons(2)
 
 
   task = tsk("penguins")
@@ -36,7 +37,8 @@ test_that("LearnerClassifAutoXgboost twoclass internal eval metric is found", {
   skip_if_not_installed("rush")
   flush_redis()
 
-  rush_plan(n_workers = 1)
+    rush_plan(n_workers = 1, worker_type = "remote")
+  mirai::daemons(1)
 
   task_twoclass = tsk("pima")
   msrs_twoclass = rbindlist(list(
@@ -72,7 +74,8 @@ test_that("LearnerClassifAutoXgboost multiclass internal eval metric is found", 
   skip_if_not_installed("rush")
   flush_redis()
 
-  rush_plan(n_workers = 1)
+    rush_plan(n_workers = 1, worker_type = "remote")
+  mirai::daemons(1)
 
   task_multiclass = tsk("penguins")
   msrs_multiclass = rbindlist(list(

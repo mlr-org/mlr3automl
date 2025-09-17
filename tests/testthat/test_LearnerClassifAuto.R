@@ -125,7 +125,8 @@ test_that("all learner work", {
   skip_if_not_installed(all_packages)
   flush_redis()
 
-  rush_plan(n_workers = 2)
+    rush_plan(n_workers = 2, worker_type = "remote")
+  mirai::daemons(2)
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
@@ -150,7 +151,8 @@ test_that("memory limit works", {
   skip_if_not_installed(all_packages)
   flush_redis()
 
-  rush_plan(n_workers = 2)
+    rush_plan(n_workers = 2, worker_type = "remote")
+  mirai::daemons(2)
 
   task = tsk("spam")
   learner = lrn("classif.auto",
@@ -175,7 +177,8 @@ test_that("small data set switch works", {
   skip_if_not_installed("glmnet")
   flush_redis()
 
-  rush_plan(n_workers = 2)
+    rush_plan(n_workers = 2, worker_type = "remote")
+  mirai::daemons(2)
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
@@ -200,7 +203,8 @@ test_that("large data set switch works", {
   skip_if_not_installed(all_packages)
   flush_redis()
 
-  rush_plan(n_workers = 2)
+    rush_plan(n_workers = 2, worker_type = "remote")
+  mirai::daemons(2)
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
@@ -225,7 +229,8 @@ test_that("resample works", {
   skip_if_not_installed("glmnet")
   flush_redis()
 
-  rush_plan(n_workers = 2)
+    rush_plan(n_workers = 2, worker_type = "remote")
+  mirai::daemons(2)
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
@@ -245,7 +250,8 @@ test_that("resample works", {
 
 # test_that("logger callback works", {
 #   skip_if_not_installed(c("glmnet", "kknn", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
-#   rush_plan(n_workers = 2)
+#     rush_plan(n_workers = 2, worker_type = "remote")
+  mirai::daemons(2)
 
 #   task = tsk("penguins")
 #   learner = lrn("classif.auto",
@@ -264,7 +270,8 @@ test_that("resample works", {
 
 # test_that("integer columns work", {
 #   library(mlr3oml)
-#   rush_plan(n_workers = 2)
+#     rush_plan(n_workers = 2, worker_type = "remote")
+  mirai::daemons(2)
 
 
 #   task = tsk("oml", data_id = 1464)
