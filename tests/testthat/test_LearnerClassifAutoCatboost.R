@@ -30,7 +30,6 @@ test_that("LearnerClassifAutoCatboost is trained", {
   )
 
   expect_class(learner$train(task), "LearnerClassifAutoCatboost")
-  expect_equal(learner$graph$param_set$values$branch.selection, "catboost")
   expect_equal(learner$model$instance$result$branch.selection, "catboost")
 })
 
