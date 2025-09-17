@@ -81,18 +81,9 @@ Change to \code{FALSE} to debug.}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{graph}}{(\link[mlr3pipelines:Graph]{mlr3pipelines::Graph}).}
-
 \item{\code{tuning_space}}{(\code{list()}).}
 
 \item{\code{instance}}{(\link[mlr3tuning:TuningInstanceAsyncSingleCrit]{mlr3tuning::TuningInstanceAsyncSingleCrit}).}
-}
-\if{html}{\out{</div>}}
-}
-\section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{graph}}{(\link[mlr3pipelines:Graph]{mlr3pipelines::Graph}).}
 }
 \if{html}{\out{</div>}}
 }

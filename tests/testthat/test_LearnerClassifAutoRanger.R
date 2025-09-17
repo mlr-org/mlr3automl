@@ -3,8 +3,7 @@ test_that("LearnerClassifAutoRanger is initialized", {
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 10))
 
-  expect_class(learner$graph, "Graph")
-  expect_list(learner$tuning_space)
+  expect_learner(learner)
 })
 
 test_that("LearnerClassifAutoRanger is trained", {

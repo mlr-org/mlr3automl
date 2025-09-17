@@ -1,18 +1,36 @@
+#' @title Catboost Auto
+#'
+#' @description
+#' Catboost auto.
+#'
 #' @include mlr_auto.R
+#'
+#' @template param_id
+#'
 #' @export
 AutoCatboost = R6Class("AutoCatboost",
   inherit = Auto,
   public = list(
+
+    #' @description
+    #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "catboost") {
       super$initialize(id = id)
       self$task_types = c("classif", "regr")
       self$properties = c("internal_tuning", "large_data_sets")
     },
 
-    graph = function(task, measure, threads, timeout) {
+    #' @description
+    #' Create the graph for the auto.
+    #'
+    #' @param task ([mlr3::Task]).
+    #' @param measure ([mlr3::Measure]).
+    #' @param n_threads (`numeric(1)`).
+    #' @param timeout (`numeric(1)`).
+    graph = function(task, measure, n_threads, timeout) {
       assert_task(task)
       assert_measure(measure)
-      assert_count(threads)
+      assert_count(n_threads)
       assert_count(timeout)
 
       learner = lrn(sprintf("%s.catboost", task$task_type),
@@ -21,7 +39,7 @@ AutoCatboost = R6Class("AutoCatboost",
         early_stopping_rounds = self$early_stopping_rounds(task),
         use_best_model = TRUE,
         eval_metric = self$internal_measure(measure, task))
-      set_threads(learner, threads)
+      set_threads(learner, n_threads)
 
       po("removeconstants", id = "catboost_removeconstants") %>>%
         po("colapply", id = "catboost_colapply", applicator = as.numeric, affect_columns = selector_type("integer")) %>>%
@@ -29,6 +47,10 @@ AutoCatboost = R6Class("AutoCatboost",
         learner
     },
 
+    #' @description
+    #' Estimate the memory for the auto.
+    #'
+    #' @param task ([mlr3::Task]).
     estimate_memory = function(task) {
       upper = self$search_space$upper
 
@@ -46,6 +68,11 @@ AutoCatboost = R6Class("AutoCatboost",
       memory_size
     },
 
+    #' @description
+    #' Get the internal measure for the auto.
+    #'
+    #' @param measure ([mlr3::Measure]).
+    #' @param task ([mlr3::Task]).
     internal_measure = function(measure, task) {
       if (task$task_type == "regr") {
         switch(measure$id,
@@ -83,6 +110,10 @@ AutoCatboost = R6Class("AutoCatboost",
       }
     },
 
+    #' @description
+    #' Get the default values for the auto.
+    #'
+    #' @param task ([mlr3::Task]).
     default_values = function(task) {
       list(
         catboost.depth = 6L,
@@ -94,6 +125,7 @@ AutoCatboost = R6Class("AutoCatboost",
 
   active = list(
 
+    #' @field search_space (`ParamSet`).
     search_space = function() {
       ps(
         catboost.depth          = p_int(5L, 8L),

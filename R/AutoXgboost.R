@@ -1,18 +1,35 @@
+#' @title Xgboost Auto
+#'
+#' @description
+#' Xgboost auto.
+#'
+#' @template param_id
+#'
 #' @include mlr_auto.R
 #' @export
 AutoXgboost = R6Class("AutoXgboost",
   inherit = Auto,
   public = list(
+
+    #' @description
+    #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "xgboost") {
       super$initialize(id = id)
       self$task_types = c("classif", "regr")
       self$properties = c("internal_tuning", "large_data_sets")
     },
 
-    graph = function(task, measure, threads, timeout) {
+    #' @description
+    #' Create the graph for the auto.
+    #'
+    #' @param task ([mlr3::Task]).
+    #' @param measure ([mlr3::Measure]).
+    #' @param n_threads (`numeric(1)`).
+    #' @param timeout (`numeric(1)`).
+    graph = function(task, measure, n_threads, timeout) {
       assert_task(task)
       assert_measure(measure)
-      assert_count(threads)
+      assert_count(n_threads)
       assert_count(timeout)
 
       learner = lrn(sprintf("%s.xgboost", task$task_type),
@@ -21,7 +38,7 @@ AutoXgboost = R6Class("AutoXgboost",
         callbacks = list(cb_timeout_xgboost(timeout * 0.8)),
         eval_metric = self$internal_measure(measure, task),
         nrounds = 5000L)
-      set_threads(learner, threads)
+      set_threads(learner, n_threads)
 
       po("removeconstants", id = "xgboost_removeconstants") %>>%
         po("imputeoor", id = "xgboost_imputeoor") %>>%
@@ -32,6 +49,10 @@ AutoXgboost = R6Class("AutoXgboost",
         learner
     },
 
+    #' @description
+    #' Estimate the memory for the auto.
+    #'
+    #' @param task ([mlr3::Task]).
     estimate_memory = function(task) {
       upper = self$search_space$upper
 
@@ -49,6 +70,11 @@ AutoXgboost = R6Class("AutoXgboost",
       memory_size
     },
 
+    #' @description
+    #' Get the internal measure for the auto.
+    #'
+    #' @param measure ([mlr3::Measure]).
+    #' @param task ([mlr3::Task]).
     internal_measure = function(measure, task) {
       if (task$task_type == "regr") {
         switch(measure$id,
@@ -78,6 +104,10 @@ AutoXgboost = R6Class("AutoXgboost",
       }
     },
 
+    #' @description
+    #' Get the default values for the auto.
+    #'
+    #' @param task ([mlr3::Task]).
     default_values = function(task) {
       list(
         xgboost.eta = log(0.3),
@@ -91,6 +121,8 @@ AutoXgboost = R6Class("AutoXgboost",
     }
   ),
   active = list(
+
+    #' @field search_space (`ParamSet`).
     search_space = function() {
       ps(
         xgboost.eta               = p_dbl(1e-4, 1, logscale = TRUE),

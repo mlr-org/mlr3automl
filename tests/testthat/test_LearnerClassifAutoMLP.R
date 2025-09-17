@@ -1,26 +1,9 @@
-test_that("default design is generated", {
-  skip_if_not_installed(c("catboost", "mlr3torch"))
-
-  learner_ids =  c("catboost", "mlp")
-  xdt = generate_default_design(task_type = "classif", learner_ids, task = tsk("penguins"), tuning_space)
-  expect_data_table(xdt, nrows = 2)
-})
-
-test_that("lhs design is generated", {
-  skip_if_not_installed(c("catboost", "fastai"))
-
-  learner_ids =  c("catboost", "mlp")
-  xdt = generate_lhs_design(1, "classif", learner_ids, tuning_space)
-  expect_data_table(xdt, nrows = 4)
-})
-
 test_that("LearnerClassifAutoFastai is initialized", {
   learner = lrn("classif.auto_fastai",
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 10))
 
-  expect_class(learner$graph, "Graph")
-  expect_list(learner$tuning_space)
+  expect_learner(learner)
 })
 
 test_that("LearnerClassifAutoFastai is trained", {

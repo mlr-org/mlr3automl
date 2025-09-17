@@ -3,8 +3,7 @@ test_that("LearnerClassifAutoLightGBM is initialized", {
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 10))
 
-  expect_class(learner$graph, "Graph")
-  expect_list(learner$tuning_space)
+  expect_learner(learner)
 })
 
 test_that("LearnerClassifAutoLightGBM is trained", {
@@ -17,7 +16,6 @@ test_that("LearnerClassifAutoLightGBM is trained", {
 
   task = tsk("penguins")
   learner = lrn("classif.auto_lightgbm",
-    lightgbm_eval_metric = "multi_error",
     small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),

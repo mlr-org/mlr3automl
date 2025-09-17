@@ -9,10 +9,10 @@ AutoLightgbm = R6Class("AutoLightgbm",
       self$properties = c("internal_tuning", "large_data_sets")
     },
 
-    graph = function(task, measure, threads, timeout) {
+    graph = function(task, measure, n_threads, timeout) {
       assert_task(task)
       assert_measure(measure)
-      assert_count(threads)
+      assert_count(n_threads)
       assert_count(timeout)
 
       learner = lrn(sprintf("%s.lightgbm", task$task_type),
@@ -20,7 +20,7 @@ AutoLightgbm = R6Class("AutoLightgbm",
         early_stopping_rounds = self$early_stopping_rounds(task),
         callbacks = list(cb_timeout_lightgbm(timeout * 0.8)),
         eval = self$internal_measure(measure, task))
-      set_threads(learner, threads)
+      set_threads(learner, n_threads)
 
       learner
     },

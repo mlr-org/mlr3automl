@@ -1,14 +1,31 @@
+#' @title Extra Trees Auto
+#'
+#' @description
+#' Extra Trees auto.
+#'
+#' @template param_id
+#'
 #' @include mlr_auto.R
 #' @export
 AutoExtraTrees = R6Class("AutoExtraTrees",
   inherit = Auto,
   public = list(
+
+    #' @description
+    #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "extra_trees") {
       super$initialize(id = id)
       self$task_types = c("classif", "regr")
       self$properties = c("large_data_sets", "hyperparameter-free")
     },
 
+    #' @description
+    #' Create the graph for the auto.
+    #'
+    #' @param task ([mlr3::Task]).
+    #' @param measure ([mlr3::Measure]).
+    #' @param n_threads (`numeric(1)`).
+    #' @param timeout (`numeric(1)`).
     graph = function(task, measure, n_threads, timeout) {
       assert_task(task)
       assert_measure(measure)
@@ -32,22 +49,33 @@ AutoExtraTrees = R6Class("AutoExtraTrees",
         learner
     },
 
+    #' @description
+    #' Estimate the memory for the auto.
+    #'
+    #' @param task ([mlr3::Task]).
     estimate_memory = function(task) {
       num_trees = 100
       tree_size_bytes = task$nrow / 60000 * 1e6
       (tree_size_bytes * num_trees) / 1e6
     },
 
+    #' @description
+    #' Get the default values for the auto.
+    #'
+    #' @param task ([mlr3::Task]).
     default_values = function(task) {
       list()
     }
   ),
 
   active = list(
+
+    #' @field search_space (`ParamSet`).
     search_space = function() {
       ps()
     },
 
+    #' @field packages (`character()`).
     packages = function(rhs) {
      assert_ro_binding(rhs)
      lrn("classif.ranger")$packages

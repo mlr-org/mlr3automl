@@ -14,9 +14,6 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
   inherit = Learner,
   public = list(
 
-    #' @field graph ([mlr3pipelines::Graph]).
-    graph_learner = NULL,
-
     #' @field tuning_space (`list()`).
     tuning_space = NULL,
 
@@ -92,7 +89,6 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
       } else if (name == "state") {
         if (!is.null(value)) {
           value = list(
-            graph_learner = value$graph_learner$clone(deep = TRUE),
             instance = value$instance$clone(deep = TRUE))
         }
         return(value)

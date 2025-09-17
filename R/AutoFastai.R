@@ -1,14 +1,31 @@
+#' @title Fastai Auto
+#'
+#' @description
+#' Fastai auto.
+#'
+#' @template param_id
+#'
 #' @include mlr_auto.R
 #' @export
 AutoFastai = R6Class("AutoFastai",
   inherit = Auto,
   public = list(
+
+    #' @description
+    #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "fastai") {
       super$initialize(id = id)
       self$task_types = c("classif", "regr")
       self$properties = "internal_tuning"
     },
 
+    #' @description
+    #' Create the graph for the auto.
+    #'
+    #' @param task ([mlr3::Task]).
+    #' @param measure ([mlr3::Measure]).
+    #' @param n_threads (`numeric(1)`).
+    #' @param timeout (`numeric(1)`).
     graph = function(task, measure, n_threads, timeout) {
       assert_task(task)
       assert_measure(measure)
@@ -32,12 +49,21 @@ AutoFastai = R6Class("AutoFastai",
         learner
     },
 
+    #' @description
+    #' Estimate the memory for the auto.
+    #'
+    #' @param task ([mlr3::Task]).
     estimate_memory = function(task) {
       memory_size = task$nrow * task$ncol * 10 / 1e6
       lg$info("Fastai memory size: %s MB", round(memory_size))
       memory_size
     },
 
+    #' @description
+    #' Get the internal measure for the auto.
+    #'
+    #' @param measure ([mlr3::Measure]).
+    #' @param task ([mlr3::Task]).
     internal_measure = function(measure, task) {
      if ("twoclass" %in% task$properties) {
       switch(measure$id,
@@ -59,6 +85,10 @@ AutoFastai = R6Class("AutoFastai",
     }
     },
 
+    #' @description
+    #' Get the default values for the auto.
+    #'
+    #' @param task ([mlr3::Task]).
     default_values = function(task) {
       list(
         fastai.lr = log(1e-3),
@@ -69,6 +99,8 @@ AutoFastai = R6Class("AutoFastai",
   ),
 
   active = list(
+
+    #' @field search_space (`ParamSet`).
     search_space = function() {
       ps(
         fastai.lr = p_dbl(1e-4, 1e-1, logscale = TRUE),

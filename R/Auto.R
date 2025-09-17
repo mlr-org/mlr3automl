@@ -1,17 +1,37 @@
+#' @title Auto Class
+#'
+#' @description
+#' This class is the base class for all autos.
+#'
 #' @include mlr_auto.R
+#'
+#' @template param_id
+#'
 #' @export
 Auto = R6Class("Auto",
   public = list(
+
+    #' @field id (`character(1)`).
     id = NULL,
 
+    #' @field properties (`character()`).
     properties = NULL,
 
+    #' @field task_types (`character()`).
     task_types = NULL,
 
+    #' @description
+    #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id) {
       self$id = assert_string(id)
     },
 
+    #' @description
+    #' Check if the auto is compatible with the task.
+    #'
+    #' @param task ([mlr3::Task]).
+    #' @param memory_limit (`numeric(1)`).
+    #' @param large_data_set (`logical(1)`).
     check = function(task, memory_limit = Inf, large_data_set = FALSE) {
       if (!task$task_type %in% self$task_types) {
        lg$info("Learner '%s' is not compatible with task type '%s'", self$id, task$task_type)
@@ -28,11 +48,14 @@ Auto = R6Class("Auto",
       TRUE
     },
 
-    graph = function(task, threads) {
-      stop("Abstract")
-    },
-
-    configure_graph = function(graph, task) {
+    #' @description
+    #' Create the graph for the auto.
+    #'
+    #' @param task ([mlr3::Task]).
+    #' @param measure ([mlr3::Measure]).
+    #' @param n_threads (`numeric(1)`).
+    #' @param timeout (`numeric(1)`).
+    graph = function(task, measure, n_threads, timeout) {
       stop("Abstract")
     },
 
@@ -49,14 +72,26 @@ Auto = R6Class("Auto",
       max(min_early_stopping_rounds, 1e4 / task$nrow * max_early_stopping_rounds)
     },
 
+    #' @description
+    #' Estimate the memory for the auto.
+    #'
+    #' @param task ([mlr3::Task]).
     estimate_memory = function(task) {
       -Inf
     },
 
+    #' @description
+    #' Get the default values for the auto.
+    #'
+    #' @param task ([mlr3::Task]).
     default_values = function(task) {
       stop("Abstract")
     },
 
+    #' @description
+    #' Default hyperparameters for the learner.
+    #'
+    #' @param task ([mlr3::Task]).
     design_default = function(task) {
       default_values = self$default_values(task)
       xdt = as.data.table(default_values)
@@ -64,6 +99,11 @@ Auto = R6Class("Auto",
       xdt
     },
 
+    #' @description
+    #' DGenerate lhs design for the learner.
+    #'
+    #' @param task ([mlr3::Task]).
+    #' @param size (`integer(1)`).
     design_lhs = function(task, size) {
       assert_task(task)
       assert_count(size)
@@ -81,10 +121,12 @@ Auto = R6Class("Auto",
   ),
 
   active = list(
+    #' @field search_space (`ParamSet`).
     search_space = function() {
       stop("Abstract")
     },
 
+    #' @field packages (`character()`).
     packages = function(rhs) {
      assert_ro_binding(rhs)
      lrn(sprintf("classif.%s", self$id))$packages

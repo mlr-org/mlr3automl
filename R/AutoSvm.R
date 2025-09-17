@@ -1,18 +1,35 @@
+#' @title Svm Auto
+#'
+#' @description
+#' Svm auto.
+#'
+#' @template param_id
+#'
 #' @include mlr_auto.R
 #' @export
 AutoSvm = R6Class("AutoSvm",
   inherit = Auto,
   public = list(
+
+    #' @description
+    #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "svm") {
       super$initialize(id = id)
       self$task_types = c("classif", "regr")
       self$properties = character(0)
     },
 
-    graph = function(task, measure, threads, timeout) {
+    #' @description
+    #' Create the graph for the auto.
+    #'
+    #' @param task ([mlr3::Task]).
+    #' @param measure ([mlr3::Measure]).
+    #' @param n_threads (`numeric(1)`).
+    #' @param timeout (`numeric(1)`).
+    graph = function(task, measure, n_threads, timeout) {
       assert_task(task)
       assert_measure(measure)
-      assert_count(threads)
+      assert_count(n_threads)
       assert_count(timeout)
 
       svm_type = if (task$task_type == "classif") "C-classification" else "eps-regression"
@@ -27,6 +44,10 @@ AutoSvm = R6Class("AutoSvm",
         lrn(sprintf("%s.svm", task$task_type), id = "svm", type = svm_type)
     },
 
+    #' @description
+    #' Get the default values for the auto.
+    #'
+    #' @param task ([mlr3::Task]).
     default_values = function(task) {
       list(
         svm.cost = log(1),
@@ -38,6 +59,8 @@ AutoSvm = R6Class("AutoSvm",
   ),
 
   active = list(
+
+    #' @field search_space (`ParamSet`).
     search_space = function() {
       ps(
         svm.cost    = p_dbl(1e-4, 1e4, logscale = TRUE),
