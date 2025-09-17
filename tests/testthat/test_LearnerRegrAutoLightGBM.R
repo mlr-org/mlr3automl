@@ -16,7 +16,7 @@ test_that("LearnerRegrAutoLightGBM is trained", {
   rush_plan(n_workers = 2)
 
 
-  task = tsk("mtcars")
+  task = tsk("california_housing")$filter(sample(1000))
   learner = lrn("regr.auto_lightgbm",
     lightgbm_eval_metric = "rmse",
     small_data_size = 1,
@@ -41,7 +41,7 @@ test_that("LearnerRegrAutoLightGBM internal eval metric is found", {
 
   rush_plan(n_workers = 1)
 
-  task = tsk("mtcars")
+  task = tsk("california_housing")$filter(sample(1000))
   msrs_regr = rbindlist(list(
     list(measure = "regr.mse", metric = "mse"),
     list(measure = "regr.rmse", metric = "rmse"),

@@ -7,6 +7,10 @@ train_auto = function(self, private, task) {
   # initialize mbo tuner
   tuner = tnr("async_mbo")
 
+  if ("fastai" %in% learner_ids) {
+    assert_python_packages("fastai")
+  }
+
   # remove learner based on memory limit
   lg$info("Starting to select from %i learners: %s", length(learner_ids), paste0(learner_ids, collapse = ","))
 
@@ -56,7 +60,7 @@ train_auto = function(self, private, task) {
   # cardinality
   cardinality = map_int(task$col_info$levels, length)
   if (!is.null(pv$max_cardinality) && any(cardinality > pv$max_cardinality)) {
-    lg$debug("Reducing number of factor levels to %i", pv$max_cardinality)
+    lg$info("Reducing number of factor levels to %i", pv$max_cardinality)
 
     # collapse factors
     pipeop_ids = names(self$graph$pipeops)
@@ -67,7 +71,7 @@ train_auto = function(self, private, task) {
   }
 
   if ("extra_trees" %in% learner_ids && any(cardinality > pv$extra_trees_max_cardinality))  {
-    lg$debug("Reducing number of factor levels to %i for extra trees", pv$extra_trees_max_cardinality)
+    lg$info("Reducing number of factor levels to %i for extra trees", pv$extra_trees_max_cardinality)
     self$graph$pipeops$extra_trees_collapse$param_set$values$target_level_count = pv$extra_trees_max_cardinality
   }
 
@@ -177,11 +181,11 @@ train_auto = function(self, private, task) {
 
 
   # tune
-  lg$debug("Learner '%s' starts tuning phase", self$id)
+  lg$info("Learner '%s' starts tuning phase", self$id)
   tuner$optimize(self$instance)
 
   # fit final model
-  lg$debug("Learner '%s' fits final model", self$id)
+  lg$info("Learner '%s' fits final model", self$id)
 
   if (length(learners_with_validation)) {
     set_validate(graph_learner, NULL, ids = intersect(learner_ids, c("xgboost", "catboost", "lightgbm", "fastai")))

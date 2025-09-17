@@ -15,7 +15,7 @@ test_that("LearnerRegrAutoCatboost is trained", {
 
   rush_plan(n_workers = 2)
 
-  task = tsk("mtcars")
+  task = tsk("california_housing")$filter(sample(1000))
   learner = lrn("regr.auto_catboost",
     catboost_eval_metric = "RMSE",
     small_data_size = 1,
@@ -40,7 +40,7 @@ test_that("LearnerRegrAutoCaboost internal eval metric is found", {
 
   rush_plan(n_workers = 1)
 
-  task = tsk("mtcars")
+  task = tsk("california_housing")$filter(sample(1000))
   msrs_regr = rbindlist(list(
     list(measure = "regr.rmse", metric = "RMSE"),
     list(measure = "regr.mae", metric = "MAE"),
