@@ -112,7 +112,7 @@ test_that("mlp works", {
 })
 
 test_that("fastai works", {
-  # test_classif_learner("fastai")
+  test_classif_learner("fastai")
 })
 
 test_that("xgboost, catboost and lightgbm work", {
