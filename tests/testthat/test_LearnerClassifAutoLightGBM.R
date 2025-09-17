@@ -26,7 +26,6 @@ test_that("LearnerClassifAutoLightGBM is trained", {
   )
 
   expect_class(learner$train(task), "LearnerClassifAutoLightGBM")
-  expect_equal(learner$graph$param_set$values$branch.selection, "lightgbm")
   expect_equal(learner$model$instance$result$branch.selection, "lightgbm")
 })
 

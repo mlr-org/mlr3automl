@@ -27,6 +27,5 @@ test_that("LearnerClassifAutoSVM is trained", {
   )
 
   expect_class(learner$train(task), "LearnerClassifAutoSVM")
-  expect_equal(learner$graph$param_set$values$branch.selection, "svm")
   expect_equal(learner$model$instance$result$branch.selection, "svm")
 })

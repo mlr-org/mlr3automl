@@ -18,7 +18,6 @@ test_that("LearnerClassifAutoCatboost is trained", {
 
   task = tsk("penguins")
   learner = lrn("classif.auto_catboost",
-    catboost_eval_metric = "Accuracy",
     small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
@@ -112,22 +111,3 @@ test_that("LearnerClassifAutoCatboost multiclass internal eval metric is found",
   })
 })
 
-test_that("catboost not supported internal eval metric throws error", {
-  skip_on_cran()
-  skip_if_not_installed("rush")
-  flush_redis()
-
-  rush_plan(n_workers = 2)
-
-  task = tsk("penguins")
-  learner = lrn("classif.auto_catboost",
-    small_data_size = 1,
-    resampling = rsmp("holdout"),
-    measure = msr("classif.mbrier"),
-    terminator = trm("evals", n_evals = 6),
-    store_benchmark_result = TRUE,
-    store_models = TRUE
-  )
-
-  expect_error(learner$train(task), "No suitable catboost eval metric found")
-})

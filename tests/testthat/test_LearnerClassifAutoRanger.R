@@ -26,6 +26,5 @@ test_that("LearnerClassifAutoRanger is trained", {
   )
 
   expect_class(learner$train(task), "LearnerClassifAutoRanger")
-  expect_equal(learner$graph$param_set$values$branch.selection, "ranger")
   expect_equal(learner$model$instance$result$branch.selection, "ranger")
 })

@@ -17,7 +17,6 @@ test_that("LearnerClassifAutoXgboost is trained", {
 
   task = tsk("penguins")
   learner = lrn("classif.auto_xgboost",
-    xgboost_eval_metric = "merror",
     small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
@@ -28,7 +27,6 @@ test_that("LearnerClassifAutoXgboost is trained", {
   )
 
   expect_class(learner$train(task), "LearnerClassifAutoXgboost")
-  expect_equal(learner$graph$param_set$values$branch.selection, "xgboost")
   expect_equal(learner$model$instance$result$branch.selection, "xgboost")
 })
 

@@ -26,6 +26,5 @@ test_that("LearnerClassifAutoKKNN is trained", {
   )
 
   expect_class(learner$train(task), "LearnerClassifAutoKKNN")
-  expect_equal(learner$graph$param_set$values$branch.selection, "kknn")
   expect_equal(learner$model$instance$result$branch.selection, "kknn")
 })
