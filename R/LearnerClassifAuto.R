@@ -27,10 +27,11 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(
       id = "classif.auto",
-      learner_ids = c("glmnet", "kknn", "lda", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm", "mlp") # "fastai"
+      learner_ids = NULL
       ) {
-      assert_subset(learner_ids, c("glmnet", "kknn", "lda", "ranger", "svm", "xgboost", "catboost", "extra_trees", "lightgbm", "mlp")) # "fastai"
-
+      all_learner_ids = mlr_auto$keys()
+      if (is.null(learner_ids)) learner_ids = all_learner_ids
+      assert_subset(learner_ids, all_learner_ids)
       private$.learner_ids = learner_ids
 
       param_set = ps(
