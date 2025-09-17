@@ -3,7 +3,7 @@ train_auto = function(self, private, task) {
   large_data_set = task$nrow * task$ncol > pv$large_data_size
   n_workers = rush_config()$n_workers %??% 1L
   n_threads = if (large_data_set) 4L else pv$n_threads %??% 1L
-  memory_limit = pv$memory_limit %??% Inf
+  memory_limit = (pv$memory_limit %??% Inf) / n_workers
   autos = mlr_auto$mget(private$.learner_ids)
 
   lg$info("Training '%s' on task '%s'", self$id, task$id)

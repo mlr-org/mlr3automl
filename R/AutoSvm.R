@@ -65,8 +65,8 @@ AutoSvm = R6Class("AutoSvm",
       ps(
         svm.cost    = p_dbl(1e-4, 1e4, logscale = TRUE),
         svm.kernel  = p_fct(c("polynomial", "radial", "sigmoid", "linear")),
-        svm.degree  = p_int(2, 5, depends = svm.kernel == "polynomial"),
-        svm.gamma   = p_dbl(1e-4, 1e4, logscale = TRUE, depends = svm.kernel %in% c("polynomial", "sigmoid", "radial"))
+        svm.degree  = p_int(2, 5, depends =  quote(svm.kernel == "polynomial")),
+        svm.gamma   = p_dbl(1e-4, 1e4, logscale = TRUE, depends = quote(svm.kernel %in% c("polynomial", "sigmoid", "radial")))
       )
     }
   )

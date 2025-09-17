@@ -8,8 +8,12 @@
 #' @import mlr3pipelines
 #' @import mlr3tuning
 #' @import mlr3tuningspaces
+#' @import mlr3torch
 #' @import paradox
 #' @import R6
+#' @import future
+#' @import redux
+#' @import mirai
 #' @importFrom rush rush_config
 #' @import lhs
 
