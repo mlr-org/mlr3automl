@@ -89,6 +89,13 @@ Change to \code{FALSE} to debug.}
 }
 \if{html}{\out{</div>}}
 }
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
+\describe{
+\item{\code{graph}}{(\link[mlr3pipelines:Graph]{mlr3pipelines::Graph}).}
+}
+\if{html}{\out{</div>}}
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
@@ -122,7 +129,7 @@ Creates a new instance of this \link[R6:R6Class]{R6} class.
 \if{html}{\out{<div class="r">}}\preformatted{LearnerClassifAuto$new(
   id = "classif.auto",
   learner_ids = c("glmnet", "kknn", "lda", "ranger", "svm", "xgboost", "catboost",
-    "extra_trees", "lightgbm", "fastai")
+    "extra_trees", "lightgbm", "mlp")
 )}\if{html}{\out{</div>}}
 }
 

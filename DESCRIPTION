@@ -15,6 +15,7 @@ Depends:
     mlr3 (>= 1.1.0),
     mlr3extralearners,
     mlr3learners (>= 0.12.0),
+    mlr3torch,
     mlr3tuning (>= 1.4.0.9000),
     R (>= 3.1.0),
     rush (>= 0.3.0)
@@ -58,6 +59,19 @@ NeedsCompilation: no
 Roxygen: list(markdown = TRUE, r6 = TRUE)
 RoxygenNote: 7.3.3
 Collate:
+    'mlr_auto.R'
+    'Auto.R'
+    'AutoCatboost.R'
+    'AutoExtraTrees.R'
+    'AutoFastai.R'
+    'AutoGlmnet.R'
+    'AutoKknn.R'
+    'AutoLda.R'
+    'AutoLightgbm.R'
+    'AutoMlp.R'
+    'AutoRanger.R'
+    'AutoSvm.R'
+    'AutoXgboost.R'
     'aaa.R'
     'LearnerClassifAuto.R'
     'LearnerClassifAutoCatboost.R'
@@ -65,20 +79,10 @@ Collate:
     'LearnerClassifAutoGlmnet.R'
     'LearnerClassifAutoKKNN.R'
     'LearnerClassifAutoLightGBM.R'
+    'LearnerClassifAutoMLP.R'
     'LearnerClassifAutoRanger.R'
     'LearnerClassifAutoSVM.R'
     'LearnerClassifAutoXgboost.R'
-    'LearnerRegrAuto.R'
-    'LearnerRegrAutoCatboost.R'
-    'LearnerRegrAutoGlmnet.R'
-    'LearnerRegrAutoKKNN.R'
-    'LearnerRegrAutoLightGBM.R'
-    'LearnerRegrAutoRanger.R'
-    'LearnerRegrAutoSVM.R'
-    'LearnerRegrAutoXgboost.R'
-    'build_graph.R'
-    'estimate_memory.R'
     'helper.R'
-    'internal_measure.R'
     'train_auto.R'
     'zzz.R'

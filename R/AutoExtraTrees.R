@@ -1,0 +1,60 @@
+#' @include mlr_auto.R
+#' @export
+AutoExtraTrees = R6Class("AutoExtraTrees",
+  inherit = Auto,
+  public = list(
+    initialize = function(id = "extra_trees") {
+      super$initialize(id = id)
+      self$task_types = c("classif", "regr")
+      self$properties = c("large_data_sets", "hyperparameter-free")
+    },
+
+    graph = function(task, measure, n_threads, timeout) {
+      assert_task(task)
+      assert_measure(measure)
+      assert_count(n_threads)
+      assert_count(timeout)
+
+      learner = lrn(sprintf("%s.ranger", task$task_type),
+        id = "extra_trees",
+        splitrule = "extratrees",
+        num.trees = 100L,
+        replace = FALSE,
+        sample.fraction = 1)
+      set_threads(learner, n_threads)
+
+      po("removeconstants", id = "extra_trees_removeconstants") %>>%
+        po("imputeoor", id = "extra_trees_imputeoor") %>>%
+        po("fixfactors", id = "extra_trees_fixfactors") %>>%
+        po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "extra_trees_imputesample") %>>%
+        po("collapsefactors", target_level_count = 40, id = "extra_trees_collapse") %>>%
+        po("removeconstants", id = "extra_trees_post_removeconstants") %>>%
+        learner
+    },
+
+    estimate_memory = function(task) {
+      num_trees = 100
+      tree_size_bytes = task$nrow / 60000 * 1e6
+      (tree_size_bytes * num_trees) / 1e6
+    },
+
+    default_values = function(task) {
+      list()
+    }
+  ),
+
+  active = list(
+    search_space = function() {
+      ps()
+    },
+
+    packages = function(rhs) {
+     assert_ro_binding(rhs)
+     lrn("classif.ranger")$packages
+    }
+  )
+)
+
+mlr_auto$add("extra_trees", function() AutoExtraTrees$new())
+
+

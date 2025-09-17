@@ -20,3 +20,5 @@ LearnerClassifAutoMLP = R6Class("LearnerClassifAutoMLP",
 
 #' @include aaa.R
 learners[["classif.auto_mlp"]] = LearnerClassifAutoMLP
+
+

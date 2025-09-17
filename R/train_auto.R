@@ -1,156 +1,88 @@
 train_auto = function(self, private, task) {
   pv = self$param_set$values
-  learner_ids = private$.learner_ids
+  large_data_set = task$nrow * task$ncol > pv$large_data_size
+  n_workers = rush_config()$n_workers %??% 1L
+  n_threads = if (large_data_set) 4L else pv$n_threads %??% 1L
+  memory_limit = pv$memory_limit %??% Inf
+  autos = mlr_auto$mget(private$.learner_ids)
 
-  lg$debug("Training '%s' on task '%s'", self$id, task$id)
+  lg$info("Training '%s' on task '%s'", self$id, task$id)
 
   # initialize mbo tuner
   tuner = tnr("async_mbo")
 
-  if ("fastai" %in% learner_ids) {
-    assert_python_packages("fastai")
+  # set number of workers
+  if (large_data_set) {
+    n_workers = max(1, floor(n_workers / 4L))
+    tuner$param_set$set_values(n_workers = n_workers)
+    lg$info("Large data set detected. Reducing number of workers to %i", n_workers)
   }
 
-  # remove learner based on memory limit
-  lg$info("Starting to select from %i learners: %s", length(learner_ids), paste0(learner_ids, collapse = ","))
-
-  if (!is.null(pv$max_memory)) {
-    memory_usage = map_dbl(learner_ids, function(learner_id) {
-      estimate_memory(self$graph$pipeops[[learner_id]]$learner, task) / 1e6
-    })
-    learner_ids = learner_ids[memory_usage < pv$max_memory]
-    lg$info("Checking learners for memory limit of %i MB. Keeping %i learner(s): %s", pv$max_memory, length(learner_ids), paste0(learner_ids, collapse = ","))
-  }
-
-  # set number of threads
-  if (!is.null(pv$max_nthread)) {
-    lg$info("Setting number of threads per learner to %i", pv$max_nthread)
-    walk(learner_ids, function(learner_id) {
-      set_threads(self$graph$pipeops[[learner_id]]$learner, pv$max_nthread)
-    })
-  }
-
-  # reduce number of workers on large data sets
-  if (!is.null(pv$large_data_size) && task$nrow * task$ncol > pv$large_data_size) {
-    lg$info("Task size larger than %i rows", pv$large_data_size)
-
-    learner_ids = intersect(learner_ids, pv$large_data_learner_ids)
-    self$tuning_space = tuning_space[learner_ids]
-    lg$info("Keeping %i learner(s): %s", length(learner_ids), paste0(learner_ids, collapse = ","))
-
-    lg$info("Increasing number of threads per learner to %i", pv$large_data_nthread)
-    walk(learner_ids, function(learner_id) {
-      set_threads(self$graph$pipeops[[learner_id]]$learner, pv$large_data_nthread)
-    })
-    n_workers = rush_config()$n_workers
-    n = max(1, floor(n_workers / pv$large_data_nthread))
-    tuner$param_set$set_values(n_workers = n)
-    lg$info("Reducing number of workers to %i", n)
-  }
-
-  # small data resampling
-  resampling = if (!is.null(pv$small_data_size) && task$nrow < pv$small_data_size) {
-    lg$info("Task has less than %i rows", pv$small_data_size)
-    lg$info("Using small data set resampling with %i iterations", pv$small_data_resampling$iters)
+  # resampling
+  resampling = if (task$nrow < pv$small_data_size) {
+    lg$info("Small data set detected. Using small data set resampling with %i iterations", pv$small_data_resampling$iters)
     pv$small_data_resampling
   } else {
     pv$resampling
   }
 
-  # cardinality
-  cardinality = map_int(task$col_info$levels, length)
-  if (!is.null(pv$max_cardinality) && any(cardinality > pv$max_cardinality)) {
-    lg$info("Reducing number of factor levels to %i", pv$max_cardinality)
-
-    # collapse factors
-    pipeop_ids = names(self$graph$pipeops)
-    pipeop_ids = pipeop_ids[grep("collapse", pipeop_ids)]
-    walk(pipeop_ids, function(pipeop_id) {
-      self$graph$pipeops[[pipeop_id]]$param_set$values$target_level_count = pv$max_cardinality
-    })
-  }
-
-  if ("extra_trees" %in% learner_ids && any(cardinality > pv$extra_trees_max_cardinality))  {
-    lg$info("Reducing number of factor levels to %i for extra trees", pv$extra_trees_max_cardinality)
-    self$graph$pipeops$extra_trees_collapse$param_set$values$target_level_count = pv$extra_trees_max_cardinality
-  }
-
   # initialize graph learner
-  graph_learner = as_learner(self$graph, clone = TRUE)
+  autos = keep(autos, function(auto) auto$check(task, memory_limit = memory_limit, large_data_set = large_data_set))
+
+  if (all(map_lgl(autos, function(auto) "hyperparameter-free" %in% auto$properties))) {
+    stop("All learners have no hyperparameters to tune. Combine with other learners.")
+  }
+
+  branches = map(autos, function(auto) auto$graph(task, pv$measure, n_threads, pv$learner_timeout))
+  graph_learner = as_learner(po("branch", options = names(branches)) %>>%
+    gunion(unname(branches)) %>>%
+    po("unbranch", options = names(branches)), clone = TRUE)
   graph_learner$id = "graph_learner"
   graph_learner$predict_type = pv$measure$predict_type
+  graph_learner$packages = c(graph_learner$packages, c("mlr3torch"))
+
+
   if (pv$encapsulate_learner) {
-    fallback = lrn(paste0(graph_learner$task_type, ".featureless"))
+    fallback = lrn(sprintf("%s.featureless", task$task_type))
     fallback$predict_type = pv$measure$predict_type
     graph_learner$encapsulate(method = "mirai", fallback = fallback)
     graph_learner$timeout = c(train = pv$learner_timeout, predict = pv$learner_timeout)
   }
 
-  learners_with_validation = intersect(learner_ids, c("xgboost", "catboost", "lightgbm", "fastai"))
+  learner_ids = map_chr(autos, "id")
+  learners_with_validation = learner_ids[map_lgl(autos, function(auto) "internal_tuning" %in% auto$properties)]
   if (length(learners_with_validation)) {
     set_validate(graph_learner, "test", ids = learners_with_validation)
   }
 
-  # set early stopping
-  if ("xgboost" %in% learner_ids) {
-    graph_learner$param_set$values$xgboost.callbacks = list(cb_timeout_xgboost(pv$learner_timeout * 0.8))
-    eval_metric = pv$xgboost_eval_metric %??% internal_measure_xgboost(pv$measure, task)
-    if (is.na(eval_metric)) eval_metric = pv$xgboost_eval_metric
-    graph_learner$param_set$values$xgboost.eval_metric = eval_metric
-  }
-  if ("catboost" %in% learner_ids) {
-    eval_metric = pv$catboost_eval_metric %??% internal_measure_catboost(pv$measure, task)
-    if (is.na(eval_metric)) {
-      stopf("No suitable catboost eval metric found for measure %s on task '%s'. Please set the `catboost_eval_metric` parameter.", pv$measure$id, task$id)
-    }
-    graph_learner$param_set$values$catboost.eval_metric = eval_metric
-  }
-  if ("lightgbm" %in% learner_ids) {
-    graph_learner$param_set$values$lightgbm.callbacks = list(cb_timeout_lightgbm(pv$learner_timeout * 0.8))
-    eval_metric = pv$lightgbm_eval_metric %??% internal_measure_lightgbm(pv$measure, task)
-    if (is.na(eval_metric)) eval_metric = pv$lightgbm_eval_metric
-    graph_learner$param_set$values$lightgbm.eval = eval_metric  # maybe change this to `lightgbm.eval_metric` for consistency?
-  }
-  if ("fastai" %in% learner_ids) {
-    eval_metric = pv$fastai_eval_metric %??% internal_measure_fastai(pv$measure, task)
-    # if (is.na(eval_metric)) eval_metric = pv$fastai_eval_metric
-    graph_learner$param_set$values$fastai.eval_metric = eval_metric
-  }
-
   # initialize search space
-  tuning_space = unlist(unname(self$tuning_space), recursive = FALSE)
-  graph_scratch = graph_learner$clone(deep = TRUE)
-  graph_scratch$param_set$set_values(.values = tuning_space)
-  graph_scratch$param_set$set_values(branch.selection = to_tune(learner_ids))
-  search_space = graph_scratch$param_set$search_space()
-
-  # add fastai search space
-  if ("fastai" %in% learner_ids) {
-    search_space = c(search_space, fastai_search_space_graph)
-  }
+  search_space = ps(
+    branch.selection = p_fct(levels = learner_ids)
+  )
+  search_spaces = c(list(search_space), map(autos, function(auto) auto$search_space))
+  search_space = ps_union(unname(search_spaces))
 
   # add dependencies
-  walk(learner_ids, function(learner_id) {
-    param_ids = search_space$ids()
-    param_ids = grep(paste0("^", learner_id), param_ids, value = TRUE)
+  walk(autos, function(auto) {
+    param_ids = auto$search_space$ids()
+    internal_tune_ids = auto$search_space$ids(any_tags = "internal_tuning")
+    param_ids = setdiff(param_ids, internal_tune_ids)
+
     walk(param_ids, function(param_id) {
-      # skip internal tuning parameter
-      if (param_id %in% c("xgboost.nrounds", "catboost.iterations", "lightgbm.num_iterations", "fastai.n_epoch")) return()
       search_space$add_dep(
         id = param_id,
         on = "branch.selection",
-        cond = CondEqual$new(learner_id)
+        cond = CondEqual$new(auto$id)
       )
     })
   })
 
-
   # initial design
-  lhs_xdt = generate_lhs_design(pv$lhs_size, self$task_type, setdiff(learner_ids, c("lda", "extra_trees")), self$tuning_space)
-  default_xdt = generate_default_design(self$task_type, learner_ids, task, self$tuning_space)
-  initial_xdt = rbindlist(list(lhs_xdt, default_xdt), use.names = TRUE, fill = TRUE)
-  setorderv(initial_xdt, "branch.selection")
-  tuner$param_set$set_values(initial_design = initial_xdt)
+  lhs_design = map_dtr(autos, function(auto) auto$design_lhs(task, pv$lhs_size), .fill = TRUE)
+  default_design = map_dtr(autos, function(auto) auto$design_default(task), .fill = TRUE)
+  initial_design = rbindlist(list(default_design, lhs_design), use.names = TRUE, fill = TRUE)
+  setorderv(initial_design, "branch.selection")
+  tuner$param_set$set_values(initial_design = initial_design)
 
   # tuning instance
   self$instance = ti_async(
@@ -179,7 +111,6 @@ train_auto = function(self, private, task) {
     terminator = trm("evals", n_evals = 10000L),
     catch_errors = pv$encapsulate_mbo)
 
-
   # tune
   lg$info("Learner '%s' starts tuning phase", self$id)
   tuner$optimize(self$instance)
@@ -187,8 +118,10 @@ train_auto = function(self, private, task) {
   # fit final model
   lg$info("Learner '%s' fits final model", self$id)
 
+
   if (length(learners_with_validation)) {
-    set_validate(graph_learner, NULL, ids = intersect(learner_ids, c("xgboost", "catboost", "lightgbm", "fastai")))
+    set_validate(graph_learner, NULL, ids = learners_with_validation)
+    # FIXME: remove this once we have a better way to handle this
     graph_learner$param_set$values$xgboost.callbacks = NULL
     graph_learner$param_set$values$lightgbm.callbacks = NULL
   }
