@@ -27,7 +27,6 @@ Imports:
     mlr3mbo (>= 0.2.8),
     mlr3misc (>= 0.15.1),
     mlr3pipelines,
-    mlr3tuningspaces,
     paradox (>= 1.0.1),
     R6,
     utils
