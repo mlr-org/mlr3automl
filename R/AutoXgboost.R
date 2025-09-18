@@ -103,7 +103,7 @@ AutoXgboost = R6Class("AutoXgboost",
     },
 
     #' @description
-    #' Get the default values for the auto.
+    #' Get the default hyperparameter values.
     default_values = function(task) {
       list(
         xgboost.eta = log(0.3),
@@ -114,6 +114,12 @@ AutoXgboost = R6Class("AutoXgboost",
         xgboost.alpha = log(0L),
         xgboost.subsample = 1L
       )
+    },
+
+    #' @description
+    #' Get the initial hyperparameter set.
+    design_set = function(task, measure, size, exclude = NULL, stratify = TRUE) {
+      sample_design_set(task, measure, size, "xgboost", self$search_space, exclude, stratify)
     }
   ),
   active = list(

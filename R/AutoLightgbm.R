@@ -95,7 +95,7 @@ AutoLightgbm = R6Class("AutoLightgbm",
     },
 
     #' @description
-    #' Get the default values for the auto.
+    #' Get the default hyperparameter values.
     default_values = function(task) {
       list(
         lightgbm.learning_rate    = log(0.1),
@@ -103,6 +103,12 @@ AutoLightgbm = R6Class("AutoLightgbm",
         lightgbm.min_data_in_leaf = 20L,
         lightgbm.num_leaves       = 31L
       )
+    },
+
+    #' @description
+    #' Get the initial hyperparameter set.
+    design_set = function(task, measure, size, exclude = NULL, stratify = TRUE) {
+      sample_design_set(task, measure, size, "lightgbm", self$search_space, exclude, stratify)
     }
   ),
 
@@ -112,10 +118,10 @@ AutoLightgbm = R6Class("AutoLightgbm",
     search_space = function(rhs) {
       assert_ro_binding(rhs)
       ps(
-        lightgbm.learning_rate    = p_dbl(5e-3, 0.2, logscale = TRUE),
-        lightgbm.feature_fraction = p_dbl(0.75, 1),
-        lightgbm.min_data_in_leaf = p_int(2L, 60L),
-        lightgbm.num_leaves       = p_int(16L, 96L),
+        lightgbm.learning_rate    = p_dbl(1e-3, 1,, logscale = TRUE),
+        lightgbm.feature_fraction = p_dbl(0.1, 1),
+        lightgbm.min_data_in_leaf = p_int(1L, 200L),
+        lightgbm.num_leaves       = p_int(10L, 255L),
         lightgbm.num_iterations   = p_int(1L, 5000L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
       )
     }

@@ -6,6 +6,17 @@ test_that("LearnerClassifAutoRanger is initialized", {
   expect_learner(learner)
 })
 
+test_that("design set is generated", {
+  auto = mlr_auto$get("ranger")
+  xdt = auto$design_set(tsk("penguins"), msr("classif.ce"), 10)
+  expect_data_table(xdt, nrows = 10)
+  expect_set_equal(xdt$branch.selection, "ranger")
+
+  xdt = auto$design_set(tsk("penguins"), msr("classif.ce"), 1)
+  expect_data_table(xdt, nrows = 2)
+  expect_set_equal(xdt$branch.selection, "ranger")
+})
+
 test_that("LearnerClassifAutoRanger is trained", {
   skip_on_cran()
   skip_if_not_installed("ranger")

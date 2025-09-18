@@ -61,7 +61,7 @@ AutoRanger = R6Class("AutoRanger",
     },
 
     #' @description
-    #' Get the default values for the auto.
+    #' Get the default hyperparameter values.
     default_values = function(task) {
       list(
         ranger.mtry.ratio = 0.5,
@@ -69,6 +69,16 @@ AutoRanger = R6Class("AutoRanger",
         ranger.sample.fraction = 0.632,
         ranger.num.trees = 1000L
       )
+    },
+
+    #' @description
+    #' Get the initial hyperparameter set.
+    design_set = function(task, measure, size, exclude = NULL, stratify = TRUE) {
+      assert_task(task)
+      assert_measure(measure)
+      assert_count(size)
+
+      sample_design_set(task, measure, size, "ranger", self$search_space, exclude, stratify)
     }
   ),
 

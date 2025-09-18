@@ -40,7 +40,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         large_data_size = p_int(lower = 1L, init = 1e6, tags = c("train", "super")),
         # small data
         small_data_size = p_int(lower = 1L, init = 5000L, tags = c("train", "super")),
-        small_data_resampling = p_uty(tags = c("train", "super")),
+        small_data_resampling = p_uty(init = rsmp("cv", folds = 10), tags = c("train", "super")),
         # tuner
         resampling = p_uty(init = rsmp("holdout"), tags = c("train", "super")),
         terminator = p_uty(init = trm("run_time", secs = 3600), tags = c("train", "super")),
@@ -49,6 +49,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         callbacks = p_uty(init = clbk("mlr3tuning.async_save_logs"), tags = c("train", "super")),
         store_benchmark_result = p_lgl(init = FALSE, tags = c("train", "super")),
         store_models = p_lgl(init = FALSE, tags = c("train", "super")),
+        initial_design_type = p_fct(levels = c("lhs", "best"), init = "lhs", tags = c("train", "super")),
         # debugging
         encapsulate_learner = p_lgl(init = TRUE, tags = c("train", "super")),
         encapsulate_mbo = p_lgl(init = TRUE, tags = c("train", "super"))

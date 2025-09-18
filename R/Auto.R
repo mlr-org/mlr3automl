@@ -107,6 +107,16 @@ Auto = R6Class("Auto",
       }
       set(xdt, j = "branch.selection", value = self$id)
       xdt
+    },
+
+    #' @description
+    #' Get the initial hyperparameter set.
+    design_set = function(task, measure, size) {
+      assert_task(task)
+      assert_measure(measure)
+      assert_count(size)
+
+      self$design_default(task)
     }
   ),
 

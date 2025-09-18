@@ -48,13 +48,19 @@ AutoKknn = R6Class("AutoKknn",
     },
 
     #' @description
-    #' Get the default values for the auto.
+    #' Get the default hyperparameter values.
     default_values = function(task) {
       list(
         kknn.k = 7L,
         kknn.distance = 2,
         kknn.kernel = "optimal"
       )
+    },
+
+    #' @description
+    #' Get the initial hyperparameter set.
+    design_set = function(task, measure, size, exclude = NULL, stratify = TRUE) {
+      sample_design_set(task, measure, size, "kknn", self$search_space, exclude, stratify)
     }
   ),
 
@@ -64,8 +70,8 @@ AutoKknn = R6Class("AutoKknn",
     search_space = function(rhs) {
       assert_ro_binding(rhs)
       ps(
-        kknn.k = p_int(1L, 50L),
-        kknn.distance = p_int(1L, 5L),
+        kknn.k = p_int(1L, 100L, logscale = TRUE),
+        kknn.distance = p_dbl(1L, 5L),
         kknn.kernel = p_fct(levels = c("rectangular", "optimal", "epanechnikov", "biweight", "triweight", "cos",  "inv",  "gaussian", "rank"))
       )
     }
@@ -73,5 +79,4 @@ AutoKknn = R6Class("AutoKknn",
 )
 
 mlr_auto$add("kknn", function() AutoKknn$new())
-
 

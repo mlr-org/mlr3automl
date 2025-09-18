@@ -108,13 +108,19 @@ AutoCatboost = R6Class("AutoCatboost",
     },
 
     #' @description
-    #' Get the default values for the auto.
+    #' Get the default hyperparameter values.
     default_values = function(task) {
       list(
         catboost.depth = 6L,
         catboost.learning_rate = log(0.03),
         catboost.l2_leaf_reg = 3
       )
+    },
+
+    #' @description
+    #' Get the initial hyperparameter set.
+    design_set = function(task, measure, size, exclude = NULL, stratify = TRUE) {
+      sample_design_set(task, measure, size, "catboost", self$search_space)
     }
   ),
 
@@ -124,9 +130,9 @@ AutoCatboost = R6Class("AutoCatboost",
     search_space = function(rhs) {
       assert_ro_binding(rhs)
       ps(
-        catboost.depth          = p_int(5L, 8L),
-        catboost.learning_rate  = p_dbl(5e-3, 0.2, logscale = TRUE),
-        catboost.l2_leaf_reg    = p_dbl(1, 5),
+        catboost.depth          = p_int(1, 16),
+        catboost.learning_rate  = p_dbl(1e-3, 1, logscale = TRUE),
+        catboost.l2_leaf_reg    = p_dbl(1e-3, 1e3),
         catboost.iterations     = p_int(1L, 1000L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
       )
     }
