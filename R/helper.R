@@ -38,11 +38,20 @@ cb_timeout_lightgbm <- function(timeout) {
   return(callback)
 }
 
+check_python_packages = function(packages, python_version = NULL) {
+  reticulate::py_require(packages, python_version = python_version)
+  available = map_lgl(packages, reticulate::py_module_available)
+  if (any(!available)) {
+    return(sprintf("Package %s not available.", as_short_string(packages[!available])))
+  }
+  TRUE
+}
+
 assert_python_packages = function(packages, python_version = NULL) {
   reticulate::py_require(packages, python_version = python_version)
   available = map_lgl(packages, reticulate::py_module_available)
   if (any(!available)) {
-    stopf("Package %s not available.", packages[!available])
+    stopf("Package %s not available.", as_short_string(packages[!available]))
   }
   invisible(packages)
 }

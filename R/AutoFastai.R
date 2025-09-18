@@ -25,6 +25,19 @@ AutoFastai = R6Class("AutoFastai",
     },
 
     #' @description
+    #' Check if the auto is compatible with the task.
+    check = function(task, memory_limit = Inf, large_data_set = FALSE) {
+      super$check(task, memory_limit, large_data_set)
+      ok = check_python_packages(c("fastai", "torch"))
+      if (!isTRUE(ok)) {
+        lg$info(ok)
+        lg$info("Remove fastai from search space")
+        return(FALSE)
+      }
+      TRUE
+    },
+
+    #' @description
     #' Create the graph for the auto.
     graph = function(task, measure, n_threads, timeout) {
       assert_task(task)
@@ -33,6 +46,7 @@ AutoFastai = R6Class("AutoFastai",
       assert_count(timeout)
 
       require_namespaces("mlr3extralearners")
+      assert_python_packages(c("fastai", "torch"))
 
       learner = lrn(sprintf("%s.fastai", task$task_type),
         id = "fastai",

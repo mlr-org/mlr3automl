@@ -29,8 +29,12 @@ train_auto = function(self, private, task) {
   # initialize graph learner
   autos = keep(autos, function(auto) auto$check(task, memory_limit = memory_limit, large_data_set = large_data_set))
 
+  if (!length(autos)) {
+    error_config("No learner is compatible with the task.")
+  }
+
   if (all(map_lgl(autos, function(auto) "hyperparameter-free" %in% auto$properties))) {
-    stop("All learners have no hyperparameters to tune. Combine with other learners.")
+    error_config("All learners have no hyperparameters to tune. Combine with other learners.")
   }
 
   branches = map(autos, function(auto) auto$graph(task, pv$measure, n_threads, pv$learner_timeout))

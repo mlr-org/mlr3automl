@@ -1,5 +1,4 @@
 all_packages = c("glmnet", "kknn", "ranger", "e1071", "xgboost", "catboost","lightgbm", "fastai", "mlr3torch")
-all_learners = c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost","lightgbm", "lda", "extra_trees")
 
 test_that("initial design is generated", {
   skip_if_not_installed(all_packages)
@@ -35,7 +34,6 @@ test_that("lhs design is generated with size smaller than the maximum number of 
 
 test_that("LearnerClassifAuto is initialized", {
   learner = lrn("classif.auto",
-    learner_ids = all_learners,
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 10))
 
@@ -130,7 +128,6 @@ test_that("all learner work", {
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
-    learner_ids = all_learners,
     small_data_size = 1,
     lhs_size = 1,
     resampling = rsmp("holdout"),
@@ -156,7 +153,6 @@ test_that("memory limit works", {
 
   task = tsk("spam")
   learner = lrn("classif.auto",
-    learner_ids = all_learners,
     memory_limit = 50,
     small_data_size = 100,
     measure = msr("classif.ce"),
@@ -182,7 +178,6 @@ test_that("small data set switch works", {
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
-    learner_ids = "glmnet",
     small_data_size = 1000,
     small_data_resampling = rsmp("cv", folds = 2),
     measure = msr("classif.ce"),
@@ -208,7 +203,6 @@ test_that("large data set switch works", {
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
-    learner_ids = all_learners,
     large_data_size = 100,
     small_data_size = 1,
     measure = msr("classif.ce"),
