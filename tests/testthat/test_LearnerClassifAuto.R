@@ -106,7 +106,29 @@ test_that("lightgbm works", {
 })
 
 test_that("mlp works", {
-  test_classif_learner("mlp")
+  skip_on_cran()
+  skip_if_not_installed("mlr3torch")
+  skip_if_not_installed("rush")
+  flush_redis()
+
+  rush_plan(n_workers = 2, worker_type = "remote")
+  mirai::daemons(2)
+
+  task = tsk("penguins")
+  learner = lrn("classif.auto",
+    learner_ids = "mlp",
+    small_data_size = 1,
+    resampling = rsmp("holdout"),
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 1),
+    lhs_size = 1,
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE
+  )
+
+  expect_class(learner$train(task), "LearnerClassifAuto")
+  expect_subset(learner$model$instance$result$branch.selection, "mlp")
+  expect_set_equal(learner$model$instance$archive$data$branch.selection, "mlp")
 })
 
 # test_that("fastai works", {
