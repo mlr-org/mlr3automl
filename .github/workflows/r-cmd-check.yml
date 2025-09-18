@@ -51,6 +51,7 @@ jobs:
         with:
           extra-packages: any::rcmdcheck
           needs: check
+          cache: "always"
 
       - name: Install torch
         run: |
