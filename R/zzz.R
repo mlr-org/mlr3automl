@@ -1,13 +1,10 @@
 #' @import checkmate
 #' @import data.table
 #' @import mlr3
-#' @import mlr3learners
-#' @import mlr3extralearners
 #' @import mlr3mbo
 #' @import mlr3misc
 #' @import mlr3pipelines
 #' @import mlr3tuning
-#' @import mlr3tuningspaces
 #' @import paradox
 #' @import R6
 #' @importFrom rush rush_config
@@ -15,9 +12,6 @@
 
 
 "_PACKAGE"
-
-utils::globalVariables("start_time")
-
 
 #' @include aaa.R
 register_mlr3 = function() {
@@ -30,7 +24,7 @@ register_mlr3 = function() {
   register_namespace_callback(pkgname, "mlr3", register_mlr3)
 
   # setup logger
-  lg = lgr::get_logger(pkgname)
+  lg = lgr::get_logger("mlr3/mlr3automl")
   assign("lg", lg, envir = parent.env(environment()))
   f = function(event) {
     event$msg = paste0("[mlr3automl] ", event$msg)

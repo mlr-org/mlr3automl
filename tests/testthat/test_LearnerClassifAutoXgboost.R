@@ -3,8 +3,7 @@ test_that("LearnerClassifAutoXgboost is initialized", {
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 10))
 
-  expect_class(learner$graph, "Graph")
-  expect_list(learner$tuning_space)
+  expect_learner(learner)
 })
 
 test_that("LearnerClassifAutoXgboost is trained", {
@@ -13,12 +12,12 @@ test_that("LearnerClassifAutoXgboost is trained", {
   skip_if_not_installed("rush")
   flush_redis()
 
-  rush_plan(n_workers = 2)
+  rush_plan(n_workers = 2, worker_type = "remote")
+  mirai::daemons(2)
 
 
   task = tsk("penguins")
   learner = lrn("classif.auto_xgboost",
-    xgboost_eval_metric = "merror",
     small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
@@ -29,7 +28,6 @@ test_that("LearnerClassifAutoXgboost is trained", {
   )
 
   expect_class(learner$train(task), "LearnerClassifAutoXgboost")
-  expect_equal(learner$graph$param_set$values$branch.selection, "xgboost")
   expect_equal(learner$model$instance$result$branch.selection, "xgboost")
 })
 
@@ -39,7 +37,8 @@ test_that("LearnerClassifAutoXgboost twoclass internal eval metric is found", {
   skip_if_not_installed("rush")
   flush_redis()
 
-  rush_plan(n_workers = 1)
+  rush_plan(n_workers = 1, worker_type = "remote")
+  mirai::daemons(1)
 
   task_twoclass = tsk("pima")
   msrs_twoclass = rbindlist(list(
@@ -75,7 +74,8 @@ test_that("LearnerClassifAutoXgboost multiclass internal eval metric is found", 
   skip_if_not_installed("rush")
   flush_redis()
 
-  rush_plan(n_workers = 1)
+  rush_plan(n_workers = 1, worker_type = "remote")
+  mirai::daemons(1)
 
   task_multiclass = tsk("penguins")
   msrs_multiclass = rbindlist(list(
@@ -103,4 +103,20 @@ test_that("LearnerClassifAutoXgboost multiclass internal eval metric is found", 
       msrs_multiclass$metric[[i]]
     )
   })
+})
+
+test_that("LearnerClassifAutoXgboost timeout works", {
+  skip_on_cran()
+  skip_if_not_installed("lightgbm")
+
+  learner = lrn("classif.xgboost",
+    nrounds = 10000,
+    early_stopping_rounds = 10000,
+    callbacks = list(cb_timeout_xgboost(1)),
+    validate = 0.3
+  )
+
+  learner$train(tsk("spam"))
+
+  expect_true(max(learner$model$evaluation_log$iter) < 10000)
 })

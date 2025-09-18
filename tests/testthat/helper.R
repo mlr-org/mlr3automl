@@ -27,12 +27,12 @@ expect_rush_reset = function(rush, type = "kill") {
 
 test_classif_learner = function(learner_id, n_evals = 6) {
   skip_on_cran()
-  if ("extra_trees" %in% learner_id) learner_id = c(learner_id, "ranger")
-  skip_if_not_installed(setdiff(learner_id, c("lda", "extra_trees")))
+  skip_if_not_installed(unlist(map(mlr_auto$mget(learner_id), "packages")))
   skip_if_not_installed("rush")
   flush_redis()
 
-  rush_plan(n_workers = 2)
+  rush_plan(n_workers = 2, worker_type = "remote")
+  mirai::daemons(2)
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
@@ -61,7 +61,8 @@ test_regr_learner = function(learner_id, n_evals = 6) {
   skip_if_not_installed("rush")
   flush_redis()
 
-  rush_plan(n_workers = 2)
+  rush_plan(n_workers = 2, worker_type = "remote")
+  mirai::daemons(2)
 
   task = tsk("california_housing")$filter(sample(1000))
   learner = lrn("regr.auto",

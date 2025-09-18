@@ -1,60 +1,3 @@
-generate_default_design = function(task_type, learner_ids, task, tuning_space, branch = TRUE) {
-  map_dtr(learner_ids, function(learner_id) {
-    if (paste0(task_type, ".", learner_id) %nin% mlr_learners$keys()) {
-      return(data.table(branch.selection = learner_id))
-    }
-
-    learner = lrn(sprintf("%s.%s", task_type, learner_id))
-    token = tuning_space[[learner_id]]
-
-    # learner without tuning space
-    if (!length(token)) {
-      return(data.table(branch.selection = learner_id))
-    }
-
-    names(token) = gsub(paste0("^", learner_id, "."), "", names(token))
-    learner$param_set$set_values(.values = token)
-    search_space = learner$param_set$search_space()
-    xss = default_values(learner, search_space = search_space, task = task)
-    has_logscale = map_lgl(search_space$params$.trafo, function(x) identical(x, exp))
-    xdt = as.data.table(map_if(xss, has_logscale, function(value) if (value > 0) log(value) else value))
-
-    setnames(xdt, sprintf("%s.%s", learner_id, names(xdt)))
-
-    if (branch) {
-      set(xdt, j = "branch.selection", value = learner_id)
-    }
-    xdt
-  }, .fill = TRUE)
-}
-
-generate_lhs_design = function(size, task_type, learner_ids, tuning_space, branch = TRUE) {
-  if (!size) return(data.table())
-  learner_ids = learner_ids[learner_ids %in% names(tuning_space)]
-
-  map_dtr(learner_ids, function(learner_id) {
-    learner = lrn(sprintf("%s.%s", task_type, learner_id))
-
-    token = tuning_space[[learner_id]]
-    # learner without tuning space
-    if (!length(token)) {
-      return(data.table(branch.selection = learner_id))
-    }
-
-    names(token) = gsub(paste0("^", learner_id, "."), "", names(token))
-    learner$param_set$set_values(.values = token)
-    search_space = learner$param_set$search_space()
-    # if there are categorical parameters, we need to sample at least the maximum number of levels
-    n_levels = search_space$nlevels[search_space$ids(class = c("ParamFct", "ParamLgl"))]
-    xdt = generate_design_lhs(search_space, max(n_levels, size))$data
-    setnames(xdt, sprintf("%s.%s", learner_id, names(xdt)))
-    if (branch) {
-      set(xdt, j = "branch.selection", value = learner_id)
-    }
-    xdt
-  }, .fill = TRUE)
-}
-
 cb_timeout_xgboost = function(timeout) {
   callback = function(env = parent.frame()) {
     if (is.null(env$start_time)) {
@@ -76,10 +19,12 @@ cb_timeout_xgboost = function(timeout) {
 
 cb_timeout_lightgbm <- function(timeout) {
 
-  callback = function(env) {
-    if (!exists("start_time")) start_time <<- Sys.time()
+  state <- new.env(parent = emptyenv())
 
-    if (difftime(Sys.time(), start_time, units = "secs") > timeout) {
+  callback = function(env) {
+    if (is.null(state$start_time)) state$start_time <- Sys.time()
+
+    if (difftime(Sys.time(), state$start_time, units = "secs") > timeout) {
       message("Timeout reached")
       env$met_early_stop = TRUE
     } else {
@@ -93,3 +38,20 @@ cb_timeout_lightgbm <- function(timeout) {
   return(callback)
 }
 
+check_python_packages = function(packages, python_version = NULL) {
+  reticulate::py_require(packages, python_version = python_version)
+  available = map_lgl(packages, reticulate::py_module_available)
+  if (any(!available)) {
+    return(sprintf("Package %s not available.", as_short_string(packages[!available])))
+  }
+  TRUE
+}
+
+assert_python_packages = function(packages, python_version = NULL) {
+  reticulate::py_require(packages, python_version = python_version)
+  available = map_lgl(packages, reticulate::py_module_available)
+  if (any(!available)) {
+    stopf("Package %s not available.", as_short_string(packages[!available]))
+  }
+  invisible(packages)
+}

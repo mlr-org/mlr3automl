@@ -38,7 +38,8 @@ remotes::install_github("mlr-org/mlr3automl")
 ``` r
 library("mlr3automl")
 
-rush_plan(n_workers = 2)
+  rush_plan(n_workers = 2, worker_type = "remote")
+  mirai::daemons(2)
 
 task = tsk("spam")
 

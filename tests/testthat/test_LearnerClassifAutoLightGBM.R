@@ -3,8 +3,7 @@ test_that("LearnerClassifAutoLightGBM is initialized", {
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 10))
 
-  expect_class(learner$graph, "Graph")
-  expect_list(learner$tuning_space)
+  expect_learner(learner)
 })
 
 test_that("LearnerClassifAutoLightGBM is trained", {
@@ -13,11 +12,11 @@ test_that("LearnerClassifAutoLightGBM is trained", {
   skip_if_not_installed("rush")
   flush_redis()
 
-  rush_plan(n_workers = 2)
+  rush_plan(n_workers = 2, worker_type = "remote")
+  mirai::daemons(2)
 
   task = tsk("penguins")
   learner = lrn("classif.auto_lightgbm",
-    lightgbm_eval_metric = "multi_error",
     small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
@@ -28,7 +27,6 @@ test_that("LearnerClassifAutoLightGBM is trained", {
   )
 
   expect_class(learner$train(task), "LearnerClassifAutoLightGBM")
-  expect_equal(learner$graph$param_set$values$branch.selection, "lightgbm")
   expect_equal(learner$model$instance$result$branch.selection, "lightgbm")
 })
 
@@ -38,7 +36,8 @@ test_that("LearnerClassifAutoLightGBM twoclass internal eval metric is found", {
   skip_if_not_installed("rush")
   flush_redis()
 
-  rush_plan(n_workers = 1)
+  rush_plan(n_workers = 1, worker_type = "remote")
+  mirai::daemons(1)
 
   task_twoclass = tsk("pima")
   msrs_twoclass = rbindlist(list(
@@ -74,7 +73,8 @@ test_that("LearnerClassifAutoLightGBM multiclass internal eval metric is found",
   skip_if_not_installed("rush")
   flush_redis()
 
-  rush_plan(n_workers = 1)
+  rush_plan(n_workers = 1, worker_type = "remote")
+  mirai::daemons(1)
 
   task_multiclass = tsk("penguins")
   msrs_multiclass = rbindlist(list(
@@ -102,4 +102,20 @@ test_that("LearnerClassifAutoLightGBM multiclass internal eval metric is found",
       msrs_multiclass$metric[[i]]
     )
   })
+})
+
+test_that("LearnerClassifAutoLightGBM timeout works", {
+  skip_on_cran()
+  skip_if_not_installed("lightgbm")
+
+  learner = lrn("classif.lightgbm",
+    num_iterations = 10000,
+    early_stopping_rounds = 10000,
+    callbacks = list(cb_timeout_lightgbm(1)),
+    validate = 0.3
+  )
+
+  learner$train(tsk("spam"))
+
+  expect_true(learner$model$num_iter() < 10000)
 })

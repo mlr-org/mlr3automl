@@ -5,8 +5,7 @@ test_that("LearnerClassifAutoCatboost is initialized", {
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 10))
 
-  expect_class(learner$graph, "Graph")
-  expect_list(learner$tuning_space)
+  expect_learner(learner)
 })
 
 test_that("LearnerClassifAutoCatboost is trained", {
@@ -15,22 +14,24 @@ test_that("LearnerClassifAutoCatboost is trained", {
   skip_if_not_installed("rush")
   flush_redis()
 
-  rush_plan(n_workers = 2)
+  rush_plan(n_workers = 2, worker_type = "remote")
+  mirai::daemons(2)
+
 
   task = tsk("penguins")
   learner = lrn("classif.auto_catboost",
-    catboost_eval_metric = "Accuracy",
     small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 6),
     lhs_size = 1,
     encapsulate_learner = FALSE,
-    encapsulate_mbo = FALSE
+    encapsulate_mbo = FALSE,
+    store_benchmark_result = TRUE,
+    store_models = TRUE
   )
 
   expect_class(learner$train(task), "LearnerClassifAutoCatboost")
-  expect_equal(learner$graph$param_set$values$branch.selection, "catboost")
   expect_equal(learner$model$instance$result$branch.selection, "catboost")
 })
 
@@ -40,7 +41,8 @@ test_that("LearnerClassifAutoCatboost twoclass internal eval metric is found", {
   skip_if_not_installed("rush")
   flush_redis()
 
-  rush_plan(n_workers = 1)
+  rush_plan(n_workers = 1, worker_type = "remote")
+  mirai::daemons(1)
 
   task_twoclass = tsk("pima")
   msrs_twoclass = rbindlist(list(
@@ -81,7 +83,8 @@ test_that("LearnerClassifAutoCatboost multiclass internal eval metric is found",
   skip_if_not_installed("rush")
   flush_redis()
 
-  rush_plan(n_workers = 1)
+  rush_plan(n_workers = 1, worker_type = "remote")
+  mirai::daemons(1)
 
   task_multiclass = tsk("penguins")
   msrs_multiclass = rbindlist(list(
@@ -111,22 +114,3 @@ test_that("LearnerClassifAutoCatboost multiclass internal eval metric is found",
   })
 })
 
-test_that("catboost not supported internal eval metric throws error", {
-  skip_on_cran()
-  skip_if_not_installed("rush")
-  flush_redis()
-
-  rush_plan(n_workers = 2)
-
-  task = tsk("penguins")
-  learner = lrn("classif.auto_catboost",
-    small_data_size = 1,
-    resampling = rsmp("holdout"),
-    measure = msr("classif.mbrier"),
-    terminator = trm("evals", n_evals = 6),
-    store_benchmark_result = TRUE,
-    store_models = TRUE
-  )
-
-  expect_error(learner$train(task), "No suitable catboost eval metric found")
-})

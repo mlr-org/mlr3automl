@@ -81,8 +81,6 @@ Change to \code{FALSE} to debug.}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{graph}}{(\link[mlr3pipelines:Graph]{mlr3pipelines::Graph}).}
-
 \item{\code{tuning_space}}{(\code{list()}).}
 
 \item{\code{instance}}{(\link[mlr3tuning:TuningInstanceAsyncSingleCrit]{mlr3tuning::TuningInstanceAsyncSingleCrit}).}
@@ -119,11 +117,7 @@ Change to \code{FALSE} to debug.}
 \subsection{Method \code{new()}}{
 Creates a new instance of this \link[R6:R6Class]{R6} class.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LearnerClassifAuto$new(
-  id = "classif.auto",
-  learner_ids = c("glmnet", "kknn", "lda", "ranger", "svm", "xgboost", "catboost",
-    "extra_trees", "lightgbm")
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LearnerClassifAuto$new(id = "classif.auto", learner_ids = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

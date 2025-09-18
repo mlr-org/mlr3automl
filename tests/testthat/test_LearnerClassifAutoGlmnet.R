@@ -3,8 +3,7 @@ test_that("LearnerClassifAutoGlmnet is initialized", {
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 10))
 
-  expect_class(learner$graph, "Graph")
-  expect_list(learner$tuning_space)
+  expect_learner(learner)
 })
 
 test_that("LearnerClassifAutoGlmnet is trained", {
@@ -13,7 +12,8 @@ test_that("LearnerClassifAutoGlmnet is trained", {
   skip_if_not_installed("rush")
   flush_redis()
 
-  rush_plan(n_workers = 2)
+  rush_plan(n_workers = 2, worker_type = "remote")
+  mirai::daemons(2)
 
   task = tsk("penguins")
   learner = lrn("classif.auto_glmnet",
@@ -27,6 +27,5 @@ test_that("LearnerClassifAutoGlmnet is trained", {
   )
 
   expect_class(learner$train(task), "LearnerClassifAutoGlmnet")
-  expect_equal(learner$graph$param_set$values$branch.selection, "glmnet")
   expect_equal(learner$model$instance$result$branch.selection, "glmnet")
 })
