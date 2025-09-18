@@ -20,6 +20,7 @@ Fastai auto.
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-AutoFastai-new}{\code{AutoFastai$new()}}
+\item \href{#method-AutoFastai-check}{\code{AutoFastai$check()}}
 \item \href{#method-AutoFastai-graph}{\code{AutoFastai$graph()}}
 \item \href{#method-AutoFastai-estimate_memory}{\code{AutoFastai$estimate_memory()}}
 \item \href{#method-AutoFastai-internal_measure}{\code{AutoFastai$internal_measure()}}
@@ -30,7 +31,6 @@ Fastai auto.
 \if{html}{\out{
 <details open><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="check"><a href='../../mlr3automl/html/Auto.html#method-Auto-check'><code>mlr3automl::Auto$check()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_default"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_default'><code>mlr3automl::Auto$design_default()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_lhs"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_lhs'><code>mlr3automl::Auto$design_lhs()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="early_stopping_rounds"><a href='../../mlr3automl/html/Auto.html#method-Auto-early_stopping_rounds'><code>mlr3automl::Auto$early_stopping_rounds()</code></a></span></li>
@@ -51,6 +51,27 @@ Creates a new instance of this \link[R6:R6Class]{R6} class.
 \describe{
 \item{\code{id}}{(\code{character(1)})\cr
 Identifier for the new instance.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AutoFastai-check"></a>}}
+\if{latex}{\out{\hypertarget{method-AutoFastai-check}{}}}
+\subsection{Method \code{check()}}{
+Check if the auto is compatible with the task.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AutoFastai$check(task, memory_limit = Inf, large_data_set = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+
+\item{\code{memory_limit}}{(\code{integer(1)}).}
+
+\item{\code{large_data_set}}{(\code{logical(1)}).}
 }
 \if{html}{\out{</div>}}
 }

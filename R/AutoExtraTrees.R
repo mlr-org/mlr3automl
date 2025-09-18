@@ -18,6 +18,7 @@ AutoExtraTrees = R6Class("AutoExtraTrees",
       super$initialize(id = id)
       self$task_types = c("classif", "regr")
       self$properties = c("large_data_sets", "hyperparameter-free")
+      self$packages = c("mlr3", "mlr3learners", "ranger")
     },
 
     #' @description
@@ -76,12 +77,6 @@ AutoExtraTrees = R6Class("AutoExtraTrees",
     #' @field search_space ([paradox::ParamSet]).
     search_space = function() {
       ps()
-    },
-
-    #' @field packages (`character()`).
-    packages = function(rhs) {
-     assert_ro_binding(rhs)
-     lrn("classif.ranger")$packages
     }
   )
 )

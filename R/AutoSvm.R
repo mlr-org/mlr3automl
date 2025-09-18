@@ -22,6 +22,7 @@ AutoSvm = R6Class("AutoSvm",
       super$initialize(id = id)
       self$task_types = c("classif", "regr")
       self$properties = character(0)
+      self$packages = c("mlr3", "mlr3learners", "e1071")
     },
 
     #' @description

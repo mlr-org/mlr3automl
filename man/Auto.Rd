@@ -14,6 +14,8 @@ This class is the base class for all autos.
 \item{\code{properties}}{(\code{character()}).}
 
 \item{\code{task_types}}{(\code{character()}).}
+
+\item{\code{packages}}{(\code{character()}).}
 }
 \if{html}{\out{</div>}}
 }
@@ -21,8 +23,6 @@ This class is the base class for all autos.
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
 \item{\code{search_space}}{(\link[paradox:ParamSet]{paradox::ParamSet}).}
-
-\item{\code{packages}}{(\code{character()}).}
 }
 \if{html}{\out{</div>}}
 }

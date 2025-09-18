@@ -22,6 +22,7 @@ AutoMlp = R6Class("AutoMlp",
       super$initialize(id = id)
       self$task_types = c("classif", "regr")
       self$properties = "internal_tuning"
+      self$packages = c("mlr3", "mlr3torch")
     },
 
     #' @description

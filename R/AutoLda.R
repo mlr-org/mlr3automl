@@ -22,6 +22,7 @@ AutoLda = R6Class("AutoLda",
       super$initialize(id = id)
       self$task_types = "classif"
       self$properties = "hyperparameter-free"
+      self$packages = c("mlr3", "mlr3learners", "MASS")
     },
 
     #' @description

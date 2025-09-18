@@ -10,6 +10,8 @@
 #' @template param_measure
 #' @template param_n_threads
 #' @template param_timeout
+#' @template param_memory_limit
+#' @template param_large_data_set
 #'
 #' @export
 AutoFastai = R6Class("AutoFastai",
@@ -22,6 +24,7 @@ AutoFastai = R6Class("AutoFastai",
       super$initialize(id = id)
       self$task_types = c("classif", "regr")
       self$properties = "internal_tuning"
+      self$packages = c("mlr3", "mlr3extralearners", "fastai")
     },
 
     #' @description

@@ -22,6 +22,7 @@ AutoRanger = R6Class("AutoRanger",
       super$initialize(id = id)
       self$task_types = c("classif", "regr")
       self$properties = "large_data_sets"
+      self$packages = c("mlr3", "mlr3learners", "ranger")
     },
 
     #' @description

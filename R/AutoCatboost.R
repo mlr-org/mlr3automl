@@ -22,6 +22,7 @@ AutoCatboost = R6Class("AutoCatboost",
       super$initialize(id = id)
       self$task_types = c("classif", "regr")
       self$properties = c("internal_tuning", "large_data_sets")
+      self$packages = c("mlr3", "mlr3extralearners", "catboost")
     },
 
     #' @description

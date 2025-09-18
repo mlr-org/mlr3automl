@@ -27,6 +27,9 @@ Auto = R6Class("Auto",
     #' @field task_types (`character()`).
     task_types = NULL,
 
+    #' @field packages (`character()`).
+    packages = NULL,
+
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id) {
@@ -112,12 +115,6 @@ Auto = R6Class("Auto",
     search_space = function(rhs) {
       assert_ro_binding(rhs)
       stop("Abstract")
-    },
-
-    #' @field packages (`character()`).
-    packages = function(rhs) {
-     assert_ro_binding(rhs)
-     lrn(sprintf("classif.%s", self$id))$packages
     }
   )
 )

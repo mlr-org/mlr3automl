@@ -22,6 +22,7 @@ AutoKknn = R6Class("AutoKknn",
       super$initialize(id = id)
       self$task_types = c("classif", "regr")
       self$properties = character()
+      self$packages = c("mlr3", "mlr3learners", "kknn")
     },
 
     #' @description
