@@ -1,4 +1,12 @@
+#' @title Kknn Auto
+#'
 #' @include mlr_auto.R
+#'
+#' @description
+#' Kknn auto.
+#'
+#' @template param_id
+#'
 #' @export
 AutoKknn = R6Class("AutoKknn",
   inherit = Auto,

@@ -12,7 +12,7 @@ test_that("LearnerClassifAutoXgboost is trained", {
   skip_if_not_installed("rush")
   flush_redis()
 
-    rush_plan(n_workers = 2, worker_type = "remote")
+  rush_plan(n_workers = 2, worker_type = "remote")
   mirai::daemons(2)
 
 
@@ -37,7 +37,7 @@ test_that("LearnerClassifAutoXgboost twoclass internal eval metric is found", {
   skip_if_not_installed("rush")
   flush_redis()
 
-    rush_plan(n_workers = 1, worker_type = "remote")
+  rush_plan(n_workers = 1, worker_type = "remote")
   mirai::daemons(1)
 
   task_twoclass = tsk("pima")
@@ -74,7 +74,7 @@ test_that("LearnerClassifAutoXgboost multiclass internal eval metric is found", 
   skip_if_not_installed("rush")
   flush_redis()
 
-    rush_plan(n_workers = 1, worker_type = "remote")
+  rush_plan(n_workers = 1, worker_type = "remote")
   mirai::daemons(1)
 
   task_multiclass = tsk("penguins")
@@ -103,4 +103,20 @@ test_that("LearnerClassifAutoXgboost multiclass internal eval metric is found", 
       msrs_multiclass$metric[[i]]
     )
   })
+})
+
+test_that("LearnerClassifAutoXgboost timeout works", {
+  skip_on_cran()
+  skip_if_not_installed("lightgbm")
+
+  learner = lrn("classif.xgboost",
+    nrounds = 10000,
+    early_stopping_rounds = 10000,
+    callbacks = list(cb_timeout_xgboost(1)),
+    validate = 0.3
+  )
+
+  learner$train(tsk("spam"))
+
+  expect_true(max(learner$model$evaluation_log$iter) < 10000)
 })

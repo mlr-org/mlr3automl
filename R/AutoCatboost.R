@@ -1,9 +1,9 @@
 #' @title Catboost Auto
 #'
+#' @include mlr_auto.R
+#'
 #' @description
 #' Catboost auto.
-#'
-#' @include mlr_auto.R
 #'
 #' @template param_id
 #'

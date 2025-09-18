@@ -1,11 +1,12 @@
 #' @title Fastai Auto
 #'
+#' @include mlr_auto.R
+#'
 #' @description
 #' Fastai auto.
 #'
 #' @template param_id
 #'
-#' @include mlr_auto.R
 #' @export
 AutoFastai = R6Class("AutoFastai",
   inherit = Auto,

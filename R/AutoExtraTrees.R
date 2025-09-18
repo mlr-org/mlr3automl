@@ -1,11 +1,12 @@
 #' @title Extra Trees Auto
 #'
+#' @include mlr_auto.R
+#'
 #' @description
 #' Extra Trees auto.
 #'
 #' @template param_id
 #'
-#' @include mlr_auto.R
 #' @export
 AutoExtraTrees = R6Class("AutoExtraTrees",
   inherit = Auto,

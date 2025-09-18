@@ -1,4 +1,12 @@
+#' @title Lightgbm Auto
+#'
 #' @include mlr_auto.R
+#'
+#' @description
+#' Lightgbm auto.
+#'
+#' @template param_id
+#'
 #' @export
 AutoLightgbm = R6Class("AutoLightgbm",
   inherit = Auto,

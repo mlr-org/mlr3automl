@@ -125,7 +125,7 @@ test_that("all learner work", {
   skip_if_not_installed(all_packages)
   flush_redis()
 
-    rush_plan(n_workers = 2, worker_type = "remote")
+  rush_plan(n_workers = 2, worker_type = "remote")
   mirai::daemons(2)
 
   task = tsk("penguins")
@@ -151,7 +151,7 @@ test_that("memory limit works", {
   skip_if_not_installed(all_packages)
   flush_redis()
 
-    rush_plan(n_workers = 2, worker_type = "remote")
+  rush_plan(n_workers = 2, worker_type = "remote")
   mirai::daemons(2)
 
   task = tsk("spam")
@@ -177,7 +177,7 @@ test_that("small data set switch works", {
   skip_if_not_installed("glmnet")
   flush_redis()
 
-    rush_plan(n_workers = 2, worker_type = "remote")
+  rush_plan(n_workers = 2, worker_type = "remote")
   mirai::daemons(2)
 
   task = tsk("penguins")
@@ -248,57 +248,3 @@ test_that("resample works", {
   expect_resample_result(rr)
 })
 
-# test_that("logger callback works", {
-#   skip_if_not_installed(c("glmnet", "kknn", "ranger", "e1071", "xgboost", "catboost", "MASS", "lightgbm"))
-#     rush_plan(n_workers = 2, worker_type = "remote")
-  mirai::daemons(2)
-
-#   task = tsk("penguins")
-#   learner = lrn("classif.auto",
-#     small_data_size = 1,
-#     resampling = rsmp("holdout"),
-#     measure = msr("classif.ce"),
-#     terminator = trm("evals", n_evals = 10),
-#     lhs_size = 1,
-#     callbacks = clbk("mlr3tuning.async_save_logs")
-#   )
-
-#   expect_class(learner$train(task), "LearnerClassifAuto")
-#   expect_list(learner$instance$archive$data$log)
-#   expect_list(learner$instance$archive$data$log[[1]], len = 1)
-# })
-
-# test_that("integer columns work", {
-#   library(mlr3oml)
-#     rush_plan(n_workers = 2, worker_type = "remote")
-  mirai::daemons(2)
-
-
-#   task = tsk("oml", data_id = 1464)
-#   learner = lrn("classif.auto",
-#     learner_ids = "catboost",
-#     small_data_size = 100,
-#     measure = msr("classif.ce"),
-#     terminator = trm("evals", n_evals = 20),
-#     lhs_size = 1
-#   )
-
-#   expect_class(learner$train(task), "LearnerClassifAuto")
-# })
-
-# test_that("constant columns work", {
-#   library(mlr3oml)
-#   rush_plan(n_workers = 2, lgr_thresholds = c(mlr3 = "info"))
-
-
-#   task = tsk("oml", data_id = 41143)
-#   learner = lrn("classif.auto",
-#     learner_ids = "catboost",
-#     small_data_size = 100,
-#     measure = msr("classif.ce"),
-#     terminator = trm("evals", n_evals = 20),
-#     lhs_size = 1
-#   )
-
-#   expect_class(learner$train(task), "LearnerClassifAuto")
-# })

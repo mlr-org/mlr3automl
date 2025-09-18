@@ -1,11 +1,11 @@
 #' @title Glmnet Auto
 #'
+#' @include mlr_auto.R
+#'
 #' @description
 #' Glmnet auto.
 #'
 #' @template param_id
-#'
-#' @include mlr_auto.R
 #'
 #' @export
 AutoGlmnet = R6Class("AutoGlmnet",

@@ -12,7 +12,7 @@ test_that("LearnerClassifAutoLightGBM is trained", {
   skip_if_not_installed("rush")
   flush_redis()
 
-    rush_plan(n_workers = 2, worker_type = "remote")
+  rush_plan(n_workers = 2, worker_type = "remote")
   mirai::daemons(2)
 
   task = tsk("penguins")
@@ -36,7 +36,7 @@ test_that("LearnerClassifAutoLightGBM twoclass internal eval metric is found", {
   skip_if_not_installed("rush")
   flush_redis()
 
-    rush_plan(n_workers = 1, worker_type = "remote")
+  rush_plan(n_workers = 1, worker_type = "remote")
   mirai::daemons(1)
 
   task_twoclass = tsk("pima")
@@ -73,7 +73,7 @@ test_that("LearnerClassifAutoLightGBM multiclass internal eval metric is found",
   skip_if_not_installed("rush")
   flush_redis()
 
-    rush_plan(n_workers = 1, worker_type = "remote")
+  rush_plan(n_workers = 1, worker_type = "remote")
   mirai::daemons(1)
 
   task_multiclass = tsk("penguins")
@@ -102,4 +102,20 @@ test_that("LearnerClassifAutoLightGBM multiclass internal eval metric is found",
       msrs_multiclass$metric[[i]]
     )
   })
+})
+
+test_that("LearnerClassifAutoLightGBM timeout works", {
+  skip_on_cran()
+  skip_if_not_installed("lightgbm")
+
+  learner = lrn("classif.lightgbm",
+    num_iterations = 10000,
+    early_stopping_rounds = 10000,
+    callbacks = list(cb_timeout_lightgbm(1)),
+    validate = 0.3
+  )
+
+  learner$train(tsk("spam"))
+
+  expect_true(learner$model$num_iter() < 10000)
 })

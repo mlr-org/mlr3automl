@@ -11,16 +11,12 @@
 #' @import mlr3torch
 #' @import paradox
 #' @import R6
-#' @import redux
 #' @import mirai
 #' @importFrom rush rush_config
 #' @import lhs
 
 
 "_PACKAGE"
-
-utils::globalVariables("start_time")
-
 
 #' @include aaa.R
 register_mlr3 = function() {

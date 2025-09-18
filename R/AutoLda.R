@@ -1,4 +1,12 @@
+#' @title Lda Auto
+#'
 #' @include mlr_auto.R
+#'
+#' @description
+#' Lda auto.
+#'
+#' @template param_id
+#'
 #' @export
 AutoLda = R6Class("AutoLda",
   inherit = Auto,

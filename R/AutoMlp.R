@@ -1,4 +1,12 @@
+#' @title Mlp Auto
+#'
 #' @include mlr_auto.R
+#'
+#' @description
+#' Mlp auto.
+#'
+#' @template param_id
+#'
 #' @export
 AutoMlp = R6Class("AutoMlp",
   inherit = Auto,

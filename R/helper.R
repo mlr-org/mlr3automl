@@ -19,10 +19,12 @@ cb_timeout_xgboost = function(timeout) {
 
 cb_timeout_lightgbm <- function(timeout) {
 
-  callback = function(env) {
-    if (!exists("start_time")) start_time <<- Sys.time()
+  state <- new.env(parent = emptyenv())
 
-    if (difftime(Sys.time(), start_time, units = "secs") > timeout) {
+  callback = function(env) {
+    if (is.null(state$start_time)) state$start_time <- Sys.time()
+
+    if (difftime(Sys.time(), state$start_time, units = "secs") > timeout) {
       message("Timeout reached")
       env$met_early_stop = TRUE
     } else {
