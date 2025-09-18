@@ -33,6 +33,7 @@ Imports:
 Suggests:
     catboost,
     e1071,
+    fastai,
     glmnet,
     kknn,
     lightgbm,
