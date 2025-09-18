@@ -56,14 +56,15 @@ assert_python_packages = function(packages, python_version = NULL) {
   invisible(packages)
 }
 
-sample_design_set = function(task, measure, size, learner_id, search_space, exclude = NULL, stratify = TRUE) {
+sample_design_set = function(task, measure, size, learner_id, search_space) {
   assert_task(task)
   assert_measure(measure)
-  assert_count(size)
-  assert_data_table(exclude, null.ok = TRUE)
+  assert_count(size, null.ok = TRUE)
+
 
   # read data of best hyperparameters
   data = fread(system.file("data", sprintf("best_%s.csv", learner_id), package = "mlr3automl"))
+  if (is.null(size)) size = nrow(data)
 
   # exclude tasks
   exclude_tasks = getOption("mlr3automl.exclude_tasks", "")
@@ -84,14 +85,10 @@ sample_design_set = function(task, measure, size, learner_id, search_space, excl
   param_ids = setdiff(param_ids, internal_ids)
   data = data[, param_ids, with = FALSE]
 
-  # exclude already sampled rows
-  if (!is.null(exclude)) {
-    data = data[!exclude, , on = param_ids]
-  }
 
   # draw at least one row for each factor level
   factor_cols = search_space$ids(class = c("ParamFct", "ParamLgl"))
-  if (stratify && length(factor_cols)) {
+  if (length(factor_cols)) {
 
     # sample rows for each factor level
     xdt = map_dtr(factor_cols, function(col) {

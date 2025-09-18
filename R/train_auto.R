@@ -96,8 +96,8 @@ train_auto = function(self, private, task) {
 
   # initial design
   if (pv$initial_design_type == "lhs") {
-    default_design = map_dtr(autos, function(auto) auto$design_default(task), .fill = TRUE)
-    lhs_design = map_dtr(autos, function(auto) auto$design_lhs(task, pv$lhs_size), .fill = TRUE)
+    default_design = map_dtr(autos, function(auto) auto$design_default(task))
+    lhs_design = map_dtr(autos, function(auto) auto$design_lhs(task, pv$lhs_size))
     initial_design = rbindlist(list(default_design, lhs_design), use.names = TRUE, fill = TRUE)
     setorderv(initial_design, "branch.selection")
     tuner$param_set$set_values(initial_design = initial_design)
@@ -107,38 +107,49 @@ train_auto = function(self, private, task) {
       error_config("Terminator must be a TerminatorEvals or TerminatorRunTime.")
     }
 
-    size = if (inherits(pv$terminator, "TerminatorEvals")) {
+    initial_design = if (inherits(pv$terminator, "TerminatorEvals")) {
       # set size of test design to 25% of the total number of evaluations
       lg$info("Evaluating initial design")
 
-      ceiling(pv$terminator$param_set$values$n_evals * 0.25 / length(autos))
+      size = ceiling(pv$terminator$param_set$values$n_evals * 0.25 / length(autos))
+      map_dtr(autos, function(auto) auto$design_set(task, pv$measure, size), .fill = TRUE)
     } else if (inherits(pv$terminator, "TerminatorRunTime")) {
-      # test runtime with one design point per learner
-      lg$info("Evaluating runtime test design")
-      1
+      # draw one point for each learner and factor level
+      initial_designs = map(autos, function(auto) auto$design_set(task, pv$measure, size = NULL))
+      walk(initial_designs, function(initial_design) {
+        initial_design[, .i := .I]
+      })
+      initial_design = rbindlist(initial_designs, use.names = TRUE, fill = TRUE)
+      setorderv(initial_design, ".i")
+      set(initial_design, j = ".i", value = NULL)
+
+      runtime_initial_design = pv$terminator$param_set$values$secs * 0.25
+      self$instance$terminator$param_set$set_values(secs = runtime_initial_design)
+      lg$info("Evaluating initial design for %s seconds", runtime_initial_design)
+      initial_design
     }
 
-    test_design = map_dtr(autos, function(auto) auto$design_set(task, pv$measure, size), .fill = TRUE)
-    test_tuner = tnr("async_design_points", design = test_design)
-    test_tuner$optimize(self$instance)
 
-    if (inherits(pv$terminator, "TerminatorRunTime")) {
-      # increase size of test design to 25% of the total runtime
-      runtime_learners = sum(self$instance$archive$data$runtime_learners, na.rm = TRUE)
-      runtime_limit = pv$terminator$param_set$values$secs * 0.25
-      size = floor(runtime_limit / runtime_learners * length(autos))
+    tnr_design_points = tnr("async_design_points", design = initial_design)
+    tnr_design_points$optimize(self$instance)
 
-      if (size >= 1) {
-        lg$info("Evaluating initial design")
+    # if (inherits(pv$terminator, "TerminatorRunTime")) {
+    #   # increase size of test design to 25% of the total runtime
+    #   runtime_learners = sum(self$instance$archive$data$runtime_learners, na.rm = TRUE)
+    #   runtime_limit = pv$terminator$param_set$values$secs * 0.25
+    #   size = floor(runtime_limit / runtime_learners * length(autos))
 
-        # draw additional design points for each learner but exclude already sampled rows
-        test_design = pmap_dtr(list(autos, split(test_design, by = "branch.selection")), function(auto, design) auto$design_set(task, pv$measure, size, exclude = design, stratify = FALSE), .fill = TRUE)
-        test_tuner = tnr("async_design_points", design = test_design)
-        test_tuner$optimize(self$instance)
-      } else {
-        lg$info("Runtime test design already exceeded 25%% of the total runtime. Skipping initial design.")
-      }
-    }
+    #   if (size >= 1) {
+    #     lg$info("Evaluating initial design")
+
+    #     # draw additional design points for each learner but exclude already sampled rows
+    #     test_design = pmap_dtr(list(autos, split(test_design, by = "branch.selection")), function(auto, design) auto$design_set(task, pv$measure, size, exclude = design, stratify = FALSE), .fill = TRUE)
+    #     test_tuner = tnr("async_design_points", design = test_design)
+    #     test_tuner$optimize(self$instance)
+    #   } else {
+    #     lg$info("Runtime test design already exceeded 25%% of the total runtime. Skipping initial design.")
+    #   }
+    # }
   }
 
   # configure tuner

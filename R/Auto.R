@@ -114,7 +114,7 @@ Auto = R6Class("Auto",
     design_set = function(task, measure, size) {
       assert_task(task)
       assert_measure(measure)
-      assert_count(size)
+      assert_count(size, null.ok = TRUE)
 
       self$design_default(task)
     }

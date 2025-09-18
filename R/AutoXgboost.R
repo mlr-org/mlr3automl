@@ -118,8 +118,8 @@ AutoXgboost = R6Class("AutoXgboost",
 
     #' @description
     #' Get the initial hyperparameter set.
-    design_set = function(task, measure, size, exclude = NULL, stratify = TRUE) {
-      sample_design_set(task, measure, size, "xgboost", self$search_space, exclude, stratify)
+    design_set = function(task, measure, size) {
+      sample_design_set(task, measure, size, "xgboost", self$search_space)
     }
   ),
   active = list(

@@ -73,12 +73,8 @@ AutoRanger = R6Class("AutoRanger",
 
     #' @description
     #' Get the initial hyperparameter set.
-    design_set = function(task, measure, size, exclude = NULL, stratify = TRUE) {
-      assert_task(task)
-      assert_measure(measure)
-      assert_count(size)
-
-      sample_design_set(task, measure, size, "ranger", self$search_space, exclude, stratify)
+    design_set = function(task, measure, size) {
+      sample_design_set(task, measure, size, "ranger", self$search_space)
     }
   ),
 

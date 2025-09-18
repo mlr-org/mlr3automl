@@ -60,12 +60,8 @@ AutoSvm = R6Class("AutoSvm",
 
     #' @description
     #' Get the initial hyperparameter set.
-    design_set = function(task, measure, size, exclude = NULL, stratify = TRUE) {
-      assert_task(task)
-      assert_measure(measure)
-      assert_count(size)
-
-      sample_design_set(task, measure, size, "svm", self$search_space, exclude, stratify)
+    design_set = function(task, measure, size) {
+      sample_design_set(task, measure, size, "svm", self$search_space)
     }
   ),
 

@@ -119,7 +119,7 @@ AutoCatboost = R6Class("AutoCatboost",
 
     #' @description
     #' Get the initial hyperparameter set.
-    design_set = function(task, measure, size, exclude = NULL, stratify = TRUE) {
+    design_set = function(task, measure, size) {
       sample_design_set(task, measure, size, "catboost", self$search_space)
     }
   ),
