@@ -6,17 +6,26 @@
 #' Kknn auto.
 #'
 #' @template param_id
+#' @template param_task
+#' @template param_measure
+#' @template param_n_threads
+#' @template param_timeout
 #'
 #' @export
 AutoKknn = R6Class("AutoKknn",
   inherit = Auto,
   public = list(
+
+    #' @description
+    #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "kknn") {
       super$initialize(id = id)
       self$task_types = c("classif", "regr")
       self$properties = character()
     },
 
+    #' @description
+    #' Create the graph for the auto.
     graph = function(task, measure, n_threads, timeout) {
       assert_task(task)
       assert_measure(measure)
@@ -35,6 +44,8 @@ AutoKknn = R6Class("AutoKknn",
         learner
     },
 
+    #' @description
+    #' Get the default values for the auto.
     default_values = function(task) {
       list(
         kknn.k = 7L,
@@ -45,7 +56,10 @@ AutoKknn = R6Class("AutoKknn",
   ),
 
   active = list(
-    search_space = function() {
+
+    #' @field search_space ([paradox::ParamSet]).
+    search_space = function(rhs) {
+      assert_ro_binding(rhs)
       ps(
         kknn.k = p_int(1L, 50L),
         kknn.distance = p_int(1L, 5L),

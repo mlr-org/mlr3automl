@@ -71,7 +71,7 @@ AutoExtraTrees = R6Class("AutoExtraTrees",
 
   active = list(
 
-    #' @field search_space (`ParamSet`).
+    #' @field search_space ([paradox::ParamSet]).
     search_space = function() {
       ps()
     },

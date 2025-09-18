@@ -20,7 +20,7 @@ This class is the base class for all autos.
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{search_space}}{(\code{ParamSet}).}
+\item{\code{search_space}}{(\link[paradox:ParamSet]{paradox::ParamSet}).}
 
 \item{\code{packages}}{(\code{character()}).}
 }
@@ -72,7 +72,7 @@ Check if the auto is compatible with the task.
 \describe{
 \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
 
-\item{\code{memory_limit}}{(\code{numeric(1)}).}
+\item{\code{memory_limit}}{(\code{integer(1)}).}
 
 \item{\code{large_data_set}}{(\code{logical(1)}).}
 }
@@ -95,9 +95,9 @@ Create the graph for the auto.
 
 \item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
 
-\item{\code{n_threads}}{(\code{numeric(1)}).}
+\item{\code{n_threads}}{(\code{integer(1)}).}
 
-\item{\code{timeout}}{(\code{numeric(1)}).}
+\item{\code{timeout}}{(\code{integer(1)}).}
 }
 \if{html}{\out{</div>}}
 }
@@ -114,7 +114,7 @@ Estimate the number of early stopping rounds.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{task}}{\link[mlr3:Task]{mlr3::Task}.}
+\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
 }
 \if{html}{\out{</div>}}
 }
@@ -174,7 +174,7 @@ Default hyperparameters for the learner.
 \if{html}{\out{<a id="method-Auto-design_lhs"></a>}}
 \if{latex}{\out{\hypertarget{method-Auto-design_lhs}{}}}
 \subsection{Method \code{design_lhs()}}{
-DGenerate lhs design for the learner.
+Generate lhs design for the learner.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Auto$design_lhs(task, size)}\if{html}{\out{</div>}}
 }

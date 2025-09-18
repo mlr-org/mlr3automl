@@ -1,11 +1,16 @@
 #' @title Xgboost Auto
 #'
+#' @include mlr_auto.R
+#'
 #' @description
 #' Xgboost auto.
 #'
 #' @template param_id
+#' @template param_task
+#' @template param_measure
+#' @template param_n_threads
+#' @template param_timeout
 #'
-#' @include mlr_auto.R
 #' @export
 AutoXgboost = R6Class("AutoXgboost",
   inherit = Auto,
@@ -21,11 +26,6 @@ AutoXgboost = R6Class("AutoXgboost",
 
     #' @description
     #' Create the graph for the auto.
-    #'
-    #' @param task ([mlr3::Task]).
-    #' @param measure ([mlr3::Measure]).
-    #' @param n_threads (`numeric(1)`).
-    #' @param timeout (`numeric(1)`).
     graph = function(task, measure, n_threads, timeout) {
       assert_task(task)
       assert_measure(measure)
@@ -51,8 +51,6 @@ AutoXgboost = R6Class("AutoXgboost",
 
     #' @description
     #' Estimate the memory for the auto.
-    #'
-    #' @param task ([mlr3::Task]).
     estimate_memory = function(task) {
       upper = self$search_space$upper
 
@@ -72,9 +70,6 @@ AutoXgboost = R6Class("AutoXgboost",
 
     #' @description
     #' Get the internal measure for the auto.
-    #'
-    #' @param measure ([mlr3::Measure]).
-    #' @param task ([mlr3::Task]).
     internal_measure = function(measure, task) {
       if (task$task_type == "regr") {
         switch(measure$id,
@@ -106,8 +101,6 @@ AutoXgboost = R6Class("AutoXgboost",
 
     #' @description
     #' Get the default values for the auto.
-    #'
-    #' @param task ([mlr3::Task]).
     default_values = function(task) {
       list(
         xgboost.eta = log(0.3),
@@ -122,8 +115,9 @@ AutoXgboost = R6Class("AutoXgboost",
   ),
   active = list(
 
-    #' @field search_space (`ParamSet`).
-    search_space = function() {
+    #' @field search_space ([paradox::ParamSet]).
+    search_space = function(rhs) {
+      assert_ro_binding(rhs)
       ps(
         xgboost.eta               = p_dbl(1e-4, 1, logscale = TRUE),
         xgboost.max_depth         = p_int(1, 20),

@@ -1,11 +1,16 @@
 #' @title Svm Auto
 #'
+#' @include mlr_auto.R
+#'
 #' @description
 #' Svm auto.
 #'
 #' @template param_id
+#' @template param_task
+#' @template param_measure
+#' @template param_n_threads
+#' @template param_timeout
 #'
-#' @include mlr_auto.R
 #' @export
 AutoSvm = R6Class("AutoSvm",
   inherit = Auto,
@@ -21,11 +26,6 @@ AutoSvm = R6Class("AutoSvm",
 
     #' @description
     #' Create the graph for the auto.
-    #'
-    #' @param task ([mlr3::Task]).
-    #' @param measure ([mlr3::Measure]).
-    #' @param n_threads (`numeric(1)`).
-    #' @param timeout (`numeric(1)`).
     graph = function(task, measure, n_threads, timeout) {
       assert_task(task)
       assert_measure(measure)
@@ -46,8 +46,6 @@ AutoSvm = R6Class("AutoSvm",
 
     #' @description
     #' Get the default values for the auto.
-    #'
-    #' @param task ([mlr3::Task]).
     default_values = function(task) {
       list(
         svm.cost = log(1),
@@ -60,8 +58,9 @@ AutoSvm = R6Class("AutoSvm",
 
   active = list(
 
-    #' @field search_space (`ParamSet`).
-    search_space = function() {
+    #' @field search_space ([paradox::ParamSet]).
+    search_space = function(rhs) {
+      assert_ro_binding(rhs)
       ps(
         svm.cost    = p_dbl(1e-4, 1e4, logscale = TRUE),
         svm.kernel  = p_fct(c("polynomial", "radial", "sigmoid", "linear")),

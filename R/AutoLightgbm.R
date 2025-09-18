@@ -6,17 +6,26 @@
 #' Lightgbm auto.
 #'
 #' @template param_id
+#' @template param_task
+#' @template param_measure
+#' @template param_n_threads
+#' @template param_timeout
 #'
 #' @export
 AutoLightgbm = R6Class("AutoLightgbm",
   inherit = Auto,
   public = list(
+
+    #' @description
+    #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "lightgbm") {
       super$initialize(id = id)
       self$task_types = c("classif", "regr")
       self$properties = c("internal_tuning", "large_data_sets")
     },
 
+    #' @description
+    #' Create the graph for the auto.
     graph = function(task, measure, n_threads, timeout) {
       assert_task(task)
       assert_measure(measure)
@@ -33,6 +42,8 @@ AutoLightgbm = R6Class("AutoLightgbm",
       learner
     },
 
+    #' @description
+    #' Estimate the memory for the auto.
     estimate_memory = function(task) {
         upper = self$search_space$upper
 
@@ -50,6 +61,8 @@ AutoLightgbm = R6Class("AutoLightgbm",
         memory_size
     },
 
+    #' @description
+    #' Get the internal measure for the auto.
     internal_measure = function(measure, task) {
        if (task$task_type == "regr") {
         switch(measure$id,
@@ -78,6 +91,8 @@ AutoLightgbm = R6Class("AutoLightgbm",
   }
     },
 
+    #' @description
+    #' Get the default values for the auto.
     default_values = function(task) {
       list(
         lightgbm.learning_rate    = log(0.1),
@@ -89,7 +104,10 @@ AutoLightgbm = R6Class("AutoLightgbm",
   ),
 
   active = list(
-    search_space = function() {
+
+    #' @field search_space ([paradox::ParamSet]).
+    search_space = function(rhs) {
+      assert_ro_binding(rhs)
       ps(
         lightgbm.learning_rate    = p_dbl(5e-3, 0.2, logscale = TRUE),
         lightgbm.feature_fraction = p_dbl(0.75, 1),

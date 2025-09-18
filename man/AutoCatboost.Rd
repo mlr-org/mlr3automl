@@ -12,7 +12,7 @@ Catboost auto.
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{search_space}}{(\code{ParamSet}).}
+\item{\code{search_space}}{(\link[paradox:ParamSet]{paradox::ParamSet}).}
 }
 \if{html}{\out{</div>}}
 }
@@ -71,9 +71,9 @@ Create the graph for the auto.
 
 \item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
 
-\item{\code{n_threads}}{(\code{numeric(1)}).}
+\item{\code{n_threads}}{(\code{integer(1)}).}
 
-\item{\code{timeout}}{(\code{numeric(1)}).}
+\item{\code{timeout}}{(\code{integer(1)}).}
 }
 \if{html}{\out{</div>}}
 }

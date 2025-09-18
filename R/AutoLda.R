@@ -6,17 +6,26 @@
 #' Lda auto.
 #'
 #' @template param_id
+#' @template param_task
+#' @template param_measure
+#' @template param_n_threads
+#' @template param_timeout
 #'
 #' @export
 AutoLda = R6Class("AutoLda",
   inherit = Auto,
   public = list(
+
+    #' @description
+    #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "lda") {
       super$initialize(id = id)
       self$task_types = "classif"
       self$properties = "hyperparameter-free"
     },
 
+    #' @description
+    #' Create the graph for the auto.
     graph = function(task, measure, n_threads, timeout) {
       assert_task(task)
       assert_measure(measure)
@@ -35,13 +44,18 @@ AutoLda = R6Class("AutoLda",
         learner
     },
 
+    #' @description
+    #' Get the default values for the auto.
     default_values = function(task) {
       list()
     }
   ),
 
   active = list(
-    search_space = function() {
+
+    #' @field search_space ([paradox::ParamSet]).
+    search_space = function(rhs) {
+      assert_ro_binding(rhs)
       ps()
     }
   )

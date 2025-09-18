@@ -6,6 +6,10 @@
 #' Glmnet auto.
 #'
 #' @template param_id
+#' @template param_task
+#' @template param_measure
+#' @template param_n_threads
+#' @template param_timeout
 #'
 #' @export
 AutoGlmnet = R6Class("AutoGlmnet",
@@ -22,11 +26,6 @@ AutoGlmnet = R6Class("AutoGlmnet",
 
     #' @description
     #' Create the graph for the auto.
-    #'
-    #' @param task ([mlr3::Task]).
-    #' @param measure ([mlr3::Measure]).
-    #' @param n_threads (`numeric(1)`).
-    #' @param timeout (`numeric(1)`).
     graph = function(task, measure, n_threads, timeout) {
       assert_task(task)
       assert_measure(measure)
@@ -48,8 +47,6 @@ AutoGlmnet = R6Class("AutoGlmnet",
 
     #' @description
     #' Get the default values for the auto.
-    #'
-    #' @param task ([mlr3::Task]).
     default_values = function(task) {
       list(
         glmnet.s = 0.01,
@@ -60,8 +57,9 @@ AutoGlmnet = R6Class("AutoGlmnet",
 
   active = list(
 
-    #' @field search_space (`ParamSet`).
-    search_space = function() {
+    #' @field search_space ([paradox::ParamSet]).
+    search_space = function(rhs) {
+      assert_ro_binding(rhs)
       ps(
         glmnet.s     = p_dbl(1e-4, 1e4, logscale = TRUE),
         glmnet.alpha = p_dbl(0, 1)

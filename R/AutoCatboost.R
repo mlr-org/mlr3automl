@@ -6,6 +6,10 @@
 #' Catboost auto.
 #'
 #' @template param_id
+#' @template param_task
+#' @template param_measure
+#' @template param_n_threads
+#' @template param_timeout
 #'
 #' @export
 AutoCatboost = R6Class("AutoCatboost",
@@ -22,11 +26,6 @@ AutoCatboost = R6Class("AutoCatboost",
 
     #' @description
     #' Create the graph for the auto.
-    #'
-    #' @param task ([mlr3::Task]).
-    #' @param measure ([mlr3::Measure]).
-    #' @param n_threads (`numeric(1)`).
-    #' @param timeout (`numeric(1)`).
     graph = function(task, measure, n_threads, timeout) {
       assert_task(task)
       assert_measure(measure)
@@ -49,8 +48,6 @@ AutoCatboost = R6Class("AutoCatboost",
 
     #' @description
     #' Estimate the memory for the auto.
-    #'
-    #' @param task ([mlr3::Task]).
     estimate_memory = function(task) {
       upper = self$search_space$upper
 
@@ -70,9 +67,6 @@ AutoCatboost = R6Class("AutoCatboost",
 
     #' @description
     #' Get the internal measure for the auto.
-    #'
-    #' @param measure ([mlr3::Measure]).
-    #' @param task ([mlr3::Task]).
     internal_measure = function(measure, task) {
       if (task$task_type == "regr") {
         switch(measure$id,
@@ -112,8 +106,6 @@ AutoCatboost = R6Class("AutoCatboost",
 
     #' @description
     #' Get the default values for the auto.
-    #'
-    #' @param task ([mlr3::Task]).
     default_values = function(task) {
       list(
         catboost.depth = 6L,
@@ -125,8 +117,9 @@ AutoCatboost = R6Class("AutoCatboost",
 
   active = list(
 
-    #' @field search_space (`ParamSet`).
-    search_space = function() {
+    #' @field search_space ([paradox::ParamSet]).
+    search_space = function(rhs) {
+      assert_ro_binding(rhs)
       ps(
         catboost.depth          = p_int(5L, 8L),
         catboost.learning_rate  = p_dbl(5e-3, 0.2, logscale = TRUE),

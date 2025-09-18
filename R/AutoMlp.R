@@ -6,17 +6,26 @@
 #' Mlp auto.
 #'
 #' @template param_id
+#' @template param_task
+#' @template param_measure
+#' @template param_n_threads
+#' @template param_timeout
 #'
 #' @export
 AutoMlp = R6Class("AutoMlp",
   inherit = Auto,
   public = list(
+
+    #' @description
+    #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "mlp") {
       super$initialize(id = id)
       self$task_types = c("classif", "regr")
       self$properties = "internal_tuning"
     },
 
+    #' @description
+    #' Create the graph for the auto.
     graph = function(task, measure, n_threads, timeout) {
       assert_task(task)
       assert_measure(measure)
@@ -40,12 +49,16 @@ AutoMlp = R6Class("AutoMlp",
         learner
     },
 
+    #' @description
+    #' Estimate the memory for the auto.
     estimate_memory = function(task) {
       memory_size = task$nrow * task$ncol * 8 * 10 / 1e6
       lg$info("Mlp memory size: %s MB", round(memory_size))
       memory_size
     },
 
+    #' @description
+    #' Get the default values for the auto.
     default_values = function(task) {
       list(
         mlp.n_layers = 2L,
@@ -59,7 +72,9 @@ AutoMlp = R6Class("AutoMlp",
 
   active = list(
 
-    search_space = function() {
+    #' @field search_space ([paradox::ParamSet]).
+    search_space = function(rhs) {
+      assert_ro_binding(rhs)
       ps(
         mlp.n_layers              = p_int(1L, 16L),
         mlp.neurons               = p_int(1L, 1024L),

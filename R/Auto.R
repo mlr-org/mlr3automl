@@ -6,6 +6,13 @@
 #' @include mlr_auto.R
 #'
 #' @template param_id
+#' @template param_task
+#' @template param_measure
+#' @template param_n_threads
+#' @template param_timeout
+#' @template param_memory_limit
+#' @template param_large_data_set
+#' @template param_size
 #'
 #' @export
 Auto = R6Class("Auto",
@@ -28,10 +35,6 @@ Auto = R6Class("Auto",
 
     #' @description
     #' Check if the auto is compatible with the task.
-    #'
-    #' @param task ([mlr3::Task]).
-    #' @param memory_limit (`numeric(1)`).
-    #' @param large_data_set (`logical(1)`).
     check = function(task, memory_limit = Inf, large_data_set = FALSE) {
       if (!task$task_type %in% self$task_types) {
        lg$info("Learner '%s' is not compatible with task type '%s'", self$id, task$task_type)
@@ -50,19 +53,12 @@ Auto = R6Class("Auto",
 
     #' @description
     #' Create the graph for the auto.
-    #'
-    #' @param task ([mlr3::Task]).
-    #' @param measure ([mlr3::Measure]).
-    #' @param n_threads (`numeric(1)`).
-    #' @param timeout (`numeric(1)`).
     graph = function(task, measure, n_threads, timeout) {
       stop("Abstract")
     },
 
     #' @description
     #' Estimate the number of early stopping rounds.
-    #'
-    #' @param task [mlr3::Task].
     early_stopping_rounds = function(task) {
       min_early_stopping_rounds = 20L
       max_early_stopping_rounds = 200L
@@ -74,24 +70,18 @@ Auto = R6Class("Auto",
 
     #' @description
     #' Estimate the memory for the auto.
-    #'
-    #' @param task ([mlr3::Task]).
     estimate_memory = function(task) {
       -Inf
     },
 
     #' @description
     #' Get the default values for the auto.
-    #'
-    #' @param task ([mlr3::Task]).
     default_values = function(task) {
       stop("Abstract")
     },
 
     #' @description
     #' Default hyperparameters for the learner.
-    #'
-    #' @param task ([mlr3::Task]).
     design_default = function(task) {
       default_values = self$default_values(task)
       xdt = as.data.table(default_values)
@@ -100,10 +90,7 @@ Auto = R6Class("Auto",
     },
 
     #' @description
-    #' DGenerate lhs design for the learner.
-    #'
-    #' @param task ([mlr3::Task]).
-    #' @param size (`integer(1)`).
+    #' Generate lhs design for the learner.
     design_lhs = function(task, size) {
       assert_task(task)
       assert_count(size)
@@ -121,8 +108,9 @@ Auto = R6Class("Auto",
   ),
 
   active = list(
-    #' @field search_space (`ParamSet`).
-    search_space = function() {
+    #' @field search_space ([paradox::ParamSet]).
+    search_space = function(rhs) {
+      assert_ro_binding(rhs)
       stop("Abstract")
     },
 

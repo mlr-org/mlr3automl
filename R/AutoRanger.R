@@ -1,14 +1,31 @@
+#' @title Ranger Auto
+#'
 #' @include mlr_auto.R
+#'
+#' @description
+#' Ranger auto.
+#'
+#' @template param_id
+#' @template param_task
+#' @template param_measure
+#' @template param_n_threads
+#' @template param_timeout
+#'
 #' @export
 AutoRanger = R6Class("AutoRanger",
   inherit = Auto,
   public = list(
+
+    #' @description
+    #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "ranger") {
       super$initialize(id = id)
       self$task_types = c("classif", "regr")
       self$properties = "large_data_sets"
     },
 
+    #' @description
+    #' Create the graph for the auto.
     graph = function(task, measure, n_threads, timeout) {
       assert_task(task)
       assert_measure(measure)
@@ -27,6 +44,8 @@ AutoRanger = R6Class("AutoRanger",
         learner
     },
 
+    #' @description
+    #' Estimate the memory for the auto.
     estimate_memory = function(task) {
       upper = self$search_space$upper
 
@@ -38,6 +57,8 @@ AutoRanger = R6Class("AutoRanger",
       memory_size
     },
 
+    #' @description
+    #' Get the default values for the auto.
     default_values = function(task) {
       list(
         ranger.mtry.ratio = 0.5,
@@ -49,7 +70,10 @@ AutoRanger = R6Class("AutoRanger",
   ),
 
   active = list(
-    search_space = function() {
+
+    #' @field search_space ([paradox::ParamSet]).
+    search_space = function(rhs) {
+      assert_ro_binding(rhs)
       ps(
         ranger.mtry.ratio      = p_dbl(0, 1),
         ranger.replace         = p_lgl(),
