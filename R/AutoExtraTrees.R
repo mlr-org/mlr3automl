@@ -33,6 +33,8 @@ AutoExtraTrees = R6Class("AutoExtraTrees",
       assert_count(n_threads)
       assert_count(timeout)
 
+      require_namespaces("mlr3learners")
+
       learner = lrn(sprintf("%s.ranger", task$task_type),
         id = "extra_trees",
         splitrule = "extratrees",

@@ -32,6 +32,8 @@ AutoMlp = R6Class("AutoMlp",
       assert_count(n_threads)
       assert_count(timeout)
 
+      require_namespaces("mlr3torch")
+
       learner = lrn(sprintf("%s.mlp", task$task_type),
        id = "mlp",
        measures_valid = measure,

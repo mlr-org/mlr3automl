@@ -32,6 +32,8 @@ AutoGlmnet = R6Class("AutoGlmnet",
       assert_count(n_threads)
       assert_count(timeout)
 
+      require_namespaces("mlr3learners")
+
       learner = lrn(sprintf("%s.glmnet", task$task_type), id = "glmnet")
 
       po("removeconstants", id = "glmnet_removeconstants") %>>%

@@ -32,6 +32,8 @@ AutoCatboost = R6Class("AutoCatboost",
       assert_count(n_threads)
       assert_count(timeout)
 
+      require_namespaces("mlr3extralearners")
+
       learner = lrn(sprintf("%s.catboost", task$task_type),
         id = "catboost",
         iterations = self$search_space$upper["catboost.iterations"] %??% 1000L,

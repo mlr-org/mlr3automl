@@ -11,7 +11,6 @@
 #' @import mlr3torch
 #' @import paradox
 #' @import R6
-#' @import mirai
 #' @importFrom rush rush_config
 #' @import lhs
 

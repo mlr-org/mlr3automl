@@ -32,6 +32,8 @@ AutoFastai = R6Class("AutoFastai",
       assert_count(n_threads)
       assert_count(timeout)
 
+      require_namespaces("mlr3extralearners")
+
       learner = lrn(sprintf("%s.fastai", task$task_type),
         id = "fastai",
         patience = self$early_stopping_rounds(task),

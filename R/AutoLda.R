@@ -32,6 +32,8 @@ AutoLda = R6Class("AutoLda",
       assert_count(n_threads)
       assert_count(timeout)
 
+      require_namespaces("mlr3learners")
+
       learner = lrn("classif.lda", id = "lda")
 
       po("removeconstants", id = "lda_removeconstants") %>>%

@@ -32,6 +32,8 @@ AutoKknn = R6Class("AutoKknn",
       assert_count(n_threads)
       assert_count(timeout)
 
+      require_namespaces("mlr3learners")
+
       learner = lrn(sprintf("%s.kknn", task$task_type), id = "kknn")
 
       po("removeconstants", id = "kknn_removeconstants") %>>%

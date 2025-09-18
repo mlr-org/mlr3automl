@@ -32,6 +32,8 @@ AutoSvm = R6Class("AutoSvm",
       assert_count(n_threads)
       assert_count(timeout)
 
+      require_namespaces("mlr3learners")
+
       svm_type = if (task$task_type == "classif") "C-classification" else "eps-regression"
       branch_svm = po("removeconstants", id = "svm_removeconstants") %>>%
         po("imputehist", id = "svm_imputehist") %>>%

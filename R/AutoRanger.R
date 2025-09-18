@@ -32,6 +32,8 @@ AutoRanger = R6Class("AutoRanger",
       assert_count(n_threads)
       assert_count(timeout)
 
+      require_namespaces("mlr3learners")
+
       learner = lrn(sprintf("%s.ranger", task$task_type), id = "ranger")
       set_threads(learner, n_threads)
 

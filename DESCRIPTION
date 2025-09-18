@@ -13,9 +13,6 @@ URL: https://github.com/mlr-org/mlr3automl
 BugReports: https://github.com/mlr-org/mlr3automl/issues
 Depends:
     mlr3 (>= 1.1.0),
-    mlr3extralearners,
-    mlr3learners (>= 0.12.0),
-    mlr3torch,
     mlr3tuning (>= 1.4.0.9000),
     R (>= 3.1.0),
     rush (>= 0.3.0)
@@ -24,7 +21,9 @@ Imports:
     checkmate,
     data.table,
     lhs,
-    mirai,
+    mlr3extralearners,
+    mlr3learners (>= 0.12.0),
+    mlr3torch,
     mlr3mbo (>= 0.2.8),
     mlr3misc (>= 0.15.1),
     mlr3pipelines,
@@ -40,6 +39,7 @@ Suggests:
     lightgbm,
     lgr,
     MASS,
+    mirai,
     mlr3viz,
     ranger,
     redux,

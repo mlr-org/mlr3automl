@@ -32,6 +32,8 @@ AutoXgboost = R6Class("AutoXgboost",
       assert_count(n_threads)
       assert_count(timeout)
 
+      require_namespaces("mlr3learners")
+
       learner = lrn(sprintf("%s.xgboost", task$task_type),
         id = "xgboost",
         early_stopping_rounds = self$early_stopping_rounds(task),
