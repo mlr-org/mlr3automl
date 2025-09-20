@@ -26,11 +26,13 @@ Glmnet auto.
 }
 }
 \if{html}{\out{
-<details open><summary>Inherited methods</summary>
+<details><summary>Inherited methods</summary>
 <ul>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="check"><a href='../../mlr3automl/html/Auto.html#method-Auto-check'><code>mlr3automl::Auto$check()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_default"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_default'><code>mlr3automl::Auto$design_default()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_lhs"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_lhs'><code>mlr3automl::Auto$design_lhs()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_random"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_random'><code>mlr3automl::Auto$design_random()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_set"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_set'><code>mlr3automl::Auto$design_set()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="early_stopping_rounds"><a href='../../mlr3automl/html/Auto.html#method-Auto-early_stopping_rounds'><code>mlr3automl::Auto$early_stopping_rounds()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="estimate_memory"><a href='../../mlr3automl/html/Auto.html#method-Auto-estimate_memory'><code>mlr3automl::Auto$estimate_memory()</code></a></span></li>
 </ul>
@@ -81,7 +83,7 @@ Create the graph for the auto.
 \if{html}{\out{<a id="method-AutoGlmnet-default_values"></a>}}
 \if{latex}{\out{\hypertarget{method-AutoGlmnet-default_values}{}}}
 \subsection{Method \code{default_values()}}{
-Get the default values for the auto.
+Get the default hyperparameter values.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AutoGlmnet$default_values(task)}\if{html}{\out{</div>}}
 }

@@ -44,7 +44,7 @@ AutoSvm = R6Class("AutoSvm",
         po("collapsefactors", target_level_count = 100, id = "svm_collapse") %>>%
         po("encode", method = "one-hot", id = "svm_encode") %>>%
         po("removeconstants", id = "svm_post_removeconstants") %>>%
-        lrn(sprintf("%s.svm", task$task_type), id = "svm", type = svm_type)
+        lrn(sprintf("%s.svm", task$task_type), id = "svm", type = svm_type, kernel = "radial")
     },
 
     #' @description
@@ -52,16 +52,8 @@ AutoSvm = R6Class("AutoSvm",
     default_values = function(task) {
       list(
         svm.cost = log(1),
-        svm.kernel = "radial",
-        svm.degree = NA_integer_,
         svm.gamma = log(1 / length(task$feature_names))
       )
-    },
-
-    #' @description
-    #' Get the initial hyperparameter set.
-    design_set = function(task, measure, size) {
-      sample_design_set(task, measure, size, "svm", self$search_space)
     }
   ),
 
@@ -72,9 +64,7 @@ AutoSvm = R6Class("AutoSvm",
       assert_ro_binding(rhs)
       ps(
         svm.cost    = p_dbl(1e-4, 1e4, logscale = TRUE),
-        svm.kernel  = p_fct(c("polynomial", "radial", "sigmoid", "linear")),
-        svm.degree  = p_int(2, 5, depends =  quote(svm.kernel == "polynomial")),
-        svm.gamma   = p_dbl(1e-4, 1e4, logscale = TRUE, depends = quote(svm.kernel %in% c("polynomial", "sigmoid", "radial")))
+        svm.gamma   = p_dbl(1e-4, 1e4, logscale = TRUE)
       )
     }
   )

@@ -24,10 +24,10 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(
       id = "classif.auto",
-      learner_ids = NULL
+      learner_ids
       ) {
       all_learner_ids = mlr_auto$keys()
-      if (is.null(learner_ids)) learner_ids = all_learner_ids
+      if (missing(learner_ids)) learner_ids = all_learner_ids
       assert_subset(learner_ids, all_learner_ids)
       private$.learner_ids = learner_ids
 
@@ -42,14 +42,14 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         small_data_size = p_int(lower = 1L, init = 5000L, tags = c("train", "super")),
         small_data_resampling = p_uty(init = rsmp("cv", folds = 10), tags = c("train", "super")),
         # tuner
+        initial_design_size = p_int(lower = 1L, init = 4L, tags = c("train", "super")),
+        initial_design_type = p_uty(init = "lhs", tags = c("train", "super"), custom_check = crate({function(x) check_subset(x, c("lhs", "set", "random", "default"))})),
         resampling = p_uty(init = rsmp("holdout"), tags = c("train", "super")),
         terminator = p_uty(init = trm("run_time", secs = 3600), tags = c("train", "super")),
         measure = p_uty(tags = c("train", "super")),
-        lhs_size = p_int(lower = 1L, init = 4L, tags = c("train", "super")),
         callbacks = p_uty(init = clbk("mlr3tuning.async_save_logs"), tags = c("train", "super")),
         store_benchmark_result = p_lgl(init = FALSE, tags = c("train", "super")),
         store_models = p_lgl(init = FALSE, tags = c("train", "super")),
-        initial_design_type = p_fct(levels = c("lhs", "best"), init = "lhs", tags = c("train", "super")),
         # debugging
         encapsulate_learner = p_lgl(init = TRUE, tags = c("train", "super")),
         encapsulate_mbo = p_lgl(init = TRUE, tags = c("train", "super"))

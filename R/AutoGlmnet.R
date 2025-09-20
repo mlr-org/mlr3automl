@@ -55,12 +55,6 @@ AutoGlmnet = R6Class("AutoGlmnet",
         glmnet.lambda = 0,
         glmnet.alpha = 1
       )
-    },
-
-    #' @description
-    #' Get the initial hyperparameter set.
-    design_set = function(task, measure, size) {
-      sample_design_set(task, measure, size, "glmnet", self$search_space)
     }
   ),
 

@@ -103,12 +103,6 @@ AutoLightgbm = R6Class("AutoLightgbm",
         lightgbm.min_data_in_leaf = 20L,
         lightgbm.num_leaves       = 31L
       )
-    },
-
-    #' @description
-    #' Get the initial hyperparameter set.
-    design_set = function(task, measure, size) {
-      sample_design_set(task, measure, size, "lightgbm", self$search_space)
     }
   ),
 

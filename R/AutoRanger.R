@@ -69,12 +69,6 @@ AutoRanger = R6Class("AutoRanger",
         ranger.sample.fraction = 0.632,
         ranger.num.trees = 1000L
       )
-    },
-
-    #' @description
-    #' Get the initial hyperparameter set.
-    design_set = function(task, measure, size) {
-      sample_design_set(task, measure, size, "ranger", self$search_space)
     }
   ),
 

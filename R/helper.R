@@ -56,59 +56,16 @@ assert_python_packages = function(packages, python_version = NULL) {
   invisible(packages)
 }
 
-sample_design_set = function(task, measure, size, learner_id, search_space) {
-  assert_task(task)
-  assert_measure(measure)
-  assert_count(size, null.ok = TRUE)
-
-
-  # read data of best hyperparameters
-  data = fread(system.file("data", sprintf("best_%s.csv", learner_id), package = "mlr3automl"))
-  if (is.null(size)) size = nrow(data)
-
-  # exclude tasks
-  exclude_tasks = getOption("mlr3automl.exclude_tasks", "")
-  if (any(exclude_tasks %in% data$task)) {
-    lg$info("Excluding tasks from initial design: %s", as_short_string(exclude_tasks[exclude_tasks %in% data$task]))
-    data = data[task %nin% exclude_tasks]
-  }
-
-  # subset to relevant measure
-  measure_id = sub(sprintf("^%s\\.", task$task_type), "", measure$id)
-  measure_id = if (measure_id %in% data$measure) measure_id else "mcc"
-  data = data[measure_id, , on = "measure"]
-
-  # subset to relevant parameters
-  data = set_names(data, sprintf("%s.%s", learner_id, names(data)))
-  param_ids = search_space$ids()
-  internal_ids = search_space$ids(tags = "internal_tuning")
-  param_ids = setdiff(param_ids, internal_ids)
-  data = data[, param_ids, with = FALSE]
-
-
-  # draw at least one row for each factor level
-  factor_cols = search_space$ids(class = c("ParamFct", "ParamLgl"))
-  if (length(factor_cols)) {
-
-    # sample rows for each factor level
-    xdt = map_dtr(factor_cols, function(col) {
-      data[, .SD[sample(.N, 1)], by = col]
-    })
-
-    # sample remaining rows until size is reached
-    data = data[!xdt, , on = param_ids]
-    size = size - nrow(xdt)
-    if (size > 0) {
-      size = min(size, nrow(data))
-      xdt = rbindlist(list(xdt, data[sample(nrow(data), size)]), use.names = TRUE)
+callback_runtime_limit = callback_async_tuning("initial_design_runtime",
+  on_optimizer_after_eval = function(callback, context) {
+    start_time = context$instance$archive$start_time
+    runtime_limit = context$instance$terminator$param_set$values$secs
+    if (difftime(Sys.time(), start_time, units = "secs") > runtime_limit * 0.25) {
+      lg$info("Initial design runtime limit reached")
+      failed_tasks = context$instance$rush$queued_tasks
+      if (length(failed_tasks)) {
+        context$instance$rush$push_failed(failed_tasks, condition = replicate(length(failed_tasks), list(message = "Initial design runtime limit reached"), simplify = FALSE))
+      }
     }
-  } else {
-    size = min(size, nrow(data))
-    xdt = data[sample(nrow(data), size)]
   }
-
-  lg$info("Learner '%s' design set size: %i", learner_id, nrow(xdt))
-
-  set(xdt, j = "branch.selection", value = learner_id)
-  xdt
-}
+)

@@ -32,7 +32,7 @@ test_that("LearnerClassifAutoRanger is trained", {
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 6),
-    lhs_size = 1,
+    initial_design_size = 1,
     encapsulate_learner = FALSE,
     encapsulate_mbo = FALSE
   )

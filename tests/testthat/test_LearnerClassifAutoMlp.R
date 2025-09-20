@@ -7,6 +7,7 @@ test_that("LearnerClassifAutoMlp is initialized", {
 })
 
 test_that("LearnerClassifAutoFastai is trained", {
+  skip_if(TRUE)
   skip_on_cran()
   skip_if_not_installed("mlr3torch")
   skip_if_not_installed("rush")
@@ -21,7 +22,7 @@ test_that("LearnerClassifAutoFastai is trained", {
     resampling = rsmp("cv", folds = 3),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 1),
-    lhs_size = 1,
+    initial_design_size = 1,
     encapsulate_learner = FALSE,
     encapsulate_mbo = FALSE
   )

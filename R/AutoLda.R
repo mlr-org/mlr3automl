@@ -8,6 +8,9 @@
 #' @template param_id
 #' @template param_task
 #' @template param_measure
+#' @template param_task
+#' @template param_measure
+#' @template param_size
 #' @template param_n_threads
 #' @template param_timeout
 #'
@@ -50,7 +53,25 @@ AutoLda = R6Class("AutoLda",
     #' @description
     #' Get the default values for the auto.
     default_values = function(task) {
-      list()
+      NULL
+    },
+
+    #' @description
+    #' Get the initial hyperparameter set.
+    design_lhs = function(task, size) {
+      NULL
+    },
+
+    #' @description
+    #' Get the initial hyperparameter set.
+    design_random = function(task, size) {
+      NULL
+    },
+
+    #' @description
+    #' Get the initial hyperparameter set.
+    design_set = function(task, measure, size) {
+      NULL
     }
   ),
 

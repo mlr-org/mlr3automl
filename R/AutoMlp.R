@@ -58,18 +58,6 @@ AutoMlp = R6Class("AutoMlp",
       memory_size = task$nrow * task$ncol * 8 * 10 / 1e6
       lg$info("Mlp memory size: %s MB", round(memory_size))
       memory_size
-    },
-
-    #' @description
-    #' Get the default values for the auto.
-    default_values = function(task) {
-      list(
-        mlp.n_layers = 2L,
-        mlp.neurons = 200L,
-        mlp.p = 0.5,
-        mlp.opt.lr = log(1e-3),
-        mlp.opt.weight_decay = log(1e-3)
-      )
     }
   ),
 

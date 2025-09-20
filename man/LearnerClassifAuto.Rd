@@ -58,7 +58,7 @@ Resampling strategy used for tuning.}
 Terminator criterion for tuning.}
 \item{measure}{(\link[mlr3:Measure]{mlr3::Measure})\cr
 Measure used for tuning.}
-\item{lhs_size}{(\code{integer(1)})\cr
+\item{initial_design_size}{(\code{integer(1)})\cr
 Size of the initial design used for mbo.}
 \item{callbacks}{(\link[mlr3tuning:CallbackAsyncTuning]{mlr3tuning::CallbackAsyncTuning})\cr
 Callbacks used for tuning.}
@@ -117,7 +117,7 @@ Change to \code{FALSE} to debug.}
 \subsection{Method \code{new()}}{
 Creates a new instance of this \link[R6:R6Class]{R6} class.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LearnerClassifAuto$new(id = "classif.auto", learner_ids = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LearnerClassifAuto$new(id = "classif.auto", learner_ids)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

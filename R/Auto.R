@@ -93,30 +93,72 @@ Auto = R6Class("Auto",
     },
 
     #' @description
+    #' Generate random design for the learner.
+    design_random = function(task, size) {
+      assert_task(task)
+      assert_count(size)
+
+      internal_tune_ids = self$search_space$ids(any_tags = "internal_tuning")
+      xdt = generate_design_random(self$search_space, size)$data
+      set(xdt, j = "branch.selection", value = self$id)
+
+      lg$info("Learner '%s' design set size: %i", self$id, nrow(xdt))
+
+      xdt[, setdiff(c("branch.selection", self$search_space$ids()), internal_tune_ids), with = FALSE]
+    },
+
+    #' @description
     #' Generate lhs design for the learner.
     design_lhs = function(task, size) {
       assert_task(task)
       assert_count(size)
-
-      if (!self$search_space$length) return(data.table())
       internal_tune_ids = self$search_space$ids(any_tags = "internal_tuning")
-      n_levels = self$search_space$nlevels[self$search_space$ids(class = c("ParamFct", "ParamLgl"))]
-      xdt = generate_design_lhs(self$search_space, as.integer(max(n_levels, size)))$data
-      if (length(internal_tune_ids)) {
-        xdt = xdt[, setdiff(self$search_space$ids(), internal_tune_ids), with = FALSE]
-      }
+      xdt = generate_design_lhs(self$search_space, n = size)$data
       set(xdt, j = "branch.selection", value = self$id)
-      xdt
+
+      lg$info("Learner '%s' design set size: %i", self$id, nrow(xdt))
+
+      xdt[, setdiff(c("branch.selection", self$search_space$ids()), internal_tune_ids), with = FALSE]
     },
 
     #' @description
     #' Get the initial hyperparameter set.
+    #' The initial design might be larger than the requested size to include all factor levels
+    #' If no best hyperparameter set is available, a random design is generated.
     design_set = function(task, measure, size) {
       assert_task(task)
       assert_measure(measure)
-      assert_count(size, null.ok = TRUE)
+      assert_count(size)
 
-      self$design_default(task)
+      # read data of best hyperparameters
+      file = system.file("data", sprintf("best_%s.csv", self$id), package = "mlr3automl")
+      if (!file.exists(file)) return(self$design_random(task, size))
+      data = fread(file)
+
+      # exclude tasks
+      exclude_tasks = getOption("mlr3automl.exclude_tasks", "")
+      if (any(exclude_tasks %in% data$task)) {
+        lg$info("Excluding tasks from initial design: %s", as_short_string(exclude_tasks[exclude_tasks %in% data$task]))
+        data = data[task %nin% exclude_tasks]
+      }
+
+      # subset to relevant measure
+      measure_id = sub(sprintf("^%s\\.", task$task_type), "", measure$id)
+      measure_id = if (measure_id %in% data$measure) measure_id else "mcc"
+      data = data[measure_id, , on = "measure"]
+
+      # subset to relevant parameters
+      param_ids = self$search_space$ids()
+      param_internal_ids = self$search_space$ids(any_tags = "internal_tuning")
+      param_ids = setdiff(param_ids, param_internal_ids)
+      data = data[, param_ids, with = FALSE]
+
+      xdt = data[sample(nrow(data), min(size, nrow(data)))]
+      set(xdt, j = "branch.selection", value = self$id)
+
+      lg$info("Learner '%s' design set size: %i", self$id, nrow(xdt))
+
+      xdt
     }
   ),
 

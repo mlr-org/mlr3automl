@@ -25,7 +25,7 @@ expect_rush_reset = function(rush, type = "kill") {
 }
 
 
-test_classif_learner = function(learner_id, n_evals = 6) {
+test_classif_learner = function(learner_id, initial_design_size = 2, initial_design_type = "lhs", n_evals = 5) {
   skip_on_cran()
   skip_if_not_installed(unlist(map(mlr_auto$mget(learner_id), "packages")))
   skip_if_not_installed("rush")
@@ -41,7 +41,8 @@ test_classif_learner = function(learner_id, n_evals = 6) {
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = n_evals),
-    lhs_size = 1,
+    initial_design_type = initial_design_type,
+    initial_design_size = initial_design_size,
     encapsulate_learner = FALSE,
     encapsulate_mbo = FALSE
   )
@@ -71,7 +72,7 @@ test_regr_learner = function(learner_id, n_evals = 6) {
     resampling = rsmp("holdout"),
     measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = n_evals),
-    lhs_size = 1,
+    initial_design_size = 1,
     encapsulate_learner = FALSE,
     encapsulate_mbo = FALSE
   )

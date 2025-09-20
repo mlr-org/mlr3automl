@@ -35,7 +35,7 @@ AutoKknn = R6Class("AutoKknn",
 
       require_namespaces("mlr3learners")
 
-      learner = lrn(sprintf("%s.kknn", task$task_type), id = "kknn")
+      learner = lrn(sprintf("%s.kknn", task$task_type), id = "kknn", kernel = "optimal")
 
       po("removeconstants", id = "kknn_removeconstants") %>>%
         po("imputehist", id = "kknn_imputehist") %>>%
@@ -52,15 +52,8 @@ AutoKknn = R6Class("AutoKknn",
     default_values = function(task) {
       list(
         kknn.k = 7L,
-        kknn.distance = 2,
-        kknn.kernel = "optimal"
+        kknn.distance = 2
       )
-    },
-
-    #' @description
-    #' Get the initial hyperparameter set.
-    design_set = function(task, measure, size) {
-      sample_design_set(task, measure, size, "kknn", self$search_space)
     }
   ),
 
@@ -71,8 +64,8 @@ AutoKknn = R6Class("AutoKknn",
       assert_ro_binding(rhs)
       ps(
         kknn.k = p_int(1L, 100L, logscale = TRUE),
-        kknn.distance = p_dbl(1L, 5L),
-        kknn.kernel = p_fct(levels = c("rectangular", "optimal", "epanechnikov", "biweight", "triweight", "cos",  "inv",  "gaussian", "rank"))
+        kknn.distance = p_dbl(1L, 5L)
+        #kknn.kernel = p_fct(levels = c("rectangular", "optimal", "epanechnikov", "biweight", "triweight", "cos",  "inv",  "gaussian", "rank"))
       )
     }
   )

@@ -115,12 +115,6 @@ AutoCatboost = R6Class("AutoCatboost",
         catboost.learning_rate = log(0.03),
         catboost.l2_leaf_reg = 3
       )
-    },
-
-    #' @description
-    #' Get the initial hyperparameter set.
-    design_set = function(task, measure, size) {
-      sample_design_set(task, measure, size, "catboost", self$search_space)
     }
   ),
 

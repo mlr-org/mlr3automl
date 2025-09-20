@@ -94,63 +94,23 @@ train_auto = function(self, private, task) {
     store_models = pv$store_models
   )
 
-  # initial design
-  if (pv$initial_design_type == "lhs") {
-    default_design = map_dtr(autos, function(auto) auto$design_default(task))
-    lhs_design = map_dtr(autos, function(auto) auto$design_lhs(task, pv$lhs_size))
-    initial_design = rbindlist(list(default_design, lhs_design), use.names = TRUE, fill = TRUE)
-    setorderv(initial_design, "branch.selection")
-    tuner$param_set$set_values(initial_design = initial_design)
-  } else {
 
-    if (!test_multi_class(pv$terminator, c("TerminatorEvals", "TerminatorRunTime"))) {
-      error_config("Terminator must be a TerminatorEvals or TerminatorRunTime.")
-    }
-
-    initial_design = if (inherits(pv$terminator, "TerminatorEvals")) {
-      # set size of test design to 25% of the total number of evaluations
-      lg$info("Evaluating initial design")
-
-      size = ceiling(pv$terminator$param_set$values$n_evals * 0.25 / length(autos))
-      map_dtr(autos, function(auto) auto$design_set(task, pv$measure, size), .fill = TRUE)
-    } else if (inherits(pv$terminator, "TerminatorRunTime")) {
-      # draw one point for each learner and factor level
-      initial_designs = map(autos, function(auto) auto$design_set(task, pv$measure, size = NULL))
-      walk(initial_designs, function(initial_design) {
-        initial_design[, .i := .I]
-      })
-      initial_design = rbindlist(initial_designs, use.names = TRUE, fill = TRUE)
-      setorderv(initial_design, ".i")
-      set(initial_design, j = ".i", value = NULL)
-
-      runtime_initial_design = pv$terminator$param_set$values$secs * 0.25
-      self$instance$terminator$param_set$set_values(secs = runtime_initial_design)
-      lg$info("Evaluating initial design for %s seconds", runtime_initial_design)
-      initial_design
-    }
-
-
-    tnr_design_points = tnr("async_design_points", design = initial_design)
-    tnr_design_points$optimize(self$instance)
-
-    # if (inherits(pv$terminator, "TerminatorRunTime")) {
-    #   # increase size of test design to 25% of the total runtime
-    #   runtime_learners = sum(self$instance$archive$data$runtime_learners, na.rm = TRUE)
-    #   runtime_limit = pv$terminator$param_set$values$secs * 0.25
-    #   size = floor(runtime_limit / runtime_learners * length(autos))
-
-    #   if (size >= 1) {
-    #     lg$info("Evaluating initial design")
-
-    #     # draw additional design points for each learner but exclude already sampled rows
-    #     test_design = pmap_dtr(list(autos, split(test_design, by = "branch.selection")), function(auto, design) auto$design_set(task, pv$measure, size, exclude = design, stratify = FALSE), .fill = TRUE)
-    #     test_tuner = tnr("async_design_points", design = test_design)
-    #     test_tuner$optimize(self$instance)
-    #   } else {
-    #     lg$info("Runtime test design already exceeded 25%% of the total runtime. Skipping initial design.")
-    #   }
-    # }
+  initial_design_best =if ("set" %in% pv$initial_design_type) {
+    map_dtr(autos, function(auto) auto$design_set(task, measure = pv$measure, size = pv$initial_design_size), .fill = TRUE)
   }
+  initial_design_lhs = if ("lhs" %in% pv$initial_design_type) {
+    map_dtr(autos, function(auto) auto$design_lhs(task, pv$initial_design_size), .fill = TRUE)
+  }
+  initial_design_random = if ("random" %in% pv$initial_design_type) {
+    map_dtr(autos, function(auto) auto$design_random(task, pv$initial_design_size), .fill = TRUE)
+  }
+  initial_design_default = if ("default" %in% pv$initial_design_type) {
+    map_dtr(autos, function(auto) auto$design_default(task), .fill = TRUE)
+  }
+
+  initial_designs = rbindlist(list(initial_design_best, initial_design_lhs, initial_design_random, initial_design_default), use.names = TRUE, fill = TRUE)
+  initial_designs = initial_designs[sample(.N)]
+  tuner$param_set$set_values(initial_design = initial_designs)
 
   # configure tuner
   tuner$surrogate = default_surrogate(self$instance, force_random_forest = TRUE)
@@ -162,8 +122,8 @@ train_auto = function(self, private, task) {
 
   tuner$acq_function = acqf("stochastic_cb", lambda = 1.96, rate = 0.1, period = 25L)
   tuner$acq_optimizer = acqo(
-    optimizer = bbotk::opt("random_search", batch_size = 1000L),
-    terminator = trm("evals", n_evals = 10000L),
+    optimizer = bbotk::opt("random_search", batch_size = 30000L),
+    terminator = trm("evals", n_evals = 30000L),
     catch_errors = pv$encapsulate_mbo)
 
   # tune

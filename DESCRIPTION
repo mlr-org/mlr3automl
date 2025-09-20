@@ -53,7 +53,9 @@ Remotes:
     mlr-org/mlr3extralearners@fastai_v2,
     mlr-org/mlr3,
     mlr-org/bbotk,
-    mlr-org/mlr3tuning
+    mlr-org/mlr3tuning,
+    mlr-org/mlr3torch@loaded_packages,
+    mlr-org/mlr3@predict_error
 Config/testthat/edition: 3
 Config/testthat/parallel: false
 Encoding: UTF-8
@@ -65,7 +67,6 @@ Collate:
     'Auto.R'
     'AutoCatboost.R'
     'AutoExtraTrees.R'
-    'AutoFastai.R'
     'AutoGlmnet.R'
     'AutoKknn.R'
     'AutoLda.R'

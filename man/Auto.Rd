@@ -36,7 +36,9 @@ This class is the base class for all autos.
 \item \href{#method-Auto-estimate_memory}{\code{Auto$estimate_memory()}}
 \item \href{#method-Auto-default_values}{\code{Auto$default_values()}}
 \item \href{#method-Auto-design_default}{\code{Auto$design_default()}}
+\item \href{#method-Auto-design_random}{\code{Auto$design_random()}}
 \item \href{#method-Auto-design_lhs}{\code{Auto$design_lhs()}}
+\item \href{#method-Auto-design_set}{\code{Auto$design_set()}}
 \item \href{#method-Auto-clone}{\code{Auto$clone()}}
 }
 }
@@ -171,6 +173,25 @@ Default hyperparameters for the learner.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Auto-design_random"></a>}}
+\if{latex}{\out{\hypertarget{method-Auto-design_random}{}}}
+\subsection{Method \code{design_random()}}{
+Generate random design for the learner.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Auto$design_random(task, size)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+
+\item{\code{size}}{(\code{integer(1)}).}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Auto-design_lhs"></a>}}
 \if{latex}{\out{\hypertarget{method-Auto-design_lhs}{}}}
 \subsection{Method \code{design_lhs()}}{
@@ -183,6 +204,29 @@ Generate lhs design for the learner.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+
+\item{\code{size}}{(\code{integer(1)}).}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Auto-design_set"></a>}}
+\if{latex}{\out{\hypertarget{method-Auto-design_set}{}}}
+\subsection{Method \code{design_set()}}{
+Get the initial hyperparameter set.
+The initial design might be larger than the requested size to include all factor levels
+If no best hyperparameter set is available, a random design is generated.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Auto$design_set(task, measure, size)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+
+\item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
 
 \item{\code{size}}{(\code{integer(1)}).}
 }
