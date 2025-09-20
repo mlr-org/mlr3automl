@@ -43,7 +43,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         small_data_resampling = p_uty(init = rsmp("cv", folds = 10), tags = c("train", "super")),
         # tuner
         initial_design_size = p_int(lower = 1L, init = 4L, tags = c("train", "super")),
-        initial_design_type = p_uty(init = "lhs", tags = c("train", "super"), custom_check = crate({function(x) check_subset(x, c("lhs", "set", "random", "default"))})),
+        initial_design_type = p_uty(init = c("default", "lhs"), tags = c("train", "super"), custom_check = crate({function(x) check_subset(x, c("lhs", "set", "random", "default"))})),
         resampling = p_uty(init = rsmp("holdout"), tags = c("train", "super")),
         terminator = p_uty(init = trm("run_time", secs = 3600), tags = c("train", "super")),
         measure = p_uty(tags = c("train", "super")),

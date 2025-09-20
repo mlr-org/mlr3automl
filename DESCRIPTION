@@ -54,7 +54,7 @@ Remotes:
     mlr-org/mlr3,
     mlr-org/bbotk,
     mlr-org/mlr3tuning,
-    mlr-org/mlr3torch@loaded_packages,
+    mlr-org/mlr3torch,
     mlr-org/mlr3@predict_error
 Config/testthat/edition: 3
 Config/testthat/parallel: false

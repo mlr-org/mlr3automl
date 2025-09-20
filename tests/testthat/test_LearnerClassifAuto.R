@@ -124,7 +124,7 @@ test_that("xgboost, catboost and lightgbm work", {
 })
 
 test_that("all learner work", {
-  test_classif_learner(c("catboost", "glmnet", "kknn", "lightgbm", "mlp", "ranger", "svm", "xgboost"))
+  test_classif_learner(c("catboost", "glmnet", "kknn", "lightgbm", "mlp", "ranger", "svm", "xgboost", "lda", "extra_trees"), initial_design_type = c("lhs", "default"))
 })
 
 test_that("memory limit works", {
@@ -163,6 +163,7 @@ test_that("small data set switch works", {
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
+    learner_ids = "glmnet",
     small_data_size = 1000,
     small_data_resampling = rsmp("cv", folds = 2),
     measure = msr("classif.ce"),
@@ -188,6 +189,8 @@ test_that("large data set switch works", {
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
+    learner_ids = c("catboost", "glmnet", "kknn", "lightgbm", "mlp", "ranger", "svm", "xgboost", "lda", "extra_trees"),
+    initial_design_type = c("lhs", "default"),
     large_data_size = 100,
     small_data_size = 1,
     measure = msr("classif.ce"),
@@ -239,7 +242,7 @@ test_that("best initial design works with evals terminator", {
   task = tsk("penguins")
   learner = lrn("classif.auto",
     learner_ids = c("kknn", "glmnet"),
-    initial_design_type = "best",
+    initial_design_type = "set",
     small_data_size = 1,
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 10),
@@ -261,7 +264,7 @@ test_that("initial design runtime limit works", {
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
-    learner_ids = "glmnet",
+    #learner_ids = "glmnet",
     small_data_size = 1,
     initial_design_type = "random",
     initial_design_size = 100,
