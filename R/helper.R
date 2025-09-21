@@ -64,7 +64,7 @@ callback_runtime_limit = callback_async_tuning("initial_design_runtime",
       lg$info("Initial design runtime limit reached")
       failed_tasks = context$instance$rush$queued_tasks
       if (length(failed_tasks)) {
-        context$instance$rush$push_failed(failed_tasks, condition = replicate(length(failed_tasks), list(message = "Initial design runtime limit reached"), simplify = FALSE))
+        context$instance$rush$push_failed(failed_tasks, conditions = replicate(length(failed_tasks), list(message = "Initial design runtime limit reached"), simplify = FALSE))
       }
     }
   }

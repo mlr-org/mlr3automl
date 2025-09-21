@@ -184,7 +184,7 @@ test_that("large data set switch works", {
   skip_if_not_installed(all_packages)
   flush_redis()
 
-    rush_plan(n_workers = 2, worker_type = "remote")
+  rush_plan(n_workers = 2, worker_type = "remote")
   mirai::daemons(2)
 
   task = tsk("penguins")

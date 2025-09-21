@@ -100,6 +100,7 @@ Estimate the memory for the auto.
 \if{html}{\out{<a id="method-AutoMlp-default_values"></a>}}
 \if{latex}{\out{\hypertarget{method-AutoMlp-default_values}{}}}
 \subsection{Method \code{default_values()}}{
+Get the default values for the auto.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AutoMlp$default_values(task)}\if{html}{\out{</div>}}
 }

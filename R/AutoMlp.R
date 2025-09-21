@@ -60,6 +60,8 @@ AutoMlp = R6Class("AutoMlp",
       memory_size
     },
 
+    #' @description
+    #' Get the default values for the auto.
     default_values = function(task) {
       list()
     }
