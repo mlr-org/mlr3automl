@@ -106,19 +106,14 @@ AutoLightgbm = R6Class("AutoLightgbm",
     }
   ),
 
-  active = list(
-
-    #' @field search_space ([paradox::ParamSet]).
-    search_space = function(rhs) {
-      assert_ro_binding(rhs)
-      ps(
-        lightgbm.learning_rate    = p_dbl(1e-3, 1,, logscale = TRUE),
+  private = list(
+    .search_space = ps(
+        lightgbm.learning_rate    = p_dbl(1e-3, 1, logscale = TRUE),
         lightgbm.feature_fraction = p_dbl(0.1, 1),
         lightgbm.min_data_in_leaf = p_int(1L, 200L),
         lightgbm.num_leaves       = p_int(10L, 255L),
         lightgbm.num_iterations   = p_int(1L, 5000L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
       )
-    }
   )
 )
 

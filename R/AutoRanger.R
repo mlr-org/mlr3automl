@@ -72,18 +72,13 @@ AutoRanger = R6Class("AutoRanger",
     }
   ),
 
-  active = list(
-
-    #' @field search_space ([paradox::ParamSet]).
-    search_space = function(rhs) {
-      assert_ro_binding(rhs)
-      ps(
+  private = list(
+    .search_space = ps(
         ranger.mtry.ratio      = p_dbl(0, 1),
         ranger.replace         = p_lgl(),
         ranger.sample.fraction = p_dbl(1e-1, 1),
         ranger.num.trees       = p_int(500L, 2000L)
       )
-    }
   )
 )
 

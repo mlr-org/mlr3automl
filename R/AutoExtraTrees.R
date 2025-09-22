@@ -93,14 +93,6 @@ AutoExtraTrees = R6Class("AutoExtraTrees",
     design_set = function(task, measure, size) {
       NULL
     }
-  ),
-
-  active = list(
-
-    #' @field search_space ([paradox::ParamSet]).
-    search_space = function() {
-      ps()
-    }
   )
 )
 

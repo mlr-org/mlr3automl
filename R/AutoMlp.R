@@ -67,12 +67,8 @@ AutoMlp = R6Class("AutoMlp",
     }
   ),
 
-  active = list(
-
-    #' @field search_space ([paradox::ParamSet]).
-    search_space = function(rhs) {
-      assert_ro_binding(rhs)
-      ps(
+  private = list(
+    .search_space = ps(
         mlp.n_layers              = p_int(1L, 16L),
         mlp.neurons               = p_int(1L, 1024L),
         mlp.p                     = p_dbl(0, 0.5),
@@ -80,7 +76,6 @@ AutoMlp = R6Class("AutoMlp",
         mlp.opt.weight_decay      = p_dbl(1e-6, 1e-3, logscale = TRUE),
         mlp.epochs                = p_int(1L, 100L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
       )
-    }
   )
 )
 

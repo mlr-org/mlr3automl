@@ -57,17 +57,11 @@ AutoKknn = R6Class("AutoKknn",
     }
   ),
 
-  active = list(
-
-    #' @field search_space ([paradox::ParamSet]).
-    search_space = function(rhs) {
-      assert_ro_binding(rhs)
-      ps(
-        kknn.k = p_int(1L, 100L, logscale = TRUE),
-        kknn.distance = p_dbl(1L, 5L)
-        #kknn.kernel = p_fct(levels = c("rectangular", "optimal", "epanechnikov", "biweight", "triweight", "cos",  "inv",  "gaussian", "rank"))
-      )
-    }
+  private = list(
+    .search_space = ps(
+      kknn.k = p_int(1L, 100L, logscale = TRUE),
+      kknn.distance = p_dbl(1L, 5L)
+    )
   )
 )
 

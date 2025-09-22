@@ -98,13 +98,13 @@ Auto = R6Class("Auto",
       assert_task(task)
       assert_count(size)
 
-      internal_tune_ids = self$search_space$ids(any_tags = "internal_tuning")
-      xdt = generate_design_random(self$search_space, size)$data
+      internal_tune_ids = self$search_space(task)$ids(any_tags = "internal_tuning")
+      xdt = generate_design_random(self$search_space(task), size)$data
       set(xdt, j = "branch.selection", value = self$id)
 
       lg$info("Learner '%s' design set size: %i", self$id, nrow(xdt))
 
-      xdt[, setdiff(c("branch.selection", self$search_space$ids()), internal_tune_ids), with = FALSE]
+      xdt[, setdiff(c("branch.selection", self$search_space(task)$ids()), internal_tune_ids), with = FALSE]
     },
 
     #' @description
@@ -112,13 +112,13 @@ Auto = R6Class("Auto",
     design_lhs = function(task, size) {
       assert_task(task)
       assert_count(size)
-      internal_tune_ids = self$search_space$ids(any_tags = "internal_tuning")
-      xdt = generate_design_lhs(self$search_space, n = size)$data
+      internal_tune_ids = self$search_space(task)$ids(any_tags = "internal_tuning")
+      xdt = generate_design_lhs(self$search_space(task), n = size)$data
       set(xdt, j = "branch.selection", value = self$id)
 
       lg$info("Learner '%s' design set size: %i", self$id, nrow(xdt))
 
-      xdt[, setdiff(c("branch.selection", self$search_space$ids()), internal_tune_ids), with = FALSE]
+      xdt[, setdiff(c("branch.selection", self$search_space(task)$ids()), internal_tune_ids), with = FALSE]
     },
 
     #' @description
@@ -148,8 +148,8 @@ Auto = R6Class("Auto",
       data = data[measure_id, , on = "measure"]
 
       # subset to relevant parameters
-      param_ids = self$search_space$ids()
-      param_internal_ids = self$search_space$ids(any_tags = "internal_tuning")
+      param_ids = self$search_space(task)$ids()
+      param_internal_ids = self$search_space(task)$ids(any_tags = "internal_tuning")
       param_ids = setdiff(param_ids, param_internal_ids)
       data = data[, param_ids, with = FALSE]
 
@@ -159,14 +159,16 @@ Auto = R6Class("Auto",
       lg$info("Learner '%s' design set size: %i", self$id, nrow(xdt))
 
       xdt
+    },
+
+    #' @description
+    #' Get the search space for the auto.
+    search_space = function(task) {
+      private$.search_space
     }
   ),
 
-  active = list(
-    #' @field search_space ([paradox::ParamSet]).
-    search_space = function(rhs) {
-      assert_ro_binding(rhs)
-      stop("Abstract")
-    }
+  private = list(
+    .search_space = ps()
   )
 )

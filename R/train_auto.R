@@ -63,13 +63,13 @@ train_auto = function(self, private, task) {
   search_space = ps(
     branch.selection = p_fct(levels = learner_ids)
   )
-  search_spaces = c(list(search_space), map(autos, function(auto) auto$search_space))
+  search_spaces = c(list(search_space), map(autos, function(auto) auto$search_space(task)))
   search_space = ps_union(unname(search_spaces))
 
   # add dependencies
   walk(autos, function(auto) {
-    param_ids = auto$search_space$ids()
-    internal_tune_ids = auto$search_space$ids(any_tags = "internal_tuning")
+    param_ids = auto$search_space(task)$ids()
+    internal_tune_ids = auto$search_space(task)$ids(any_tags = "internal_tuning")
     param_ids = setdiff(param_ids, internal_tune_ids)
 
     walk(param_ids, function(param_id) {

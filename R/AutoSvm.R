@@ -57,16 +57,11 @@ AutoSvm = R6Class("AutoSvm",
     }
   ),
 
-  active = list(
-
-    #' @field search_space ([paradox::ParamSet]).
-    search_space = function(rhs) {
-      assert_ro_binding(rhs)
-      ps(
+  private = list(
+    .search_space = ps(
         svm.cost    = p_dbl(1e-4, 1e4, logscale = TRUE),
         svm.gamma   = p_dbl(1e-4, 1e4, logscale = TRUE)
       )
-    }
   )
 )
 

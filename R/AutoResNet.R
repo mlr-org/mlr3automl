@@ -67,12 +67,8 @@ AutoResNet = R6Class("AutoResNet",
     }
   ),
 
-  active = list(
-
-    #' @field search_space ([paradox::ParamSet]).
-    search_space = function(rhs) {
-      assert_ro_binding(rhs)
-      ps(
+  private = list(
+    .search_space = ps(
         resnet.n_blocks            = p_int(1, 16),
         resnet.d_block             = p_int(64, 1024),
         resnet.d_hidden_multiplier = p_int(1, 4),
@@ -82,9 +78,6 @@ AutoResNet = R6Class("AutoResNet",
         resnet.opt.weight_decay    = p_dbl(1e-6, 1e-3, logscale = TRUE),
         resnet.epochs              = p_int(1L, 100L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
       )
-
-
-    }
   )
 )
 

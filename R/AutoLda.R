@@ -73,15 +73,6 @@ AutoLda = R6Class("AutoLda",
     design_set = function(task, measure, size) {
       NULL
     }
-  ),
-
-  active = list(
-
-    #' @field search_space ([paradox::ParamSet]).
-    search_space = function(rhs) {
-      assert_ro_binding(rhs)
-      ps()
-    }
   )
 )
 

@@ -19,13 +19,6 @@ This class is the base class for all autos.
 }
 \if{html}{\out{</div>}}
 }
-\section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{search_space}}{(\link[paradox:ParamSet]{paradox::ParamSet}).}
-}
-\if{html}{\out{</div>}}
-}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
@@ -39,6 +32,7 @@ This class is the base class for all autos.
 \item \href{#method-Auto-design_random}{\code{Auto$design_random()}}
 \item \href{#method-Auto-design_lhs}{\code{Auto$design_lhs()}}
 \item \href{#method-Auto-design_set}{\code{Auto$design_set()}}
+\item \href{#method-Auto-search_space}{\code{Auto$search_space()}}
 \item \href{#method-Auto-clone}{\code{Auto$clone()}}
 }
 }
@@ -229,6 +223,23 @@ If no best hyperparameter set is available, a random design is generated.
 \item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
 
 \item{\code{size}}{(\code{integer(1)}).}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Auto-search_space"></a>}}
+\if{latex}{\out{\hypertarget{method-Auto-search_space}{}}}
+\subsection{Method \code{search_space()}}{
+Get the search space for the auto.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Auto$search_space(task)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
 }
 \if{html}{\out{</div>}}
 }

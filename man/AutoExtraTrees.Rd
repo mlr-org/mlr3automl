@@ -9,13 +9,6 @@ Extra Trees auto.
 \section{Super class}{
 \code{\link[mlr3automl:Auto]{mlr3automl::Auto}} -> \code{AutoExtraTrees}
 }
-\section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{search_space}}{(\link[paradox:ParamSet]{paradox::ParamSet}).}
-}
-\if{html}{\out{</div>}}
-}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
@@ -35,6 +28,7 @@ Extra Trees auto.
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="check"><a href='../../mlr3automl/html/Auto.html#method-Auto-check'><code>mlr3automl::Auto$check()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_default"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_default'><code>mlr3automl::Auto$design_default()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="early_stopping_rounds"><a href='../../mlr3automl/html/Auto.html#method-Auto-early_stopping_rounds'><code>mlr3automl::Auto$early_stopping_rounds()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="search_space"><a href='../../mlr3automl/html/Auto.html#method-Auto-search_space'><code>mlr3automl::Auto$search_space()</code></a></span></li>
 </ul>
 </details>
 }}

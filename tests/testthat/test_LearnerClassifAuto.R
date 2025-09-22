@@ -127,6 +127,12 @@ test_that("ft_transformer works", {
   test_classif_learner("ft_transformer")
 })
 
+test_that("tabpfn works", {
+  skip_if(TRUE)
+
+  test_classif_learner("tabpfn")
+})
+
 
 # test_that("fastai works", {
 #   test_classif_learner("fastai")

@@ -116,12 +116,8 @@ AutoXgboost = R6Class("AutoXgboost",
       )
     }
   ),
-  active = list(
-
-    #' @field search_space ([paradox::ParamSet]).
-    search_space = function(rhs) {
-      assert_ro_binding(rhs)
-      ps(
+  private = list(
+    .search_space = ps(
         xgboost.eta               = p_dbl(1e-4, 1, logscale = TRUE),
         xgboost.max_depth         = p_int(1, 12),
         xgboost.colsample_bytree  = p_dbl(1e-1, 1),
@@ -131,7 +127,6 @@ AutoXgboost = R6Class("AutoXgboost",
         xgboost.subsample         = p_dbl(1e-1, 1),
         xgboost.nrounds           = p_int(1, 5000, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
       )
-    }
   )
 )
 

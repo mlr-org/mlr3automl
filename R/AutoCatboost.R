@@ -118,18 +118,13 @@ AutoCatboost = R6Class("AutoCatboost",
     }
   ),
 
-  active = list(
-
-    #' @field search_space ([paradox::ParamSet]).
-    search_space = function(rhs) {
-      assert_ro_binding(rhs)
-      ps(
-        catboost.depth          = p_int(1, 12),
-        catboost.learning_rate  = p_dbl(1e-3, 1, logscale = TRUE),
-        catboost.l2_leaf_reg    = p_dbl(1e-3, 1e3),
-        catboost.iterations     = p_int(1L, 1000L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
-      )
-    }
+  private = list(
+    .search_space =  ps(
+      catboost.depth          = p_int(1, 12),
+      catboost.learning_rate  = p_dbl(1e-3, 1, logscale = TRUE),
+      catboost.l2_leaf_reg    = p_dbl(1e-3, 1e3),
+      catboost.iterations     = p_int(1L, 1000L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
+    )
   )
 )
 

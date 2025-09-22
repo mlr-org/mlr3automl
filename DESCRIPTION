@@ -75,6 +75,7 @@ Collate:
     'AutoRanger.R'
     'AutoResNet.R'
     'AutoSvm.R'
+    'AutoTabpfn.R'
     'AutoXgboost.R'
     'aaa.R'
     'LearnerClassifAuto.R'

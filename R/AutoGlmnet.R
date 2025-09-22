@@ -58,16 +58,11 @@ AutoGlmnet = R6Class("AutoGlmnet",
     }
   ),
 
-  active = list(
-
-    #' @field search_space ([paradox::ParamSet]).
-    search_space = function(rhs) {
-      assert_ro_binding(rhs)
-      ps(
-        glmnet.lambda = p_dbl(1e-4, 1e4, logscale = TRUE),
-        glmnet.alpha  = p_dbl(0, 1)
-      )
-    }
+  private = list(
+    .search_space = ps(
+      glmnet.lambda = p_dbl(1e-4, 1e4, logscale = TRUE),
+      glmnet.alpha  = p_dbl(0, 1)
+    )
   )
 )
 

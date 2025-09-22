@@ -103,12 +103,8 @@ AutoFTTransformer = R6Class("AutoFTTransformer",
     }
   ),
 
-  active = list(
-
-    #' @field search_space ([paradox::ParamSet]).
-    search_space = function(rhs) {
-      assert_ro_binding(rhs)
-      ps(
+  private = list(
+    .search_space = ps(
         ft_transformer.n_blocks                = p_int(1, 6),
         ft_transformer.d_token                 = p_int(8L, 64L, trafo = function(x) 8L * x),
         ft_transformer.residual_dropout        = p_dbl(0, 0.2),
@@ -119,9 +115,6 @@ AutoFTTransformer = R6Class("AutoFTTransformer",
         ft_transformer.opt.weight_decay        = p_dbl(1e-6, 1e-3, logscale = TRUE),
         ft_transformer.epochs                  = p_int(1L, 100L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
       )
-
-
-    }
   )
 )
 
