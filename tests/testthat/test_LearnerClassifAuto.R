@@ -33,7 +33,7 @@ test_that("set design is generated", {
 
   autos = mlr_auto$mget(mlr_auto$keys())
   xdt = map_dtr(autos, function(auto) auto$design_set(tsk("penguins"), msr("classif.ce"), 10L), .fill = TRUE)
-  expect_data_table(xdt, nrows = 0L)
+  expect_data_table(xdt, nrows = 70L)
   expect_set_equal(xdt$branch.selection, c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost","lightgbm"))
 })
 
