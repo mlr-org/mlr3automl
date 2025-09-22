@@ -37,7 +37,7 @@ AutoCatboost = R6Class("AutoCatboost",
 
       learner = lrn(sprintf("%s.catboost", task$task_type),
         id = "catboost",
-        iterations = self$search_space$upper["catboost.iterations"] %??% 1000L,
+        iterations = self$search_space(task)$upper["catboost.iterations"] %??% 1000L,
         early_stopping_rounds = self$early_stopping_rounds(task),
         use_best_model = TRUE,
         eval_metric = self$internal_measure(measure, task))
@@ -52,7 +52,7 @@ AutoCatboost = R6Class("AutoCatboost",
     #' @description
     #' Estimate the memory for the auto.
     estimate_memory = function(task) {
-      upper = self$search_space$upper
+      upper = self$search_space(task)$upper
 
       # histogram size
       border_count = 254

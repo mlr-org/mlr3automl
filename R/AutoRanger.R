@@ -50,7 +50,7 @@ AutoRanger = R6Class("AutoRanger",
     #' @description
     #' Estimate the memory for the auto.
     estimate_memory = function(task) {
-      upper = self$search_space$upper
+      upper = self$search_space(task)$upper
 
       num_trees = upper["ranger.num.trees"]
       tree_size = task$nrow / 60000 * 1e6

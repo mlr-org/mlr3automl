@@ -37,6 +37,14 @@ test_that("set design is generated", {
   expect_set_equal(xdt$branch.selection, c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost","lightgbm"))
 })
 
+test_that("estimate memory works", {
+  skip_if_not_installed(all_packages)
+
+  autos = mlr_auto$mget(mlr_auto$keys())
+  memory = map_dbl(autos, function(auto) auto$estimate_memory(tsk("penguins")))
+  expect_numeric(memory)
+})
+
 test_that("LearnerClassifAuto is initialized", {
   learner = lrn("classif.auto",
     measure = msr("classif.ce"),
@@ -233,7 +241,7 @@ test_that("resample works", {
   skip_if_not_installed("glmnet")
   flush_redis()
 
-    rush_plan(n_workers = 2, worker_type = "remote")
+  rush_plan(n_workers = 2, worker_type = "remote")
   mirai::daemons(2)
 
   task = tsk("penguins")
