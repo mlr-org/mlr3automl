@@ -63,6 +63,10 @@ Check if the auto is compatible with the task.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+
+\item{\code{memory_limit}}{(\code{integer(1)}).}
+
+\item{\code{large_data_set}}{(\code{logical(1)}).}
 }
 \if{html}{\out{</div>}}
 }

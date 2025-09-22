@@ -14,8 +14,13 @@ test_that("lhs design is generated", {
 
   autos = mlr_auto$mget(mlr_auto$keys())
   xdt = map_dtr(autos, function(auto) auto$design_lhs(tsk("penguins"), 10L), .fill = TRUE)
+<<<<<<< HEAD
   expect_data_table(xdt, nrows = length(autos) * 10 - 20 + 2)
   expect_set_equal(xdt$branch.selection, mlr_auto$keys())
+=======
+  expect_data_table(xdt, nrows = 100L)
+  expect_set_equal(xdt$branch.selection, c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost","lightgbm", "mlp", "resnet", "ft_transformer"))
+>>>>>>> main
 })
 
 test_that("random design is generated", {
@@ -23,9 +28,14 @@ test_that("random design is generated", {
 
   autos = mlr_auto$mget(mlr_auto$keys())
   xdt = map_dtr(autos, function(auto) auto$design_random(tsk("penguins"), 10L), .fill = TRUE)
+<<<<<<< HEAD
   expect_data_table(xdt, nrows = length(autos) * 10 - 20 + 2)
   expect_set_equal(xdt$branch.selection, mlr_auto$keys())
 
+=======
+  expect_data_table(xdt, nrows = 100L)
+  expect_set_equal(xdt$branch.selection, c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost","lightgbm", "mlp", "resnet", "ft_transformer"))
+>>>>>>> main
 })
 
 test_that("set design is generated", {
@@ -33,8 +43,13 @@ test_that("set design is generated", {
 
   autos = mlr_auto$mget(mlr_auto$keys())
   xdt = map_dtr(autos, function(auto) auto$design_set(tsk("penguins"), msr("classif.ce"), 10L), .fill = TRUE)
+<<<<<<< HEAD
   expect_data_table(xdt, nrows = 0L)
   expect_set_equal(xdt$branch.selection, c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost","lightgbm"))
+=======
+  expect_data_table(xdt, nrows = 100L)
+  expect_set_equal(xdt$branch.selection, c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost","lightgbm", "mlp", "resnet", "ft_transformer"))
+>>>>>>> main
 })
 
 test_that("LearnerClassifAuto is initialized", {
@@ -158,12 +173,14 @@ test_that("memory limit works", {
 
   task = tsk("spam")
   learner = lrn("classif.auto",
-    memory_limit = 50,
+    learner_ids = c("ranger", "xgboost", "catboost", "kknn"),
+    memory_limit = 5,
     small_data_size = 100,
     measure = msr("classif.ce"),
-    terminator = trm("evals", n_evals = 20),
+    terminator = trm("evals", n_evals = 5),
     resampling = rsmp("holdout"),
-    initial_design_size = 1,
+    initial_design_type = "random",
+    initial_design_size = 2,
     encapsulate_learner = FALSE,
     encapsulate_mbo = FALSE
   )

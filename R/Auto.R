@@ -44,7 +44,7 @@ Auto = R6Class("Auto",
        return(FALSE)
       }
       if (self$estimate_memory(task) > memory_limit) {
-        lg$info("Learner '%s' violates the memory limit of %i MB", self$id, memory_limit)
+        lg$info("Learner '%s' violates the memory limit of %i MB", self$id, ceiling(memory_limit))
         return(FALSE)
       }
       if (large_data_set && !("large_data_sets" %in% self$properties)) {

@@ -10,6 +10,8 @@
 #' @template param_measure
 #' @template param_n_threads
 #' @template param_timeout
+#' @template param_memory_limit
+#' @template param_large_data_set
 #'
 #' @export
 AutoTabpfn = R6Class("AutoTabpfn",
