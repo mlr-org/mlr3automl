@@ -13,11 +13,11 @@ URL: https://github.com/mlr-org/mlr3automl
 BugReports: https://github.com/mlr-org/mlr3automl/issues
 Depends:
     mlr3 (>= 1.1.0),
-    mlr3tuning (>= 1.4.0.9000),
+    mlr3tuning (>= 1.4.0),
     R (>= 3.1.0),
     rush (>= 0.3.0)
 Imports:
-    bbotk (>= 1.6.0.9000),
+    bbotk (>= 1.6.0),
     checkmate,
     data.table,
     lhs,
@@ -54,8 +54,7 @@ Remotes:
     mlr-org/mlr3,
     mlr-org/bbotk,
     mlr-org/mlr3tuning,
-    mlr-org/mlr3torch,
-    mlr-org/mlr3@predict_error
+    mlr-org/mlr3torch
 Config/testthat/edition: 3
 Config/testthat/parallel: false
 Encoding: UTF-8
