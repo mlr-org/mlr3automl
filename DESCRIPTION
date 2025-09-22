@@ -66,6 +66,7 @@ Collate:
     'Auto.R'
     'AutoCatboost.R'
     'AutoExtraTrees.R'
+    'AutoFTTransformer.R'
     'AutoGlmnet.R'
     'AutoKknn.R'
     'AutoLda.R'
