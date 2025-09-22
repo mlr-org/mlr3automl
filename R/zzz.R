@@ -17,6 +17,9 @@
 register_mlr3 = function() {
   x = utils::getFromNamespace("mlr_learners", ns = "mlr3")
   iwalk(learners, function(obj, nm) x$add(nm, obj))
+
+  x = utils::getFromNamespace("mlr_callbacks", ns = "mlr3misc")
+  iwalk(callbacks, function(obj, nm) x$add(nm, obj))
 }
 
 .onLoad = function(libname, pkgname) {
@@ -35,8 +38,9 @@ register_mlr3 = function() {
 
 .onUnload = function(libpaths) { # nolint
   mlr_learners = mlr3::mlr_learners
-
+  mlr_callbacks = mlr3misc::mlr_callbacks
   walk(names(learners), function(id) mlr_learners$remove(id))
+  walk(names(callbacks), function(id) mlr_callbacks$remove(id))
 }
 
 leanify_package()
