@@ -57,18 +57,7 @@ AutoRanger = R6Class("AutoRanger",
 
       memory_size = (tree_size * num_trees) / 1e6
       lg$info("Ranger memory size: %s MB", round(memory_size))
-      memory_size
-    },
-
-    #' @description
-    #' Get the default hyperparameter values.
-    default_values = function(task) {
-      list(
-        ranger.mtry.ratio = 0.5,
-        ranger.replace = TRUE,
-        ranger.sample.fraction = 0.632,
-        ranger.num.trees = 1000L
-      )
+      ceiling(memory_size)
     }
   ),
 
@@ -78,7 +67,14 @@ AutoRanger = R6Class("AutoRanger",
         ranger.replace         = p_lgl(),
         ranger.sample.fraction = p_dbl(1e-1, 1),
         ranger.num.trees       = p_int(500L, 2000L)
-      )
+    ),
+
+    .default_values = list(
+      ranger.mtry.ratio = 0.5,
+      ranger.replace = TRUE,
+      ranger.sample.fraction = 0.632,
+      ranger.num.trees = 1000L
+    )
   )
 )
 

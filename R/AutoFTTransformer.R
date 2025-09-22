@@ -93,13 +93,7 @@ AutoFTTransformer = R6Class("AutoFTTransformer",
     estimate_memory = function(task) {
       memory_size = task$nrow * task$ncol * 8 * 10 / 1e6
       lg$info("FTTransformer memory size: %s MB", round(memory_size))
-      memory_size
-    },
-
-    #' @description
-    #' Get the default values for the auto.
-    default_values = function(task) {
-      list()
+      ceiling(memory_size)
     }
   ),
 
@@ -114,7 +108,18 @@ AutoFTTransformer = R6Class("AutoFTTransformer",
         ft_transformer.opt.lr                  = p_dbl(1e-5, 1e-4, logscale = TRUE),
         ft_transformer.opt.weight_decay        = p_dbl(1e-6, 1e-3, logscale = TRUE),
         ft_transformer.epochs                  = p_int(1L, 100L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
-      )
+    ),
+
+    .default_values = list(
+      ft_transformer.n_blocks = 4L,
+      ft_transformer.d_token = 64L,
+      ft_transformer.residual_dropout = 0.1,
+      ft_transformer.attention_dropout = 0.2,
+      ft_transformer.ffn_dropout = 0.2,
+      ft_transformer.ffn_d_hidden_multiplier = 2 / 3,
+      ft_transformer.opt.lr = 1e-5,
+      ft_transformer.opt.weight_decay = 1e-6
+    )
   )
 )
 

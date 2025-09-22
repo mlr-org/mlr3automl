@@ -57,13 +57,7 @@ AutoMlp = R6Class("AutoMlp",
     estimate_memory = function(task) {
       memory_size = task$nrow * task$ncol * 8 * 10 / 1e6
       lg$info("Mlp memory size: %s MB", round(memory_size))
-      memory_size
-    },
-
-    #' @description
-    #' Get the default values for the auto.
-    default_values = function(task) {
-      list()
+      ceiling(memory_size)
     }
   ),
 
@@ -75,7 +69,15 @@ AutoMlp = R6Class("AutoMlp",
         mlp.opt.lr                = p_dbl(1e-5, 1e-2, logscale = TRUE),
         mlp.opt.weight_decay      = p_dbl(1e-6, 1e-3, logscale = TRUE),
         mlp.epochs                = p_int(1L, 100L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
-      )
+    ),
+
+    .default_values = list(
+      mlp.n_layers = 4L,
+      mlp.neurons = 128L,
+      mlp.p = 0.2,
+      mlp.opt.lr = 1e-5,
+      mlp.opt.weight_decay = 1e-6
+    )
   )
 )
 

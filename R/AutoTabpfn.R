@@ -28,8 +28,15 @@ AutoTabpfn = R6Class("AutoTabpfn",
     #' @description
     #' Check if the auto is compatible with the task.
     check = function(task, memory_limit = Inf, large_data_set = FALSE) {
-      if (task$nrow > 1e5) {
-        lg$info("Learner '%s' is not compatible with tasks with more than 10,000 rows", self$id)
+      ok = check_python_packages(c("fastai", "torch"))
+      if (!isTRUE(ok)) {
+        lg$info(ok)
+        lg$info("Remove tabpfn from search space")
+        return(FALSE)
+      }
+
+      if (task$nrow > 1e3) {
+        lg$info("Learner '%s' is not compatible with tasks with more than 1,000 rows", self$id)
         return(FALSE)
       }
       super$check(task, memory_limit, large_data_set)
@@ -62,13 +69,7 @@ AutoTabpfn = R6Class("AutoTabpfn",
     estimate_memory = function(task) {
       memory_size = task$nrow * task$ncol * 8 * 10 / 1e6
       lg$info("Tabpfn memory size: %s MB", round(memory_size))
-      memory_size
-    },
-
-    #' @description
-    #' Get the default hyperparameter values.
-    default_values = function(task) {
-      list()
+      ceiling(memory_size)
     },
 
     #' @description
@@ -88,6 +89,15 @@ AutoTabpfn = R6Class("AutoTabpfn",
         )
       }
     }
+  ),
+
+  private = list(
+    .default_values = list(
+      tabpfn.n_estimators = 4L,
+      tabpfn.softmax_temperature = 1.0,
+      tabpfn.balance_probabilities = FALSE,
+      tabpfn.average_before_softmax = FALSE
+    )
   )
 )
 

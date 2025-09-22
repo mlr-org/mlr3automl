@@ -61,7 +61,7 @@ AutoSvm = R6Class("AutoSvm",
     .search_space = ps(
         svm.cost    = p_dbl(1e-4, 1e4, logscale = TRUE),
         svm.gamma   = p_dbl(1e-4, 1e4, logscale = TRUE)
-      )
+    )
   )
 )
 

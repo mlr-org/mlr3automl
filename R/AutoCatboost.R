@@ -65,7 +65,7 @@ AutoCatboost = R6Class("AutoCatboost",
 
       memory_size = (histogram_size + data_size) / 1e6
       lg$info("Catboost memory size: %s MB", round(memory_size))
-      memory_size
+      ceiling(memory_size)
     },
 
     #' @description
@@ -105,16 +105,6 @@ AutoCatboost = R6Class("AutoCatboost",
           "merror" # default
         )
       }
-    },
-
-    #' @description
-    #' Get the default hyperparameter values.
-    default_values = function(task) {
-      list(
-        catboost.depth = 6L,
-        catboost.learning_rate = log(0.03),
-        catboost.l2_leaf_reg = 3
-      )
     }
   ),
 
@@ -124,6 +114,12 @@ AutoCatboost = R6Class("AutoCatboost",
       catboost.learning_rate  = p_dbl(1e-3, 1, logscale = TRUE),
       catboost.l2_leaf_reg    = p_dbl(1e-3, 1e3),
       catboost.iterations     = p_int(1L, 1000L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
+    ),
+
+    .default_values = list(
+      catboost.depth = 6L,
+      catboost.learning_rate = log(0.03),
+      catboost.l2_leaf_reg = 3
     )
   )
 )

@@ -48,30 +48,6 @@ AutoLda = R6Class("AutoLda",
         po("collapsefactors", target_level_count = 100, id = "lda_collapse") %>>%
         po("removeconstants", id = "lda_post_removeconstants") %>>%
         learner
-    },
-
-    #' @description
-    #' Get the default values for the auto.
-    default_values = function(task) {
-      NULL
-    },
-
-    #' @description
-    #' Get the initial hyperparameter set.
-    design_lhs = function(task, size) {
-      NULL
-    },
-
-    #' @description
-    #' Get the initial hyperparameter set.
-    design_random = function(task, size) {
-      NULL
-    },
-
-    #' @description
-    #' Get the initial hyperparameter set.
-    design_set = function(task, measure, size) {
-      NULL
     }
   )
 )
