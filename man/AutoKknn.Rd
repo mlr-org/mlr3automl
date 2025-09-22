@@ -14,7 +14,6 @@ Kknn auto.
 \itemize{
 \item \href{#method-AutoKknn-new}{\code{AutoKknn$new()}}
 \item \href{#method-AutoKknn-graph}{\code{AutoKknn$graph()}}
-\item \href{#method-AutoKknn-default_values}{\code{AutoKknn$default_values()}}
 \item \href{#method-AutoKknn-clone}{\code{AutoKknn$clone()}}
 }
 }
@@ -22,6 +21,7 @@ Kknn auto.
 <details><summary>Inherited methods</summary>
 <ul>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="check"><a href='../../mlr3automl/html/Auto.html#method-Auto-check'><code>mlr3automl::Auto$check()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="default_values"><a href='../../mlr3automl/html/Auto.html#method-Auto-default_values'><code>mlr3automl::Auto$default_values()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_default"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_default'><code>mlr3automl::Auto$design_default()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_lhs"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_lhs'><code>mlr3automl::Auto$design_lhs()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_random"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_random'><code>mlr3automl::Auto$design_random()</code></a></span></li>
@@ -69,23 +69,6 @@ Create the graph for the auto.
 \item{\code{n_threads}}{(\code{integer(1)}).}
 
 \item{\code{timeout}}{(\code{integer(1)}).}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-AutoKknn-default_values"></a>}}
-\if{latex}{\out{\hypertarget{method-AutoKknn-default_values}{}}}
-\subsection{Method \code{default_values()}}{
-Get the default hyperparameter values.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoKknn$default_values(task)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
 }
 \if{html}{\out{</div>}}
 }

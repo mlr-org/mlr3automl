@@ -15,7 +15,6 @@ Ranger auto.
 \item \href{#method-AutoRanger-new}{\code{AutoRanger$new()}}
 \item \href{#method-AutoRanger-graph}{\code{AutoRanger$graph()}}
 \item \href{#method-AutoRanger-estimate_memory}{\code{AutoRanger$estimate_memory()}}
-\item \href{#method-AutoRanger-default_values}{\code{AutoRanger$default_values()}}
 \item \href{#method-AutoRanger-clone}{\code{AutoRanger$clone()}}
 }
 }
@@ -23,6 +22,7 @@ Ranger auto.
 <details><summary>Inherited methods</summary>
 <ul>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="check"><a href='../../mlr3automl/html/Auto.html#method-Auto-check'><code>mlr3automl::Auto$check()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="default_values"><a href='../../mlr3automl/html/Auto.html#method-Auto-default_values'><code>mlr3automl::Auto$default_values()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_default"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_default'><code>mlr3automl::Auto$design_default()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_lhs"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_lhs'><code>mlr3automl::Auto$design_lhs()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_random"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_random'><code>mlr3automl::Auto$design_random()</code></a></span></li>
@@ -80,23 +80,6 @@ Create the graph for the auto.
 Estimate the memory for the auto.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AutoRanger$estimate_memory(task)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-AutoRanger-default_values"></a>}}
-\if{latex}{\out{\hypertarget{method-AutoRanger-default_values}{}}}
-\subsection{Method \code{default_values()}}{
-Get the default hyperparameter values.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoRanger$default_values(task)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

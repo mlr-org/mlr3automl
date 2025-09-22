@@ -208,9 +208,7 @@ Generate lhs design for the learner.
 \if{html}{\out{<a id="method-Auto-design_set"></a>}}
 \if{latex}{\out{\hypertarget{method-Auto-design_set}{}}}
 \subsection{Method \code{design_set()}}{
-Get the initial hyperparameter set.
-The initial design might be larger than the requested size to include all factor levels
-If no best hyperparameter set is available, a random design is generated.
+Get the initial hyperparameter set for the learner.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Auto$design_set(task, measure, size)}\if{html}{\out{</div>}}
 }
@@ -231,7 +229,7 @@ If no best hyperparameter set is available, a random design is generated.
 \if{html}{\out{<a id="method-Auto-search_space"></a>}}
 \if{latex}{\out{\hypertarget{method-Auto-search_space}{}}}
 \subsection{Method \code{search_space()}}{
-Get the search space for the auto.
+Get the search space for the learner.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Auto$search_space(task)}\if{html}{\out{</div>}}
 }

@@ -13,9 +13,9 @@ Tabpfn auto.
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-AutoTabpfn-new}{\code{AutoTabpfn$new()}}
+\item \href{#method-AutoTabpfn-check}{\code{AutoTabpfn$check()}}
 \item \href{#method-AutoTabpfn-graph}{\code{AutoTabpfn$graph()}}
 \item \href{#method-AutoTabpfn-estimate_memory}{\code{AutoTabpfn$estimate_memory()}}
-\item \href{#method-AutoTabpfn-default_values}{\code{AutoTabpfn$default_values()}}
 \item \href{#method-AutoTabpfn-search_space}{\code{AutoTabpfn$search_space()}}
 \item \href{#method-AutoTabpfn-clone}{\code{AutoTabpfn$clone()}}
 }
@@ -23,7 +23,7 @@ Tabpfn auto.
 \if{html}{\out{
 <details><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="check"><a href='../../mlr3automl/html/Auto.html#method-Auto-check'><code>mlr3automl::Auto$check()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="default_values"><a href='../../mlr3automl/html/Auto.html#method-Auto-default_values'><code>mlr3automl::Auto$default_values()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_default"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_default'><code>mlr3automl::Auto$design_default()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_lhs"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_lhs'><code>mlr3automl::Auto$design_lhs()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_random"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_random'><code>mlr3automl::Auto$design_random()</code></a></span></li>
@@ -46,6 +46,23 @@ Creates a new instance of this \link[R6:R6Class]{R6} class.
 \describe{
 \item{\code{id}}{(\code{character(1)})\cr
 Identifier for the new instance.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AutoTabpfn-check"></a>}}
+\if{latex}{\out{\hypertarget{method-AutoTabpfn-check}{}}}
+\subsection{Method \code{check()}}{
+Check if the auto is compatible with the task.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AutoTabpfn$check(task, memory_limit = Inf, large_data_set = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
 }
 \if{html}{\out{</div>}}
 }
@@ -80,23 +97,6 @@ Create the graph for the auto.
 Estimate the memory for the auto.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AutoTabpfn$estimate_memory(task)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-AutoTabpfn-default_values"></a>}}
-\if{latex}{\out{\hypertarget{method-AutoTabpfn-default_values}{}}}
-\subsection{Method \code{default_values()}}{
-Get the default hyperparameter values.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoTabpfn$default_values(task)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

@@ -16,7 +16,6 @@ Catboost auto.
 \item \href{#method-AutoCatboost-graph}{\code{AutoCatboost$graph()}}
 \item \href{#method-AutoCatboost-estimate_memory}{\code{AutoCatboost$estimate_memory()}}
 \item \href{#method-AutoCatboost-internal_measure}{\code{AutoCatboost$internal_measure()}}
-\item \href{#method-AutoCatboost-default_values}{\code{AutoCatboost$default_values()}}
 \item \href{#method-AutoCatboost-clone}{\code{AutoCatboost$clone()}}
 }
 }
@@ -24,6 +23,7 @@ Catboost auto.
 <details><summary>Inherited methods</summary>
 <ul>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="check"><a href='../../mlr3automl/html/Auto.html#method-Auto-check'><code>mlr3automl::Auto$check()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="default_values"><a href='../../mlr3automl/html/Auto.html#method-Auto-default_values'><code>mlr3automl::Auto$default_values()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_default"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_default'><code>mlr3automl::Auto$design_default()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_lhs"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_lhs'><code>mlr3automl::Auto$design_lhs()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_random"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_random'><code>mlr3automl::Auto$design_random()</code></a></span></li>
@@ -105,23 +105,6 @@ Get the internal measure for the auto.
 \describe{
 \item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
 
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-AutoCatboost-default_values"></a>}}
-\if{latex}{\out{\hypertarget{method-AutoCatboost-default_values}{}}}
-\subsection{Method \code{default_values()}}{
-Get the default hyperparameter values.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoCatboost$default_values(task)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
 \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
 }
 \if{html}{\out{</div>}}
