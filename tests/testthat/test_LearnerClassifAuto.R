@@ -277,14 +277,13 @@ test_that("initial design runtime limit works", {
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
-    #learner_ids = "glmnet",
+    learner_ids = "glmnet",
     small_data_size = 1,
     initial_design_type = "random",
     initial_design_size = 100,
     measure = msr("classif.ce"),
-    terminator = trm("run_time", secs = 40),
-    callbacks = callback_runtime_limit
+    terminator = trm("run_time", secs = 40)
   )
 
-  learner$train(task)
+   expect_class(learner$train(task), "LearnerClassifAuto")
 })
