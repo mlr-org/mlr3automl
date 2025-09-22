@@ -86,5 +86,6 @@ Collate:
     'LearnerClassifAutoSVM.R'
     'LearnerClassifAutoXgboost.R'
     'helper.R'
+    'mlr_callbacks.R'
     'train_auto.R'
     'zzz.R'

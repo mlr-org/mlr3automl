@@ -32,7 +32,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
       private$.learner_ids = learner_ids
 
       param_set = ps(
-        learner_timeout = p_int(lower = 1L, init = 600L, tags = c("train", "super")),
+        learner_timeout = p_int(lower = 1L, init = 900L, tags = c("train", "super")),
         # system
         n_threads = p_int(lower = 1L, init = 1L, tags = c("train", "catboost", "lightgbm", "ranger", "xgboost")),
         memory_limit = p_int(lower = 1L, init = 32000L, tags = c("train", "catboost", "lightgbm", "ranger", "xgboost")),
@@ -47,7 +47,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         resampling = p_uty(init = rsmp("holdout"), tags = c("train", "super")),
         terminator = p_uty(init = trm("run_time", secs = 3600), tags = c("train", "super")),
         measure = p_uty(tags = c("train", "super")),
-        callbacks = p_uty(init = clbk("mlr3tuning.async_save_logs"), tags = c("train", "super")),
+        callbacks = p_uty(tags = c("train", "super")),
         store_benchmark_result = p_lgl(init = FALSE, tags = c("train", "super")),
         store_models = p_lgl(init = FALSE, tags = c("train", "super")),
         # debugging

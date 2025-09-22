@@ -81,6 +81,8 @@ train_auto = function(self, private, task) {
     })
   })
 
+  callbacks = c(pv$callbacks, clbk("mlr3automl.initial_design_runtime"), clbk("mlr3tuning.async_save_logs"))
+
   # tuning instance
   self$instance = ti_async(
     task = task,
