@@ -9,20 +9,12 @@ Mlp auto.
 \section{Super class}{
 \code{\link[mlr3automl:Auto]{mlr3automl::Auto}} -> \code{AutoMlp}
 }
-\section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{search_space}}{(\link[paradox:ParamSet]{paradox::ParamSet}).}
-}
-\if{html}{\out{</div>}}
-}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-AutoMlp-new}{\code{AutoMlp$new()}}
 \item \href{#method-AutoMlp-graph}{\code{AutoMlp$graph()}}
 \item \href{#method-AutoMlp-estimate_memory}{\code{AutoMlp$estimate_memory()}}
-\item \href{#method-AutoMlp-default_values}{\code{AutoMlp$default_values()}}
 \item \href{#method-AutoMlp-clone}{\code{AutoMlp$clone()}}
 }
 }
@@ -30,11 +22,13 @@ Mlp auto.
 <details><summary>Inherited methods</summary>
 <ul>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="check"><a href='../../mlr3automl/html/Auto.html#method-Auto-check'><code>mlr3automl::Auto$check()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="default_values"><a href='../../mlr3automl/html/Auto.html#method-Auto-default_values'><code>mlr3automl::Auto$default_values()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_default"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_default'><code>mlr3automl::Auto$design_default()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_lhs"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_lhs'><code>mlr3automl::Auto$design_lhs()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_random"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_random'><code>mlr3automl::Auto$design_random()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_set"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_set'><code>mlr3automl::Auto$design_set()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="early_stopping_rounds"><a href='../../mlr3automl/html/Auto.html#method-Auto-early_stopping_rounds'><code>mlr3automl::Auto$early_stopping_rounds()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="search_space"><a href='../../mlr3automl/html/Auto.html#method-Auto-search_space'><code>mlr3automl::Auto$search_space()</code></a></span></li>
 </ul>
 </details>
 }}
@@ -86,23 +80,6 @@ Create the graph for the auto.
 Estimate the memory for the auto.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AutoMlp$estimate_memory(task)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-AutoMlp-default_values"></a>}}
-\if{latex}{\out{\hypertarget{method-AutoMlp-default_values}{}}}
-\subsection{Method \code{default_values()}}{
-Get the default values for the auto.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoMlp$default_values(task)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

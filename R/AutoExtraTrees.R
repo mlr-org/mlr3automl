@@ -65,41 +65,7 @@ AutoExtraTrees = R6Class("AutoExtraTrees",
     estimate_memory = function(task) {
       num_trees = 100
       tree_size_bytes = task$nrow / 60000 * 1e6
-      (tree_size_bytes * num_trees) / 1e6
-    },
-
-    #' @description
-    #' Get the default values for the auto.
-    #'
-    #' @param task ([mlr3::Task]).
-    default_values = function(task) {
-      list()
-    },
-
-    #' @description
-    #' Get the initial hyperparameter set.
-    design_lhs = function(task, size) {
-      NULL
-    },
-
-    #' @description
-    #' Get the initial hyperparameter set.
-    design_random = function(task, size) {
-      NULL
-    },
-
-    #' @description
-    #' Get the initial hyperparameter set.
-    design_set = function(task, measure, size) {
-      NULL
-    }
-  ),
-
-  active = list(
-
-    #' @field search_space ([paradox::ParamSet]).
-    search_space = function() {
-      ps()
+      ceiling((tree_size_bytes * num_trees) / 1e6)
     }
   )
 )

@@ -86,8 +86,8 @@ Auto = R6Class("Auto",
     #' @description
     #' Default hyperparameters for the learner.
     design_default = function(task) {
-      default_values = self$default_values(task)
-      xdt = as.data.table(default_values)
+      default_values =
+      xdt = as.data.table(private$.default_values)
       set(xdt, j = "branch.selection", value = self$id)
       xdt
     },
@@ -98,13 +98,18 @@ Auto = R6Class("Auto",
       assert_task(task)
       assert_count(size)
 
-      internal_tune_ids = self$search_space$ids(any_tags = "internal_tuning")
-      xdt = generate_design_random(self$search_space, size)$data
+      internal_tune_ids = self$search_space(task)$ids(any_tags = "internal_tuning")
+      xdt = if (self$search_space(task)$length) {
+        generate_design_random(self$search_space(task), size)$data
+      } else {
+        data.table()
+      }
+
       set(xdt, j = "branch.selection", value = self$id)
 
-      lg$info("Learner '%s' design set size: %i", self$id, nrow(xdt))
+      lg$info("Learner '%s' random design size: %i", self$id, nrow(xdt))
 
-      xdt[, setdiff(c("branch.selection", self$search_space$ids()), internal_tune_ids), with = FALSE]
+      xdt[, setdiff(c("branch.selection", self$search_space(task)$ids()), internal_tune_ids), with = FALSE]
     },
 
     #' @description
@@ -112,19 +117,23 @@ Auto = R6Class("Auto",
     design_lhs = function(task, size) {
       assert_task(task)
       assert_count(size)
-      internal_tune_ids = self$search_space$ids(any_tags = "internal_tuning")
-      xdt = generate_design_lhs(self$search_space, n = size)$data
+
+      internal_tune_ids = self$search_space(task)$ids(any_tags = "internal_tuning")
+      xdt = if (self$search_space(task)$length) {
+        generate_design_lhs(self$search_space(task), n = size)$data
+      } else {
+        data.table()
+      }
+
       set(xdt, j = "branch.selection", value = self$id)
 
-      lg$info("Learner '%s' design set size: %i", self$id, nrow(xdt))
+      lg$info("Learner '%s' lhs design size: %i", self$id, nrow(xdt))
 
-      xdt[, setdiff(c("branch.selection", self$search_space$ids()), internal_tune_ids), with = FALSE]
+      xdt[, setdiff(c("branch.selection", self$search_space(task)$ids()), internal_tune_ids), with = FALSE]
     },
 
     #' @description
-    #' Get the initial hyperparameter set.
-    #' The initial design might be larger than the requested size to include all factor levels
-    #' If no best hyperparameter set is available, a random design is generated.
+    #' Get the initial hyperparameter set for the learner.
     design_set = function(task, measure, size) {
       assert_task(task)
       assert_measure(measure)
@@ -132,7 +141,7 @@ Auto = R6Class("Auto",
 
       # read data of best hyperparameters
       file = system.file("ex_data", sprintf("best_%s.csv", self$id), package = "mlr3automl")
-      if (!file.exists(file)) return(self$design_random(task, size))
+      if (!file.exists(file)) return(data.table())
       data = fread(file)
 
       # exclude tasks
@@ -148,25 +157,28 @@ Auto = R6Class("Auto",
       data = data[measure_id, , on = "measure"]
 
       # subset to relevant parameters
-      param_ids = self$search_space$ids()
-      param_internal_ids = self$search_space$ids(any_tags = "internal_tuning")
+      param_ids = self$search_space(task)$ids()
+      param_internal_ids = self$search_space(task)$ids(any_tags = "internal_tuning")
       param_ids = setdiff(param_ids, param_internal_ids)
       data = data[, param_ids, with = FALSE]
 
       xdt = data[sample(nrow(data), min(size, nrow(data)))]
       set(xdt, j = "branch.selection", value = self$id)
 
-      lg$info("Learner '%s' design set size: %i", self$id, nrow(xdt))
+      lg$info("Learner '%s' set design size: %i", self$id, nrow(xdt))
 
       xdt
+    },
+
+    #' @description
+    #' Get the search space for the learner.
+    search_space = function(task) {
+      private$.search_space
     }
   ),
 
-  active = list(
-    #' @field search_space ([paradox::ParamSet]).
-    search_space = function(rhs) {
-      assert_ro_binding(rhs)
-      stop("Abstract")
-    }
+  private = list(
+    .search_space = ps(),
+    .default_values = list()
   )
 )

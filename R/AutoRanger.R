@@ -50,40 +50,31 @@ AutoRanger = R6Class("AutoRanger",
     #' @description
     #' Estimate the memory for the auto.
     estimate_memory = function(task) {
-      upper = self$search_space$upper
+      upper = self$search_space(task)$upper
 
       num_trees = upper["ranger.num.trees"]
       tree_size = task$nrow / 60000 * 1e6
 
       memory_size = (tree_size * num_trees) / 1e6
       lg$info("Ranger memory size: %s MB", round(memory_size))
-      memory_size
-    },
-
-    #' @description
-    #' Get the default hyperparameter values.
-    default_values = function(task) {
-      list(
-        ranger.mtry.ratio = 0.5,
-        ranger.replace = TRUE,
-        ranger.sample.fraction = 0.632,
-        ranger.num.trees = 1000L
-      )
+      ceiling(memory_size)
     }
   ),
 
-  active = list(
-
-    #' @field search_space ([paradox::ParamSet]).
-    search_space = function(rhs) {
-      assert_ro_binding(rhs)
-      ps(
+  private = list(
+    .search_space = ps(
         ranger.mtry.ratio      = p_dbl(0, 1),
         ranger.replace         = p_lgl(),
         ranger.sample.fraction = p_dbl(1e-1, 1),
         ranger.num.trees       = p_int(500L, 2000L)
-      )
-    }
+    ),
+
+    .default_values = list(
+      ranger.mtry.ratio = 0.5,
+      ranger.replace = TRUE,
+      ranger.sample.fraction = 0.632,
+      ranger.num.trees = 1000L
+    )
   )
 )
 

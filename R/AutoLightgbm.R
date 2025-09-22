@@ -48,7 +48,7 @@ AutoLightgbm = R6Class("AutoLightgbm",
     #' @description
     #' Estimate the memory for the auto.
     estimate_memory = function(task) {
-        upper = self$search_space$upper
+        upper = self$search_space(task)$upper
 
         # histogram size
         max_bin =  255
@@ -61,7 +61,7 @@ AutoLightgbm = R6Class("AutoLightgbm",
 
         memory_size = (histogram_size + data_size) / 1e6
         lg$info("Lightgbm memory size: %s MB", round(memory_size))
-        memory_size
+        ceiling(memory_size)
     },
 
     #' @description
@@ -73,52 +73,40 @@ AutoLightgbm = R6Class("AutoLightgbm",
           "regr.rmse" = "rmse",
           "regr.mae" = "mae",
           "regr.mape" = "mape",
-          "rmse" # default
-        )
+          "rmse") # default
       } else if ("twoclass" %in% task$properties) {
         switch(measure$id,
           "classif.ce" = "binary_error",
           "classif.acc" = "binary_error",
           "classif.auc" = "auc",
           "classif.logloss" = "binary_logloss",
-          "binary_error" # default
-        )
+          "binary_error") # default
       } else if ("multiclass" %in% task$properties) {
         switch(measure$id,
           "classif.ce" = "multi_error",
           "classif.acc" = "multi_error",
           "classif.mauc_mu" = "auc_mu",
           "classif.logloss" = "multi_logloss",
-          "multi_error" # default
-    )
-  }
-    },
-
-    #' @description
-    #' Get the default hyperparameter values.
-    default_values = function(task) {
-      list(
-        lightgbm.learning_rate    = log(0.1),
-        lightgbm.feature_fraction = 1,
-        lightgbm.min_data_in_leaf = 20L,
-        lightgbm.num_leaves       = 31L
-      )
+          "multi_error") # default
+      }
     }
   ),
 
-  active = list(
-
-    #' @field search_space ([paradox::ParamSet]).
-    search_space = function(rhs) {
-      assert_ro_binding(rhs)
-      ps(
-        lightgbm.learning_rate    = p_dbl(1e-3, 1,, logscale = TRUE),
+  private = list(
+    .search_space = ps(
+        lightgbm.learning_rate    = p_dbl(1e-3, 1, logscale = TRUE),
         lightgbm.feature_fraction = p_dbl(0.1, 1),
         lightgbm.min_data_in_leaf = p_int(1L, 200L),
         lightgbm.num_leaves       = p_int(10L, 255L),
         lightgbm.num_iterations   = p_int(1L, 5000L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
-      )
-    }
+    ),
+
+    .default_values = list(
+      lightgbm.learning_rate = log(0.1),
+      lightgbm.feature_fraction = 1,
+      lightgbm.min_data_in_leaf = 20L,
+      lightgbm.num_leaves = 31L
+    )
   )
 )
 

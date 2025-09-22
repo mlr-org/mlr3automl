@@ -55,7 +55,7 @@ AutoXgboost = R6Class("AutoXgboost",
     #' @description
     #' Estimate the memory for the auto.
     estimate_memory = function(task) {
-      upper = self$search_space$upper
+      upper = self$search_space(task)$upper
 
       # histogram size
       max_depth = upper["xgboost.max_depth"]
@@ -68,7 +68,7 @@ AutoXgboost = R6Class("AutoXgboost",
 
       memory_size = (histogram_size + data_size) / 1e6
       lg$info("Xgboost memory size: %s MB", round(memory_size))
-      memory_size
+      ceiling(memory_size)
     },
 
     #' @description
@@ -100,28 +100,11 @@ AutoXgboost = R6Class("AutoXgboost",
           "merror" # default
         )
       }
-    },
-
-    #' @description
-    #' Get the default hyperparameter values.
-    default_values = function(task) {
-      list(
-        xgboost.eta = log(0.3),
-        xgboost.max_depth = 6L,
-        xgboost.colsample_bytree = 1L,
-        xgboost.colsample_bylevel = 1L,
-        xgboost.lambda = log(1L),
-        xgboost.alpha = log(0L),
-        xgboost.subsample = 1L
-      )
     }
   ),
-  active = list(
 
-    #' @field search_space ([paradox::ParamSet]).
-    search_space = function(rhs) {
-      assert_ro_binding(rhs)
-      ps(
+  private = list(
+    .search_space = ps(
         xgboost.eta               = p_dbl(1e-4, 1, logscale = TRUE),
         xgboost.max_depth         = p_int(1, 12),
         xgboost.colsample_bytree  = p_dbl(1e-1, 1),
@@ -130,8 +113,17 @@ AutoXgboost = R6Class("AutoXgboost",
         xgboost.alpha             = p_dbl(1e-3, 1e3, logscale = TRUE),
         xgboost.subsample         = p_dbl(1e-1, 1),
         xgboost.nrounds           = p_int(1, 5000, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
-      )
-    }
+    ),
+
+    .default_values = list(
+      xgboost.eta = log(0.3),
+      xgboost.max_depth = 6L,
+      xgboost.colsample_bytree = 1L,
+      xgboost.colsample_bylevel = 1L,
+      xgboost.lambda = log(1L),
+      xgboost.alpha = log(0L),
+      xgboost.subsample = 1L
+    )
   )
 )
 

@@ -46,28 +46,19 @@ AutoGlmnet = R6Class("AutoGlmnet",
         po("encode", method = "one-hot", id = "glmnet_encode") %>>%
         po("removeconstants", id = "glmnet_post_removeconstants") %>>%
         learner
-    },
-
-    #' @description
-    #' Get the default hyperparameter values.
-    default_values = function(task) {
-      list(
-        glmnet.lambda = 0,
-        glmnet.alpha = 1
-      )
     }
   ),
 
-  active = list(
+  private = list(
+    .search_space = ps(
+      glmnet.lambda = p_dbl(1e-4, 1e4, logscale = TRUE),
+      glmnet.alpha  = p_dbl(0, 1)
+    ),
 
-    #' @field search_space ([paradox::ParamSet]).
-    search_space = function(rhs) {
-      assert_ro_binding(rhs)
-      ps(
-        glmnet.lambda = p_dbl(1e-4, 1e4, logscale = TRUE),
-        glmnet.alpha  = p_dbl(0, 1)
-      )
-    }
+    .default_values = list(
+      glmnet.lambda = 0,
+      glmnet.alpha = 1
+    )
   )
 )
 

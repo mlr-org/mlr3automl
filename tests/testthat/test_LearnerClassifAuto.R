@@ -14,8 +14,8 @@ test_that("lhs design is generated", {
 
   autos = mlr_auto$mget(mlr_auto$keys())
   xdt = map_dtr(autos, function(auto) auto$design_lhs(tsk("penguins"), 10L), .fill = TRUE)
-  expect_data_table(xdt, nrows = 100L)
-  expect_set_equal(xdt$branch.selection, c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost","lightgbm", "mlp", "resnet", "ft_transformer"))
+  expect_data_table(xdt, nrows = length(autos) * 10 - 20 + 2)
+  expect_set_equal(xdt$branch.selection, mlr_auto$keys())
 })
 
 test_that("random design is generated", {
@@ -23,8 +23,9 @@ test_that("random design is generated", {
 
   autos = mlr_auto$mget(mlr_auto$keys())
   xdt = map_dtr(autos, function(auto) auto$design_random(tsk("penguins"), 10L), .fill = TRUE)
-  expect_data_table(xdt, nrows = 100L)
-  expect_set_equal(xdt$branch.selection, c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost","lightgbm", "mlp", "resnet", "ft_transformer"))
+  expect_data_table(xdt, nrows = length(autos) * 10 - 20 + 2)
+  expect_set_equal(xdt$branch.selection, mlr_auto$keys())
+
 })
 
 test_that("set design is generated", {
@@ -32,8 +33,16 @@ test_that("set design is generated", {
 
   autos = mlr_auto$mget(mlr_auto$keys())
   xdt = map_dtr(autos, function(auto) auto$design_set(tsk("penguins"), msr("classif.ce"), 10L), .fill = TRUE)
-  expect_data_table(xdt, nrows = 100L)
-  expect_set_equal(xdt$branch.selection, c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost","lightgbm", "mlp", "resnet", "ft_transformer"))
+  expect_data_table(xdt, nrows = 70L)
+  expect_set_equal(xdt$branch.selection, c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost","lightgbm"))
+})
+
+test_that("estimate memory works", {
+  skip_if_not_installed(all_packages)
+
+  autos = mlr_auto$mget(mlr_auto$keys())
+  memory = map_dbl(autos, function(auto) auto$estimate_memory(tsk("penguins")))
+  expect_numeric(memory)
 })
 
 test_that("LearnerClassifAuto is initialized", {
@@ -68,7 +77,7 @@ test_that("only lda fails", {
 })
 
 test_that("lda and glmnet works", {
-  test_classif_learner(c("lda", "glmnet"), initial_design_type = c("lhs", "default"))
+ x =  test_classif_learner(c("lda", "glmnet"), initial_design_type = c("lhs", "default"))
 })
 
 test_that("ranger works", {
@@ -125,6 +134,12 @@ test_that("ft_transformer works", {
   skip_if(TRUE)
 
   test_classif_learner("ft_transformer")
+})
+
+test_that("tabpfn works", {
+  skip_if(TRUE)
+
+  test_classif_learner("tabpfn")
 })
 
 
@@ -226,7 +241,7 @@ test_that("resample works", {
   skip_if_not_installed("glmnet")
   flush_redis()
 
-    rush_plan(n_workers = 2, worker_type = "remote")
+  rush_plan(n_workers = 2, worker_type = "remote")
   mirai::daemons(2)
 
   task = tsk("penguins")

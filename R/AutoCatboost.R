@@ -37,7 +37,7 @@ AutoCatboost = R6Class("AutoCatboost",
 
       learner = lrn(sprintf("%s.catboost", task$task_type),
         id = "catboost",
-        iterations = self$search_space$upper["catboost.iterations"] %??% 1000L,
+        iterations = self$search_space(task)$upper["catboost.iterations"] %??% 1000L,
         early_stopping_rounds = self$early_stopping_rounds(task),
         use_best_model = TRUE,
         eval_metric = self$internal_measure(measure, task))
@@ -52,7 +52,7 @@ AutoCatboost = R6Class("AutoCatboost",
     #' @description
     #' Estimate the memory for the auto.
     estimate_memory = function(task) {
-      upper = self$search_space$upper
+      upper = self$search_space(task)$upper
 
       # histogram size
       border_count = 254
@@ -65,7 +65,7 @@ AutoCatboost = R6Class("AutoCatboost",
 
       memory_size = (histogram_size + data_size) / 1e6
       lg$info("Catboost memory size: %s MB", round(memory_size))
-      memory_size
+      ceiling(memory_size)
     },
 
     #' @description
@@ -105,31 +105,22 @@ AutoCatboost = R6Class("AutoCatboost",
           "merror" # default
         )
       }
-    },
-
-    #' @description
-    #' Get the default hyperparameter values.
-    default_values = function(task) {
-      list(
-        catboost.depth = 6L,
-        catboost.learning_rate = log(0.03),
-        catboost.l2_leaf_reg = 3
-      )
     }
   ),
 
-  active = list(
+  private = list(
+    .search_space =  ps(
+      catboost.depth          = p_int(1, 12),
+      catboost.learning_rate  = p_dbl(1e-3, 1, logscale = TRUE),
+      catboost.l2_leaf_reg    = p_dbl(1e-3, 1e3),
+      catboost.iterations     = p_int(1L, 1000L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
+    ),
 
-    #' @field search_space ([paradox::ParamSet]).
-    search_space = function(rhs) {
-      assert_ro_binding(rhs)
-      ps(
-        catboost.depth          = p_int(1, 12),
-        catboost.learning_rate  = p_dbl(1e-3, 1, logscale = TRUE),
-        catboost.l2_leaf_reg    = p_dbl(1e-3, 1e3),
-        catboost.iterations     = p_int(1L, 1000L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
-      )
-    }
+    .default_values = list(
+      catboost.depth = 6L,
+      catboost.learning_rate = log(0.03),
+      catboost.l2_leaf_reg = 3
+    )
   )
 )
 

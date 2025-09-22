@@ -57,22 +57,12 @@ AutoResNet = R6Class("AutoResNet",
     estimate_memory = function(task) {
       memory_size = task$nrow * task$ncol * 8 * 10 / 1e6
       lg$info("ResNet memory size: %s MB", round(memory_size))
-      memory_size
-    },
-
-    #' @description
-    #' Get the default values for the auto.
-    default_values = function(task) {
-      list()
+      ceiling(memory_size)
     }
   ),
 
-  active = list(
-
-    #' @field search_space ([paradox::ParamSet]).
-    search_space = function(rhs) {
-      assert_ro_binding(rhs)
-      ps(
+  private = list(
+    .search_space = ps(
         resnet.n_blocks            = p_int(1, 16),
         resnet.d_block             = p_int(64, 1024),
         resnet.d_hidden_multiplier = p_int(1, 4),
@@ -81,10 +71,17 @@ AutoResNet = R6Class("AutoResNet",
         resnet.opt.lr              = p_dbl(1e-5, 1e-2, logscale = TRUE),
         resnet.opt.weight_decay    = p_dbl(1e-6, 1e-3, logscale = TRUE),
         resnet.epochs              = p_int(1L, 100L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
-      )
+    ),
 
-
-    }
+    .default_values = list(
+      resnet.n_blocks = 4L,
+      resnet.d_block = 128L,
+      resnet.d_hidden_multiplier = 1L,
+      resnet.dropout1 = 0.2,
+      resnet.dropout2 = 0.2,
+      resnet.opt.lr = 1e-5,
+      resnet.opt.weight_decay = 1e-6
+    )
   )
 )
 

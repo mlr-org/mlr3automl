@@ -9,32 +9,26 @@ Lda auto.
 \section{Super class}{
 \code{\link[mlr3automl:Auto]{mlr3automl::Auto}} -> \code{AutoLda}
 }
-\section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{search_space}}{(\link[paradox:ParamSet]{paradox::ParamSet}).}
-}
-\if{html}{\out{</div>}}
-}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-AutoLda-new}{\code{AutoLda$new()}}
 \item \href{#method-AutoLda-graph}{\code{AutoLda$graph()}}
-\item \href{#method-AutoLda-default_values}{\code{AutoLda$default_values()}}
-\item \href{#method-AutoLda-design_lhs}{\code{AutoLda$design_lhs()}}
-\item \href{#method-AutoLda-design_random}{\code{AutoLda$design_random()}}
-\item \href{#method-AutoLda-design_set}{\code{AutoLda$design_set()}}
 \item \href{#method-AutoLda-clone}{\code{AutoLda$clone()}}
 }
 }
 \if{html}{\out{
-<details open><summary>Inherited methods</summary>
+<details><summary>Inherited methods</summary>
 <ul>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="check"><a href='../../mlr3automl/html/Auto.html#method-Auto-check'><code>mlr3automl::Auto$check()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="default_values"><a href='../../mlr3automl/html/Auto.html#method-Auto-default_values'><code>mlr3automl::Auto$default_values()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_default"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_default'><code>mlr3automl::Auto$design_default()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_lhs"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_lhs'><code>mlr3automl::Auto$design_lhs()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_random"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_random'><code>mlr3automl::Auto$design_random()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_set"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_set'><code>mlr3automl::Auto$design_set()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="early_stopping_rounds"><a href='../../mlr3automl/html/Auto.html#method-Auto-early_stopping_rounds'><code>mlr3automl::Auto$early_stopping_rounds()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="estimate_memory"><a href='../../mlr3automl/html/Auto.html#method-Auto-estimate_memory'><code>mlr3automl::Auto$estimate_memory()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="search_space"><a href='../../mlr3automl/html/Auto.html#method-Auto-search_space'><code>mlr3automl::Auto$search_space()</code></a></span></li>
 </ul>
 </details>
 }}
@@ -79,92 +73,6 @@ Create the graph for the auto.
 \item{\code{n_threads}}{(\code{integer(1)}).}
 
 \item{\code{timeout}}{(\code{integer(1)}).}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-AutoLda-default_values"></a>}}
-\if{latex}{\out{\hypertarget{method-AutoLda-default_values}{}}}
-\subsection{Method \code{default_values()}}{
-Get the default values for the auto.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoLda$default_values(task)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-AutoLda-design_lhs"></a>}}
-\if{latex}{\out{\hypertarget{method-AutoLda-design_lhs}{}}}
-\subsection{Method \code{design_lhs()}}{
-Get the initial hyperparameter set.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoLda$design_lhs(task, size)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-
-\item{\code{size}}{(\code{integer(1)}).}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-AutoLda-design_random"></a>}}
-\if{latex}{\out{\hypertarget{method-AutoLda-design_random}{}}}
-\subsection{Method \code{design_random()}}{
-Get the initial hyperparameter set.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoLda$design_random(task, size)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-
-\item{\code{size}}{(\code{integer(1)}).}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-AutoLda-design_set"></a>}}
-\if{latex}{\out{\hypertarget{method-AutoLda-design_set}{}}}
-\subsection{Method \code{design_set()}}{
-Get the initial hyperparameter set.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoLda$design_set(task, measure, size)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-
-\item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
-
-\item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
-
-\item{\code{size}}{(\code{integer(1)}).}
 }
 \if{html}{\out{</div>}}
 }
