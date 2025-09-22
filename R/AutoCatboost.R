@@ -124,7 +124,7 @@ AutoCatboost = R6Class("AutoCatboost",
     search_space = function(rhs) {
       assert_ro_binding(rhs)
       ps(
-        catboost.depth          = p_int(1, 16),
+        catboost.depth          = p_int(1, 12),
         catboost.learning_rate  = p_dbl(1e-3, 1, logscale = TRUE),
         catboost.l2_leaf_reg    = p_dbl(1e-3, 1e3),
         catboost.iterations     = p_int(1L, 1000L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))

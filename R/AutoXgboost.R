@@ -123,7 +123,7 @@ AutoXgboost = R6Class("AutoXgboost",
       assert_ro_binding(rhs)
       ps(
         xgboost.eta               = p_dbl(1e-4, 1, logscale = TRUE),
-        xgboost.max_depth         = p_int(1, 20),
+        xgboost.max_depth         = p_int(1, 12),
         xgboost.colsample_bytree  = p_dbl(1e-1, 1),
         xgboost.colsample_bylevel = p_dbl(1e-1, 1),
         xgboost.lambda            = p_dbl(1e-3, 1e3, logscale = TRUE),
