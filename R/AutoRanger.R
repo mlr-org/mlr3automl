@@ -61,7 +61,7 @@ AutoRanger = R6Class("AutoRanger",
     },
 
     #' @description
-    #' Get the default values for the auto.
+    #' Get the default hyperparameter values.
     default_values = function(task) {
       list(
         ranger.mtry.ratio = 0.5,

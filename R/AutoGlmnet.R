@@ -49,10 +49,10 @@ AutoGlmnet = R6Class("AutoGlmnet",
     },
 
     #' @description
-    #' Get the default values for the auto.
+    #' Get the default hyperparameter values.
     default_values = function(task) {
       list(
-        glmnet.s = 0.01,
+        glmnet.lambda = 0,
         glmnet.alpha = 1
       )
     }
@@ -64,8 +64,8 @@ AutoGlmnet = R6Class("AutoGlmnet",
     search_space = function(rhs) {
       assert_ro_binding(rhs)
       ps(
-        glmnet.s     = p_dbl(1e-4, 1e4, logscale = TRUE),
-        glmnet.alpha = p_dbl(0, 1)
+        glmnet.lambda = p_dbl(1e-4, 1e4, logscale = TRUE),
+        glmnet.alpha  = p_dbl(0, 1)
       )
     }
   )

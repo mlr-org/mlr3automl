@@ -13,8 +13,6 @@ Extra Trees auto.
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
 \item{\code{search_space}}{(\link[paradox:ParamSet]{paradox::ParamSet}).}
-
-\item{\code{packages}}{(\code{character()}).}
 }
 \if{html}{\out{</div>}}
 }
@@ -25,6 +23,9 @@ Extra Trees auto.
 \item \href{#method-AutoExtraTrees-graph}{\code{AutoExtraTrees$graph()}}
 \item \href{#method-AutoExtraTrees-estimate_memory}{\code{AutoExtraTrees$estimate_memory()}}
 \item \href{#method-AutoExtraTrees-default_values}{\code{AutoExtraTrees$default_values()}}
+\item \href{#method-AutoExtraTrees-design_lhs}{\code{AutoExtraTrees$design_lhs()}}
+\item \href{#method-AutoExtraTrees-design_random}{\code{AutoExtraTrees$design_random()}}
+\item \href{#method-AutoExtraTrees-design_set}{\code{AutoExtraTrees$design_set()}}
 \item \href{#method-AutoExtraTrees-clone}{\code{AutoExtraTrees$clone()}}
 }
 }
@@ -33,7 +34,6 @@ Extra Trees auto.
 <ul>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="check"><a href='../../mlr3automl/html/Auto.html#method-Auto-check'><code>mlr3automl::Auto$check()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_default"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_default'><code>mlr3automl::Auto$design_default()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_lhs"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_lhs'><code>mlr3automl::Auto$design_lhs()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="early_stopping_rounds"><a href='../../mlr3automl/html/Auto.html#method-Auto-early_stopping_rounds'><code>mlr3automl::Auto$early_stopping_rounds()</code></a></span></li>
 </ul>
 </details>
@@ -109,6 +109,65 @@ Get the default values for the auto.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AutoExtraTrees-design_lhs"></a>}}
+\if{latex}{\out{\hypertarget{method-AutoExtraTrees-design_lhs}{}}}
+\subsection{Method \code{design_lhs()}}{
+Get the initial hyperparameter set.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AutoExtraTrees$design_lhs(task, size)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+
+\item{\code{size}}{(\code{integer(1)}).}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AutoExtraTrees-design_random"></a>}}
+\if{latex}{\out{\hypertarget{method-AutoExtraTrees-design_random}{}}}
+\subsection{Method \code{design_random()}}{
+Get the initial hyperparameter set.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AutoExtraTrees$design_random(task, size)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+
+\item{\code{size}}{(\code{integer(1)}).}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AutoExtraTrees-design_set"></a>}}
+\if{latex}{\out{\hypertarget{method-AutoExtraTrees-design_set}{}}}
+\subsection{Method \code{design_set()}}{
+Get the initial hyperparameter set.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AutoExtraTrees$design_set(task, measure, size)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+
+\item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
+
+\item{\code{size}}{(\code{integer(1)}).}
 }
 \if{html}{\out{</div>}}
 }

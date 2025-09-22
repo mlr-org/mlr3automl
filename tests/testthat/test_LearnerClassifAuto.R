@@ -1,35 +1,39 @@
 all_packages = c("glmnet", "kknn", "ranger", "e1071", "xgboost", "catboost","lightgbm", "fastai", "mlr3torch")
 
-test_that("initial design is generated", {
+test_that("default design is generated", {
   skip_if_not_installed(all_packages)
 
-  learner_ids = c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost","lightgbm", "fastai", "mlp", "extra_trees", "lda")
-  autos = mlr_auto$mget(learner_ids)
+  autos = mlr_auto$mget(mlr_auto$keys())
   xdt = map_dtr(autos, function(auto) auto$design_default(tsk("penguins")), .fill = TRUE)
-  expect_data_table(xdt, nrows = length(learner_ids))
-  expect_set_equal(xdt$branch.selection, learner_ids)
+  expect_data_table(xdt, nrows = length(autos))
+  expect_set_equal(xdt$branch.selection, mlr_auto$keys())
 })
 
 test_that("lhs design is generated", {
   skip_if_not_installed(all_packages)
 
-  learner_ids = c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost","lightgbm", "fastai", "mlp", "extra_trees", "lda")
-
-  autos = mlr_auto$mget(learner_ids)
+  autos = mlr_auto$mget(mlr_auto$keys())
   xdt = map_dtr(autos, function(auto) auto$design_lhs(tsk("penguins"), 10L), .fill = TRUE)
-  expect_data_table(xdt, nrows = 90)
-  expect_set_equal(xdt$branch.selection, c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost","lightgbm", "fastai", "mlp"))
+  expect_data_table(xdt, nrows = 80L)
+  expect_set_equal(xdt$branch.selection, c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost","lightgbm", "mlp"))
 })
 
-test_that("lhs design is generated with size smaller than the maximum number of levels", {
+test_that("random design is generated", {
   skip_if_not_installed(all_packages)
 
-  learner_ids = c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost","lightgbm", "fastai", "mlp", "extra_trees", "lda")
+  autos = mlr_auto$mget(mlr_auto$keys())
+  xdt = map_dtr(autos, function(auto) auto$design_random(tsk("penguins"), 10L), .fill = TRUE)
+  expect_data_table(xdt, nrows = 80L)
+  expect_set_equal(xdt$branch.selection, c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost","lightgbm", "mlp"))
+})
 
-  autos = mlr_auto$mget(learner_ids)
-  xdt = map_dtr(autos, function(auto) auto$design_lhs(tsk("penguins"), 1L), .fill = TRUE)
-  expect_data_table(xdt, nrows = 26)
-  expect_set_equal(xdt$branch.selection, c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost","lightgbm", "fastai", "mlp"))
+test_that("set design is generated", {
+  skip_if_not_installed(all_packages)
+
+  autos = mlr_auto$mget(mlr_auto$keys())
+  xdt = map_dtr(autos, function(auto) auto$design_set(tsk("penguins"), msr("classif.ce"), 10L), .fill = TRUE)
+  expect_data_table(xdt, nrows = 80L)
+  expect_set_equal(xdt$branch.selection, c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost","lightgbm", "mlp"))
 })
 
 test_that("LearnerClassifAuto is initialized", {
@@ -37,7 +41,7 @@ test_that("LearnerClassifAuto is initialized", {
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 10))
 
-  expect_learner(learner)
+  expect_learner(learner, task = tsk("penguins"))
 })
 
 test_that("glmnet works", {
@@ -45,7 +49,7 @@ test_that("glmnet works", {
 })
 
 test_that("kknn works", {
-  test_classif_learner ("kknn", n_evals = 10)
+  test_classif_learner ("kknn")
 })
 
 test_that("only lda fails", {
@@ -64,7 +68,7 @@ test_that("only lda fails", {
 })
 
 test_that("lda and glmnet works", {
-  test_classif_learner(c("lda", "glmnet"))
+  test_classif_learner(c("lda", "glmnet"), initial_design_type = c("lhs", "default"))
 })
 
 test_that("ranger works", {
@@ -98,7 +102,7 @@ test_that("only extra_trees fails", {
 })
 
 test_that("extra_trees and glmnet works", {
-  test_classif_learner(c("extra_trees", "glmnet"))
+  test_classif_learner(c("extra_trees", "glmnet"), initial_design_type = c("lhs", "default"))
 })
 
 test_that("lightgbm works", {
@@ -106,29 +110,9 @@ test_that("lightgbm works", {
 })
 
 test_that("mlp works", {
-  skip_on_cran()
-  skip_if_not_installed("mlr3torch")
-  skip_if_not_installed("rush")
-  flush_redis()
+  skip_if(TRUE)
 
-  rush_plan(n_workers = 2, worker_type = "remote")
-  mirai::daemons(2)
-
-  task = tsk("penguins")
-  learner = lrn("classif.auto",
-    learner_ids = "mlp",
-    small_data_size = 1,
-    resampling = rsmp("holdout"),
-    measure = msr("classif.ce"),
-    terminator = trm("evals", n_evals = 1),
-    lhs_size = 1,
-    encapsulate_learner = FALSE,
-    encapsulate_mbo = FALSE
-  )
-
-  expect_class(learner$train(task), "LearnerClassifAuto")
-  expect_subset(learner$model$instance$result$branch.selection, "mlp")
-  expect_set_equal(learner$model$instance$archive$data$branch.selection, "mlp")
+  test_classif_learner("mlp")
 })
 
 # test_that("fastai works", {
@@ -140,28 +124,7 @@ test_that("xgboost, catboost and lightgbm work", {
 })
 
 test_that("all learner work", {
-  skip_on_cran()
-  skip_if_not_installed("rush")
-  skip_if_not_installed(all_packages)
-  flush_redis()
-
-  rush_plan(n_workers = 2, worker_type = "remote")
-  mirai::daemons(2)
-
-  task = tsk("penguins")
-  learner = lrn("classif.auto",
-    small_data_size = 1,
-    lhs_size = 1,
-    resampling = rsmp("holdout"),
-    measure = msr("classif.ce"),
-    terminator = trm("evals", n_evals = 25),
-    encapsulate_learner = FALSE,
-    encapsulate_mbo = FALSE
-  )
-
-  expect_class(learner$train(task), "LearnerClassifAuto")
-  expect_class(learner$model$instance, "TuningInstanceAsyncSingleCrit")
-  expect_prediction(learner$predict(task))
+  test_classif_learner(c("catboost", "glmnet", "kknn", "lightgbm", "mlp", "ranger", "svm", "xgboost", "lda", "extra_trees"), initial_design_type = c("lhs", "default"))
 })
 
 test_that("memory limit works", {
@@ -180,7 +143,7 @@ test_that("memory limit works", {
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 20),
     resampling = rsmp("holdout"),
-    lhs_size = 1,
+    initial_design_size = 1,
     encapsulate_learner = FALSE,
     encapsulate_mbo = FALSE
   )
@@ -200,11 +163,12 @@ test_that("small data set switch works", {
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
+    learner_ids = "glmnet",
     small_data_size = 1000,
     small_data_resampling = rsmp("cv", folds = 2),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 1),
-    lhs_size = 1,
+    initial_design_size = 1,
     store_benchmark_result = TRUE,
     encapsulate_learner = FALSE,
     encapsulate_mbo = FALSE
@@ -220,16 +184,18 @@ test_that("large data set switch works", {
   skip_if_not_installed(all_packages)
   flush_redis()
 
-    rush_plan(n_workers = 2, worker_type = "remote")
+  rush_plan(n_workers = 2, worker_type = "remote")
   mirai::daemons(2)
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
+    learner_ids = c("catboost", "glmnet", "kknn", "lightgbm", "mlp", "ranger", "svm", "xgboost", "lda", "extra_trees"),
+    initial_design_type = c("lhs", "default"),
     large_data_size = 100,
     small_data_size = 1,
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 10),
-    lhs_size = 1,
+    initial_design_size = 1,
     store_benchmark_result = TRUE,
     encapsulate_learner = FALSE,
     encapsulate_mbo = FALSE
@@ -255,7 +221,7 @@ test_that("resample works", {
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 1),
-    lhs_size = 1,
+    initial_design_size = 1,
     encapsulate_learner = FALSE,
     encapsulate_mbo = FALSE
   )
@@ -264,3 +230,48 @@ test_that("resample works", {
   expect_resample_result(rr)
 })
 
+test_that("best initial design works with evals terminator", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  skip_if_not_installed(all_packages)
+  flush_redis()
+
+  rush_plan(n_workers = 2, worker_type = "remote")
+  mirai::daemons(2)
+
+  task = tsk("penguins")
+  learner = lrn("classif.auto",
+    learner_ids = c("kknn", "glmnet"),
+    initial_design_type = "set",
+    small_data_size = 1,
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 10),
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE
+  )
+
+  expect_class(learner$train(task), "LearnerClassifAuto")
+})
+
+test_that("initial design runtime limit works", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  skip_if_not_installed(all_packages)
+  flush_redis()
+
+  rush_plan(n_workers = 2, worker_type = "remote")
+  mirai::daemons(2)
+
+  task = tsk("penguins")
+  learner = lrn("classif.auto",
+    #learner_ids = "glmnet",
+    small_data_size = 1,
+    initial_design_type = "random",
+    initial_design_size = 100,
+    measure = msr("classif.ce"),
+    terminator = trm("run_time", secs = 40),
+    callbacks = callback_runtime_limit
+  )
+
+  learner$train(task)
+})

@@ -55,3 +55,17 @@ assert_python_packages = function(packages, python_version = NULL) {
   }
   invisible(packages)
 }
+
+callback_runtime_limit = callback_async_tuning("initial_design_runtime",
+  on_optimizer_after_eval = function(callback, context) {
+    start_time = context$instance$archive$start_time
+    runtime_limit = context$instance$terminator$param_set$values$secs
+    if (difftime(Sys.time(), start_time, units = "secs") > runtime_limit * 0.25) {
+      lg$info("Initial design runtime limit reached")
+      failed_tasks = context$instance$rush$queued_tasks
+      if (length(failed_tasks)) {
+        context$instance$rush$push_failed(failed_tasks, conditions = replicate(length(failed_tasks), list(message = "Initial design runtime limit reached"), simplify = FALSE))
+      }
+    }
+  }
+)

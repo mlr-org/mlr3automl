@@ -41,7 +41,7 @@
 #'   Terminator criterion for tuning.}
 #'   \item{measure}{([mlr3::Measure])\cr
 #'   Measure used for tuning.}
-#'   \item{lhs_size}{(`integer(1)`)\cr
+#'   \item{initial_design_size}{(`integer(1)`)\cr
 #'   Size of the initial design used for mbo.}
 #'   \item{callbacks}{([mlr3tuning::CallbackAsyncTuning])\cr
 #'   Callbacks used for tuning.}

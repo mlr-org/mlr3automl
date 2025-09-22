@@ -6,6 +6,11 @@
 #' Extra Trees auto.
 #'
 #' @template param_id
+#' @template param_n_threads
+#' @template param_timeout
+#' @template param_task
+#' @template param_measure
+#' @template param_size
 #'
 #' @export
 AutoExtraTrees = R6Class("AutoExtraTrees",
@@ -69,6 +74,24 @@ AutoExtraTrees = R6Class("AutoExtraTrees",
     #' @param task ([mlr3::Task]).
     default_values = function(task) {
       list()
+    },
+
+    #' @description
+    #' Get the initial hyperparameter set.
+    design_lhs = function(task, size) {
+      NULL
+    },
+
+    #' @description
+    #' Get the initial hyperparameter set.
+    design_random = function(task, size) {
+      NULL
+    },
+
+    #' @description
+    #' Get the initial hyperparameter set.
+    design_set = function(task, measure, size) {
+      NULL
     }
   ),
 

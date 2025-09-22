@@ -81,13 +81,6 @@ train_auto = function(self, private, task) {
     })
   })
 
-  # initial design
-  lhs_design = map_dtr(autos, function(auto) auto$design_lhs(task, pv$lhs_size), .fill = TRUE)
-  default_design = map_dtr(autos, function(auto) auto$design_default(task), .fill = TRUE)
-  initial_design = rbindlist(list(default_design, lhs_design), use.names = TRUE, fill = TRUE)
-  setorderv(initial_design, "branch.selection")
-  tuner$param_set$set_values(initial_design = initial_design)
-
   # tuning instance
   self$instance = ti_async(
     task = task,
@@ -101,6 +94,24 @@ train_auto = function(self, private, task) {
     store_models = pv$store_models
   )
 
+
+  initial_design_best =if ("set" %in% pv$initial_design_type) {
+    map_dtr(autos, function(auto) auto$design_set(task, measure = pv$measure, size = pv$initial_design_size), .fill = TRUE)
+  }
+  initial_design_lhs = if ("lhs" %in% pv$initial_design_type) {
+    map_dtr(autos, function(auto) auto$design_lhs(task, pv$initial_design_size), .fill = TRUE)
+  }
+  initial_design_random = if ("random" %in% pv$initial_design_type) {
+    map_dtr(autos, function(auto) auto$design_random(task, pv$initial_design_size), .fill = TRUE)
+  }
+  initial_design_default = if ("default" %in% pv$initial_design_type) {
+    map_dtr(autos, function(auto) auto$design_default(task), .fill = TRUE)
+  }
+
+  initial_designs = rbindlist(list(initial_design_best, initial_design_lhs, initial_design_random, initial_design_default), use.names = TRUE, fill = TRUE)
+  initial_designs = initial_designs[sample(.N)]
+  tuner$param_set$set_values(initial_design = initial_designs)
+
   # configure tuner
   tuner$surrogate = default_surrogate(self$instance, force_random_forest = TRUE)
   tuner$surrogate$param_set$set_values(catch_errors = pv$encapsulate_mbo)
@@ -111,8 +122,8 @@ train_auto = function(self, private, task) {
 
   tuner$acq_function = acqf("stochastic_cb", lambda = 1.96, rate = 0.1, period = 25L)
   tuner$acq_optimizer = acqo(
-    optimizer = bbotk::opt("random_search", batch_size = 1000L),
-    terminator = trm("evals", n_evals = 10000L),
+    optimizer = bbotk::opt("random_search", batch_size = 30000L),
+    terminator = trm("evals", n_evals = 30000L),
     catch_errors = pv$encapsulate_mbo)
 
   # tune

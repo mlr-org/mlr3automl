@@ -3,7 +3,6 @@
 export(Auto)
 export(AutoCatboost)
 export(AutoExtraTrees)
-export(AutoFastai)
 export(AutoGlmnet)
 export(AutoKknn)
 export(AutoLda)
