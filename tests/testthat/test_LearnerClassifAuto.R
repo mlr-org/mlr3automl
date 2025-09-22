@@ -115,6 +115,19 @@ test_that("mlp works", {
   test_classif_learner("mlp")
 })
 
+test_that("resnet works", {
+  skip_if(TRUE)
+
+  test_classif_learner("resnet")
+})
+
+test_that("ft_transformer works", {
+  skip_if(TRUE)
+
+  test_classif_learner("ft_transformer")
+})
+
+
 # test_that("fastai works", {
 #   test_classif_learner("fastai")
 # })

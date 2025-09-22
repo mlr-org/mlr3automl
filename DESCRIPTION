@@ -72,6 +72,7 @@ Collate:
     'AutoLightgbm.R'
     'AutoMlp.R'
     'AutoRanger.R'
+    'AutoResNet.R'
     'AutoSvm.R'
     'AutoXgboost.R'
     'aaa.R'
