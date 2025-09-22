@@ -131,7 +131,7 @@ Auto = R6Class("Auto",
       assert_count(size)
 
       # read data of best hyperparameters
-      file = system.file("data", sprintf("best_%s.csv", self$id), package = "mlr3automl")
+      file = system.file("ex_data", sprintf("best_%s.csv", self$id), package = "mlr3automl")
       if (!file.exists(file)) return(self$design_random(task, size))
       data = fread(file)
 
