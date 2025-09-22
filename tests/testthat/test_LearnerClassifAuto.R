@@ -14,13 +14,8 @@ test_that("lhs design is generated", {
 
   autos = mlr_auto$mget(mlr_auto$keys())
   xdt = map_dtr(autos, function(auto) auto$design_lhs(tsk("penguins"), 10L), .fill = TRUE)
-<<<<<<< HEAD
   expect_data_table(xdt, nrows = length(autos) * 10 - 20 + 2)
   expect_set_equal(xdt$branch.selection, mlr_auto$keys())
-=======
-  expect_data_table(xdt, nrows = 100L)
-  expect_set_equal(xdt$branch.selection, c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost","lightgbm", "mlp", "resnet", "ft_transformer"))
->>>>>>> main
 })
 
 test_that("random design is generated", {
@@ -28,14 +23,9 @@ test_that("random design is generated", {
 
   autos = mlr_auto$mget(mlr_auto$keys())
   xdt = map_dtr(autos, function(auto) auto$design_random(tsk("penguins"), 10L), .fill = TRUE)
-<<<<<<< HEAD
   expect_data_table(xdt, nrows = length(autos) * 10 - 20 + 2)
   expect_set_equal(xdt$branch.selection, mlr_auto$keys())
 
-=======
-  expect_data_table(xdt, nrows = 100L)
-  expect_set_equal(xdt$branch.selection, c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost","lightgbm", "mlp", "resnet", "ft_transformer"))
->>>>>>> main
 })
 
 test_that("set design is generated", {
@@ -43,13 +33,8 @@ test_that("set design is generated", {
 
   autos = mlr_auto$mget(mlr_auto$keys())
   xdt = map_dtr(autos, function(auto) auto$design_set(tsk("penguins"), msr("classif.ce"), 10L), .fill = TRUE)
-<<<<<<< HEAD
   expect_data_table(xdt, nrows = 0L)
   expect_set_equal(xdt$branch.selection, c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost","lightgbm"))
-=======
-  expect_data_table(xdt, nrows = 100L)
-  expect_set_equal(xdt$branch.selection, c("glmnet", "kknn", "ranger", "svm", "xgboost", "catboost","lightgbm", "mlp", "resnet", "ft_transformer"))
->>>>>>> main
 })
 
 test_that("LearnerClassifAuto is initialized", {
