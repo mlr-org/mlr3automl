@@ -2,7 +2,7 @@ train_auto = function(self, private, task) {
   pv = self$param_set$values
   large_data_set = task$nrow * task$ncol > pv$large_data_size
   n_workers = rush_config()$n_workers %??% 1L
-  n_threads = if (large_data_set) 4L else pv$n_threads %??% 1L
+  n_threads = pv$n_threads %??% 1L
   memory_limit = (pv$memory_limit %??% Inf) / n_workers
   autos = mlr_auto$mget(private$.learner_ids)
 
@@ -14,8 +14,11 @@ train_auto = function(self, private, task) {
   # set number of workers
   if (large_data_set) {
     n_workers = max(1, floor(n_workers / 4L))
+    n_threads = n_threads * 4L
+    memory_limit = memory_limit * 4L
+
     tuner$param_set$set_values(n_workers = n_workers)
-    lg$info("Large data set detected. Reducing number of workers to %i", n_workers)
+    lg$info("Large data set detected. Reducing number of workers to %i. Increasing number of threads to %i and memory limit to %i MB", n_workers, n_threads, memory_limit)
   }
 
   # resampling
