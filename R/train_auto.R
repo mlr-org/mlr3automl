@@ -46,7 +46,6 @@ train_auto = function(self, private, task) {
     po("unbranch", options = names(branches)), clone = TRUE)
   graph_learner$id = "graph_learner"
   graph_learner$predict_type = pv$measure$predict_type
-  graph_learner$packages = c(graph_learner$packages, c("mlr3torch"))
 
 
   if (pv$encapsulate_learner) {
