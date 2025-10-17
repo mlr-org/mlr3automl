@@ -117,18 +117,29 @@ train_auto = function(self, private, task) {
   tuner$param_set$set_values(initial_design = initial_designs)
 
   # configure tuner
-  tuner$surrogate = default_surrogate(self$instance, force_random_forest = TRUE)
+  learner = lrn("regr.ranger",
+      num.trees = 500L,
+      se.method = "jack",
+      splitrule = "variance",
+      predict_type = "se",
+      keep.inbag = TRUE,
+      sample.fraction = 1,
+      min.node.size = 3,
+      min.bucket = 3,
+      mtry.ratio = 5/6
+    )
+
+  tuner$surrogate =  srlrn(learner)
   tuner$surrogate$param_set$set_values(catch_errors = pv$encapsulate_mbo)
 
   if (!pv$encapsulate_mbo) {
     tuner$surrogate$learner$encapsulate(method = "none")
   }
 
+  budget = 100L * search_space$length^2
   tuner$acq_function = acqf("stochastic_cb", lambda = 1.96, rate = 0.1, period = 25L)
-  tuner$acq_optimizer = acqo(
-    optimizer = bbotk::opt("random_search", batch_size = 30000L),
-    terminator = trm("evals", n_evals = 30000L),
-    catch_errors = pv$encapsulate_mbo)
+  tuner$acq_optimizer = AcqOptimizerLocalSearch$new()
+  tuner$acq_optimizer$param_set$set_values(n_searches = 10L, n_steps = ceiling(budget / 300L), n_neighs = 30L) #  catch_errors = pv$encapsulate_mbo
 
   # tune
   lg$info("Learner '%s' starts tuning phase", self$id)
