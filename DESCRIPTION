@@ -51,7 +51,7 @@ Remotes:
     catboost/catboost/catboost/R-package,
     eagerai/fastai,
     mlr-org/mlr3extralearners,
-    mlr-org/mlr3mbo@so_config_6
+    mlr-org/mlr3mbo@so_config_6,
     mlr-org/mlr3torch,
     mlr-org/mlr3tuning
 Config/testthat/edition: 3
