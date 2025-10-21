@@ -36,6 +36,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         # system
         n_threads = p_int(lower = 1L, init = 1L, tags = c("train", "catboost", "lightgbm", "ranger", "xgboost")),
         memory_limit = p_int(lower = 1L, init = 32000L, tags = c("train", "catboost", "lightgbm", "ranger", "xgboost")),
+        devices = p_uty(init = c("cpu", "cuda"), tags = c("train", "super"), custom_check = crate({function(x) check_subset(x, c("cpu", "cuda"))})),
         # large data
         large_data_size = p_int(lower = 1L, init = 1e6, tags = c("train", "super")),
         # small data

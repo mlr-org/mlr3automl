@@ -19,15 +19,17 @@ AutoRanger = R6Class("AutoRanger",
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "ranger") {
-      super$initialize(id = id)
-      self$task_types = c("classif", "regr")
-      self$properties = "large_data_sets"
-      self$packages = c("mlr3", "mlr3learners", "ranger")
+      super$initialize(id = id,
+        properties = "large_data_sets",
+        task_types = c("classif", "regr"),
+        packages = c("mlr3", "mlr3learners", "ranger"),
+        devices = "cpu"
+      )
     },
 
     #' @description
     #' Create the graph for the auto.
-    graph = function(task, measure, n_threads, timeout) {
+    graph = function(task, measure, n_threads, timeout, devices) {
       assert_task(task)
       assert_measure(measure)
       assert_count(n_threads)

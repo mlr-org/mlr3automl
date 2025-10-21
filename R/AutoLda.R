@@ -22,10 +22,12 @@ AutoLda = R6Class("AutoLda",
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "lda") {
-      super$initialize(id = id)
-      self$task_types = "classif"
-      self$properties = "hyperparameter-free"
-      self$packages = c("mlr3", "mlr3learners", "MASS")
+      super$initialize(
+        id = id,
+        task_types = "classif",
+        properties = "hyperparameter-free",
+        packages = c("mlr3", "mlr3learners", "MASS"),
+        devices = "cpu")
     },
 
     #' @description

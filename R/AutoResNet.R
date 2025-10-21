@@ -19,27 +19,43 @@ AutoResNet = R6Class("AutoResNet",
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "resnet") {
-      super$initialize(id = id)
-      self$task_types = c("classif", "regr")
-      self$properties = "internal_tuning"
-      self$packages = c("mlr3", "mlr3torch")
+      super$initialize(id = id,
+        properties = "internal_tuning",
+        task_types = c("classif", "regr"),
+        packages = c("mlr3", "mlr3torch"),
+        devices = c("cpu", "cuda")
+      )
+    },
+
+    #' @description
+    #' Check if the auto is compatible with the task.
+    check = function(task, memory_limit = Inf, large_data_set = FALSE, devices = "cpu") {
+      if ("cuda" %nin% devices && task$nrow > 1e3) {
+        lg$info("Learner '%s' is not compatible with tasks with more than 1,000 rows when using 'cpu' as device", self$id)
+        return(FALSE)
+      }
+      super$check(task, memory_limit, large_data_set, devices)
     },
 
     #' @description
     #' Create the graph for the auto.
-    graph = function(task, measure, n_threads, timeout) {
+    graph = function(task, measure, n_threads, timeout, devices) {
       assert_task(task)
       assert_measure(measure)
       assert_count(n_threads)
       assert_count(timeout)
+      assert_subset(devices, self$devices)
 
       require_namespaces("mlr3torch")
+
+      device = if ("cuda" %in% devices) "cuda" else "auto"
 
       learner = lrn(sprintf("%s.tab_resnet", task$task_type),
        id = "resnet",
        measures_valid = measure,
        patience = self$early_stopping_rounds(task),
-       batch_size = 32L
+       batch_size = 32L,
+       device = device
       )
       set_threads(learner, n_threads)
 

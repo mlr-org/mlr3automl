@@ -19,27 +19,33 @@ AutoLightgbm = R6Class("AutoLightgbm",
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "lightgbm") {
-      super$initialize(id = id)
-      self$task_types = c("classif", "regr")
-      self$properties = c("internal_tuning", "large_data_sets")
-      self$packages = c("mlr3", "mlr3extralearners", "lightgbm")
+      super$initialize(id = id,
+        properties = c("internal_tuning", "large_data_sets"),
+        task_types = c("classif", "regr"),
+        packages = c("mlr3", "mlr3extralearners", "lightgbm"),
+        devices = c("cpu", "cuda")
+      )
     },
 
     #' @description
     #' Create the graph for the auto.
-    graph = function(task, measure, n_threads, timeout) {
+    graph = function(task, measure, n_threads, timeout, devices) {
       assert_task(task)
       assert_measure(measure)
       assert_count(n_threads)
       assert_count(timeout)
+      assert_subset(devices, self$devices)
 
       require_namespaces("mlr3extralearners")
+
+      device_type = if ("cuda" %in% devices) "gpu" else "cpu"
 
       learner = lrn(sprintf("%s.lightgbm", task$task_type),
         id = "lightgbm",
         early_stopping_rounds = self$early_stopping_rounds(task),
         callbacks = list(cb_timeout_lightgbm(timeout * 0.8)),
-        eval = self$internal_measure(measure, task))
+        eval = self$internal_measure(measure, task),
+        device_type = device_type)
       set_threads(learner, n_threads)
 
       learner

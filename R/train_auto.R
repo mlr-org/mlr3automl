@@ -30,7 +30,7 @@ train_auto = function(self, private, task) {
   }
 
   # initialize graph learner
-  autos = keep(autos, function(auto) auto$check(task, memory_limit = memory_limit, large_data_set = large_data_set))
+  autos = keep(autos, function(auto) auto$check(task, memory_limit = memory_limit, large_data_set = large_data_set, devices = pv$devices))
 
   if (!length(autos)) {
     error_config("No learner is compatible with the task.")
@@ -40,13 +40,12 @@ train_auto = function(self, private, task) {
     error_config("All learners have no hyperparameters to tune. Combine with other learners.")
   }
 
-  branches = map(autos, function(auto) auto$graph(task, pv$measure, n_threads, pv$learner_timeout))
+  branches = map(autos, function(auto) auto$graph(task, pv$measure, n_threads, pv$learner_timeout, pv$devices))
   graph_learner = as_learner(po("branch", options = names(branches)) %>>%
     gunion(unname(branches)) %>>%
     po("unbranch", options = names(branches)), clone = TRUE)
   graph_learner$id = "graph_learner"
   graph_learner$predict_type = pv$measure$predict_type
-
 
   if (pv$encapsulate_learner) {
     fallback = lrn(sprintf("%s.featureless", task$task_type))

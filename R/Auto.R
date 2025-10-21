@@ -30,15 +30,22 @@ Auto = R6Class("Auto",
     #' @field packages (`character()`).
     packages = NULL,
 
+    #' @field devices (`character()`).
+    devices = NULL,
+
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
-    initialize = function(id) {
+    initialize = function(id, properties = character(0), task_types = character(0), packages = character(0), devices = character(0)) {
       self$id = assert_string(id)
+      self$properties = assert_character(properties)
+      self$task_types = assert_character(task_types)
+      self$packages = assert_character(packages)
+      self$devices = assert_character(devices)
     },
 
     #' @description
     #' Check if the auto is compatible with the task.
-    check = function(task, memory_limit = Inf, large_data_set = FALSE) {
+    check = function(task, memory_limit = Inf, large_data_set = FALSE, devices) {
       if (!task$task_type %in% self$task_types) {
        lg$info("Learner '%s' is not compatible with task type '%s'", self$id, task$task_type)
        return(FALSE)
@@ -51,6 +58,11 @@ Auto = R6Class("Auto",
         lg$info("Learner '%s' is not compatible with large data sets", self$id)
         return(FALSE)
       }
+      if (any(devices %nin% self$devices)) {
+        lg$info("Learner '%s' is not compatible with devices '%s'", self$id, as_short_string(devices))
+        return(FALSE)
+      }
+
       TRUE
     },
 
