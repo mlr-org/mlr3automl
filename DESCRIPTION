@@ -33,8 +33,8 @@ Suggests:
     fastai,
     glmnet,
     kknn,
-    lightgbm,
     lgr,
+    lightgbm,
     MASS,
     mirai,
     mlr3extralearners,
@@ -50,6 +50,7 @@ Suggests:
 Remotes:
     catboost/catboost/catboost/R-package,
     eagerai/fastai,
+    mlr-org/mlr3,
     mlr-org/mlr3extralearners,
     mlr-org/mlr3mbo@so_config_6,
     mlr-org/mlr3torch,

@@ -98,7 +98,6 @@ train_auto = function(self, private, task) {
     store_models = pv$store_models
   )
 
-
   initial_design_best =if ("set" %in% pv$initial_design_type) {
     map_dtr(autos, function(auto) auto$design_set(task, measure = pv$measure, size = pv$initial_design_size), .fill = TRUE)
   }
