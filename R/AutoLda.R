@@ -32,7 +32,7 @@ AutoLda = R6Class("AutoLda",
 
     #' @description
     #' Create the graph for the auto.
-    graph = function(task, measure, n_threads, timeout) {
+    graph = function(task, measure, n_threads, timeout, devices) {
       assert_task(task)
       assert_measure(measure)
       assert_count(n_threads)

@@ -326,3 +326,26 @@ test_that("devices works", {
 
   expect_class(learner$train(task), "LearnerClassifAuto")
 })
+
+test_that("devices works", {
+  skip_if(TRUE)
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  skip_if_not_installed(all_packages)
+  flush_redis()
+
+  rush_plan(n_workers = 2, worker_type = "remote")
+  mirai::daemons(2)
+
+  task = tsk("penguins")
+  learner = lrn("classif.auto",
+    devices = "cuda",
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 10),
+    initial_design_size = 1,
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE
+  )
+
+  expect_class(learner$train(task), "LearnerClassifAuto")
+})

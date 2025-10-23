@@ -68,7 +68,7 @@ Auto = R6Class("Auto",
 
     #' @description
     #' Create the graph for the auto.
-    graph = function(task, measure, n_threads, timeout) {
+    graph = function(task, measure, n_threads, timeout, devices) {
       stop("Abstract")
     },
 

@@ -32,7 +32,7 @@ AutoTabpfn = R6Class("AutoTabpfn",
     #' @description
     #' Check if the auto is compatible with the task.
     check = function(task, memory_limit = Inf, large_data_set = FALSE, devices = "cpu") {
-      ok = check_python_packages(c("fastai", "torch"))
+      ok = check_python_packages(c("torch"))
       if (!isTRUE(ok)) {
         lg$info(ok)
         lg$info("Remove tabpfn from search space")
