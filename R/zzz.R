@@ -9,7 +9,7 @@
 #' @import R6
 #' @importFrom rush rush_config
 #' @import lhs
-
+#' @import mlr3learners
 
 "_PACKAGE"
 

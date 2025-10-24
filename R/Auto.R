@@ -13,6 +13,7 @@
 #' @template param_memory_limit
 #' @template param_large_data_set
 #' @template param_size
+#' @template param_devices
 #'
 #' @export
 Auto = R6Class("Auto",
@@ -35,7 +36,18 @@ Auto = R6Class("Auto",
 
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
-    initialize = function(id, properties = character(0), task_types = character(0), packages = character(0), devices = character(0)) {
+    #'
+    #' @param id (`character(1)`).
+    #' @param properties (`character()`).
+    #' @param task_types (`character()`).
+    #' @param packages (`character()`).
+    #' @param devices (`character()`).
+    initialize = function(id,
+      properties = character(0),
+      task_types = character(0),
+      packages = character(0),
+      devices = character(0)
+      ) {
       self$id = assert_string(id)
       self$properties = assert_character(properties)
       self$task_types = assert_character(task_types)

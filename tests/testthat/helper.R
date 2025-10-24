@@ -25,7 +25,14 @@ expect_rush_reset = function(rush, type = "kill") {
 }
 
 
-test_classif_learner = function(learner_id, initial_design_size = 2, initial_design_type = "lhs", n_evals = 5) {
+test_classif_learner = function(
+  learner_id,
+  initial_design_size = 2,
+  initial_design_type = "lhs",
+  n_evals = 4,
+  task = NULL,
+  check_learners = TRUE
+  ) {
   skip_on_cran()
   skip_if_not_installed(unlist(map(mlr_auto$mget(learner_id), "packages")))
   skip_if_not_installed("rush")
@@ -34,7 +41,7 @@ test_classif_learner = function(learner_id, initial_design_size = 2, initial_des
   rush_plan(n_workers = 2, worker_type = "remote")
   mirai::daemons(2)
 
-  task = tsk("penguins")
+  task = if (is.null(task)) tsk("penguins") else task
   learner = lrn("classif.auto",
     learner_ids = learner_id,
     small_data_size = 1,
@@ -44,7 +51,8 @@ test_classif_learner = function(learner_id, initial_design_size = 2, initial_des
     initial_design_type = initial_design_type,
     initial_design_size = initial_design_size,
     encapsulate_learner = FALSE,
-    encapsulate_mbo = FALSE
+    encapsulate_mbo = FALSE,
+    check_learners = check_learners
   )
 
   expect_class(learner$train(task), "LearnerClassifAuto")
@@ -84,3 +92,4 @@ test_regr_learner = function(learner_id, n_evals = 6) {
   learner
 }
 
+all_packages = c("glmnet", "kknn", "ranger", "e1071", "xgboost", "catboost","lightgbm", "fastai", "mlr3torch")

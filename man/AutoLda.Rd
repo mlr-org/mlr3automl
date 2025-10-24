@@ -56,7 +56,7 @@ Identifier for the new instance.}
 \subsection{Method \code{graph()}}{
 Create the graph for the auto.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoLda$graph(task, measure, n_threads, timeout)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AutoLda$graph(task, measure, n_threads, timeout, devices)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -73,6 +73,11 @@ Create the graph for the auto.
 \item{\code{n_threads}}{(\code{integer(1)}).}
 
 \item{\code{timeout}}{(\code{integer(1)}).}
+
+\item{\code{devices}}{(\code{character()})\cr
+Devices to use.
+Allowed values are \code{"cpu"} and \code{"cuda"}.
+Default is "cpu".}
 }
 \if{html}{\out{</div>}}
 }

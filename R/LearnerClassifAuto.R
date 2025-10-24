@@ -53,7 +53,8 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         store_models = p_lgl(init = FALSE, tags = c("train", "super")),
         # debugging
         encapsulate_learner = p_lgl(init = TRUE, tags = c("train", "super")),
-        encapsulate_mbo = p_lgl(init = TRUE, tags = c("train", "super"))
+        encapsulate_mbo = p_lgl(init = TRUE, tags = c("train", "super")),
+        check_learners = p_lgl(init = TRUE, tags = c("train", "super"))
       )
       # subset to relevant parameters for selected learners
       param_set = param_set$subset(ids = unique(param_set$ids(any_tags = c("super", learner_ids))))
@@ -65,7 +66,7 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         id = id,
         task_type = "classif",
         param_set = param_set,
-        packages = union(c("mlr3", "mlr3tuning","mlr3pipelines"), packages),
+        packages = union(c("mlr3", "mlr3tuning","mlr3pipelines", "mlr3learners"), packages),
         feature_types = c("logical", "integer", "numeric", "character", "factor"),
         predict_types = c("response", "prob"),
         properties = c("missings", "weights", "twoclass", "multiclass"),

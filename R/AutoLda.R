@@ -13,6 +13,7 @@
 #' @template param_size
 #' @template param_n_threads
 #' @template param_timeout
+#' @template param_devices
 #'
 #' @export
 AutoLda = R6Class("AutoLda",

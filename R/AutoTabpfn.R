@@ -12,6 +12,7 @@
 #' @template param_timeout
 #' @template param_memory_limit
 #' @template param_large_data_set
+#' @template param_devices
 #'
 #' @export
 AutoTabpfn = R6Class("AutoTabpfn",

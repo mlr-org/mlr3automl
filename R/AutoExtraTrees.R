@@ -11,6 +11,7 @@
 #' @template param_task
 #' @template param_measure
 #' @template param_size
+#' @template param_devices
 #'
 #' @export
 AutoExtraTrees = R6Class("AutoExtraTrees",

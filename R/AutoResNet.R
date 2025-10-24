@@ -10,6 +10,7 @@
 #' @template param_measure
 #' @template param_n_threads
 #' @template param_timeout
+#' @template param_devices
 #'
 #' @export
 AutoResNet = R6Class("AutoResNet",
@@ -23,18 +24,8 @@ AutoResNet = R6Class("AutoResNet",
         properties = "internal_tuning",
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3torch"),
-        devices = c("cpu", "cuda")
+        devices = "cuda"
       )
-    },
-
-    #' @description
-    #' Check if the auto is compatible with the task.
-    check = function(task, memory_limit = Inf, large_data_set = FALSE, devices = "cpu") {
-      if ("cuda" %nin% devices && task$nrow > 1e3) {
-        lg$info("Learner '%s' is not compatible with tasks with more than 1,000 rows when using 'cpu' as device", self$id)
-        return(FALSE)
-      }
-      super$check(task, memory_limit, large_data_set, devices)
     },
 
     #' @description
@@ -44,7 +35,7 @@ AutoResNet = R6Class("AutoResNet",
       assert_measure(measure)
       assert_count(n_threads)
       assert_count(timeout)
-      assert_subset(devices, self$devices)
+      assert_subset(devices, c("cuda", "cpu"))
 
       require_namespaces("mlr3torch")
 

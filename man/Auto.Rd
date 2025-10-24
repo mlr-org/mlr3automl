@@ -16,6 +16,8 @@ This class is the base class for all autos.
 \item{\code{task_types}}{(\code{character()}).}
 
 \item{\code{packages}}{(\code{character()}).}
+
+\item{\code{devices}}{(\code{character()}).}
 }
 \if{html}{\out{</div>}}
 }
@@ -42,14 +44,27 @@ This class is the base class for all autos.
 \subsection{Method \code{new()}}{
 Creates a new instance of this \link[R6:R6Class]{R6} class.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Auto$new(id)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Auto$new(
+  id,
+  properties = character(0),
+  task_types = character(0),
+  packages = character(0),
+  devices = character(0)
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{id}}{(\code{character(1)})\cr
-Identifier for the new instance.}
+\item{\code{id}}{(\code{character(1)}).}
+
+\item{\code{properties}}{(\code{character()}).}
+
+\item{\code{task_types}}{(\code{character()}).}
+
+\item{\code{packages}}{(\code{character()}).}
+
+\item{\code{devices}}{(\code{character()}).}
 }
 \if{html}{\out{</div>}}
 }
@@ -60,7 +75,7 @@ Identifier for the new instance.}
 \subsection{Method \code{check()}}{
 Check if the auto is compatible with the task.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Auto$check(task, memory_limit = Inf, large_data_set = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Auto$check(task, memory_limit = Inf, large_data_set = FALSE, devices)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -71,6 +86,11 @@ Check if the auto is compatible with the task.
 \item{\code{memory_limit}}{(\code{integer(1)}).}
 
 \item{\code{large_data_set}}{(\code{logical(1)}).}
+
+\item{\code{devices}}{(\code{character()})\cr
+Devices to use.
+Allowed values are \code{"cpu"} and \code{"cuda"}.
+Default is "cpu".}
 }
 \if{html}{\out{</div>}}
 }
@@ -81,7 +101,7 @@ Check if the auto is compatible with the task.
 \subsection{Method \code{graph()}}{
 Create the graph for the auto.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Auto$graph(task, measure, n_threads, timeout)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Auto$graph(task, measure, n_threads, timeout, devices)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -94,6 +114,11 @@ Create the graph for the auto.
 \item{\code{n_threads}}{(\code{integer(1)}).}
 
 \item{\code{timeout}}{(\code{integer(1)}).}
+
+\item{\code{devices}}{(\code{character()})\cr
+Devices to use.
+Allowed values are \code{"cpu"} and \code{"cuda"}.
+Default is "cpu".}
 }
 \if{html}{\out{</div>}}
 }

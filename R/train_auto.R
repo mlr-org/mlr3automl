@@ -30,10 +30,12 @@ train_auto = function(self, private, task) {
   }
 
   # initialize graph learner
-  autos = keep(autos, function(auto) auto$check(task, memory_limit = memory_limit, large_data_set = large_data_set, devices = pv$devices))
+  if (pv$check_learners) {
+    autos = keep(autos, function(auto) auto$check(task, memory_limit = memory_limit, large_data_set = large_data_set, devices = pv$devices))
 
-  if (!length(autos)) {
-    error_config("No learner is compatible with the task.")
+    if (!length(autos)) {
+      error_config("No learner is compatible with the task.")
+    }
   }
 
   if (all(map_lgl(autos, function(auto) "hyperparameter-free" %in% auto$properties))) {

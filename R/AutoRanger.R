@@ -10,6 +10,8 @@
 #' @template param_measure
 #' @template param_n_threads
 #' @template param_timeout
+#' @template param_devices
+#'
 #'
 #' @export
 AutoRanger = R6Class("AutoRanger",
