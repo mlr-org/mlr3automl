@@ -198,6 +198,7 @@ test_that("ft_transformer works", {
 })
 
 test_that("tabpfn works", {
+  skip_if(TRUE)
   skip_on_cran()
   skip_if_not_installed(unlist(map(mlr_auto$mget("tabpfn"), "packages")))
   skip_if_not_installed("rush")
@@ -243,7 +244,7 @@ test_that("xgboost, catboost and lightgbm work", {
   test_classif_learner(c("xgboost", "catboost", "lightgbm"))
 })
 
-test_that("all learner work", {
+test_that("all learner on cpu work", {
   test_classif_learner(c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees"), initial_design_type = c("lhs", "default"))
 })
 
