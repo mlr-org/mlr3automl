@@ -10,6 +10,7 @@
 #' @template param_measure
 #' @template param_n_threads
 #' @template param_timeout
+#' @template param_devices
 #'
 #' @export
 AutoCatboost = R6Class("AutoCatboost",
@@ -19,28 +20,36 @@ AutoCatboost = R6Class("AutoCatboost",
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "catboost") {
-      super$initialize(id = id)
-      self$task_types = c("classif", "regr")
-      self$properties = c("internal_tuning", "large_data_sets")
-      self$packages = c("mlr3", "mlr3extralearners", "catboost")
+      super$initialize(
+        id = id,
+        properties = c("internal_tuning", "large_data_sets"),
+        task_types = c("classif", "regr"),
+        packages = c("mlr3", "mlr3extralearners", "catboost"),
+        devices = c("cpu", "cuda")
+      )
     },
 
     #' @description
     #' Create the graph for the auto.
-    graph = function(task, measure, n_threads, timeout) {
+    graph = function(task, measure, n_threads, timeout, devices) {
       assert_task(task)
       assert_measure(measure)
       assert_count(n_threads)
       assert_count(timeout)
+      assert_subset(devices, self$devices)
 
       require_namespaces("mlr3extralearners")
+
+      # catboost only supports gpu via cuda
+      task_type =  if ("cuda" %in% devices) "GPU" else "CPU"
 
       learner = lrn(sprintf("%s.catboost", task$task_type),
         id = "catboost",
         iterations = self$search_space(task)$upper["catboost.iterations"] %??% 1000L,
         early_stopping_rounds = self$early_stopping_rounds(task),
         use_best_model = TRUE,
-        eval_metric = self$internal_measure(measure, task))
+        eval_metric = self$internal_measure(measure, task),
+        task_type = task_type)
       set_threads(learner, n_threads)
 
       po("removeconstants", id = "catboost_removeconstants") %>>%

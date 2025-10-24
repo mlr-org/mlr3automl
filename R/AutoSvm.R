@@ -10,6 +10,7 @@
 #' @template param_measure
 #' @template param_n_threads
 #' @template param_timeout
+#' @template param_devices
 #'
 #' @export
 AutoSvm = R6Class("AutoSvm",
@@ -19,19 +20,22 @@ AutoSvm = R6Class("AutoSvm",
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "svm") {
-      super$initialize(id = id)
-      self$task_types = c("classif", "regr")
-      self$properties = character(0)
-      self$packages = c("mlr3", "mlr3learners", "e1071")
+      super$initialize(id = id,
+        properties = character(0),
+        task_types = c("classif", "regr"),
+        packages = c("mlr3", "mlr3learners", "e1071"),
+        devices = "cpu"
+      )
     },
 
     #' @description
     #' Create the graph for the auto.
-    graph = function(task, measure, n_threads, timeout) {
+    graph = function(task, measure, n_threads, timeout, devices) {
       assert_task(task)
       assert_measure(measure)
       assert_count(n_threads)
       assert_count(timeout)
+      assert_subset(devices, self$devices)
 
       require_namespaces("mlr3learners")
 

@@ -11,6 +11,7 @@
 #' @template param_task
 #' @template param_measure
 #' @template param_size
+#' @template param_devices
 #'
 #' @export
 AutoExtraTrees = R6Class("AutoExtraTrees",
@@ -20,10 +21,13 @@ AutoExtraTrees = R6Class("AutoExtraTrees",
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "extra_trees") {
-      super$initialize(id = id)
-      self$task_types = c("classif", "regr")
-      self$properties = c("large_data_sets", "hyperparameter-free")
-      self$packages = c("mlr3", "mlr3learners", "ranger")
+      super$initialize(
+        id = id,
+        properties = c("large_data_sets", "hyperparameter-free"),
+        task_types = c("classif", "regr"),
+        packages = c("mlr3", "mlr3learners", "ranger"),
+        devices = "cpu"
+      )
     },
 
     #' @description
@@ -33,7 +37,7 @@ AutoExtraTrees = R6Class("AutoExtraTrees",
     #' @param measure ([mlr3::Measure]).
     #' @param n_threads (`numeric(1)`).
     #' @param timeout (`numeric(1)`).
-    graph = function(task, measure, n_threads, timeout) {
+    graph = function(task, measure, n_threads, timeout, devices) {
       assert_task(task)
       assert_measure(measure)
       assert_count(n_threads)

@@ -1,3 +1,12 @@
+initialize_auto = function(self, private, task) {
+  pv = self$param_set$values
+  large_data_set = task$nrow * task$ncol > pv$large_data_size
+  n_workers = rush_config()$n_workers %??% 1L
+  n_threads = pv$n_threads %??% 1L
+  memory_limit = (pv$memory_limit %??% Inf) / n_workers
+  autos = mlr_auto$mget(private$.learner_ids)
+}
+
 train_auto = function(self, private, task) {
   pv = self$param_set$values
   large_data_set = task$nrow * task$ncol > pv$large_data_size
@@ -30,23 +39,24 @@ train_auto = function(self, private, task) {
   }
 
   # initialize graph learner
-  autos = keep(autos, function(auto) auto$check(task, memory_limit = memory_limit, large_data_set = large_data_set))
+  if (pv$check_learners) {
+    autos = keep(autos, function(auto) auto$check(task, memory_limit = memory_limit, large_data_set = large_data_set, devices = pv$devices))
 
-  if (!length(autos)) {
-    error_config("No learner is compatible with the task.")
+    if (!length(autos)) {
+      error_config("No learner is compatible with the task.")
+    }
   }
 
   if (all(map_lgl(autos, function(auto) "hyperparameter-free" %in% auto$properties))) {
     error_config("All learners have no hyperparameters to tune. Combine with other learners.")
   }
 
-  branches = map(autos, function(auto) auto$graph(task, pv$measure, n_threads, pv$learner_timeout))
+  branches = map(autos, function(auto) auto$graph(task, pv$measure, n_threads, pv$learner_timeout, pv$devices))
   graph_learner = as_learner(po("branch", options = names(branches)) %>>%
     gunion(unname(branches)) %>>%
     po("unbranch", options = names(branches)), clone = TRUE)
   graph_learner$id = "graph_learner"
   graph_learner$predict_type = pv$measure$predict_type
-
 
   if (pv$encapsulate_learner) {
     fallback = lrn(sprintf("%s.featureless", task$task_type))

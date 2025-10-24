@@ -56,7 +56,12 @@ Identifier for the new instance.}
 \subsection{Method \code{check()}}{
 Check if the auto is compatible with the task.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoTabpfn$check(task, memory_limit = Inf, large_data_set = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AutoTabpfn$check(
+  task,
+  memory_limit = Inf,
+  large_data_set = FALSE,
+  devices = "cpu"
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -67,6 +72,11 @@ Check if the auto is compatible with the task.
 \item{\code{memory_limit}}{(\code{integer(1)}).}
 
 \item{\code{large_data_set}}{(\code{logical(1)}).}
+
+\item{\code{devices}}{(\code{character()})\cr
+Devices to use.
+Allowed values are \code{"cpu"} and \code{"cuda"}.
+Default is "cpu".}
 }
 \if{html}{\out{</div>}}
 }
@@ -77,7 +87,7 @@ Check if the auto is compatible with the task.
 \subsection{Method \code{graph()}}{
 Create the graph for the auto.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoTabpfn$graph(task, measure, n_threads, timeout)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AutoTabpfn$graph(task, measure, n_threads, timeout, devices)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -90,6 +100,11 @@ Create the graph for the auto.
 \item{\code{n_threads}}{(\code{integer(1)}).}
 
 \item{\code{timeout}}{(\code{integer(1)}).}
+
+\item{\code{devices}}{(\code{character()})\cr
+Devices to use.
+Allowed values are \code{"cpu"} and \code{"cuda"}.
+Default is "cpu".}
 }
 \if{html}{\out{</div>}}
 }

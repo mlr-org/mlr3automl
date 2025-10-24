@@ -10,6 +10,7 @@
 #' @template param_measure
 #' @template param_n_threads
 #' @template param_timeout
+#' @template param_devices
 #'
 #' @export
 AutoKknn = R6Class("AutoKknn",
@@ -19,15 +20,17 @@ AutoKknn = R6Class("AutoKknn",
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "kknn") {
-      super$initialize(id = id)
-      self$task_types = c("classif", "regr")
-      self$properties = character()
-      self$packages = c("mlr3", "mlr3learners", "kknn")
+      super$initialize(id = id,
+        properties = character(),
+        task_types = c("classif", "regr"),
+        packages = c("mlr3", "mlr3learners", "kknn"),
+        devices = "cpu"
+      )
     },
 
     #' @description
     #' Create the graph for the auto.
-    graph = function(task, measure, n_threads, timeout) {
+    graph = function(task, measure, n_threads, timeout, devices) {
       assert_task(task)
       assert_measure(measure)
       assert_count(n_threads)

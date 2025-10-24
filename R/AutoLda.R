@@ -13,6 +13,7 @@
 #' @template param_size
 #' @template param_n_threads
 #' @template param_timeout
+#' @template param_devices
 #'
 #' @export
 AutoLda = R6Class("AutoLda",
@@ -22,15 +23,17 @@ AutoLda = R6Class("AutoLda",
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "lda") {
-      super$initialize(id = id)
-      self$task_types = "classif"
-      self$properties = "hyperparameter-free"
-      self$packages = c("mlr3", "mlr3learners", "MASS")
+      super$initialize(
+        id = id,
+        task_types = "classif",
+        properties = "hyperparameter-free",
+        packages = c("mlr3", "mlr3learners", "MASS"),
+        devices = "cpu")
     },
 
     #' @description
     #' Create the graph for the auto.
-    graph = function(task, measure, n_threads, timeout) {
+    graph = function(task, measure, n_threads, timeout, devices) {
       assert_task(task)
       assert_measure(measure)
       assert_count(n_threads)

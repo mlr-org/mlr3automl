@@ -10,6 +10,7 @@
 #' @template param_measure
 #' @template param_n_threads
 #' @template param_timeout
+#' @template param_devices
 #'
 #' @export
 AutoFTTransformer = R6Class("AutoFTTransformer",
@@ -19,21 +20,27 @@ AutoFTTransformer = R6Class("AutoFTTransformer",
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "ft_transformer") {
-      super$initialize(id = id)
-      self$task_types = c("classif", "regr")
-      self$properties = "internal_tuning"
-      self$packages = c("mlr3", "mlr3torch")
+      super$initialize(
+        id = id,
+        properties = "internal_tuning",
+        task_types = c("classif", "regr"),
+        packages = c("mlr3", "mlr3torch"),
+        devices = "cuda"
+      )
     },
 
     #' @description
     #' Create the graph for the auto.
-    graph = function(task, measure, n_threads, timeout) {
+    graph = function(task, measure, n_threads, timeout, devices) {
       assert_task(task)
       assert_measure(measure)
       assert_count(n_threads)
       assert_count(timeout)
+      assert_subset(devices, c("cuda", "cpu"))
 
       require_namespaces("mlr3torch")
+
+      device =  if ("cuda" %in% devices) "cuda" else "auto"
 
       # copied from mlr3tuningspaces
       no_wd = function(name) {
@@ -74,7 +81,8 @@ AutoFTTransformer = R6Class("AutoFTTransformer",
        patience = self$early_stopping_rounds(task),
        batch_size = 32L,
        attention_n_heads = 8L,
-       opt.param_groups = rtdl_param_groups
+       opt.param_groups = rtdl_param_groups,
+       device = device
       )
       set_threads(learner, n_threads)
 
