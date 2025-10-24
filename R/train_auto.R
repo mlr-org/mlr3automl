@@ -147,8 +147,8 @@ train_auto = function(self, private, task) {
 
   budget = 100L * search_space$length^2
   tuner$acq_function = acqf("stochastic_cb", lambda = 1.96, rate = 0.1, period = 25L)
-  tuner$acq_optimizer = AcqOptimizerLocalSearch$new()
-  tuner$acq_optimizer$param_set$set_values(n_searches = 10L, n_steps = ceiling(budget / 300L), n_neighs = 30L) #  catch_errors = pv$encapsulate_mbo
+  tuner$acq_optimizer = AcqOptimizerRandomSearch$new()
+  tuner$acq_optimizer$param_set$set_values(max_fevals = budget) #  catch_errors = pv$encapsulate_mbo
 
   # tune
   lg$info("Learner '%s' starts tuning phase", self$id)
