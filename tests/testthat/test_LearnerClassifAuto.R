@@ -72,27 +72,171 @@ test_that("lightgbm works", {
 })
 
 test_that("mlp works", {
-  task = tsk("penguins")
-  task$filter(c(1, 153, 277))
-  test_classif_learner("mlp", task = task, check_learners = FALSE)
+  skip_on_cran()
+  skip_if_not_installed(unlist(map(mlr_auto$mget("mlp"), "packages")))
+  skip_if_not_installed("rush")
+  flush_redis()
+
+  expect_true(callr::r(function() {
+    Sys.setenv(RETICULATE_PYTHON = "managed")
+    library(mlr3automl)
+    library(testthat)
+    library(checkmate)
+
+    rush_plan(n_workers = 2, worker_type = "remote")
+    mirai::daemons(2)
+
+    mirai::everywhere({
+      Sys.setenv(RETICULATE_PYTHON = "managed")
+    })
+
+    task = tsk("penguins")
+    task$filter(c(1, 153, 277))
+
+    learner = lrn("classif.auto",
+      learner_ids = "mlp",
+      small_data_size = 1,
+      resampling = rsmp("holdout"),
+      measure = msr("classif.ce"),
+      terminator = trm("evals", n_evals = 4),
+      initial_design_type = "lhs",
+      initial_design_size = 2,
+      encapsulate_learner = FALSE,
+      encapsulate_mbo = FALSE,
+      check_learners = FALSE)
+
+    expect_class(learner$train(task), "LearnerClassifAuto")
+    expect_subset(learner$model$instance$result$branch.selection, "mlp")
+    expect_set_equal(learner$model$instance$archive$data$branch.selection, "mlp")
+
+    TRUE
+  }))
 })
 
 test_that("resnet works", {
-  task = tsk("penguins")
-  task$filter(c(1, 153, 277))
-  test_classif_learner("resnet", task = task, check_learners = FALSE)
+  skip_on_cran()
+  skip_if_not_installed(unlist(map(mlr_auto$mget("resnet"), "packages")))
+  skip_if_not_installed("rush")
+  flush_redis()
+
+  expect_true(callr::r(function() {
+    Sys.setenv(RETICULATE_PYTHON = "managed")
+    library(mlr3automl)
+    library(testthat)
+    library(checkmate)
+
+    rush_plan(n_workers = 2, worker_type = "remote")
+    mirai::daemons(2)
+
+    mirai::everywhere({
+      Sys.setenv(RETICULATE_PYTHON = "managed")
+    })
+
+    task = tsk("penguins")
+    task$filter(c(1, 153, 277))
+
+    learner = lrn("classif.auto",
+      learner_ids = "resnet",
+      small_data_size = 1,
+      resampling = rsmp("holdout"),
+      measure = msr("classif.ce"),
+      terminator = trm("evals", n_evals = 4),
+      initial_design_type = "lhs",
+      initial_design_size = 2,
+      encapsulate_learner = FALSE,
+      encapsulate_mbo = FALSE,
+      check_learners = FALSE)
+
+    expect_class(learner$train(task), "LearnerClassifAuto")
+    expect_subset(learner$model$instance$result$branch.selection, "resnet")
+    expect_set_equal(learner$model$instance$archive$data$branch.selection, "resnet")
+
+    TRUE
+  }))
 })
 
 test_that("ft_transformer works", {
-  task = tsk("penguins")
-  task$filter(c(1, 153, 277))
-  test_classif_learner("ft_transformer", task = task, check_learners = FALSE)
+  skip_on_cran()
+  skip_if_not_installed(unlist(map(mlr_auto$mget("ft_transformer"), "packages")))
+  skip_if_not_installed("rush")
+  flush_redis()
+
+  expect_true(callr::r(function() {
+    Sys.setenv(RETICULATE_PYTHON = "managed")
+    library(mlr3automl)
+    library(testthat)
+    library(checkmate)
+
+    rush_plan(n_workers = 2, worker_type = "remote")
+    mirai::daemons(2)
+
+    mirai::everywhere({
+      Sys.setenv(RETICULATE_PYTHON = "managed")
+    })
+
+    task = tsk("penguins")
+    task$filter(c(1, 153, 277))
+
+    learner = lrn("classif.auto",
+      learner_ids = "ft_transformer",
+      small_data_size = 1,
+      resampling = rsmp("holdout"),
+      measure = msr("classif.ce"),
+      terminator = trm("evals", n_evals = 4),
+      initial_design_type = "lhs",
+      initial_design_size = 2,
+      encapsulate_learner = FALSE,
+      encapsulate_mbo = FALSE,
+      check_learners = FALSE)
+
+    expect_class(learner$train(task), "LearnerClassifAuto")
+    expect_subset(learner$model$instance$result$branch.selection, "ft_transformer")
+    expect_set_equal(learner$model$instance$archive$data$branch.selection, "ft_transformer")
+
+    TRUE
+  }))
 })
 
 test_that("tabpfn works", {
-  task = tsk("penguins")
-  task$filter(c(1, 153, 277))
-  test_classif_learner("tabpfn")
+  skip_on_cran()
+  skip_if_not_installed(unlist(map(mlr_auto$mget("tabpfn"), "packages")))
+  skip_if_not_installed("rush")
+  flush_redis()
+
+  expect_true(callr::r(function() {
+    Sys.setenv(RETICULATE_PYTHON = "managed")
+    library(mlr3automl)
+    library(testthat)
+    library(checkmate)
+
+    rush_plan(n_workers = 2, worker_type = "remote")
+    mirai::daemons(2)
+
+    mirai::everywhere({
+      Sys.setenv(RETICULATE_PYTHON = "managed")
+    })
+
+    task = tsk("penguins")
+    task$filter(c(1, 153, 277))
+
+    learner = lrn("classif.auto",
+      learner_ids = "tabpfn",
+      small_data_size = 1,
+      resampling = rsmp("holdout"),
+      measure = msr("classif.ce"),
+      terminator = trm("evals", n_evals = 4),
+      initial_design_type = "lhs",
+      initial_design_size = 2,
+      encapsulate_learner = FALSE,
+      encapsulate_mbo = FALSE,
+      check_learners = TRUE)
+
+    expect_class(learner$train(task), "LearnerClassifAuto")
+    expect_subset(learner$model$instance$result$branch.selection, "tabpfn")
+    expect_set_equal(learner$model$instance$archive$data$branch.selection, "tabpfn")
+
+    TRUE
+  }))
 })
 
 test_that("xgboost, catboost and lightgbm work", {
@@ -100,7 +244,7 @@ test_that("xgboost, catboost and lightgbm work", {
 })
 
 test_that("all learner work", {
-  test_classif_learner(c("catboost", "glmnet", "kknn", "lightgbm", "mlp", "ranger", "svm", "xgboost", "lda", "extra_trees"), initial_design_type = c("lhs", "default"))
+  test_classif_learner(c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees"), initial_design_type = c("lhs", "default"))
 })
 
 test_that("memory limit works", {
