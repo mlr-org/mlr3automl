@@ -54,7 +54,8 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         # debugging
         encapsulate_learner = p_lgl(init = TRUE, tags = c("train", "super")),
         encapsulate_mbo = p_lgl(init = TRUE, tags = c("train", "super")),
-        check_learners = p_lgl(init = TRUE, tags = c("train", "super"))
+        check_learners = p_lgl(init = TRUE, tags = c("train", "super")),
+        encapsulation_method = p_fct(init = "mirai", levels = c("mirai", "callr"), tags = c("train", "super"))
       )
       # subset to relevant parameters for selected learners
       param_set = param_set$subset(ids = unique(param_set$ids(any_tags = c("super", learner_ids))))

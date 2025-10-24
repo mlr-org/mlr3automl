@@ -61,7 +61,7 @@ train_auto = function(self, private, task) {
   if (pv$encapsulate_learner) {
     fallback = lrn(sprintf("%s.featureless", task$task_type))
     fallback$predict_type = pv$measure$predict_type
-    graph_learner$encapsulate(method = "mirai", fallback = fallback)
+    graph_learner$encapsulate(method = pv$encapsulation_method, fallback = fallback)
     graph_learner$timeout = c(train = pv$learner_timeout, predict = pv$learner_timeout)
   }
 
