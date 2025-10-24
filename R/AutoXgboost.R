@@ -39,7 +39,7 @@ AutoXgboost = R6Class("AutoXgboost",
 
       require_namespaces("mlr3learners")
 
-      device = if ("cuda" %in% devices) "cuda" else "cpu"
+      device = if ("cuda" %in% devices) "cuda"
 
       learner = lrn(sprintf("%s.xgboost", task$task_type),
         id = "xgboost",
