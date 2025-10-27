@@ -69,8 +69,9 @@ AutoCatboost = R6Class("AutoCatboost",
       histogram_size = 20 * task$ncol * border_count * 2^depth
 
       # data size
+      n_classes = if (inherits(task, "TaskClassif")) length(task$class_names) else 1
       data_set_size = task$nrow * task$ncol * 8
-      data_size = data_set_size * 5 + data_set_size / 4 * length(task$class_names)
+      data_size = data_set_size * 5 + data_set_size / 4 * n_classes
 
       memory_size = (histogram_size + data_size) / 1e6
       lg$info("Catboost memory size: %s MB", round(memory_size))

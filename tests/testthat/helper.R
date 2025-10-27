@@ -62,27 +62,34 @@ test_classif_learner = function(
   learner
 }
 
-test_regr_learner = function(learner_id, n_evals = 6) {
+test_regr_learner = function(
+  learner_id,
+  initial_design_size = 2,
+  initial_design_type = "lhs",
+  n_evals = 4,
+  task = NULL,
+  check_learners = TRUE
+  ) {
   skip_on_cran()
-   if ("extra_trees" %in% learner_id) learner_id = c(learner_id, "ranger")
-  skip_if_not_installed(setdiff(learner_id, c("lda", "extra_trees")))
-  skip_if_not_installed(learner_id)
+  skip_if_not_installed(unlist(map(mlr_auto$mget(learner_id), "packages")))
   skip_if_not_installed("rush")
   flush_redis()
 
   rush_plan(n_workers = 2, worker_type = "remote")
   mirai::daemons(2)
 
-  task = tsk("california_housing")$filter(sample(1000))
+  task = if (is.null(task)) tsk("mtcars") else task
   learner = lrn("regr.auto",
     learner_ids = learner_id,
     small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = n_evals),
-    initial_design_size = 1,
+    initial_design_type = initial_design_type,
+    initial_design_size = initial_design_size,
     encapsulate_learner = FALSE,
-    encapsulate_mbo = FALSE
+    encapsulate_mbo = FALSE,
+    check_learners = check_learners
   )
 
   expect_class(learner$train(task), "LearnerRegrAuto")
