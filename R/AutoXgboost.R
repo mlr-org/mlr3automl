@@ -24,7 +24,7 @@ AutoXgboost = R6Class("AutoXgboost",
         properties = c("internal_tuning", "large_data_sets"),
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3learners", "xgboost"),
-        devices = c("cpu", "gpu")
+        devices = c("cpu", "cuda")
       )
     },
 
@@ -39,17 +39,18 @@ AutoXgboost = R6Class("AutoXgboost",
 
       require_namespaces("mlr3learners")
 
-      device = if ("cuda" %in% devices) "cuda"
-
       learner = lrn(sprintf("%s.xgboost", task$task_type),
         id = "xgboost",
         early_stopping_rounds = self$early_stopping_rounds(task),
         callbacks = list(cb_timeout_xgboost(timeout * 0.8)),
         eval_metric = self$internal_measure(measure, task),
-        nrounds = 5000L,
-        device = device
+        nrounds = 5000L
       )
       set_threads(learner, n_threads)
+
+      if ("cuda" %in% devices) {
+        learner$set_values(device = "cuda")
+      }
 
       po("removeconstants", id = "xgboost_removeconstants") %>>%
         po("imputeoor", id = "xgboost_imputeoor") %>>%

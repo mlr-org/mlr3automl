@@ -12,17 +12,17 @@ License: LGPL-3
 URL: https://github.com/mlr-org/mlr3automl
 BugReports: https://github.com/mlr-org/mlr3automl/issues
 Depends:
-    mlr3 (>= 1.1.0),
-    mlr3tuning (>= 1.4.0),
+    mlr3 (>= 1.2.0.9000),
+    mlr3tuning (>= 1.4.0.9000),
     R (>= 3.1.0),
-    rush (>= 0.3.0)
+    rush (>= 0.4.0)
 Imports:
-    bbotk (>= 1.6.0),
+    bbotk (>= 1.7.1),
     checkmate,
     data.table,
     lhs,
-    mlr3learners (>= 0.12.0),
-    mlr3mbo (>= 0.2.8),
+    mlr3learners (>= 0.13.0.9000),
+    mlr3mbo (>= 0.3.3.9000),
     mlr3misc (>= 0.15.1),
     mlr3pipelines,
     paradox (>= 1.0.1),
@@ -39,7 +39,7 @@ Suggests:
     MASS,
     mirai,
     mlr3extralearners,
-    mlr3torch,
+    mlr3torch (>= 0.3.0.9000),
     mlr3viz,
     ranger,
     redux,
@@ -52,6 +52,7 @@ Remotes:
     eagerai/fastai,
     mlr-org/mlr3,
     mlr-org/mlr3extralearners,
+    mlr-org/mlr3learners,
     mlr-org/mlr3mbo@so_config_6,
     mlr-org/mlr3torch,
     mlr-org/mlr3tuning

@@ -442,3 +442,55 @@ test_that("devices works", {
 
   expect_class(learner$train(task), "LearnerClassifAuto")
 })
+
+test_that("lightgbm time limit works", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  skip_if_not_installed(all_packages)
+  flush_redis()
+
+  rush_plan(n_workers = 2, worker_type = "remote")
+  mirai::daemons(2)
+
+  task = tsk("spam")
+
+  learner = lrn("classif.auto",
+    learner_ids = "lightgbm",
+    learner_timeout = 1,
+    measure = msr("classif.ce"),
+    small_data_size = 1,
+    terminator = trm("evals", n_evals = 10),
+    initial_design_size = 1,
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE
+  )
+
+   learner$train(task)
+   expect_true(all(learner$instance$archive$data[state == "finished"]$runtime_learners < 3))
+})
+
+test_that("xgboost time limit works", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  skip_if_not_installed(all_packages)
+  flush_redis()
+
+  rush_plan(n_workers = 2, worker_type = "remote")
+  mirai::daemons(2)
+
+  task = tsk("spam")
+
+  learner = lrn("classif.auto",
+    learner_ids = "xgboost",
+    learner_timeout = 1,
+    measure = msr("classif.ce"),
+    small_data_size = 1,
+    terminator = trm("evals", n_evals = 10),
+    initial_design_size = 1,
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE
+  )
+
+  learner$train(task)
+  expect_true(all(learner$instance$archive$data[state == "finished"]$runtime_learners < 3))
+})
