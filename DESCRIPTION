@@ -29,6 +29,7 @@ Imports:
     R6,
     utils
 Suggests:
+    callr,
     catboost,
     e1071,
     fastai,
@@ -81,15 +82,31 @@ Collate:
     'aaa.R'
     'LearnerClassifAuto.R'
     'LearnerClassifAutoCatboost.R'
+    'LearnerClassifAutoFTTransformer.R'
     'LearnerClassifAutoFastai.R'
     'LearnerClassifAutoGlmnet.R'
     'LearnerClassifAutoKKNN.R'
     'LearnerClassifAutoLightGBM.R'
     'LearnerClassifAutoMLP.R'
     'LearnerClassifAutoRanger.R'
+    'LearnerClassifAutoResNet.R'
     'LearnerClassifAutoSVM.R'
+    'LearnerClassifAutoTabPFN.R'
     'LearnerClassifAutoXgboost.R'
     'LearnerRegrAuto.R'
+    'LearnerRegrAutoCatboost.R'
+    'LearnerRegrAutoExtraTrees.R'
+    'LearnerRegrAutoFTTransformer.R'
+    'LearnerRegrAutoFastai.R'
+    'LearnerRegrAutoGlmnet.R'
+    'LearnerRegrAutoKKNN.R'
+    'LearnerRegrAutoLightGBM.R'
+    'LearnerRegrAutoMLP.R'
+    'LearnerRegrAutoRanger.R'
+    'LearnerRegrAutoResNet.R'
+    'LearnerRegrAutoSVM.R'
+    'LearnerRegrAutoTabPFN.R'
+    'LearnerRegrAutoXgboost.R'
     'helper.R'
     'mlr_callbacks.R'
     'train_auto.R'

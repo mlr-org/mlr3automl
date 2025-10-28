@@ -14,6 +14,7 @@ Kknn auto.
 \itemize{
 \item \href{#method-AutoKknn-new}{\code{AutoKknn$new()}}
 \item \href{#method-AutoKknn-graph}{\code{AutoKknn$graph()}}
+\item \href{#method-AutoKknn-search_space}{\code{AutoKknn$search_space()}}
 \item \href{#method-AutoKknn-clone}{\code{AutoKknn$clone()}}
 }
 }
@@ -28,7 +29,6 @@ Kknn auto.
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_set"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_set'><code>mlr3automl::Auto$design_set()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="early_stopping_rounds"><a href='../../mlr3automl/html/Auto.html#method-Auto-early_stopping_rounds'><code>mlr3automl::Auto$early_stopping_rounds()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="estimate_memory"><a href='../../mlr3automl/html/Auto.html#method-Auto-estimate_memory'><code>mlr3automl::Auto$estimate_memory()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="search_space"><a href='../../mlr3automl/html/Auto.html#method-Auto-search_space'><code>mlr3automl::Auto$search_space()</code></a></span></li>
 </ul>
 </details>
 }}
@@ -74,6 +74,23 @@ Create the graph for the auto.
 Devices to use.
 Allowed values are \code{"cpu"} and \code{"cuda"}.
 Default is "cpu".}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AutoKknn-search_space"></a>}}
+\if{latex}{\out{\hypertarget{method-AutoKknn-search_space}{}}}
+\subsection{Method \code{search_space()}}{
+Get the search space for the auto.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AutoKknn$search_space(task)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
 }
 \if{html}{\out{</div>}}
 }
