@@ -48,15 +48,21 @@ AutoKknn = R6Class("AutoKknn",
         po("collapsefactors", target_level_count = 100, id = "kknn_collapse") %>>%
         po("removeconstants", id = "kknn_post_removeconstants") %>>%
         learner
+    },
+
+    #' @description
+    #' Get the search space for the auto.
+    search_space = function(task) {
+      assert_task(task)
+      ps(
+        # k must be less than the number of rows
+        kknn.k = p_int(1L, min(100L, task$nrow - 1L), logscale = TRUE),
+        kknn.distance = p_dbl(1L, 5L)
+      )
     }
   ),
 
   private = list(
-    .search_space = ps(
-      kknn.k = p_int(1L, 100L, logscale = TRUE),
-      kknn.distance = p_dbl(1L, 5L)
-    ),
-
     .default_values = list(
       kknn.k = 7L,
       kknn.distance = 2
