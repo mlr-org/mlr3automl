@@ -9,7 +9,6 @@ test_that("LearnerClassifAutoResNet works", {
     library(mlr3automl)
     library(testthat)
     library(checkmate)
-    devtools::load_all()
 
     rush_plan(n_workers = 2, worker_type = "remote")
     mirai::daemons(2)

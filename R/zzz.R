@@ -6,6 +6,7 @@
 #' @import mlr3pipelines
 #' @import mlr3tuning
 #' @import paradox
+#' @import bbotk
 #' @import R6
 #' @importFrom rush rush_config
 #' @import lhs
