@@ -110,7 +110,6 @@ Auto = R6Class("Auto",
     #' @description
     #' Default hyperparameters for the learner.
     design_default = function(task) {
-      default_values =
       xdt = as.data.table(private$.default_values)
       set(xdt, j = "branch.selection", value = self$id)
       xdt
