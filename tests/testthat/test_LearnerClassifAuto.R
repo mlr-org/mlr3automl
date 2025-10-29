@@ -285,3 +285,50 @@ test_that("xgboost time limit works", {
   learner$train(task)
   expect_true(all(learner$instance$archive$data[state == "finished"]$runtime_learners < 3))
 })
+
+test_that("adaptive design works", {
+  skip_if(TRUE) # runtime is too long
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  skip_if_not_installed(all_packages)
+  flush_redis()
+
+  rush_plan(n_workers = 2, worker_type = "remote")
+  mirai::daemons(2)
+
+  task = tsk("penguins")
+
+  # time limit
+  learner = lrn("classif.auto",
+    learner_ids = c("kknn", "ranger"),
+    small_data_size = 1,
+    measure = msr("classif.ce"),
+    terminator = trm("run_time", secs = 20),
+    resampling = rsmp("holdout"),
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE,
+    adaptive_design = TRUE,
+    adaptive_design_fraction = 0.25,
+    initial_design_type = "set",
+    initial_design_size = 2
+  )
+
+  expect_class(learner$train(task), "LearnerClassifAuto")
+
+  # evals limit
+  learner = lrn("classif.auto",
+    learner_ids = c("kknn", "ranger"),
+    small_data_size = 1,
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 20),
+    resampling = rsmp("holdout"),
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE,
+    adaptive_design = TRUE,
+    adaptive_design_fraction = 0.25,
+    initial_design_type = "set",
+    initial_design_size = 2
+  )
+
+  expect_class(learner$train(task), "LearnerClassifAuto")
+})

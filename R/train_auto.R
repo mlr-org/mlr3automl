@@ -84,7 +84,7 @@ train_auto = function(self, private, task) {
     })
   })
 
-  callbacks = c(pv$callbacks, clbk("mlr3automl.initial_design_runtime"), clbk("mlr3tuning.async_save_logs"))
+  callbacks = c(pv$callbacks, clbk("mlr3tuning.async_save_logs"))
 
   # tuning instance
   self$instance = ti_async(
@@ -94,27 +94,68 @@ train_auto = function(self, private, task) {
     measures = pv$measure,
     terminator = pv$terminator,
     search_space = search_space,
-    callbacks = pv$callbacks,
+    callbacks = callbacks,
     store_benchmark_result = pv$store_benchmark_result,
     store_models = pv$store_models
   )
 
-  initial_design_best =if ("set" %in% pv$initial_design_type) {
-    map_dtr(autos, function(auto) auto$design_set(task, measure = pv$measure, size = pv$initial_design_size), .fill = TRUE)
-  }
-  initial_design_lhs = if ("lhs" %in% pv$initial_design_type) {
-    map_dtr(autos, function(auto) auto$design_lhs(task, pv$initial_design_size), .fill = TRUE)
-  }
-  initial_design_random = if ("random" %in% pv$initial_design_type) {
-    map_dtr(autos, function(auto) auto$design_random(task, pv$initial_design_size), .fill = TRUE)
-  }
-  initial_design_default = if ("default" %in% pv$initial_design_type) {
-    map_dtr(autos, function(auto) auto$design_default(task), .fill = TRUE)
-  }
+  if (pv$adaptive_design) {
 
-  initial_designs = rbindlist(list(initial_design_best, initial_design_lhs, initial_design_random, initial_design_default), use.names = TRUE, fill = TRUE)
-  initial_designs = initial_designs[sample(.N)]
-  tuner$param_set$set_values(initial_design = initial_designs)
+    # start with best set design
+    initial_design_best = if ("set" %in% pv$initial_design_type) {
+      map_dtr(autos, function(auto) auto$design_set(task, measure = pv$measure, size = pv$initial_design_size), .fill = TRUE)
+    }
+
+    # adapt budget
+    if (inherits(self$instance$terminator, "TerminatorEvals")) {
+      budget = self$instance$terminator$param_set$values$n_evals
+      self$instance$terminator$param_set$set_values(n_evals = floor(budget * pv$adaptive_design_fraction))
+    } else if (inherits(self$instance$terminator, "TerminatorRunTime")) {
+      start_time = Sys.time()
+      budget = self$instance$terminator$param_set$values$secs
+      self$instance$terminator$param_set$set_values(secs = floor(budget * pv$adaptive_design_fraction))
+    } else {
+      error_config("Unsupported terminator type for adaptive design.")
+    }
+
+    tnr_design_points = tnr("async_design_points", design = initial_design_best)
+    tnr_design_points$optimize(self$instance)
+
+    # if not terminated, continue with random search
+    if (!self$instance$is_terminated) {
+
+      if (inherits(self$instance$terminator, "TerminatorRunTime")) {
+        self$instance$terminator$param_set$set_values(secs = max(0, floor(budget * pv$adaptive_design_fraction - difftime(Sys.time(), start_time, units = "secs"))))
+      }
+
+      tnr_random_search = tnr("async_random_search")
+      tnr_random_search$optimize(self$instance)
+    }
+
+    # set remaining budget
+    if (inherits(self$instance$terminator, "TerminatorEvals")) {
+      self$instance$terminator$param_set$set_values(n_evals = budget)
+    } else if (inherits(self$instance$terminator, "TerminatorRunTime")) {
+      self$instance$terminator$param_set$set_values(secs = budget * (1 - pv$adaptive_design_fraction))
+    }
+  } else {
+    initial_design_best = if ("set" %in% pv$initial_design_type) {
+      map_dtr(autos, function(auto) auto$design_set(task, measure = pv$measure, size = pv$initial_design_size), .fill = TRUE)
+    }
+    initial_design_lhs = if ("lhs" %in% pv$initial_design_type) {
+      map_dtr(autos, function(auto) auto$design_lhs(task, pv$initial_design_size), .fill = TRUE)
+    }
+    initial_design_random = if ("random" %in% pv$initial_design_type) {
+      map_dtr(autos, function(auto) auto$design_random(task, pv$initial_design_size), .fill = TRUE)
+    }
+    initial_design_default = if ("default" %in% pv$initial_design_type) {
+      map_dtr(autos, function(auto) auto$design_default(task), .fill = TRUE)
+    }
+
+    initial_designs = rbindlist(list(initial_design_best, initial_design_lhs, initial_design_random, initial_design_default), use.names = TRUE, fill = TRUE)
+    initial_designs = initial_designs[sample(.N)]
+    tuner$param_set$set_values(initial_design = initial_designs)
+  }
 
   # configure tuner
   learner = lrn("regr.ranger",
