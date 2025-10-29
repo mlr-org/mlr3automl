@@ -105,6 +105,7 @@ train_auto = function(self, private, task) {
     initial_design_best = if ("set" %in% pv$initial_design_type) {
       map_dtr(autos, function(auto) auto$design_set(task, measure = pv$measure, size = pv$initial_design_size), .fill = TRUE)
     }
+    initial_design_best = initial_design_best[sample(.N)]
 
     # adapt budget
     if (inherits(self$instance$terminator, "TerminatorEvals")) {

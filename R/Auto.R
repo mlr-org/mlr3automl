@@ -110,7 +110,6 @@ Auto = R6Class("Auto",
     #' @description
     #' Default hyperparameters for the learner.
     design_default = function(task) {
-      default_values =
       xdt = as.data.table(private$.default_values)
       set(xdt, j = "branch.selection", value = self$id)
       xdt
@@ -165,7 +164,10 @@ Auto = R6Class("Auto",
 
       # read data of best hyperparameters
       file = system.file("ex_data", sprintf("best_%s.csv", self$id), package = "mlr3automl")
-      if (!file.exists(file)) return(data.table())
+      if (!file.exists(file)) {
+        # return empty data.table
+        return(self$design_default(task)[0])
+      }
       data = fread(file)
 
       # exclude tasks
