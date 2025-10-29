@@ -159,16 +159,16 @@ train_auto = function(self, private, task) {
 
   # configure tuner
   learner = lrn("regr.ranger",
-      num.trees = 500L,
-      se.method = "jack",
-      splitrule = "variance",
-      predict_type = "se",
-      keep.inbag = TRUE,
-      sample.fraction = 1,
-      min.node.size = 3,
-      min.bucket = 3,
-      mtry.ratio = 5/6
-    )
+    num.trees = 500L,
+    se.method = "jack",
+    splitrule = "variance",
+    predict_type = "se",
+    keep.inbag = TRUE,
+    sample.fraction = 1,
+    min.node.size = 3,
+    min.bucket = 3,
+    mtry.ratio = 5/6
+  )
 
   tuner$surrogate =  srlrn(learner)
   tuner$surrogate$param_set$set_values(catch_errors = pv$encapsulate_mbo)
