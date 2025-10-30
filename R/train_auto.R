@@ -88,7 +88,7 @@ train_auto = function(self, private, task) {
   }
 
   initial_design_set = if (pv$initial_design_set) {
-    map_dtr(autos, function(auto) auto$design_set(task, measure = pv$measure, size = pv$initial_design_size), .fill = TRUE)
+    map_dtr(autos, function(auto) auto$design_set(task, measure = pv$measure, size = pv$initial_design_set), .fill = TRUE)
   }
 
   initial_design = if (!is.null(pv$initial_design_type)) {
