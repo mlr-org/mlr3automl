@@ -58,33 +58,16 @@ train_auto = function(self, private, task) {
 
   learner_ids = map_chr(autos, "id")
   learners_with_validation = learner_ids[map_lgl(autos, function(auto) "internal_tuning" %in% auto$properties)]
+  learners_without_hyperparameters = learner_ids[map_lgl(autos, function(auto) "hyperparameter-free" %in% auto$properties)]
+
   if (length(learners_with_validation)) {
     set_validate(graph_learner, "test", ids = learners_with_validation)
   }
 
   # initialize search space
-  search_space = ps(
-    branch.selection = p_fct(levels = learner_ids)
-  )
-  search_spaces = c(list(search_space), map(autos, function(auto) auto$search_space(task)))
-  search_space = ps_union(unname(search_spaces))
+  search_space = combine_search_spaces(autos, task)
 
-  # add dependencies
-  walk(autos, function(auto) {
-    param_ids = auto$search_space(task)$ids()
-    internal_tune_ids = auto$search_space(task)$ids(any_tags = "internal_tuning")
-    param_ids = setdiff(param_ids, internal_tune_ids)
-
-    walk(param_ids, function(param_id) {
-      search_space$add_dep(
-        id = param_id,
-        on = "branch.selection",
-        cond = CondEqual$new(auto$id)
-      )
-    })
-  })
-
-  callbacks = c(pv$callbacks, clbk("mlr3tuning.async_save_logs"))
+  callbacks = c(pv$callbacks, clbk("mlr3tuning.async_save_logs"), clbk("mlr3automl.initial_design_runtime"))
 
   # tuning instance
   self$instance = ti_async(
@@ -99,64 +82,30 @@ train_auto = function(self, private, task) {
     store_models = pv$store_models
   )
 
-  if (pv$adaptive_design) {
-
-    # start with best set design
-    initial_design_best = if ("set" %in% pv$initial_design_type) {
-      map_dtr(autos, function(auto) auto$design_set(task, measure = pv$measure, size = pv$initial_design_size), .fill = TRUE)
-    }
-    initial_design_best = initial_design_best[sample(.N)]
-
-    # adapt budget
-    if (inherits(self$instance$terminator, "TerminatorEvals")) {
-      budget = self$instance$terminator$param_set$values$n_evals
-      self$instance$terminator$param_set$set_values(n_evals = floor(budget * pv$adaptive_design_fraction))
-    } else if (inherits(self$instance$terminator, "TerminatorRunTime")) {
-      start_time = Sys.time()
-      budget = self$instance$terminator$param_set$values$secs
-      self$instance$terminator$param_set$set_values(secs = floor(budget * pv$adaptive_design_fraction))
-    } else {
-      error_config("Unsupported terminator type for adaptive design.")
-    }
-
-    tnr_design_points = tnr("async_design_points", design = initial_design_best)
-    tnr_design_points$optimize(self$instance)
-
-    # if not terminated, continue with random search
-    if (!self$instance$is_terminated) {
-
-      if (inherits(self$instance$terminator, "TerminatorRunTime")) {
-        self$instance$terminator$param_set$set_values(secs = max(0, floor(budget * pv$adaptive_design_fraction - difftime(Sys.time(), start_time, units = "secs"))))
-      }
-
-      tnr_random_search = tnr("async_random_search")
-      tnr_random_search$optimize(self$instance)
-    }
-
-    # set remaining budget
-    if (inherits(self$instance$terminator, "TerminatorEvals")) {
-      self$instance$terminator$param_set$set_values(n_evals = budget)
-    } else if (inherits(self$instance$terminator, "TerminatorRunTime")) {
-      self$instance$terminator$param_set$set_values(secs = budget * (1 - pv$adaptive_design_fraction))
-    }
-  } else {
-    initial_design_best = if ("set" %in% pv$initial_design_type) {
-      map_dtr(autos, function(auto) auto$design_set(task, measure = pv$measure, size = pv$initial_design_size), .fill = TRUE)
-    }
-    initial_design_lhs = if ("lhs" %in% pv$initial_design_type) {
-      map_dtr(autos, function(auto) auto$design_lhs(task, pv$initial_design_size), .fill = TRUE)
-    }
-    initial_design_random = if ("random" %in% pv$initial_design_type) {
-      map_dtr(autos, function(auto) auto$design_random(task, pv$initial_design_size), .fill = TRUE)
-    }
-    initial_design_default = if ("default" %in% pv$initial_design_type) {
-      map_dtr(autos, function(auto) auto$design_default(task), .fill = TRUE)
-    }
-
-    initial_designs = rbindlist(list(initial_design_best, initial_design_lhs, initial_design_random, initial_design_default), use.names = TRUE, fill = TRUE)
-    initial_designs = initial_designs[sample(.N)]
-    tuner$param_set$set_values(initial_design = initial_designs)
+  # initial design
+  initial_design_default = if (pv$initial_design_default) {
+    map_dtr(autos, function(auto) auto$design_default(task), .fill = TRUE)
   }
+
+  initial_design_set = if (pv$initial_design_set) {
+    map_dtr(autos, function(auto) auto$design_set(task, measure = pv$measure, size = pv$initial_design_size), .fill = TRUE)
+  }
+
+  initial_design = if (!is.null(pv$initial_design_type)) {
+    autos_with_hyperparameters = autos[!map_lgl(autos, function(auto) "hyperparameter-free" %in% auto$properties)]
+    search_space_with_hyperparameters = combine_search_spaces(autos_with_hyperparameters, task)
+    generate_initial_design(pv$initial_design_type, search_space_with_hyperparameters, pv$initial_design_size)
+  }
+
+  # add learners without hyperparameters to initial design
+  if (!pv$initial_design_default && length(learners_without_hyperparameters)) {
+    initial_design_default = map_dtr(autos[learners_without_hyperparameters], function(auto) auto$design_default(task), .fill = TRUE)
+  }
+
+  initial_designs = rbindlist(list(initial_design_default, initial_design_set, initial_design), use.names = TRUE, fill = TRUE)
+  lg$info("Initial design size: %i", nrow(initial_designs))
+
+  tuner$param_set$set_values(initial_design = initial_designs)
 
   # configure tuner
   learner = lrn("regr.ranger",
