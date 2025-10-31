@@ -98,3 +98,4 @@ rsconnect/
 .Rprofile
 kaggle/
 README.html
+inst/doc
