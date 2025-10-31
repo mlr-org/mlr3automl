@@ -56,7 +56,8 @@ Remotes:
     mlr-org/mlr3learners,
     mlr-org/mlr3mbo@so_config_6,
     mlr-org/mlr3torch,
-    mlr-org/mlr3tuning
+    mlr-org/mlr3tuning@wait_worker,
+    mlr-org/bbotk@wait_worker
 Config/testthat/edition: 3
 Config/testthat/parallel: false
 Encoding: UTF-8
