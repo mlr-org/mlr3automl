@@ -7,5 +7,5 @@ test_that("LearnerRegrAuto is initialized", {
 })
 
 test_that("all learner on cpu work", {
-  test_regr_learner(c("catboost", "glmnet", "lightgbm", "ranger", "svm", "xgboost", "extra_trees"), initial_design_type = c("lhs", "default"), n_evals = 30)
+  test_regr_learner(c("catboost", "glmnet", "lightgbm", "ranger", "svm", "xgboost", "extra_trees"), initial_design_type = "sobol", n_evals = 30)
 })

@@ -36,7 +36,7 @@ test_that("only extra_trees fails", {
 })
 
 test_that("all learner on cpu work", {
-  test_classif_learner(c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees"), initial_design_type = c("lhs", "default"))
+  test_classif_learner(c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees"), initial_design_type = "sobol")
 })
 
 test_that("memory limit works", {
@@ -104,7 +104,7 @@ test_that("large data set switch works", {
   task = tsk("penguins")
   learner = lrn("classif.auto",
     learner_ids = c("catboost", "glmnet", "kknn", "lightgbm", "mlp", "ranger", "svm", "xgboost", "lda", "extra_trees"),
-    initial_design_type = c("lhs", "default"),
+    initial_design_type = "sobol",
     large_data_size = 100,
     small_data_size = 1,
     measure = msr("classif.ce"),
