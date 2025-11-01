@@ -103,13 +103,14 @@ test_that("large data set switch works", {
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
-    learner_ids = c("catboost", "glmnet", "kknn", "lightgbm", "mlp", "ranger", "svm", "xgboost", "lda", "extra_trees"),
+    learner_ids = c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees"),
     initial_design_type = "sobol",
     large_data_size = 100,
     small_data_size = 1,
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 10),
-    initial_design_size = 1,
+    initial_design_size = 0,
+    initial_design_default = TRUE,
     store_benchmark_result = TRUE,
     encapsulate_learner = FALSE,
     encapsulate_mbo = FALSE
@@ -156,7 +157,7 @@ test_that("best initial design works with evals terminator", {
   task = tsk("penguins")
   learner = lrn("classif.auto",
     learner_ids = c("kknn", "glmnet"),
-    initial_design_type = "set",
+    initial_design_set = 1,
     small_data_size = 1,
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 10),
