@@ -15,7 +15,7 @@ Depends:
     mlr3 (>= 1.2.0.9000),
     mlr3tuning (>= 1.4.0.9000),
     R (>= 3.1.0),
-    rush (>= 0.4.0)
+    rush (>= 0.4.0.9000)
 Imports:
     bbotk (>= 1.7.1),
     checkmate,
@@ -56,8 +56,9 @@ Remotes:
     mlr-org/mlr3learners,
     mlr-org/mlr3mbo@so_config_6,
     mlr-org/mlr3torch,
-    mlr-org/mlr3tuning@wait_worker,
-    mlr-org/bbotk@wait_worker
+    mlr-org/mlr3tuning,
+    mlr-org/bbotk,
+    mlr-org/rush
 Config/testthat/edition: 3
 Config/testthat/parallel: false
 Encoding: UTF-8
