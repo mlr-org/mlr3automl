@@ -36,7 +36,7 @@ test_that("only extra_trees fails", {
 })
 
 test_that("all learner on cpu work", {
-  test_classif_learner(c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees"), initial_design_type = c("lhs", "default"))
+  test_classif_learner(c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees"), initial_design_type = "sobol")
 })
 
 test_that("memory limit works", {
@@ -103,13 +103,14 @@ test_that("large data set switch works", {
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
-    learner_ids = c("catboost", "glmnet", "kknn", "lightgbm", "mlp", "ranger", "svm", "xgboost", "lda", "extra_trees"),
-    initial_design_type = c("lhs", "default"),
+    learner_ids = c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees"),
+    initial_design_type = "sobol",
     large_data_size = 100,
     small_data_size = 1,
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 10),
-    initial_design_size = 1,
+    initial_design_size = 0,
+    initial_design_default = TRUE,
     store_benchmark_result = TRUE,
     encapsulate_learner = FALSE,
     encapsulate_mbo = FALSE
@@ -156,7 +157,7 @@ test_that("best initial design works with evals terminator", {
   task = tsk("penguins")
   learner = lrn("classif.auto",
     learner_ids = c("kknn", "glmnet"),
-    initial_design_type = "set",
+    initial_design_set = 1,
     small_data_size = 1,
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 10),
@@ -285,3 +286,63 @@ test_that("xgboost time limit works", {
   learner$train(task)
   expect_true(all(learner$instance$archive$data[state == "finished"]$runtime_learners < 3))
 })
+
+test_that("adaptive design works", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  skip_if_not_installed(all_packages)
+  flush_redis()
+
+  rush_plan(n_workers = 2, worker_type = "remote")
+  mirai::daemons(2)
+
+  task = tsk("penguins")
+
+  learner = lrn("classif.auto",
+    learner_ids = c("kknn", "ranger"),
+    small_data_size = 1,
+    measure = msr("classif.ce"),
+    terminator = trm("run_time", secs = 20),
+    resampling = rsmp("holdout"),
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE,
+    initial_design_default = FALSE,
+    initial_design_type = "sobol",
+    initial_design_size = 256,
+    initial_design_fraction = 0.25
+  )
+
+  expect_class(learner$train(task), "LearnerClassifAuto")
+})
+
+test_that("adaptive design works", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  skip_if_not_installed(all_packages)
+  flush_redis()
+
+  rush_plan(n_workers = 2, worker_type = "remote")
+  mirai::daemons(2)
+
+  task = tsk("penguins")
+
+  learner = lrn("classif.auto",
+    learner_ids = c("lda", "ranger"),
+    small_data_size = 1,
+    measure = msr("classif.ce"),
+    terminator = trm("run_time", secs = 20),
+    resampling = rsmp("holdout"),
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE,
+    initial_design_default = FALSE,
+    initial_design_type = "sobol",
+    initial_design_size = 256,
+    initial_design_fraction = 0.25
+  )
+
+  expect_class(learner$train(task), "LearnerClassifAuto")
+})
+
+
+
+

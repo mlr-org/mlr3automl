@@ -44,7 +44,7 @@ AutoLightgbm = R6Class("AutoLightgbm",
       learner = lrn(sprintf("%s.lightgbm", task$task_type),
         id = "lightgbm",
         early_stopping_rounds = self$early_stopping_rounds(task),
-        callbacks = list(cb_timeout_lightgbm(timeout * 0.8)),
+        callbacks = list(cb_timeout_lightgbm(timeout * 0.9)),
         eval = self$internal_measure(measure, task),
         device_type = device_type)
       set_threads(learner, n_threads)

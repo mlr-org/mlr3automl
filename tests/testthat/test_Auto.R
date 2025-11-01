@@ -11,8 +11,17 @@ test_that("lhs design is generated", {
   skip_if_not_installed(all_packages)
 
   autos = mlr_auto$mget(mlr_auto$keys())
-  xdt = map_dtr(autos, function(auto) auto$design_lhs(tsk("penguins"), 10L), .fill = TRUE)
-  expect_data_table(xdt, nrows = length(autos) * 10 - 20 + 2)
+  xdt = generate_initial_design("lhs", combine_search_spaces(autos, tsk("penguins")), 256L)
+  expect_data_table(xdt, nrows = 256L)
+  expect_set_equal(xdt$branch.selection, mlr_auto$keys())
+})
+
+test_that("sobol design is generated", {
+  skip_if_not_installed(all_packages)
+
+  autos = mlr_auto$mget(mlr_auto$keys())
+  xdt = generate_initial_design("sobol", combine_search_spaces(autos, tsk("penguins")), 256L)
+  expect_data_table(xdt, nrows = 256L)
   expect_set_equal(xdt$branch.selection, mlr_auto$keys())
 })
 
@@ -20,10 +29,9 @@ test_that("random design is generated", {
   skip_if_not_installed(all_packages)
 
   autos = mlr_auto$mget(mlr_auto$keys())
-  xdt = map_dtr(autos, function(auto) auto$design_random(tsk("penguins"), 10L), .fill = TRUE)
-  expect_data_table(xdt, nrows = length(autos) * 10 - 20 + 2)
+  xdt = generate_initial_design("random", combine_search_spaces(autos, tsk("penguins")), 256L)
+  expect_data_table(xdt, nrows = 256L)
   expect_set_equal(xdt$branch.selection, mlr_auto$keys())
-
 })
 
 test_that("set design is generated", {
