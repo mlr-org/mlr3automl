@@ -36,7 +36,7 @@ test_that("only extra_trees fails", {
 })
 
 test_that("all learner on cpu work", {
-  test_classif_learner(c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees"), initial_design_type = "sobol")
+  test_classif_learner(c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees"), initial_design_type = "sobol", n_evals = 20)
 })
 
 test_that("memory limit works", {

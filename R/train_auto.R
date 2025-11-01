@@ -67,7 +67,7 @@ train_auto = function(self, private, task) {
   # initialize search space
   search_space = combine_search_spaces(autos, task)
 
-  callbacks = c(pv$callbacks, clbk("mlr3tuning.async_save_logs"), clbk("mlr3automl.initial_design_runtime"))
+  callbacks = c(pv$callbacks, clbk("mlr3tuning.async_save_logs"), clbk("mlr3automl.initial_design_runtime", initial_design_fraction = pv$initial_design_fraction))
 
   # tuning instance
   self$instance = ti_async(
