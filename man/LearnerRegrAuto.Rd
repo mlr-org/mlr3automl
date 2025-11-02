@@ -19,59 +19,78 @@ Set \code{encapsulate_mbo = FALSE} to catch no errors in mbo.
 \describe{
 \item{learner_timeout}{(\code{integer(1)})\cr
 Timeout for training and predicting with a single learner.}
-\item{xgboost_eval_metric}{(\code{character(1)})\cr
-Early stopping eval metric for XGBoost.
-If \code{NULL}, attempting to match the internal XGBoost eval metric with the mlr3  \code{measure}}.
-\item{catboost_eval_metric}{(\code{character(1)})\cr
-Early stopping eval metric for CatBoost.
-If \code{NULL}, attempting to match the internal CatBoost eval metric with the mlr3 \code{measure}.}
-\item{lightgbm_eval_metric}{(\code{character(1)})\cr
-Early stopping eval metric for LightGBM.
-If \code{NULL}, attempting to match the internal LightGBM eval metric with the mlr3 \code{measure}.}
-\item{max_nthread}{(\code{integer(1)})\cr
-Maximum number of threads to use for model training.}
-\item{max_memory}{(\code{integer(1)})\cr
-Maximum memory to use for model training.}
+
+\item{n_threads}{(\code{integer(1)})\cr
+Number of threads to use for model training.}
+
+\item{memory_limit}{(\code{integer(1)})\cr
+Memory limit for model training in MB.}
+
+\item{devices}{(\code{character()})\cr
+Devices to use for model training.
+Possible values are \code{"cpu"} and \code{"cuda"}.
+If \code{"cuda"}, the learner will be trained on a GPU.}
+
 \item{large_data_size}{(\code{integer(1)})\cr
 Threshold value for the data set size from which special rules apply.
 Only the learners specified in \code{large_data_learner_ids} will be considered.
 These learners can use up to \code{large_data_nthread} threads.}
-\item{large_data_learner_ids}{(\code{character()})\cr
-Learners to consider for model training on large data sets.}
-\item{large_data_nthread}{(\code{integer(1)})\cr
-Maximum number of threads to use for model training on large data sets.}
+
 \item{small_data_size}{(\code{integer(1)})\cr
-Threshold value for the data set size from which special rules apply.
-Only the learners specified in \code{small_data_learner_ids} will be considered.
-These learners can use up to \code{small_data_nthread} threads.}
+Threshold value for the data set size from which special rules apply.}
+
 \item{small_data_resampling}{(\link[mlr3:Resampling]{mlr3::Resampling})\cr
 Resampling strategy to use for model training on small data sets.}
-\item{max_cardinality}{(\code{integer(1)})\cr
-Maximum number of factor levels allowed.
-Collapses the rarest factors in the data set, until \code{max_cardinality} levels remain.}
-\item{extra_trees_max_cardinality}{(\code{integer(1)})\cr
-Maximum number of factor levels allowed for extra trees.
-Collapses the rarest factors in the data set, until \code{extra_trees_max_cardinality} levels remain.}
+
+\item{initial_design_default}{(\code{logical(1)})\cr
+Whether to use the default design of the learner.}
+
+\item{initial_design_set}{(\code{integer(1)})\cr
+Number of points to use for the initial design set.}
+
+\item{initial_design_size}{(\code{integer(1)})\cr
+Size of the random, sobol or lhs initial design.}
+
+\item{initial_design_type}{(\code{character(1)})\cr
+Type of the initial design used for mbo.
+Possible values are \code{"lhs"}, \code{"sobol"}, \code{"random"}.
+\code{"lhs"} uses a Latin Hypercube Sampling design.
+\code{"sobol"} uses a Sobol sequence design.
+\code{"random"} uses a random design.}
+
+\item{initial_design_fraction}{(\code{numeric(1)})\cr
+Fraction of the budget to use for the initial design.}
+
 \item{resampling}{(\link[mlr3:Resampling]{mlr3::Resampling})\cr
 Resampling strategy used for tuning.}
+
 \item{terminator}{(\link[bbotk:Terminator]{bbotk::Terminator})\cr
 Terminator criterion for tuning.}
+
 \item{measure}{(\link[mlr3:Measure]{mlr3::Measure})\cr
 Measure used for tuning.}
-\item{initial_design_size}{(\code{integer(1)})\cr
-Size of the initial design used for mbo.}
+
 \item{callbacks}{(\link[mlr3tuning:CallbackAsyncTuning]{mlr3tuning::CallbackAsyncTuning})\cr
 Callbacks used for tuning.}
+
 \item{store_benchmark_result}{(\code{logical(1)})\cr
 Whether to store the benchmark result.}
+
 \item{store_models}{(\code{logical(1)})\cr
 Whether to store the models.}
+
 \item{encapsulate_learner}{(\code{logical(1)})\cr
 Whether to encapsulate the learner.
 Change to \code{FALSE} to debug.}
+
 \item{encapsulate_mbo}{(\code{logical(1)})\cr
 Whether to encapsulate the tuning.
 Change to \code{FALSE} to debug.}
+
+\item{check_learners}{(\code{logical(1)})\cr
+Whether to check if the learners are compatible with the task.
+Change to \code{FALSE} to debug.}
+
 }
 }
 

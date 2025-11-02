@@ -58,33 +58,16 @@ train_auto = function(self, private, task) {
 
   learner_ids = map_chr(autos, "id")
   learners_with_validation = learner_ids[map_lgl(autos, function(auto) "internal_tuning" %in% auto$properties)]
+  learners_without_hyperparameters = learner_ids[map_lgl(autos, function(auto) "hyperparameter-free" %in% auto$properties)]
+
   if (length(learners_with_validation)) {
     set_validate(graph_learner, "test", ids = learners_with_validation)
   }
 
   # initialize search space
-  search_space = ps(
-    branch.selection = p_fct(levels = learner_ids)
-  )
-  search_spaces = c(list(search_space), map(autos, function(auto) auto$search_space(task)))
-  search_space = ps_union(unname(search_spaces))
+  search_space = combine_search_spaces(autos, task)
 
-  # add dependencies
-  walk(autos, function(auto) {
-    param_ids = auto$search_space(task)$ids()
-    internal_tune_ids = auto$search_space(task)$ids(any_tags = "internal_tuning")
-    param_ids = setdiff(param_ids, internal_tune_ids)
-
-    walk(param_ids, function(param_id) {
-      search_space$add_dep(
-        id = param_id,
-        on = "branch.selection",
-        cond = CondEqual$new(auto$id)
-      )
-    })
-  })
-
-  callbacks = c(pv$callbacks, clbk("mlr3automl.initial_design_runtime"), clbk("mlr3tuning.async_save_logs"))
+  callbacks = c(pv$callbacks, clbk("mlr3tuning.async_save_logs"), clbk("mlr3automl.initial_design_runtime", initial_design_fraction = pv$initial_design_fraction))
 
   # tuning instance
   self$instance = ti_async(
@@ -94,40 +77,48 @@ train_auto = function(self, private, task) {
     measures = pv$measure,
     terminator = pv$terminator,
     search_space = search_space,
-    callbacks = pv$callbacks,
+    callbacks = callbacks,
     store_benchmark_result = pv$store_benchmark_result,
     store_models = pv$store_models
   )
 
-  initial_design_best =if ("set" %in% pv$initial_design_type) {
-    map_dtr(autos, function(auto) auto$design_set(task, measure = pv$measure, size = pv$initial_design_size), .fill = TRUE)
-  }
-  initial_design_lhs = if ("lhs" %in% pv$initial_design_type) {
-    map_dtr(autos, function(auto) auto$design_lhs(task, pv$initial_design_size), .fill = TRUE)
-  }
-  initial_design_random = if ("random" %in% pv$initial_design_type) {
-    map_dtr(autos, function(auto) auto$design_random(task, pv$initial_design_size), .fill = TRUE)
-  }
-  initial_design_default = if ("default" %in% pv$initial_design_type) {
+  # initial design
+  initial_design_default = if (pv$initial_design_default) {
     map_dtr(autos, function(auto) auto$design_default(task), .fill = TRUE)
   }
 
-  initial_designs = rbindlist(list(initial_design_best, initial_design_lhs, initial_design_random, initial_design_default), use.names = TRUE, fill = TRUE)
-  initial_designs = initial_designs[sample(.N)]
+  initial_design_set = if (pv$initial_design_set) {
+    map_dtr(autos, function(auto) auto$design_set(task, measure = pv$measure, size = pv$initial_design_set), .fill = TRUE)
+  }
+
+  initial_design = if (!is.null(pv$initial_design_type) && pv$initial_design_size) {
+    autos_with_hyperparameters = autos[!map_lgl(autos, function(auto) "hyperparameter-free" %in% auto$properties)]
+    search_space_with_hyperparameters = combine_search_spaces(autos_with_hyperparameters, task)
+    generate_initial_design(pv$initial_design_type, search_space_with_hyperparameters, pv$initial_design_size)
+  }
+
+  # add learners without hyperparameters to initial design
+  if (!pv$initial_design_default && length(learners_without_hyperparameters)) {
+    initial_design_default = map_dtr(autos[learners_without_hyperparameters], function(auto) auto$design_default(task), .fill = TRUE)
+  }
+
+  initial_designs = rbindlist(list(initial_design_default, initial_design_set, initial_design), use.names = TRUE, fill = TRUE)
+  lg$info("Initial design size: %i", nrow(initial_designs))
+
   tuner$param_set$set_values(initial_design = initial_designs)
 
   # configure tuner
   learner = lrn("regr.ranger",
-      num.trees = 500L,
-      se.method = "jack",
-      splitrule = "variance",
-      predict_type = "se",
-      keep.inbag = TRUE,
-      sample.fraction = 1,
-      min.node.size = 3,
-      min.bucket = 3,
-      mtry.ratio = 5/6
-    )
+    num.trees = 500L,
+    se.method = "jack",
+    splitrule = "variance",
+    predict_type = "se",
+    keep.inbag = TRUE,
+    sample.fraction = 1,
+    min.node.size = 3,
+    min.bucket = 3,
+    mtry.ratio = 5/6
+  )
 
   tuner$surrogate =  srlrn(learner)
   tuner$surrogate$param_set$set_values(catch_errors = pv$encapsulate_mbo)
