@@ -36,7 +36,29 @@ test_that("only extra_trees fails", {
 })
 
 test_that("all learner on cpu work", {
-  test_classif_learner(c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees"), initial_design_type = "sobol", n_evals = 20)
+  skip_on_cran()
+  skip_if_not_installed(unlist(map(mlr_auto$mget(c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees")), "packages")))
+  skip_if_not_installed("rush")
+  flush_redis()
+
+  rush_plan(n_workers = 2, worker_type = "remote")
+  mirai::daemons(2)
+
+  task = tsk("penguins")
+  learner = lrn("classif.auto",
+    learner_ids = c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees"),
+    small_data_size = 1,
+    resampling = rsmp("holdout"),
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 20),
+    initial_design_size = 30,
+    initial_design_type = "sobol",
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE
+  )
+
+  expect_class(learner$train(task), "LearnerClassifAuto")
+  expect_set_equal(learner$model$instance$archive$data$branch.selection, c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees"))
 })
 
 test_that("memory limit works", {

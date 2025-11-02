@@ -91,7 +91,7 @@ train_auto = function(self, private, task) {
     map_dtr(autos, function(auto) auto$design_set(task, measure = pv$measure, size = pv$initial_design_set), .fill = TRUE)
   }
 
-  initial_design = if (!is.null(pv$initial_design_type)) {
+  initial_design = if (!is.null(pv$initial_design_type) && pv$initial_design_size) {
     autos_with_hyperparameters = autos[!map_lgl(autos, function(auto) "hyperparameter-free" %in% auto$properties)]
     search_space_with_hyperparameters = combine_search_spaces(autos_with_hyperparameters, task)
     generate_initial_design(pv$initial_design_type, search_space_with_hyperparameters, pv$initial_design_size)
