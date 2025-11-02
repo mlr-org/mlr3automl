@@ -42,11 +42,15 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
         # small data
         small_data_size = p_int(lower = 1L, init = 5000L, tags = c("train", "super")),
         small_data_resampling = p_uty(init = rsmp("cv", folds = 10), tags = c("train", "super")),
+        # initial design
+        initial_design_default = p_lgl(init = FALSE, tags = c("train", "super")),
+        initial_design_set = p_int(lower = 0L, init = 0L, tags = c("train", "super")),
+        initial_design_type = p_fct(init = "sobol", levels = c("lhs", "sobol", "random"), tags = c("train", "super")),
+        initial_design_size = p_int(lower = 0L, init = 256L, tags = c("train", "super")),
+        initial_design_fraction = p_dbl(lower = 0.1, upper = 0.9, init = 0.25, tags = c("train", "super")),
         # tuner
-        initial_design_size = p_int(lower = 1L, init = 4L, tags = c("train", "super")),
-        initial_design_type = p_uty(init = c("default", "lhs"), tags = c("train", "super"), custom_check = crate({function(x) check_subset(x, c("lhs", "set", "random", "default"))})),
         resampling = p_uty(init = rsmp("holdout"), tags = c("train", "super")),
-        terminator = p_uty(init = trm("run_time", secs = 3600), tags = c("train", "super")),
+        terminator = p_uty(init = trm("run_time", secs = 3600L), tags = c("train", "super")),
         measure = p_uty(tags = c("train", "super")),
         callbacks = p_uty(tags = c("train", "super")),
         store_benchmark_result = p_lgl(init = FALSE, tags = c("train", "super")),

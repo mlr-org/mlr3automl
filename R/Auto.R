@@ -102,57 +102,11 @@ Auto = R6Class("Auto",
     },
 
     #' @description
-    #' Get the default values for the auto.
-    default_values = function(task) {
-      stop("Abstract")
-    },
-
-    #' @description
     #' Default hyperparameters for the learner.
     design_default = function(task) {
       xdt = as.data.table(private$.default_values)
       set(xdt, j = "branch.selection", value = self$id)
       xdt
-    },
-
-    #' @description
-    #' Generate random design for the learner.
-    design_random = function(task, size) {
-      assert_task(task)
-      assert_count(size)
-
-      internal_tune_ids = self$search_space(task)$ids(any_tags = "internal_tuning")
-      xdt = if (self$search_space(task)$length) {
-        generate_design_random(self$search_space(task), size)$data
-      } else {
-        data.table()
-      }
-
-      set(xdt, j = "branch.selection", value = self$id)
-
-      lg$info("Learner '%s' random design size: %i", self$id, nrow(xdt))
-
-      xdt[, setdiff(c("branch.selection", self$search_space(task)$ids()), internal_tune_ids), with = FALSE]
-    },
-
-    #' @description
-    #' Generate lhs design for the learner.
-    design_lhs = function(task, size) {
-      assert_task(task)
-      assert_count(size)
-
-      internal_tune_ids = self$search_space(task)$ids(any_tags = "internal_tuning")
-      xdt = if (self$search_space(task)$length) {
-        generate_design_lhs(self$search_space(task), n = size)$data
-      } else {
-        data.table()
-      }
-
-      set(xdt, j = "branch.selection", value = self$id)
-
-      lg$info("Learner '%s' lhs design size: %i", self$id, nrow(xdt))
-
-      xdt[, setdiff(c("branch.selection", self$search_space(task)$ids()), internal_tune_ids), with = FALSE]
     },
 
     #' @description
@@ -164,7 +118,10 @@ Auto = R6Class("Auto",
 
       # read data of best hyperparameters
       file = system.file("ex_data", sprintf("best_%s.csv", self$id), package = "mlr3automl")
-      if (!file.exists(file)) return(data.table())
+      if (!file.exists(file)) {
+        # return empty data.table
+        return(self$design_default(task)[0])
+      }
       data = fread(file)
 
       # exclude tasks
@@ -205,3 +162,4 @@ Auto = R6Class("Auto",
     .default_values = list()
   )
 )
+
