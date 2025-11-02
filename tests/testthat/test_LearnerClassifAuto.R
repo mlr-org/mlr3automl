@@ -104,7 +104,7 @@ test_that("small data set switch works", {
     small_data_resampling = rsmp("cv", folds = 2),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 1),
-    initial_design_size = 1,
+    initial_design_size = 2,
     store_benchmark_result = TRUE,
     encapsulate_learner = FALSE,
     encapsulate_mbo = FALSE
