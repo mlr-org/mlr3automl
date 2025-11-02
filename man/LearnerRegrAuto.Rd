@@ -19,18 +19,33 @@ Set \code{encapsulate_mbo = FALSE} to catch no errors in mbo.
 \describe{
 \item{learner_timeout}{(\code{integer(1)})\cr
 Timeout for training and predicting with a single learner.}
+<<<<<<< HEAD
 \item{n_threads}{(\code{integer(1)})\cr
 Number of threads to use for model training.}
 \item{memory_limit}{(\code{integer(1)})\cr
 Memory limit for model training in MB.}
+=======
+
+\item{n_threads}{(\code{integer(1)})\cr
+Number of threads to use for model training.}
+
+\item{memory_limit}{(\code{integer(1)})\cr
+Memory limit for model training in MB.}
+
+>>>>>>> main
 \item{devices}{(\code{character()})\cr
 Devices to use for model training.
 Possible values are \code{"cpu"} and \code{"cuda"}.
 If \code{"cuda"}, the learner will be trained on a GPU.}
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
 \item{large_data_size}{(\code{integer(1)})\cr
 Threshold value for the data set size from which special rules apply.
 Only the learners specified in \code{large_data_learner_ids} will be considered.
 These learners can use up to \code{large_data_nthread} threads.}
+<<<<<<< HEAD
 \item{small_data_size}{(\code{integer(1)})\cr
 Threshold value for the data set size from which special rules apply.}
 \item{small_data_resampling}{(\link[mlr3:Resampling]{mlr3::Resampling})\cr
@@ -51,27 +66,73 @@ If \code{TRUE}, the initial design will be adapted during the tuning process.}
 Fraction of the budget to use for adaptive design.
 If \code{adaptive_design} is \code{TRUE}, the initial design will be adapted during the tuning process.
 The fraction of the budget to use for adaptive design.}
+=======
+
+\item{small_data_size}{(\code{integer(1)})\cr
+Threshold value for the data set size from which special rules apply.}
+
+\item{small_data_resampling}{(\link[mlr3:Resampling]{mlr3::Resampling})\cr
+Resampling strategy to use for model training on small data sets.}
+
+\item{initial_design_default}{(\code{logical(1)})\cr
+Whether to use the default design of the learner.}
+
+\item{initial_design_set}{(\code{integer(1)})\cr
+Number of points to use for the initial design set.}
+
+\item{initial_design_size}{(\code{integer(1)})\cr
+Size of the random, sobol or lhs initial design.}
+
+\item{initial_design_type}{(\code{character(1)})\cr
+Type of the initial design used for mbo.
+Possible values are \code{"lhs"}, \code{"sobol"}, \code{"random"}.
+\code{"lhs"} uses a Latin Hypercube Sampling design.
+\code{"sobol"} uses a Sobol sequence design.
+\code{"random"} uses a random design.}
+
+\item{initial_design_fraction}{(\code{numeric(1)})\cr
+Fraction of the budget to use for the initial design.}
+
+>>>>>>> main
 \item{resampling}{(\link[mlr3:Resampling]{mlr3::Resampling})\cr
 Resampling strategy used for tuning.}
+
 \item{terminator}{(\link[bbotk:Terminator]{bbotk::Terminator})\cr
 Terminator criterion for tuning.}
+
 \item{measure}{(\link[mlr3:Measure]{mlr3::Measure})\cr
 Measure used for tuning.}
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
 \item{callbacks}{(\link[mlr3tuning:CallbackAsyncTuning]{mlr3tuning::CallbackAsyncTuning})\cr
 Callbacks used for tuning.}
+
 \item{store_benchmark_result}{(\code{logical(1)})\cr
 Whether to store the benchmark result.}
+
 \item{store_models}{(\code{logical(1)})\cr
 Whether to store the models.}
+
 \item{encapsulate_learner}{(\code{logical(1)})\cr
 Whether to encapsulate the learner.
 Change to \code{FALSE} to debug.}
+
 \item{encapsulate_mbo}{(\code{logical(1)})\cr
 Whether to encapsulate the tuning.
 Change to \code{FALSE} to debug.}
+<<<<<<< HEAD
 \item{check_learners}{(\code{logical(1)})\cr
 Whether to check if the learners are compatible with the task.
 Change to \code{FALSE} to debug.}
+=======
+
+\item{check_learners}{(\code{logical(1)})\cr
+Whether to check if the learners are compatible with the task.
+Change to \code{FALSE} to debug.}
+
+>>>>>>> main
 }
 }
 
