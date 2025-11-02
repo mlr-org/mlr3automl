@@ -16,7 +16,7 @@ test_that("all learner on cpu work", {
   mirai::daemons(2)
 
   task = tsk("mtcars")
-  learner = lrn("classif.auto",
+  learner = lrn("regr.auto",
     learner_ids = c("catboost", "glmnet", "lightgbm", "ranger", "svm", "xgboost", "extra_trees"),
     small_data_size = 1,
     resampling = rsmp("holdout"),
