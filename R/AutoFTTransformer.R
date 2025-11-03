@@ -82,7 +82,8 @@ AutoFTTransformer = R6Class("AutoFTTransformer",
         batch_size = 32L,
         attention_n_heads = 8L,
         opt.param_groups = rtdl_param_groups,
-        device = device
+        device = device,
+        tensor_dataset = "device"
       )
       set_threads(learner, n_threads)
 

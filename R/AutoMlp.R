@@ -47,7 +47,8 @@ AutoMlp = R6Class("AutoMlp",
         measures_valid = measure,
         patience = self$early_stopping_rounds(task),
         batch_size = 32L,
-        device = device
+        device = device,
+        tensor_dataset = "device"
       )
       set_threads(learner, n_threads)
 
