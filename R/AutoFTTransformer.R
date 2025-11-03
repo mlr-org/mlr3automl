@@ -25,7 +25,7 @@ AutoFTTransformer = R6Class("AutoFTTransformer",
         properties = "internal_tuning",
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3torch"),
-        devices = "cuda"
+        devices = c("cuda", "cpu")
       )
     },
 
@@ -76,13 +76,13 @@ AutoFTTransformer = R6Class("AutoFTTransformer",
       }
 
       learner = lrn(sprintf("%s.ft_transformer", task$task_type),
-       id = "ft_transformer",
-       measures_valid = measure,
-       patience = self$early_stopping_rounds(task),
-       batch_size = 32L,
-       attention_n_heads = 8L,
-       opt.param_groups = rtdl_param_groups,
-       device = device
+        id = "ft_transformer",
+        measures_valid = measure,
+        patience = self$early_stopping_rounds(task),
+        batch_size = 32L,
+        attention_n_heads = 8L,
+        opt.param_groups = rtdl_param_groups,
+        device = device
       )
       set_threads(learner, n_threads)
 

@@ -24,7 +24,7 @@ AutoResNet = R6Class("AutoResNet",
         properties = "internal_tuning",
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3torch"),
-        devices = "cuda"
+        devices = c("cuda", "cpu")
       )
     },
 
@@ -42,11 +42,11 @@ AutoResNet = R6Class("AutoResNet",
       device = if ("cuda" %in% devices) "cuda" else "auto"
 
       learner = lrn(sprintf("%s.tab_resnet", task$task_type),
-       id = "resnet",
-       measures_valid = measure,
-       patience = self$early_stopping_rounds(task),
-       batch_size = 32L,
-       device = device
+        id = "resnet",
+        measures_valid = measure,
+        patience = self$early_stopping_rounds(task),
+        batch_size = 32L,
+        device = device
       )
       set_threads(learner, n_threads)
 

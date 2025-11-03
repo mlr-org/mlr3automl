@@ -25,7 +25,7 @@ AutoMlp = R6Class("AutoMlp",
         properties = "internal_tuning",
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3torch"),
-        devices = "cuda"
+        devices = c("cuda", "cpu")
       )
     },
 
@@ -43,11 +43,11 @@ AutoMlp = R6Class("AutoMlp",
       device = if ("cuda" %in% devices) "cuda" else "auto"
 
       learner = lrn(sprintf("%s.mlp", task$task_type),
-       id = "mlp",
-       measures_valid = measure,
-       patience = self$early_stopping_rounds(task),
-       batch_size = 32L,
-       device = device
+        id = "mlp",
+        measures_valid = measure,
+        patience = self$early_stopping_rounds(task),
+        batch_size = 32L,
+        device = device
       )
       set_threads(learner, n_threads)
 
