@@ -3,7 +3,10 @@ title: "mlr3automl"
 format: html
 ---
 
+# Introduction
+
 *mlr3automl* is the Automated Machine Learning (AutoML) package of the [mlr3](https://mlr-org.com/) ecosystem.
+
 
 # Benchmark
 

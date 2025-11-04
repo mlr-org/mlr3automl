@@ -23,4 +23,4 @@
 .vscode
 ^kaggle$
 ^oml_cache$
-^vignettes/articles$
+^vignettes/$

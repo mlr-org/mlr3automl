@@ -13,17 +13,17 @@ Flexible AutoML system for the 'mlr3' ecosystem.
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/mlr-org/mlr3automl}
+  \item \url{https://github.com/mlr-org/mlr3automl https://mlr3automl.mlr-org.com}
   \item Report bugs at \url{https://github.com/mlr-org/mlr3automl/issues}
 }
 
 }
 \author{
-\strong{Maintainer}: Damir Pulatov \email{damirpolat@protonmail.com}
+\strong{Maintainer}: Marc Becker \email{marcbecker@posteo.de} (\href{https://orcid.org/0000-0002-8115-0400}{ORCID})
 
 Authors:
 \itemize{
-  \item Marc Becker \email{marcbecker@posteo.de} (\href{https://orcid.org/0000-0002-8115-0400}{ORCID})
+  \item Damir Pulatov \email{damirpolat@protonmail.com}
   \item Baisu Zhou \email{baisu.zhou@outlook.com}
 }
 
