@@ -34,7 +34,10 @@ AutoFastai = R6Class("AutoFastai",
     #' @description
     #' Check if the auto is compatible with the task.
     check = function(task, memory_limit = Inf, large_data_set = FALSE, devices = "cpu") {
-      super$check(task, memory_limit, large_data_set, devices)
+      ok = super$check(task, memory_limit, large_data_set, devices)
+      if (!isTRUE(ok)) {
+        return(FALSE)
+      }
       ok = check_python_packages(c("fastai", "torch"))
       if (!isTRUE(ok)) {
         lg$info(ok)
