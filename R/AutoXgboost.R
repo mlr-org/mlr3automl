@@ -126,8 +126,9 @@ AutoXgboost = R6Class("AutoXgboost",
     #' Modify the graph for the final model.
     final_graph = function(graph, task, pv) {
       if (task$nrow * task$ncol > pv$large_data_size) {
-        graph$param_set$set_values(xgboost_subsample.frac = 1, xgboost.callbacks = NULL)
+        graph$param_set$set_values(xgboost_subsample.frac = 1)
       }
+      graph$param_set$set_values(xgboost.callbacks = NULL)
     }
   ),
 
