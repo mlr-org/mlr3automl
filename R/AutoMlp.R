@@ -1,6 +1,6 @@
 #' @title Mlp Auto
 #'
-#' @include mlr_auto.R
+#' @include mlr_auto.R Auto.R
 #'
 #' @description
 #' Mlp auto.
@@ -11,6 +11,7 @@
 #' @template param_n_threads
 #' @template param_timeout
 #' @template param_devices
+#' @template param_pv
 #'
 #' @export
 AutoMlp = R6Class("AutoMlp",
@@ -31,7 +32,7 @@ AutoMlp = R6Class("AutoMlp",
 
     #' @description
     #' Create the graph for the auto.
-    graph = function(task, measure, n_threads, timeout, devices) {
+    graph = function(task, measure, n_threads, timeout, devices, pv) {
       assert_task(task)
       assert_measure(measure)
       assert_count(n_threads)

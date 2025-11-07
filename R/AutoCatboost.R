@@ -1,6 +1,6 @@
 #' @title Catboost Auto
 #'
-#' @include mlr_auto.R
+#' @include mlr_auto.R Auto.R Auto.R
 #'
 #' @description
 #' Catboost auto.
@@ -10,7 +10,12 @@
 #' @template param_measure
 #' @template param_n_threads
 #' @template param_timeout
+#' @template param_memory_limit
+#' @template param_large_data_set
+#' @template param_size
 #' @template param_devices
+#' @template param_pv
+#' @template param_graph
 #'
 #' @export
 AutoCatboost = R6Class("AutoCatboost",
@@ -31,7 +36,7 @@ AutoCatboost = R6Class("AutoCatboost",
 
     #' @description
     #' Create the graph for the auto.
-    graph = function(task, measure, n_threads, timeout, devices) {
+    graph = function(task, measure, n_threads, timeout, devices, pv) {
       assert_task(task)
       assert_measure(measure)
       assert_count(n_threads)
@@ -52,10 +57,17 @@ AutoCatboost = R6Class("AutoCatboost",
         task_type = task_type)
       set_threads(learner, n_threads)
 
-      po("removeconstants", id = "catboost_removeconstants") %>>%
+
+      graph = po("removeconstants", id = "catboost_removeconstants") %>>%
         po("colapply", id = "catboost_colapply", applicator = as.numeric, affect_columns = selector_type("integer")) %>>%
         po("removeconstants", id = "catboost_post_removeconstants") %>>%
         learner
+
+      if (task$nrow * task$ncol > pv$large_data_size) {
+        graph = po("subsample", frac = 0.25, stratify = inherits(task, "TaskClassif"), use_groups = FALSE, id = "catboost_subsample") %>>% graph
+      }
+
+      graph
     },
 
     #' @description
@@ -114,6 +126,14 @@ AutoCatboost = R6Class("AutoCatboost",
           "classif.mcc" = "MCC",
           "merror" # default
         )
+      }
+    },
+
+    #' @description
+    #' Modify the graph for the final model.
+    final_graph = function(graph, task, pv) {
+      if (task$nrow * task$ncol > pv$large_data_size) {
+        graph$param_set$set_values(catboost_subsample.frac = 1)
       }
     }
   ),

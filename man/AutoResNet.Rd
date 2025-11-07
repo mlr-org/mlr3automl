@@ -19,12 +19,13 @@ ResNet auto.
 }
 }
 \if{html}{\out{
-<details open><summary>Inherited methods</summary>
+<details><summary>Inherited methods</summary>
 <ul>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="check"><a href='../../mlr3automl/html/Auto.html#method-Auto-check'><code>mlr3automl::Auto$check()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_default"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_default'><code>mlr3automl::Auto$design_default()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_set"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_set'><code>mlr3automl::Auto$design_set()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="early_stopping_rounds"><a href='../../mlr3automl/html/Auto.html#method-Auto-early_stopping_rounds'><code>mlr3automl::Auto$early_stopping_rounds()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="final_graph"><a href='../../mlr3automl/html/Auto.html#method-Auto-final_graph'><code>mlr3automl::Auto$final_graph()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="search_space"><a href='../../mlr3automl/html/Auto.html#method-Auto-search_space'><code>mlr3automl::Auto$search_space()</code></a></span></li>
 </ul>
 </details>
@@ -53,7 +54,7 @@ Identifier for the new instance.}
 \subsection{Method \code{graph()}}{
 Create the graph for the auto.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoResNet$graph(task, measure, n_threads, timeout, devices)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AutoResNet$graph(task, measure, n_threads, timeout, devices, pv)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -71,6 +72,9 @@ Create the graph for the auto.
 Devices to use.
 Allowed values are \code{"cpu"} and \code{"cuda"}.
 Default is "cpu".}
+
+\item{\code{pv}}{(\code{list})\cr
+Parameter values.}
 }
 \if{html}{\out{</div>}}
 }

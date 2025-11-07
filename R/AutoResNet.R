@@ -1,6 +1,6 @@
 #' @title ResNet Auto
 #'
-#' @include mlr_auto.R
+#' @include mlr_auto.R Auto.R
 #'
 #' @description
 #' ResNet auto.
@@ -11,6 +11,7 @@
 #' @template param_n_threads
 #' @template param_timeout
 #' @template param_devices
+#' @template param_pv
 #'
 #' @export
 AutoResNet = R6Class("AutoResNet",
@@ -30,7 +31,7 @@ AutoResNet = R6Class("AutoResNet",
 
     #' @description
     #' Create the graph for the auto.
-    graph = function(task, measure, n_threads, timeout, devices) {
+    graph = function(task, measure, n_threads, timeout, devices, pv) {
       assert_task(task)
       assert_measure(measure)
       assert_count(n_threads)

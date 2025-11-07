@@ -15,6 +15,7 @@ Extra Trees auto.
 \item \href{#method-AutoExtraTrees-new}{\code{AutoExtraTrees$new()}}
 \item \href{#method-AutoExtraTrees-graph}{\code{AutoExtraTrees$graph()}}
 \item \href{#method-AutoExtraTrees-estimate_memory}{\code{AutoExtraTrees$estimate_memory()}}
+\item \href{#method-AutoExtraTrees-final_graph}{\code{AutoExtraTrees$final_graph()}}
 \item \href{#method-AutoExtraTrees-clone}{\code{AutoExtraTrees$clone()}}
 }
 }
@@ -53,7 +54,7 @@ Identifier for the new instance.}
 \subsection{Method \code{graph()}}{
 Create the graph for the auto.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoExtraTrees$graph(task, measure, n_threads, timeout, devices)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AutoExtraTrees$graph(task, measure, n_threads, timeout, devices, pv)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -71,6 +72,9 @@ Create the graph for the auto.
 Devices to use.
 Allowed values are \code{"cpu"} and \code{"cuda"}.
 Default is "cpu".}
+
+\item{\code{pv}}{(\code{list})\cr
+Parameter values.}
 }
 \if{html}{\out{</div>}}
 }
@@ -88,6 +92,29 @@ Estimate the memory for the auto.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AutoExtraTrees-final_graph"></a>}}
+\if{latex}{\out{\hypertarget{method-AutoExtraTrees-final_graph}{}}}
+\subsection{Method \code{final_graph()}}{
+Modify the graph for the final model.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AutoExtraTrees$final_graph(graph, task, pv)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{graph}}{(\code{mlr3pipelines::GraphLearner})\cr
+Graph learner.}
+
+\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+
+\item{\code{pv}}{(\code{list})\cr
+Parameter values.}
 }
 \if{html}{\out{</div>}}
 }

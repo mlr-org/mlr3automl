@@ -1,6 +1,6 @@
 #' @title Ranger Auto
 #'
-#' @include mlr_auto.R
+#' @include mlr_auto.R Auto.R
 #'
 #' @description
 #' Ranger auto.
@@ -10,8 +10,12 @@
 #' @template param_measure
 #' @template param_n_threads
 #' @template param_timeout
+#' @template param_memory_limit
+#' @template param_large_data_set
+#' @template param_size
 #' @template param_devices
-#'
+#' @template param_pv
+#' @template param_graph
 #'
 #' @export
 AutoRanger = R6Class("AutoRanger",
@@ -31,7 +35,7 @@ AutoRanger = R6Class("AutoRanger",
 
     #' @description
     #' Create the graph for the auto.
-    graph = function(task, measure, n_threads, timeout, devices) {
+    graph = function(task, measure, n_threads, timeout, devices, pv) {
       assert_task(task)
       assert_measure(measure)
       assert_count(n_threads)
@@ -42,13 +46,19 @@ AutoRanger = R6Class("AutoRanger",
       learner = lrn(sprintf("%s.ranger", task$task_type), id = "ranger")
       set_threads(learner, n_threads)
 
-      po("removeconstants", id = "ranger_removeconstants") %>>%
+      graph = po("removeconstants", id = "ranger_removeconstants") %>>%
         po("imputeoor", id = "ranger_imputeoor") %>>%
         po("fixfactors", id = "ranger_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "ranger_imputesample") %>>%
         po("collapsefactors", target_level_count = 100, id = "ranger_collapse") %>>%
         po("removeconstants", id = "ranger_post_removeconstants") %>>%
         learner
+
+      if (task$nrow * task$ncol > pv$large_data_size) {
+        graph = po("subsample", frac = 0.25, stratify = inherits(task, "TaskClassif"), use_groups = FALSE, id = "ranger_subsample") %>>% graph
+      }
+
+      graph
     },
 
     #' @description
@@ -62,6 +72,14 @@ AutoRanger = R6Class("AutoRanger",
       memory_size = (tree_size * num_trees) / 1e6
       lg$info("Ranger memory size: %s MB", round(memory_size))
       ceiling(memory_size)
+    },
+
+    #' @description
+    #' Modify the graph for the final model.
+    final_graph = function(graph, task, pv) {
+      if (task$nrow * task$ncol > pv$large_data_size) {
+        graph$param_set$set_values(ranger_subsample.frac = 1)
+      }
     }
   ),
 

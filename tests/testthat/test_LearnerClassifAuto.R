@@ -59,6 +59,8 @@ test_that("all learner on cpu work", {
 
   expect_class(learner$train(task), "LearnerClassifAuto")
   expect_set_equal(learner$model$instance$archive$data$branch.selection, c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees"))
+  expect_null(learner$model$graph_learner$param_set$values$xgboost.callbacks)
+  expect_null(learner$model$graph_learner$param_set$values$lightgbm.callbacks)
 })
 
 test_that("memory limit works", {
@@ -123,6 +125,8 @@ test_that("large data set switch works", {
   rush_plan(n_workers = 2, worker_type = "remote")
   mirai::daemons(2)
 
+  options(bbotk.debug = TRUE)
+
   task = tsk("penguins")
   learner = lrn("classif.auto",
     learner_ids = c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees"),
@@ -140,6 +144,16 @@ test_that("large data set switch works", {
 
   expect_class(learner$train(task), "LearnerClassifAuto")
   expect_set_equal(learner$model$instance$archive$data$branch.selection, c("ranger", "xgboost", "catboost", "lightgbm", "extra_trees"))
+  expect_equal(learner$model$graph_learner$param_set$values$ranger_subsample.frac, 1)
+  expect_equal(learner$model$graph_learner$param_set$values$xgboost_subsample.frac, 1)
+  expect_equal(learner$model$graph_learner$param_set$values$catboost_subsample.frac, 1)
+  expect_equal(learner$model$graph_learner$param_set$values$lightgbm_subsample.frac, 1)
+  expect_equal(learner$model$graph_learner$param_set$values$extra_trees_subsample.frac, 1)
+  expect_true(learner$model$graph_learner$param_set$values$ranger_subsample.stratify)
+  expect_true(learner$model$graph_learner$param_set$values$xgboost_subsample.stratify)
+  expect_true(learner$model$graph_learner$param_set$values$catboost_subsample.stratify)
+  expect_true(learner$model$graph_learner$param_set$values$lightgbm_subsample.stratify)
+  expect_true(learner$model$graph_learner$param_set$values$extra_trees_subsample.stratify)
 })
 
 test_that("resample works", {

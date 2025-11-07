@@ -16,6 +16,7 @@ Xgboost auto.
 \item \href{#method-AutoXgboost-graph}{\code{AutoXgboost$graph()}}
 \item \href{#method-AutoXgboost-estimate_memory}{\code{AutoXgboost$estimate_memory()}}
 \item \href{#method-AutoXgboost-internal_measure}{\code{AutoXgboost$internal_measure()}}
+\item \href{#method-AutoXgboost-final_graph}{\code{AutoXgboost$final_graph()}}
 \item \href{#method-AutoXgboost-clone}{\code{AutoXgboost$clone()}}
 }
 }
@@ -54,7 +55,7 @@ Identifier for the new instance.}
 \subsection{Method \code{graph()}}{
 Create the graph for the auto.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoXgboost$graph(task, measure, n_threads, timeout, devices)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AutoXgboost$graph(task, measure, n_threads, timeout, devices, pv)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -72,6 +73,9 @@ Create the graph for the auto.
 Devices to use.
 Allowed values are \code{"cpu"} and \code{"cuda"}.
 Default is "cpu".}
+
+\item{\code{pv}}{(\code{list})\cr
+Parameter values.}
 }
 \if{html}{\out{</div>}}
 }
@@ -108,6 +112,29 @@ Get the internal measure for the auto.
 \item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
 
 \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AutoXgboost-final_graph"></a>}}
+\if{latex}{\out{\hypertarget{method-AutoXgboost-final_graph}{}}}
+\subsection{Method \code{final_graph()}}{
+Modify the graph for the final model.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AutoXgboost$final_graph(graph, task, pv)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{graph}}{(\code{mlr3pipelines::GraphLearner})\cr
+Graph learner.}
+
+\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+
+\item{\code{pv}}{(\code{list})\cr
+Parameter values.}
 }
 \if{html}{\out{</div>}}
 }

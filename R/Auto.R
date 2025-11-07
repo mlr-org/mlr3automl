@@ -3,7 +3,7 @@
 #' @description
 #' This class is the base class for all autos.
 #'
-#' @include mlr_auto.R
+#' @include mlr_auto.R Auto.R
 #'
 #' @template param_id
 #' @template param_task
@@ -14,6 +14,8 @@
 #' @template param_large_data_set
 #' @template param_size
 #' @template param_devices
+#' @template param_pv
+#' @template param_graph
 #'
 #' @export
 Auto = R6Class("Auto",
@@ -80,7 +82,7 @@ Auto = R6Class("Auto",
 
     #' @description
     #' Create the graph for the auto.
-    graph = function(task, measure, n_threads, timeout, devices) {
+    graph = function(task, measure, n_threads, timeout, devices, pv) {
       stop("Abstract")
     },
 
@@ -154,6 +156,12 @@ Auto = R6Class("Auto",
     #' Get the search space for the learner.
     search_space = function(task) {
       private$.search_space
+    },
+
+    #' @description
+    #' Modify the graph for the final model.
+    final_graph = function(graph, task, pv) {
+      graph
     }
   ),
 

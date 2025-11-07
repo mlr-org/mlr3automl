@@ -16,6 +16,7 @@ Catboost auto.
 \item \href{#method-AutoCatboost-graph}{\code{AutoCatboost$graph()}}
 \item \href{#method-AutoCatboost-estimate_memory}{\code{AutoCatboost$estimate_memory()}}
 \item \href{#method-AutoCatboost-internal_measure}{\code{AutoCatboost$internal_measure()}}
+\item \href{#method-AutoCatboost-final_graph}{\code{AutoCatboost$final_graph()}}
 \item \href{#method-AutoCatboost-clone}{\code{AutoCatboost$clone()}}
 }
 }
@@ -54,7 +55,7 @@ Identifier for the new instance.}
 \subsection{Method \code{graph()}}{
 Create the graph for the auto.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoCatboost$graph(task, measure, n_threads, timeout, devices)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AutoCatboost$graph(task, measure, n_threads, timeout, devices, pv)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -72,6 +73,9 @@ Create the graph for the auto.
 Devices to use.
 Allowed values are \code{"cpu"} and \code{"cuda"}.
 Default is "cpu".}
+
+\item{\code{pv}}{(\code{list})\cr
+Parameter values.}
 }
 \if{html}{\out{</div>}}
 }
@@ -108,6 +112,29 @@ Get the internal measure for the auto.
 \item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
 
 \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AutoCatboost-final_graph"></a>}}
+\if{latex}{\out{\hypertarget{method-AutoCatboost-final_graph}{}}}
+\subsection{Method \code{final_graph()}}{
+Modify the graph for the final model.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AutoCatboost$final_graph(graph, task, pv)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{graph}}{(\code{mlr3pipelines::GraphLearner})\cr
+Graph learner.}
+
+\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+
+\item{\code{pv}}{(\code{list})\cr
+Parameter values.}
 }
 \if{html}{\out{</div>}}
 }

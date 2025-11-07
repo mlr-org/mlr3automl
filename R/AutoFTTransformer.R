@@ -1,6 +1,6 @@
 #' @title FTTransformer Auto
 #'
-#' @include mlr_auto.R
+#' @include mlr_auto.R Auto.R
 #'
 #' @description
 #' FTTransformer auto.
@@ -11,6 +11,7 @@
 #' @template param_n_threads
 #' @template param_timeout
 #' @template param_devices
+#' @template param_pv
 #'
 #' @export
 AutoFTTransformer = R6Class("AutoFTTransformer",
@@ -31,7 +32,7 @@ AutoFTTransformer = R6Class("AutoFTTransformer",
 
     #' @description
     #' Create the graph for the auto.
-    graph = function(task, measure, n_threads, timeout, devices) {
+    graph = function(task, measure, n_threads, timeout, devices, pv) {
       assert_task(task)
       assert_measure(measure)
       assert_count(n_threads)

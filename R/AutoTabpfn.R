@@ -1,6 +1,6 @@
 #' @title Tabpfn Auto
 #'
-#' @include mlr_auto.R
+#' @include mlr_auto.R Auto.R
 #'
 #' @description
 #' Tabpfn auto.
@@ -13,6 +13,7 @@
 #' @template param_memory_limit
 #' @template param_large_data_set
 #' @template param_devices
+#' @template param_pv
 #'
 #' @export
 AutoTabpfn = R6Class("AutoTabpfn",
@@ -49,7 +50,7 @@ AutoTabpfn = R6Class("AutoTabpfn",
 
     #' @description
     #' Create the graph for the auto.
-    graph = function(task, measure, n_threads, timeout, devices) {
+    graph = function(task, measure, n_threads, timeout, devices, pv) {
       assert_task(task)
       assert_measure(measure)
       assert_count(n_threads)

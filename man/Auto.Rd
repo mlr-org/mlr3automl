@@ -32,6 +32,7 @@ This class is the base class for all autos.
 \item \href{#method-Auto-design_default}{\code{Auto$design_default()}}
 \item \href{#method-Auto-design_set}{\code{Auto$design_set()}}
 \item \href{#method-Auto-search_space}{\code{Auto$search_space()}}
+\item \href{#method-Auto-final_graph}{\code{Auto$final_graph()}}
 \item \href{#method-Auto-clone}{\code{Auto$clone()}}
 }
 }
@@ -72,7 +73,7 @@ Creates a new instance of this \link[R6:R6Class]{R6} class.
 \subsection{Method \code{check()}}{
 Check if the auto is compatible with the task.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Auto$check(task, memory_limit = Inf, large_data_set = FALSE, devices)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Auto$check(task, memory_limit = Inf, large_data_set = FALSE, devices, pv)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -88,6 +89,9 @@ Check if the auto is compatible with the task.
 Devices to use.
 Allowed values are \code{"cpu"} and \code{"cuda"}.
 Default is "cpu".}
+
+\item{\code{pv}}{(\code{list})\cr
+Parameter values.}
 }
 \if{html}{\out{</div>}}
 }
@@ -98,7 +102,7 @@ Default is "cpu".}
 \subsection{Method \code{graph()}}{
 Create the graph for the auto.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Auto$graph(task, measure, n_threads, timeout, devices)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Auto$graph(task, measure, n_threads, timeout, devices, pv)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -116,6 +120,9 @@ Create the graph for the auto.
 Devices to use.
 Allowed values are \code{"cpu"} and \code{"cuda"}.
 Default is "cpu".}
+
+\item{\code{pv}}{(\code{list})\cr
+Parameter values.}
 }
 \if{html}{\out{</div>}}
 }
@@ -205,6 +212,29 @@ Get the search space for the learner.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Auto-final_graph"></a>}}
+\if{latex}{\out{\hypertarget{method-Auto-final_graph}{}}}
+\subsection{Method \code{final_graph()}}{
+Modify the graph for the final model.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Auto$final_graph(graph, task, pv)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{graph}}{(\code{mlr3pipelines::GraphLearner})\cr
+Graph learner.}
+
+\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+
+\item{\code{pv}}{(\code{list})\cr
+Parameter values.}
 }
 \if{html}{\out{</div>}}
 }

@@ -42,7 +42,7 @@ train_auto = function(self, private, task) {
     error_config("All learners have no hyperparameters to tune. Combine with other learners.")
   }
 
-  branches = map(autos, function(auto) auto$graph(task, pv$measure, n_threads, pv$learner_timeout, pv$devices))
+  branches = map(autos, function(auto) auto$graph(task, pv$measure, n_threads, pv$learner_timeout, pv$devices, pv))
   graph_learner = as_learner(po("branch", options = names(branches)) %>>%
     gunion(unname(branches)) %>>%
     po("unbranch", options = names(branches)), clone = TRUE)
@@ -139,15 +139,13 @@ train_auto = function(self, private, task) {
   # fit final model
   lg$info("Learner '%s' fits final model", self$id)
 
-
   if (length(learners_with_validation)) {
     set_validate(graph_learner, NULL, ids = learners_with_validation)
-    # FIXME: remove this once we have a better way to handle this
-    graph_learner$param_set$values$xgboost.callbacks = NULL
-    graph_learner$param_set$values$lightgbm.callbacks = NULL
   }
+
   graph_learner$param_set$set_values(.values = self$instance$result_learner_param_vals, .insert = FALSE)
   graph_learner$timeout = c(train = Inf, predict = Inf)
+  walk(autos, function(auto) auto$final_graph(graph_learner, task, pv))
   graph_learner$train(task)
 
   list(graph_learner = graph_learner, instance = self$instance)

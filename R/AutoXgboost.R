@@ -1,6 +1,6 @@
 #' @title Xgboost Auto
 #'
-#' @include mlr_auto.R
+#' @include mlr_auto.R Auto.R
 #'
 #' @description
 #' Xgboost auto.
@@ -10,7 +10,12 @@
 #' @template param_measure
 #' @template param_n_threads
 #' @template param_timeout
+#' @template param_memory_limit
+#' @template param_large_data_set
+#' @template param_size
 #' @template param_devices
+#' @template param_pv
+#' @template param_graph
 #'
 #' @export
 AutoXgboost = R6Class("AutoXgboost",
@@ -30,7 +35,7 @@ AutoXgboost = R6Class("AutoXgboost",
 
     #' @description
     #' Create the graph for the auto.
-    graph = function(task, measure, n_threads, timeout, devices) {
+    graph = function(task, measure, n_threads, timeout, devices, pv) {
       assert_task(task)
       assert_measure(measure)
       assert_count(n_threads)
@@ -52,13 +57,19 @@ AutoXgboost = R6Class("AutoXgboost",
         learner$set_values(device = "cuda")
       }
 
-      po("removeconstants", id = "xgboost_removeconstants") %>>%
+      graph = po("removeconstants", id = "xgboost_removeconstants") %>>%
         po("imputeoor", id = "xgboost_imputeoor") %>>%
         po("fixfactors", id = "xgboost_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "xgboost_imputesample") %>>%
         po("encodeimpact", id = "xgboost_encode") %>>%
         po("removeconstants", id = "xgboost_post_removeconstants") %>>%
         learner
+
+      if (task$nrow * task$ncol > pv$large_data_size) {
+        graph = po("subsample", frac = 0.25, stratify = inherits(task, "TaskClassif"), use_groups = FALSE, id = "xgboost_subsample") %>>% graph
+      }
+
+      graph
     },
 
     #' @description
@@ -108,6 +119,14 @@ AutoXgboost = R6Class("AutoXgboost",
           "classif.logloss" = "mlogloss",
           "merror" # default
         )
+      }
+    },
+
+    #' @description
+    #' Modify the graph for the final model.
+    final_graph = function(graph, task, pv) {
+      if (task$nrow * task$ncol > pv$large_data_size) {
+        graph$param_set$set_values(xgboost_subsample.frac = 1, xgboost.callbacks = NULL)
       }
     }
   ),

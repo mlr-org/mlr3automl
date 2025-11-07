@@ -1,6 +1,6 @@
 #' @title Lightgbm Auto
 #'
-#' @include mlr_auto.R
+#' @include mlr_auto.R Auto.R
 #'
 #' @description
 #' Lightgbm auto.
@@ -10,7 +10,12 @@
 #' @template param_measure
 #' @template param_n_threads
 #' @template param_timeout
+#' @template param_memory_limit
+#' @template param_large_data_set
+#' @template param_size
 #' @template param_devices
+#' @template param_pv
+#' @template param_graph
 #'
 #' @export
 AutoLightgbm = R6Class("AutoLightgbm",
@@ -30,7 +35,7 @@ AutoLightgbm = R6Class("AutoLightgbm",
 
     #' @description
     #' Create the graph for the auto.
-    graph = function(task, measure, n_threads, timeout, devices) {
+    graph = function(task, measure, n_threads, timeout, devices, pv) {
       assert_task(task)
       assert_measure(measure)
       assert_count(n_threads)
@@ -41,15 +46,19 @@ AutoLightgbm = R6Class("AutoLightgbm",
 
       device_type = if ("cuda" %in% devices) "gpu" else "cpu"
 
-      learner = lrn(sprintf("%s.lightgbm", task$task_type),
+      graph = lrn(sprintf("%s.lightgbm", task$task_type),
         id = "lightgbm",
         early_stopping_rounds = self$early_stopping_rounds(task),
         callbacks = list(cb_timeout_lightgbm(timeout * 0.9)),
         eval = self$internal_measure(measure, task),
         device_type = device_type)
-      set_threads(learner, n_threads)
+      set_threads(graph, n_threads)
 
-      learner
+      if (task$nrow * task$ncol > pv$large_data_size) {
+        graph = po("subsample", frac = 0.25, stratify = inherits(task, "TaskClassif"), use_groups = FALSE, id = "lightgbm_subsample") %>>% graph
+      }
+
+      graph
     },
 
     #' @description
@@ -96,6 +105,14 @@ AutoLightgbm = R6Class("AutoLightgbm",
           "classif.mauc_mu" = "auc_mu",
           "classif.logloss" = "multi_logloss",
           "multi_error") # default
+      }
+    },
+
+    #' @description
+    #' Modify the graph for the final model.
+    final_graph = function(graph, task, pv) {
+      if (task$nrow * task$ncol > pv$large_data_size) {
+        graph$param_set$set_values(lightgbm_subsample.frac = 1, lightgbm.callbacks = NULL)
       }
     }
   ),
