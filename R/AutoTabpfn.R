@@ -39,9 +39,12 @@ AutoTabpfn = R6Class("AutoTabpfn",
         lg$info("Remove tabpfn from search space")
         return(FALSE)
       }
-
       if ("cuda" %nin% devices && task$nrow > 1e3) {
         lg$info("Learner '%s' is not compatible with tasks with more than 1,000 rows when using 'cpu' as device", self$id)
+        return(FALSE)
+      }
+      if (task$ncol > 500) {
+        lg$info("Learner '%s' is not compatible with tasks with more than 500 features", self$id)
         return(FALSE)
       }
       super$check(task, memory_limit, large_data_set, devices)
