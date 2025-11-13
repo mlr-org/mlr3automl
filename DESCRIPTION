@@ -2,14 +2,14 @@ Package: mlr3automl
 Title: AutoML extention for 'mlr3'
 Version: 0.0.1
 Authors@R: c(
-    person("Damir", "Pulatov", , "damirpolat@protonmail.com", role = c("cre", "aut")),
-    person("Marc", "Becker", , "marcbecker@posteo.de", role = "aut",
-           comment = c(ORCID = "0000-0002-8115-0400")),
+    person("Marc", "Becker", , "marcbecker@posteo.de", role = c("cre", "aut"),
+        comment = c(ORCID = "0000-0002-8115-0400")),
+    person("Damir", "Pulatov", , "damirpolat@protonmail.com", role = "aut"),
     person("Baisu", "Zhou", , "baisu.zhou@outlook.com", role = "aut")
   )
 Description: Flexible AutoML system for the 'mlr3' ecosystem.
 License: LGPL-3
-URL: https://github.com/mlr-org/mlr3automl
+URL: https://github.com/mlr-org/mlr3automl https://mlr3automl.mlr-org.com
 BugReports: https://github.com/mlr-org/mlr3automl/issues
 Depends:
     mlr3 (>= 1.2.0.9000),
@@ -35,6 +35,7 @@ Suggests:
     fastai,
     glmnet,
     kknn,
+    knitr,
     lgr,
     lightgbm,
     MASS,
@@ -42,22 +43,24 @@ Suggests:
     mlr3extralearners,
     mlr3torch (>= 0.3.0.9000),
     mlr3viz,
+    quarto,
     ranger,
     redux,
     reticulate,
+    rmarkdown,
     rpart,
     testthat (>= 3.0.0),
     xgboost
 Remotes:
     catboost/catboost/catboost/R-package,
     eagerai/fastai,
+    mlr-org/bbotk,
     mlr-org/mlr3,
     mlr-org/mlr3extralearners,
     mlr-org/mlr3learners,
     mlr-org/mlr3mbo@so_config_6,
     mlr-org/mlr3torch,
     mlr-org/mlr3tuning,
-    mlr-org/bbotk,
     mlr-org/rush
 Config/testthat/edition: 3
 Config/testthat/parallel: false

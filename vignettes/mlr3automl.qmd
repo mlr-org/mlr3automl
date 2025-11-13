@@ -1,0 +1,217 @@
+---
+title: "mlr3automl"
+format: html
+---
+
+# Introduction
+
+*mlr3automl* is the Automated Machine Learning (AutoML) package of the [mlr3](https://mlr-org.com/) ecosystem.
+
+
+# Benchmark
+
+## Binary Classification
+
+```{r}
+#| echo: false
+library(gt)
+library(data.table)
+
+tab = fread("/home/marc/repositories/mlr3automl/vignettes/binary.csv")
+
+gt(tab) %>%
+  fmt_number(
+    columns = c("auc_automl", "auc_autogluon", "auc_autosklearn", "auc_ranger", "auc_nsrb_catboost", "auc_nsrb_xgboost", "auc_nsrb_lightgbm"),
+    decimals = 2
+  ) %>%
+  fmt_percent(
+    columns = "error_rate",
+    decimals = 0
+  ) %>%
+  fmt_integer(
+    columns = c("n", "instances", "features")
+  ) %>%
+   tab_style(
+    style = list(
+      cell_fill(color = "#90ee90")
+      ),
+    locations = cells_body(
+      columns = auc_autogluon,
+      rows = auc_autogluon > auc_automl & auc_autogluon > auc_autosklearn & auc_autogluon > auc_ranger
+    )
+   ) %>%
+   tab_style(
+    style = list(
+      cell_fill(color = "#90ee90")
+      ),
+    locations = cells_body(
+      columns = auc_autosklearn,
+      rows = auc_autosklearn > auc_automl & auc_autosklearn > auc_autogluon & auc_autosklearn > auc_ranger
+    )
+   ) %>%
+   tab_style(
+    style = list(
+      cell_fill(color = "#90ee90")
+      ),
+    locations = cells_body(
+      columns = auc_automl,
+      rows = auc_automl > auc_autogluon & auc_automl > auc_autosklearn & auc_automl > auc_ranger
+    )
+  ) %>%
+  tab_style(
+    style = list(
+      cell_fill(color = "#90ee90")
+      ),
+    locations = cells_body(
+      columns = auc_ranger,
+      rows = auc_ranger > auc_automl & auc_ranger > auc_autogluon & auc_ranger > auc_autosklearn
+    )
+  ) %>%
+    tab_style(
+    style = list(
+      cell_fill(color = "#B069DB")
+      ),
+    locations = cells_body(
+      columns = auc_nsrb_catboost,
+      rows = auc_nsrb_catboost > auc_automl & auc_nsrb_catboost > auc_autogluon & auc_nsrb_catboost > auc_autosklearn & auc_nsrb_catboost > auc_ranger
+    )
+  ) %>%
+  tab_style(
+    style = list(
+      cell_fill(color = "#B069DB")
+      ),
+    locations = cells_body(
+      columns = auc_nsrb_xgboost,
+      rows = auc_nsrb_xgboost > auc_automl & auc_nsrb_xgboost > auc_autogluon & auc_nsrb_xgboost > auc_autosklearn & auc_nsrb_xgboost > auc_ranger
+    )
+  ) %>%
+  tab_style(
+    style = list(
+      cell_fill(color = "#B069DB")
+      ),
+    locations = cells_body(
+      columns = auc_nsrb_lightgbm,
+      rows = auc_nsrb_lightgbm > auc_automl & auc_nsrb_lightgbm > auc_autogluon & auc_nsrb_lightgbm > auc_autosklearn & auc_nsrb_lightgbm > auc_ranger
+    )
+  ) %>%
+   cols_label(
+    task_id = "Task",
+    auc_automl = "mlr3automl",
+    auc_autogluon = "AutoGluon",
+    auc_autosklearn = "auto-sklearn",
+    auc_ranger = "ranger",
+    auc_nsrb_catboost = "nsrb catboost",
+    auc_nsrb_xgboost = "nsrb xgboost",
+    auc_nsrb_lightgbm = "nsrb lightgbm",
+    n = "N Evaluations",
+    error_rate = "Error Rate",
+    instances = "Instances",
+    features = "Features",
+   ) %>%
+   cols_hide(
+    columns = c("se_automl", "se_autogluon", "se_autosklearn", "se_ranger", "se_nsrb_catboost", "se_nsrb_xgboost", "se_nsrb_lightgbm")
+   ) %>%
+   tab_spanner(
+    label = md('**nsrb**'),
+    columns = c("auc_nsrb_catboost", "auc_nsrb_xgboost", "auc_nsrb_lightgbm")
+  ) %>%
+  tab_spanner(
+    label = md('**automl**'),
+    columns = c("auc_automl", "auc_autogluon", "auc_autosklearn")
+  ) %>%
+  tab_spanner(
+    label = md('**baseline**'),
+    columns = c("auc_ranger")
+  )
+```
+
+
+## Multiclass Classification
+
+```{r}
+# | echo: false
+library(gt)
+library(data.table)
+
+tab = fread("/home/marc/repositories/mlr3automl/vignettes/multiclass.csv")
+
+gt(tab) %>%
+  fmt_number(
+    columns = c("logloss_automl", "logloss_autogluon", "logloss_autosklearn", "logloss_ranger", "logloss_featureless", "logloss_nsrb_catboost", "logloss_nsrb_xgboost", "logloss_nsrb_lightgbm"),
+    decimals = 2
+  ) %>%
+  fmt_percent(
+    columns = "error_rate",
+    decimals = 0
+  ) %>%
+  fmt_integer(
+    columns = c("n", "instances", "features", "classes")
+  ) %>%
+   tab_style(
+    style = list(
+      cell_fill(color = "#90ee90")
+      ),
+    locations = cells_body(
+      columns = logloss_autogluon,
+      rows = logloss_autogluon < logloss_automl & logloss_autogluon < logloss_autosklearn & logloss_autogluon < logloss_ranger
+    )
+   ) %>%
+   tab_style(
+    style = list(
+      cell_fill(color = "#90ee90")
+      ),
+    locations = cells_body(
+      columns = logloss_autosklearn,
+      rows = logloss_autosklearn < logloss_automl & logloss_autosklearn < logloss_autogluon & logloss_autosklearn < logloss_ranger
+    )
+   ) %>%
+   tab_style(
+    style = list(
+      cell_fill(color = "#90ee90")
+      ),
+    locations = cells_body(
+      columns = logloss_automl,
+      rows = logloss_automl < logloss_autogluon & logloss_automl < logloss_autosklearn & logloss_automl < logloss_ranger
+    )
+  ) %>%
+  tab_style(
+    style = list(
+      cell_fill(color = "#90ee90")
+      ),
+    locations = cells_body(
+      columns = logloss_ranger,
+      rows = logloss_ranger < logloss_automl & logloss_ranger < logloss_autogluon & logloss_ranger < logloss_autosklearn
+    )
+  ) %>%
+   cols_label(
+    task_id = "Task",
+    logloss_automl = "mlr3automl",
+    logloss_autogluon = "AutoGluon",
+    logloss_autosklearn = "auto-sklearn",
+    logloss_ranger = "ranger",
+    logloss_nsrb_catboost = "nsrb catboost",
+    logloss_nsrb_xgboost = "nsrb xgboost",
+    logloss_nsrb_lightgbm = "nsrb lightgbm",
+    logloss_featureless = "featureless",
+    n = "N Evaluations",
+    error_rate = "Error Rate",
+    instances = "Instances",
+    features = "Features",
+    classes = "Classes",
+   ) %>%
+   cols_hide(
+    columns = c("se_automl", "se_autogluon", "se_autosklearn", "se_ranger", "se_featureless", "se_nsrb_catboost", "se_nsrb_xgboost", "se_nsrb_lightgbm")
+   ) %>%
+   tab_spanner(
+    label = md('**nsrb**'),
+    columns = c("logloss_nsrb_catboost", "logloss_nsrb_xgboost", "logloss_nsrb_lightgbm")
+  ) %>%
+  tab_spanner(
+    label = md('**automl**'),
+    columns = c("logloss_automl", "logloss_autogluon", "logloss_autosklearn")
+  ) %>%
+  tab_spanner(
+    label = md('**baseline**'),
+    columns = c("logloss_ranger", "logloss_featureless")
+  )
+```
