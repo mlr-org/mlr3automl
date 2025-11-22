@@ -18,7 +18,7 @@ load_callback_initial_design_runtime = function() {
         start_time = context$instance$archive$start_time
         runtime_limit = context$instance$terminator$param_set$values$secs
 
-        if (difftime(Sys.time(), start_time, units = "secs") > runtime_limit * callback$state$initial_design_fraction) {
+        if (difftime(Sys.time(), start_time, units = "secs") > runtime_limit * callback$state$initial_design_fraction && context$instance$archive$n_evals > 10L) {
           lg = lgr::get_logger("mlr3/rush")
           lg$info("Initial design runtime limit reached")
           context$instance$rush$empty_queue()

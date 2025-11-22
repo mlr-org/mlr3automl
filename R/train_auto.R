@@ -67,7 +67,10 @@ train_auto = function(self, private, task) {
   # initialize search space
   search_space = combine_search_spaces(autos, task)
 
-  callbacks = c(pv$callbacks, clbk("mlr3tuning.async_save_logs"), clbk("mlr3automl.initial_design_runtime", initial_design_fraction = pv$initial_design_fraction))
+  callbacks = c(
+    pv$callbacks,
+    clbk("mlr3tuning.async_save_logs"),
+    clbk("mlr3automl.initial_design_runtime", initial_design_fraction = pv$initial_design_fraction))
 
   # tuning instance
   self$instance = ti_async(
@@ -110,7 +113,7 @@ train_auto = function(self, private, task) {
   # configure tuner
   learner = lrn("regr.ranger",
     num.trees = 500L,
-    se.method = "jack",
+    se.method = "law_of_total_variance",
     splitrule = "variance",
     predict_type = "se",
     keep.inbag = TRUE,
@@ -121,6 +124,7 @@ train_auto = function(self, private, task) {
   )
 
   tuner$surrogate =  srlrn(learner)
+  tuner$surrogate$output_trafo = OutputTrafoLog$new()
   tuner$surrogate$param_set$set_values(catch_errors = pv$encapsulate_mbo)
 
   if (!pv$encapsulate_mbo) {
@@ -128,9 +132,9 @@ train_auto = function(self, private, task) {
   }
 
   budget = 100L * search_space$length^2
-  tuner$acq_function = acqf("stochastic_cb", lambda = 1.96, rate = 0.1, period = 25L)
+  tuner$acq_function = acqf("stochastic_cb", lambda = 3)
   tuner$acq_optimizer = AcqOptimizerLocalSearch$new()
-  tuner$acq_optimizer$param_set$set_values(n_searches = 10L, n_steps = ceiling(budget / 300L), n_neighs = 30L) #  catch_errors = pv$encapsulate_mbo
+  tuner$acq_optimizer$param_set$set_values(n_searches = 10L, n_steps = ceiling(budget / 300L), n_neighs = 30L, catch_errors = pv$encapsulate_mbo)
 
   # tune
   lg$info("Learner '%s' starts tuning phase", self$id)

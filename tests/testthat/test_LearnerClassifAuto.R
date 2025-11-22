@@ -51,7 +51,7 @@ test_that("all learner on cpu work", {
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 20),
-    initial_design_size = 30,
+    initial_design_size = 10,
     initial_design_type = "sobol",
     encapsulate_learner = FALSE,
     encapsulate_mbo = FALSE

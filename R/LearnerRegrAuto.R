@@ -47,7 +47,7 @@ LearnerRegrAuto = R6Class("LearnerRegrAuto",
         initial_design_set = p_int(lower = 0L, init = 0L, tags = c("train", "super")),
         initial_design_type = p_fct(init = "sobol", levels = c("lhs", "sobol", "random"), tags = c("train", "super")),
         initial_design_size = p_int(lower = 0L, init = 256L, tags = c("train", "super")),
-        initial_design_fraction = p_dbl(lower = 0.1, upper = 0.9, init = 0.25, tags = c("train", "super")),
+        initial_design_fraction = p_dbl(lower = 0.05, upper = 0.9, init = 0.05, tags = c("train", "super")),
         # tuner
         resampling = p_uty(init = rsmp("holdout"), tags = c("train", "super")),
         terminator = p_uty(init = trm("run_time", secs = 3600), tags = c("train", "super")),
