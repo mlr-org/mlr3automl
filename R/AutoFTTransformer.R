@@ -99,7 +99,24 @@ AutoFTTransformer = R6Class("AutoFTTransformer",
     #' @description
     #' Estimate the memory for the auto.
     estimate_memory = function(task) {
-      memory_size = task$nrow * task$ncol * 8 * 10 / 1e6
+      nrow = task$nrow
+      nfeatures = task$n_features
+      d_token = private$.search_space$upper[["ft_transformer.d_token"]]
+      ffn_d_hidden_multiplier = private$.search_space$upper[["ft_transformer.ffn_d_hidden_multiplier"]]
+      
+      baseline = 6.54
+      b_nrow = 1.41e-06
+      b_nfeatures =  0.0004
+      b_d_token = 0.0013
+      b_ffn_d_hidden_multiplier = 0.11
+      
+      memory_size = exp(baseline +
+                     b_nrow * nrow +
+                     b_nfeatures * nfeatures +
+                     b_d_token * d_token +
+                     b_ffn_d_hidden_multiplier * ffn_d_hidden_multiplier)
+      
+      memory_size = memory_size * 1.3
       lg$info("FTTransformer memory size: %s MB", round(memory_size))
       ceiling(memory_size)
     }

@@ -63,7 +63,17 @@ AutoMlp = R6Class("AutoMlp",
     #' @description
     #' Estimate the memory for the auto.
     estimate_memory = function(task) {
-      memory_size = task$nrow * task$ncol * 8 * 10 / 1e6
+      nrow = task$nrow
+      n_layers = private$.search_space$upper[["mlp.n_layers"]]
+      neurons = private$.search_space$upper[["mlp.neurons"]]
+      
+      baseline = 6.43
+      b_nrow = 2e-07
+      b_n_layers =  0.0053
+      b_neurons =  0.003
+      
+      memory_size = exp(baseline + (nrow * b_nrow) + (n_layers * b_n_layers) + (neurons * b_neurons)) # gamma model
+      memory_size = memory_size * 1.3  # scale by 30% to over-predict memory size in most cases
       lg$info("Mlp memory size: %s MB", round(memory_size))
       ceiling(memory_size)
     }
