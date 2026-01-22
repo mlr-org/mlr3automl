@@ -101,9 +101,11 @@ ggplot(param_grid, aes(y = real_mib, x = log(n_layers, base = 2))) + geom_point(
 # Fit linear model (and log scale? Grid is on log scale ...) ####
 
 # correlation matrix
-all_res %>% 
+corr_matrix =  all_res %>% 
   select(nrow, nfeatures, n_layers, neurons, epochs, p, opt_lr, opt_weight_decay, real_mib) %>%
   GGally::ggpairs()
+corr_matrix
+ggsave(filename = "memory_experiments/Mlp/corr_matrix_mlp.png", plot = corr_matrix, width = 20, height = 10)
 # - very small correlation with mib:  nfeatures, epochs, p, opt_lr, opt_weight_decay
 # - high correlations (interactions!): nrow * nfeatures
 
@@ -124,14 +126,47 @@ lm2_grid_log = lm(log(real_mib) ~ log(nrow) + log(n_layers) + log(neurons), data
 # glm_gamma = glm(real_mib ~ nrow + n_layers + neurons, data = param_grid, family = Gamma(link = "log"))
 glm_gamma = glm(rss_mib ~ nrow + n_layers + neurons, data = param_grid, family = Gamma(link = "log"))
 
-
 # Gamma model makes more sense and has better AIC than regular LM
-
 summary(lm1)
 summary(lm2)
 summary(lm2_grid)
 summary(glm_gamma)
 
+# plot predictions (on training data) as a sanity check
+prds = predict(glm_gamma, data = param_grid, type = "response")
+
+df_plot = data.frame(
+  real = param_grid$rss_mib,
+  pred_raw = prds,
+  pred_scaled = 1.3 * prds
+) %>%
+  pivot_longer(
+    cols = c(pred_raw, pred_scaled),
+    names_to = "version",
+    values_to = "pred"
+  ) %>%
+  mutate(
+    version = recode(version,
+                     pred_raw = "Model predictions",
+                     pred_scaled = "Predictions scaled by 130%")
+  )
+
+scale_prds = ggplot(data = df_plot, aes(x = real, y = pred)) +
+  geom_point() +
+  geom_abline(slope = 1, color = "red") + # perfect prediction
+  facet_wrap(~version) +
+  annotate(
+    "text",
+    x = Inf, y = Inf,
+    label = "Perfect\nprediction",
+    color = "red",
+    hjust = 1.1, vjust = 2,
+    size = 3
+  ) +
+  theme_bw() + 
+  labs(title = "Memory usage prediction for MLP", x = "real memory usage", y = "predicted memory usage")
+scale_prds
+ggsave(filename = "memory_experiments/Mlp/prds_vs_real.png", width = 9, height = 5)
 
 # prediction function ####
 r_session = 500
@@ -139,8 +174,6 @@ baseline = (glm_gamma$coefficients[[1]])
 b_nrow = (glm_gamma$coefficients[[2]])
 b_n_layers = (glm_gamma$coefficients[[3]])
 b_neurons = (glm_gamma$coefficients[[4]])
-
-
 
 estimate_memory = function(nrow, n_layers, neurons) {
   

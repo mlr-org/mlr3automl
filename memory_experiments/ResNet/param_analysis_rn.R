@@ -81,9 +81,11 @@ res_fun(param_grid |> mutate(real_mib = rss_mib), "d_hidden_multiplier")  # litt
 # descriptive plots (for model specification) ####
 
 # correlation plot
-all_res %>% 
+corr_matrix = all_res %>% 
   select(nrow, nfeatures, n_blocks, d_block, d_hidden_multiplier, dropout1, dropout2, lr, weight_decay, epochs, rss_mib) %>%
   GGally::ggpairs()
+corr_matrix
+ggsave(filename = "memory_experiments/ResNet/corr_matrix.png", width = 20, height = 10)
 # - correlation with mib: nrow, nfeatures, d_block, d_hidden_multiplier
 # - high correlation between  d_block and d_hidden_multiplier
 
@@ -108,11 +110,40 @@ plot(glm_gamma2)
 # plot predictions (on training data) as a sanity check
 prds = predict(glm_gamma2, data = param_grid, type = "response")
 
-ggplot(data = data.frame(x = param_grid$rss_mib, y = prds), aes(x, y)) +
-  geom_point() + geom_abline(slope = 1, color = "red")
-ggplot(data = data.frame(x = param_grid$rss_mib, y = 1.2 * prds), aes(x, y)) +
-  geom_point() + geom_abline(slope = 1, color = "red")
-# scaling by 1.3 overpredicts in most cases -> scale by 1.2 for safety
+df_plot = data.frame(
+  real = param_grid$rss_mib,
+  pred_raw = prds,
+  pred_scaled = 1.2 * prds
+) %>%
+  pivot_longer(
+    cols = c(pred_raw, pred_scaled),
+    names_to = "version",
+    values_to = "pred"
+  ) %>%
+  mutate(
+    version = recode(version,
+                     pred_raw = "Model predictions",
+                     pred_scaled = "Predictions scaled by 120%")
+  )
+
+scale_prds = ggplot(data = df_plot, aes(x = real, y = pred)) +
+  geom_point() +
+  geom_abline(slope = 1, color = "red") + # perfect prediction
+  facet_wrap(~version) +
+  annotate(
+    "text",
+    x = Inf, y = Inf,
+    label = "Perfect\nprediction",
+    color = "red",
+    hjust = 1.1, vjust = 2,
+    size = 3
+  ) +
+  theme_bw() + 
+  labs(title = "Memory usage prediction for ResNet", x = "real memory usage", y = "predicted memory usage")
+scale_prds
+ggsave(filename = "memory_experiments/ResNet/prds_vs_real.png", width = 9, height = 5)
+
+# scaling by 1.2 overpredicts in most cases -> scale by 1.2 for safety
 
 
 # prediction function ####
@@ -135,7 +166,7 @@ estimate_memory = function(nrow, d_block, d_hidden_multiplier ) {
                  b_d_hidden_multiplier * d_hidden_multiplier)
   # gamma model
   
-  ceiling(memory * 1.2)  # scale by 30% to be save
+  ceiling(memory * 1.2)  # scale by 20% to be save
 } 
 
 

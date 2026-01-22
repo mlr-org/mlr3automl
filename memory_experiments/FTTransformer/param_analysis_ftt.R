@@ -86,14 +86,18 @@ token %>% select(d_token, ffn_d_hidden_multiplier, rss_mib, real_mib) %>% mutate
 ## see for parameter grid
 print(res_fun(param_grid |> mutate(real_mib = rss_mib), "nrow"), n = 50)
 res_fun(param_grid |> mutate(real_mib = rss_mib), "nfeatures")
-res_fun(param_grid |> mutate(real_mib = rss_mib), "neurons")
+res_fun(param_grid |> mutate(real_mib = rss_mib), "d_token")
+res_fun(param_grid |> mutate(real_mib = rss_mib), "ffn_d_hidden_multiplier")
 
 # descriptive plots (for model specification) ####
 
 # correlation plot
-all_res %>% 
+corr_matrix = all_res %>% 
   select(nrow, nfeatures, n_blocks, d_token, ffn_d_hidden_multiplier, residual_dropout, attention_dropout, ffn_dropout, lr, weight_decay, epochs, rss_mib) %>%
   GGally::ggpairs()
+corr_matrix
+ggsave(filename = "memory_experiments/FTTransformer/corr_matrix.png", width = 20, height = 10)
+
 # - correlation with mib: nrow, nfeatures, d_token, ffn_d_hidden_multiplier
 # - high correlation between d_token and ffn_d_hidden_multiplier
 # - some correlation between nrow and nfeatures
@@ -123,11 +127,39 @@ glm_gamma = glm(rss_mib ~ nrow + nfeatures + d_token + ffn_d_hidden_multiplier, 
 
 # plot predictions (on training data) as a sanity check
 prds = predict(glm_gamma, data = param_grid, type = "response")
+df_plot = data.frame(
+  real = param_grid$rss_mib,
+  pred_raw = prds,
+  pred_scaled = 1.3 * prds
+) %>%
+  pivot_longer(
+    cols = c(pred_raw, pred_scaled),
+    names_to = "version",
+    values_to = "pred"
+  ) %>%
+  mutate(
+    version = recode(version,
+                     pred_raw = "Model predictions",
+                     pred_scaled = "Predictions scaled by 130%")
+  )
 
-ggplot(data = data.frame(x = param_grid$rss_mib, y = prds), aes(x, y)) +
-  geom_point() + geom_abline(slope = 1, color = "red")
-ggplot(data = data.frame(x = param_grid$rss_mib, y = 1.3* prds), aes(x, y)) +
-  geom_point() + geom_abline(slope = 1, color = "red")
+scale_prds = ggplot(data = df_plot, aes(x = real, y = pred)) +
+  geom_point() +
+  geom_abline(slope = 1, color = "red") + # perfect prediction
+  facet_wrap(~version) +
+  annotate(
+    "text",
+    x = Inf, y = Inf,
+    label = "Perfect\nprediction",
+    color = "red",
+    hjust = 1.1, vjust = 2,
+    size = 3
+  ) +
+  theme_bw() + 
+  labs(title = "Memory usage prediction for FTTransformer", x = "real memory usage", y = "predicted memory usage")
+scale_prds
+ggsave(filename = "memory_experiments/FTTransformer/prds_vs_real.png", width = 9, height = 5)
+
 # scaling by 1.3 overpredicts in most cases -> scale by 1.3 for safety
 
 
