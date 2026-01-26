@@ -62,10 +62,25 @@ AutoResNet = R6Class("AutoResNet",
     #' @description
     #' Estimate the memory for the auto.
     estimate_memory = function(task) {
-      memory_size = task$nrow * task$ncol * 8 * 10 / 1e6
+      nrow = task$nrow
+      d_block = private$.search_space$upper[["resnet.d_block"]]
+      d_hidden_multiplier = private$.search_space$upper[["resnet.d_hidden_multiplier"]]
+      
+      baseline = 6.56
+      b_nrow = 8.35e-07
+      b_d_block = 0.00046
+      b_d_hidden_multiplier = 0.034
+      
+      memory_size = exp(baseline +
+                     b_nrow * nrow +
+                     b_d_block * d_block +
+                     b_d_hidden_multiplier * d_hidden_multiplier)
+      
+      memory_size = memory_size * 1.2  # scale by 20% to be save
       lg$info("ResNet memory size: %s MB", round(memory_size))
       ceiling(memory_size)
     }
+    
   ),
 
   private = list(
