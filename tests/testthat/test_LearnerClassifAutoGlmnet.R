@@ -8,7 +8,8 @@ test_that("LearnerClassifAutoGlmnet works", {
   mirai::daemons(2)
 
   task = tsk("penguins")
-  learner = lrn("classif.auto_glmnet",
+  learner = lrn(
+    "classif.auto_glmnet",
     small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),

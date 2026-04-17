@@ -6,10 +6,10 @@
 #' @template param_id
 #'
 #' @export
-LearnerRegrAutoXgboost = R6Class("LearnerRegrAutoXgboost",
+LearnerRegrAutoXgboost = R6Class(
+  "LearnerRegrAutoXgboost",
   inherit = LearnerRegrAuto,
   public = list(
-
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "regr.auto_xgboost") {
@@ -20,5 +20,3 @@ LearnerRegrAutoXgboost = R6Class("LearnerRegrAutoXgboost",
 
 #' @include aaa.R
 learners[["regr.auto_xgboost"]] = LearnerRegrAutoXgboost
-
-

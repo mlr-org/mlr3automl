@@ -8,7 +8,8 @@ test_that("LearnerRegrAutoCatboost works", {
   mirai::daemons(2)
 
   task = tsk("mtcars")
-  learner = lrn("regr.auto_catboost",
+  learner = lrn(
+    "regr.auto_catboost",
     small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("regr.rmse"),

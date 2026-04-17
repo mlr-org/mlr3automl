@@ -6,10 +6,11 @@
 #' @template param_id
 #'
 #' @export
-LearnerClassifAutoFTTransformer = R6Class("LearnerClassifAutoFTTransformer",
+# nolint next: object_length_linter
+LearnerClassifAutoFTTransformer = R6Class(
+  "LearnerClassifAutoFTTransformer",
   inherit = LearnerClassifAuto,
   public = list(
-
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "classif.auto_ft_transformer") {
@@ -20,5 +21,3 @@ LearnerClassifAutoFTTransformer = R6Class("LearnerClassifAutoFTTransformer",
 
 #' @include aaa.R
 learners[["classif.auto_ft_transformer"]] = LearnerClassifAutoFTTransformer
-
-

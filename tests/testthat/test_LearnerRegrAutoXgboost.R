@@ -8,7 +8,8 @@ test_that("LearnerRegrAutoXgboost works", {
   mirai::daemons(2)
 
   task = tsk("mtcars")
-  learner = lrn("regr.auto_xgboost",
+  learner = lrn(
+    "regr.auto_xgboost",
     small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("regr.rmse"),
@@ -22,5 +23,3 @@ test_that("LearnerRegrAutoXgboost works", {
 
   expect_class(learner$train(task), "LearnerRegrAutoXgboost")
 })
-
-

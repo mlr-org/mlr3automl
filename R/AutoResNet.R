@@ -13,14 +13,15 @@
 #' @template param_devices
 #'
 #' @export
-AutoResNet = R6Class("AutoResNet",
+AutoResNet = R6Class(
+  "AutoResNet",
   inherit = Auto,
   public = list(
-
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "resnet") {
-      super$initialize(id = id,
+      super$initialize(
+        id = id,
         properties = "internal_tuning",
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3torch"),
@@ -41,12 +42,13 @@ AutoResNet = R6Class("AutoResNet",
 
       device = if ("cuda" %in% devices) "cuda" else "auto"
 
-      learner = lrn(sprintf("%s.tab_resnet", task$task_type),
-       id = "resnet",
-       measures_valid = measure,
-       patience = self$early_stopping_rounds(task),
-       batch_size = 32L,
-       device = device
+      learner = lrn(
+        sprintf("%s.tab_resnet", task$task_type),
+        id = "resnet",
+        measures_valid = measure,
+        patience = self$early_stopping_rounds(task),
+        batch_size = 32L,
+        device = device
       )
       set_threads(learner, n_threads)
 
@@ -69,6 +71,7 @@ AutoResNet = R6Class("AutoResNet",
   ),
 
   private = list(
+    # nolint start: indentation_linter, line_length_linter
     .search_space = ps(
         resnet.n_blocks            = p_int(1, 16),
         resnet.d_block             = p_int(64, 1024),
@@ -79,6 +82,7 @@ AutoResNet = R6Class("AutoResNet",
         resnet.opt.weight_decay    = p_dbl(1e-6, 1e-3, logscale = TRUE),
         resnet.epochs              = p_int(1L, 100L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
     ),
+    # nolint end
 
     .default_values = list(
       resnet.n_blocks = 4L,

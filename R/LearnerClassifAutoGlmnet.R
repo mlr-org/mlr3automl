@@ -6,10 +6,10 @@
 #' @template param_id
 #'
 #' @export
-LearnerClassifAutoGlmnet = R6Class("LearnerClassifAutoGlmnet",
+LearnerClassifAutoGlmnet = R6Class(
+  "LearnerClassifAutoGlmnet",
   inherit = LearnerClassifAuto,
   public = list(
-
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "classif.auto_glmnet") {

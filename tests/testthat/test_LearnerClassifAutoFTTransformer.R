@@ -20,7 +20,8 @@ test_that("LearnerClassifAutoFTTransformer works", {
     task = tsk("penguins")
     task$filter(c(1, 153, 277))
 
-    learner = lrn("classif.auto_ft_transformer",
+    learner = lrn(
+      "classif.auto_ft_transformer",
       small_data_size = 1,
       resampling = rsmp("holdout"),
       measure = msr("classif.ce"),
@@ -29,11 +30,10 @@ test_that("LearnerClassifAutoFTTransformer works", {
       initial_design_size = 2,
       encapsulate_learner = FALSE,
       encapsulate_mbo = FALSE,
-      check_learners = FALSE)
+      check_learners = FALSE
+    )
 
     expect_class(learner$train(task), "LearnerClassifAutoFTTransformer")
     TRUE
   }))
 })
-
-

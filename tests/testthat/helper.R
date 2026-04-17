@@ -6,7 +6,10 @@ library(paradox)
 library(R6)
 
 lapply(list.files(system.file("testthat", package = "mlr3"), pattern = "^helper.*\\.[rR]", full.names = TRUE), source)
-lapply(list.files(system.file("testthat", package = "mlr3tuning"), pattern = "^helper.*\\.[rR]", full.names = TRUE), source)
+lapply(
+  list.files(system.file("testthat", package = "mlr3tuning"), pattern = "^helper.*\\.[rR]", full.names = TRUE),
+  source
+)
 
 flush_redis = function() {
   config = redux::redis_config()
@@ -32,7 +35,7 @@ test_classif_learner = function(
   n_evals = 4,
   task = NULL,
   check_learners = TRUE
-  ) {
+) {
   skip_on_cran()
   skip_if_not_installed(unlist(map(mlr_auto$mget(learner_id), "packages")))
   skip_if_not_installed("rush")
@@ -42,7 +45,8 @@ test_classif_learner = function(
   mirai::daemons(2)
 
   task = if (is.null(task)) tsk("penguins") else task
-  learner = lrn("classif.auto",
+  learner = lrn(
+    "classif.auto",
     learner_ids = learner_id,
     small_data_size = 1,
     resampling = rsmp("holdout"),
@@ -69,7 +73,7 @@ test_regr_learner = function(
   n_evals = 4,
   task = NULL,
   check_learners = TRUE
-  ) {
+) {
   skip_on_cran()
   skip_if_not_installed(unlist(map(mlr_auto$mget(learner_id), "packages")))
   skip_if_not_installed("rush")
@@ -79,7 +83,8 @@ test_regr_learner = function(
   mirai::daemons(2)
 
   task = if (is.null(task)) tsk("mtcars") else task
-  learner = lrn("regr.auto",
+  learner = lrn(
+    "regr.auto",
     learner_ids = learner_id,
     small_data_size = 1,
     resampling = rsmp("holdout"),
@@ -99,4 +104,4 @@ test_regr_learner = function(
   learner
 }
 
-all_packages = c("glmnet", "kknn", "ranger", "e1071", "xgboost", "catboost","lightgbm", "fastai", "mlr3torch")
+all_packages = c("glmnet", "kknn", "ranger", "e1071", "xgboost", "catboost", "lightgbm", "fastai", "mlr3torch")

@@ -6,10 +6,10 @@
 #' @template param_id
 #'
 #' @export
-LearnerClassifAutoRanger = R6Class("LearnerClassifAutoRanger",
+LearnerClassifAutoRanger = R6Class(
+  "LearnerClassifAutoRanger",
   inherit = LearnerClassifAuto,
   public = list(
-
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "classif.auto_ranger") {

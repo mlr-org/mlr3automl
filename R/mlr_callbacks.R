@@ -9,8 +9,10 @@
 #' clbk("mlr3automl.initial_design_runtime")
 NULL
 
+# nolint next: object_length_linter
 load_callback_initial_design_runtime = function() {
-  callback_async_tuning("mlr3automl.initial_design_runtime",
+  callback_async_tuning(
+    "mlr3automl.initial_design_runtime",
     label = "Initial Design Runtime Limit Callback",
     man = "mlr3automl::mlr3automl.initial_design_runtime",
     on_optimizer_queue_after_eval = function(callback, context) {

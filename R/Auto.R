@@ -16,9 +16,9 @@
 #' @template param_devices
 #'
 #' @export
-Auto = R6Class("Auto",
+Auto = R6Class(
+  "Auto",
   public = list(
-
     #' @field id (`character(1)`).
     id = NULL,
 
@@ -42,12 +42,13 @@ Auto = R6Class("Auto",
     #' @param task_types (`character()`).
     #' @param packages (`character()`).
     #' @param devices (`character()`).
-    initialize = function(id,
+    initialize = function(
+      id,
       properties = character(0),
       task_types = character(0),
       packages = character(0),
       devices = character(0)
-      ) {
+    ) {
       self$id = assert_string(id)
       self$properties = assert_character(properties)
       self$task_types = assert_character(task_types)
@@ -59,8 +60,8 @@ Auto = R6Class("Auto",
     #' Check if the auto is compatible with the task.
     check = function(task, memory_limit = Inf, large_data_set = FALSE, devices) {
       if (!task$task_type %in% self$task_types) {
-       lg$info("Learner '%s' is not compatible with task type '%s'", self$id, task$task_type)
-       return(FALSE)
+        lg$info("Learner '%s' is not compatible with task type '%s'", self$id, task$task_type)
+        return(FALSE)
       }
       if (self$estimate_memory(task) > memory_limit) {
         lg$info("Learner '%s' violates the memory limit of %i MB", self$id, ceiling(memory_limit))
@@ -90,7 +91,9 @@ Auto = R6Class("Auto",
       min_early_stopping_rounds = 20L
       max_early_stopping_rounds = 200L
 
-      if (task$nrow < 1e4) return(max_early_stopping_rounds)
+      if (task$nrow < 1e4) {
+        return(max_early_stopping_rounds)
+      }
 
       floor((max(min_early_stopping_rounds, 1e4 / task$nrow * max_early_stopping_rounds)))
     },
@@ -162,4 +165,3 @@ Auto = R6Class("Auto",
     .default_values = list()
   )
 )
-

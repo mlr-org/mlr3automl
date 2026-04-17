@@ -21,7 +21,8 @@ test_that("LearnerClassifAutoTabpfn works", {
     task = tsk("penguins")
     task$filter(c(1, 153, 277))
 
-    learner = lrn("classif.auto_tabpfn",
+    learner = lrn(
+      "classif.auto_tabpfn",
       small_data_size = 1,
       resampling = rsmp("holdout"),
       measure = msr("classif.ce"),
@@ -30,10 +31,9 @@ test_that("LearnerClassifAutoTabpfn works", {
       initial_design_size = 2,
       encapsulate_learner = FALSE,
       encapsulate_mbo = FALSE,
-      check_learners = TRUE)
+      check_learners = TRUE
+    )
 
     expect_class(learner$train(task), "LearnerClassifAutoTabPFN")
   }))
 })
-
-

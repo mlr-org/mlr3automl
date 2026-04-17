@@ -1,14 +1,15 @@
 test_that("LearnerRegrAuto is initialized", {
-  learner = lrn("regr.auto",
-    measure = msr("regr.rmse"),
-    terminator = trm("evals", n_evals = 10))
+  learner = lrn("regr.auto", measure = msr("regr.rmse"), terminator = trm("evals", n_evals = 10))
 
   expect_learner(learner, task = tsk("california_housing"))
 })
 
 test_that("all learner on cpu work", {
   skip_on_cran()
-  skip_if_not_installed(unlist(map(mlr_auto$mget(c("catboost", "glmnet", "lightgbm", "ranger", "svm", "xgboost", "extra_trees")), "packages")))
+  skip_if_not_installed(unlist(map(
+    mlr_auto$mget(c("catboost", "glmnet", "lightgbm", "ranger", "svm", "xgboost", "extra_trees")),
+    "packages"
+  )))
   skip_if_not_installed("rush")
   flush_redis()
 
@@ -16,7 +17,8 @@ test_that("all learner on cpu work", {
   mirai::daemons(2)
 
   task = tsk("mtcars")
-  learner = lrn("regr.auto",
+  learner = lrn(
+    "regr.auto",
     learner_ids = c("catboost", "glmnet", "lightgbm", "ranger", "svm", "xgboost", "extra_trees"),
     small_data_size = 1,
     resampling = rsmp("holdout"),
@@ -30,5 +32,8 @@ test_that("all learner on cpu work", {
   )
 
   expect_class(learner$train(task), "LearnerRegrAuto")
-  expect_set_equal(learner$model$instance$archive$data$branch.selection, c("catboost", "glmnet", "lightgbm", "ranger", "svm", "xgboost", "extra_trees"))
+  expect_set_equal(
+    learner$model$instance$archive$data$branch.selection,
+    c("catboost", "glmnet", "lightgbm", "ranger", "svm", "xgboost", "extra_trees")
+  )
 })

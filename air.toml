@@ -8,3 +8,4 @@ default-exclude = true              # use built-in default exclusions
 
 
 # you can use "exclude" and "skip" to avoid formatting certain globs
+exclude = ["R/bibentries.R"]

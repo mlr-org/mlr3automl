@@ -8,7 +8,8 @@ test_that("LearnerClassifAutoSVM works", {
   mirai::daemons(2)
 
   task = tsk("penguins")
-  learner = lrn("classif.auto_svm",
+  learner = lrn(
+    "classif.auto_svm",
     small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
@@ -22,5 +23,3 @@ test_that("LearnerClassifAutoSVM works", {
 
   expect_class(learner$train(task), "LearnerClassifAutoSVM")
 })
-
-

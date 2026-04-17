@@ -8,7 +8,8 @@ test_that("LearnerRegrAutoRanger works", {
   mirai::daemons(2)
 
   task = tsk("mtcars")
-  learner = lrn("regr.auto_ranger",
+  learner = lrn(
+    "regr.auto_ranger",
     small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("regr.rmse"),
@@ -22,5 +23,3 @@ test_that("LearnerRegrAutoRanger works", {
 
   expect_class(learner$train(task), "LearnerRegrAutoRanger")
 })
-
-

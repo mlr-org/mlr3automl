@@ -19,7 +19,8 @@ test_that("LearnerRegrAutoResNet works", {
 
     task = tsk("mtcars")
 
-    learner = lrn("regr.auto_resnet",
+    learner = lrn(
+      "regr.auto_resnet",
       small_data_size = 1,
       resampling = rsmp("holdout"),
       measure = msr("regr.rmse"),
@@ -28,11 +29,10 @@ test_that("LearnerRegrAutoResNet works", {
       initial_design_size = 2,
       encapsulate_learner = FALSE,
       encapsulate_mbo = FALSE,
-      check_learners = FALSE)
+      check_learners = FALSE
+    )
 
     expect_class(learner$train(task), "LearnerRegrAutoResNet")
     TRUE
   }))
 })
-
-

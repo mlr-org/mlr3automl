@@ -20,7 +20,8 @@ test_that("LearnerClassifAutoResNet works", {
     task = tsk("penguins")
     task$filter(c(1, 153, 277))
 
-    learner = lrn("classif.auto_resnet",
+    learner = lrn(
+      "classif.auto_resnet",
       small_data_size = 1,
       resampling = rsmp("holdout"),
       measure = msr("classif.ce"),
@@ -29,11 +30,10 @@ test_that("LearnerClassifAutoResNet works", {
       initial_design_size = 2,
       encapsulate_learner = FALSE,
       encapsulate_mbo = FALSE,
-      check_learners = FALSE)
+      check_learners = FALSE
+    )
 
     expect_class(learner$train(task), "LearnerClassifAutoResNet")
     TRUE
   }))
 })
-
-

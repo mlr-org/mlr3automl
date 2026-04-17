@@ -13,10 +13,10 @@
 #' @template param_devices
 #'
 #' @export
-AutoFTTransformer = R6Class("AutoFTTransformer",
+AutoFTTransformer = R6Class(
+  "AutoFTTransformer",
   inherit = Auto,
   public = list(
-
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "ft_transformer") {
@@ -40,20 +40,21 @@ AutoFTTransformer = R6Class("AutoFTTransformer",
 
       require_namespaces("mlr3torch")
 
-      device =  if ("cuda" %in% devices) "cuda" else "auto"
+      device = if ("cuda" %in% devices) "cuda" else "auto"
 
       # copied from mlr3tuningspaces
       no_wd = function(name) {
         # this will also disable weight decay for the input projection bias of the attention heads
         no_wd_params = c("_normalization", "bias")
 
-        return(any(map_lgl(no_wd_params, function(pattern) grepl(pattern, name, fixed = TRUE))))
+        any(map_lgl(no_wd_params, function(pattern) grepl(pattern, name, fixed = TRUE)))
       }
 
       rtdl_param_groups = function(parameters) {
         split_param_names = strsplit(names(parameters), ".", fixed = TRUE)
 
         ffn_norm_idx = grepl("ffn_normalization", names(parameters), fixed = TRUE)
+        # nolint next: object_length_linter
         first_ffn_norm_num_in_module_list = as.integer(split_param_names[ffn_norm_idx][[1]][2])
         cls_num_in_module_list = first_ffn_norm_num_in_module_list - 1
         nums_in_module_list = sapply(split_param_names, function(x) as.integer(x[2]))
@@ -75,21 +76,26 @@ AutoFTTransformer = R6Class("AutoFTTransformer",
         )
       }
 
-      learner = lrn(sprintf("%s.ft_transformer", task$task_type),
-       id = "ft_transformer",
-       measures_valid = measure,
-       patience = self$early_stopping_rounds(task),
-       batch_size = 32L,
-       attention_n_heads = 8L,
-       opt.param_groups = rtdl_param_groups,
-       device = device
+      learner = lrn(
+        sprintf("%s.ft_transformer", task$task_type),
+        id = "ft_transformer",
+        measures_valid = measure,
+        patience = self$early_stopping_rounds(task),
+        batch_size = 32L,
+        attention_n_heads = 8L,
+        opt.param_groups = rtdl_param_groups,
+        device = device
       )
       set_threads(learner, n_threads)
 
       po("removeconstants", id = "ft_transformer_removeconstants") %>>%
         po("imputeoor", id = "ft_transformer_imputeoor") %>>%
         po("fixfactors", id = "ft_transformer_fixfactors") %>>%
-        po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "ft_transformer_imputesample") %>>%
+        po(
+          "imputesample",
+          affect_columns = selector_type(c("factor", "ordered")),
+          id = "ft_transformer_imputesample"
+        ) %>>%
         po("encodeimpact", id = "ft_transformer_encode") %>>%
         po("scale", id = "ft_transformer_scaler") %>>%
         po("removeconstants", id = "ft_transformer_post_removeconstants") %>>%
@@ -106,6 +112,7 @@ AutoFTTransformer = R6Class("AutoFTTransformer",
   ),
 
   private = list(
+    # nolint start: indentation_linter, line_length_linter
     .search_space = ps(
         ft_transformer.n_blocks                = p_int(1, 6),
         ft_transformer.d_token                 = p_int(8L, 64L, trafo = function(x) 8L * x),
@@ -117,6 +124,7 @@ AutoFTTransformer = R6Class("AutoFTTransformer",
         ft_transformer.opt.weight_decay        = p_dbl(1e-6, 1e-3, logscale = TRUE),
         ft_transformer.epochs                  = p_int(1L, 100L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
     ),
+    # nolint end
 
     .default_values = list(
       ft_transformer.n_blocks = 4L,

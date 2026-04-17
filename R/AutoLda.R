@@ -16,10 +16,10 @@
 #' @template param_devices
 #'
 #' @export
-AutoLda = R6Class("AutoLda",
+AutoLda = R6Class(
+  "AutoLda",
   inherit = Auto,
   public = list(
-
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "lda") {
@@ -28,7 +28,8 @@ AutoLda = R6Class("AutoLda",
         task_types = "classif",
         properties = "hyperparameter-free",
         packages = c("mlr3", "mlr3learners", "MASS"),
-        devices = "cpu")
+        devices = "cpu"
+      )
     },
 
     #' @description
@@ -56,5 +57,3 @@ AutoLda = R6Class("AutoLda",
 )
 
 mlr_auto$add("lda", function() AutoLda$new())
-
-

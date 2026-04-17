@@ -15,14 +15,15 @@
 #' @template param_devices
 #'
 #' @export
-AutoTabpfn = R6Class("AutoTabpfn",
+AutoTabpfn = R6Class(
+  "AutoTabpfn",
   inherit = Auto,
   public = list(
-
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "tabpfn") {
-      super$initialize(id = id,
+      super$initialize(
+        id = id,
         properties = character(0),
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3extralearners"),
@@ -40,7 +41,10 @@ AutoTabpfn = R6Class("AutoTabpfn",
         return(FALSE)
       }
       if ("cuda" %nin% devices && task$nrow > 1e3) {
-        lg$info("Learner '%s' is not compatible with tasks with more than 1,000 rows when using 'cpu' as device", self$id)
+        lg$info(
+          "Learner '%s' is not compatible with tasks with more than 1,000 rows when using 'cpu' as device",
+          self$id
+        )
         return(FALSE)
       }
       if (task$ncol > 500) {
@@ -72,7 +76,6 @@ AutoTabpfn = R6Class("AutoTabpfn",
         po("encodeimpact", id = "tabpfn_encode") %>>%
         po("removeconstants", id = "tabpfn_post_removeconstants") %>>%
         learner
-
     },
 
     #' @description
@@ -113,5 +116,3 @@ AutoTabpfn = R6Class("AutoTabpfn",
 )
 
 mlr_auto$add("tabpfn", function() AutoTabpfn$new())
-
-

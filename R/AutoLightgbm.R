@@ -13,14 +13,15 @@
 #' @template param_devices
 #'
 #' @export
-AutoLightgbm = R6Class("AutoLightgbm",
+AutoLightgbm = R6Class(
+  "AutoLightgbm",
   inherit = Auto,
   public = list(
-
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "lightgbm") {
-      super$initialize(id = id,
+      super$initialize(
+        id = id,
         properties = c("internal_tuning", "large_data_sets"),
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3extralearners", "lightgbm"),
@@ -41,12 +42,14 @@ AutoLightgbm = R6Class("AutoLightgbm",
 
       device_type = if ("cuda" %in% devices) "gpu" else "cpu"
 
-      learner = lrn(sprintf("%s.lightgbm", task$task_type),
+      learner = lrn(
+        sprintf("%s.lightgbm", task$task_type),
         id = "lightgbm",
         early_stopping_rounds = self$early_stopping_rounds(task),
         callbacks = list(cb_timeout_lightgbm(timeout * 0.9)),
         eval = self$internal_measure(measure, task),
-        device_type = device_type)
+        device_type = device_type
+      )
       set_threads(learner, n_threads)
 
       learner
@@ -55,52 +58,53 @@ AutoLightgbm = R6Class("AutoLightgbm",
     #' @description
     #' Estimate the memory for the auto.
     estimate_memory = function(task) {
-        upper = self$search_space(task)$upper
+      upper = self$search_space(task)$upper
 
-        # histogram size
-        max_bin =  255
-        num_leaves = upper["lightgbm.num_leaves"]
-        histogram_size = 20 * task$ncol * num_leaves * max_bin
+      # histogram size
+      max_bin = 255
+      num_leaves = upper["lightgbm.num_leaves"]
+      histogram_size = 20 * task$ncol * num_leaves * max_bin
 
-        # data size
-        n_classes = if (inherits(task, "TaskClassif")) length(task$class_names) else 1
-        data_set_size = task$nrow * task$ncol * 8
-        data_size = data_set_size * 5 + data_set_size / 4 * n_classes
+      # data size
+      n_classes = if (inherits(task, "TaskClassif")) length(task$class_names) else 1
+      data_set_size = task$nrow * task$ncol * 8
+      data_size = data_set_size * 5 + data_set_size / 4 * n_classes
 
-        memory_size = (histogram_size + data_size) / 1e6
-        lg$info("Lightgbm memory size: %s MB", round(memory_size))
-        ceiling(memory_size)
+      memory_size = (histogram_size + data_size) / 1e6
+      lg$info("Lightgbm memory size: %s MB", round(memory_size))
+      ceiling(memory_size)
     },
 
     #' @description
     #' Get the internal measure for the auto.
     internal_measure = function(measure, task) {
-       if (task$task_type == "regr") {
-        switch(measure$id,
-          "regr.mse" = "mse",
-          "regr.rmse" = "rmse",
-          "regr.mae" = "mae",
-          "regr.mape" = "mape",
-          "rmse") # default
+      if (task$task_type == "regr") {
+        # nolint next: line_length_linter
+        switch(measure$id, "regr.mse" = "mse", "regr.rmse" = "rmse", "regr.mae" = "mae", "regr.mape" = "mape", "rmse")
       } else if ("twoclass" %in% task$properties) {
-        switch(measure$id,
+        switch(
+          measure$id,
           "classif.ce" = "binary_error",
           "classif.acc" = "binary_error",
           "classif.auc" = "auc",
           "classif.logloss" = "binary_logloss",
-          "binary_error") # default
+          "binary_error"
+        ) # default
       } else if ("multiclass" %in% task$properties) {
-        switch(measure$id,
+        switch(
+          measure$id,
           "classif.ce" = "multi_error",
           "classif.acc" = "multi_error",
           "classif.mauc_mu" = "auc_mu",
           "classif.logloss" = "multi_logloss",
-          "multi_error") # default
+          "multi_error"
+        ) # default
       }
     }
   ),
 
   private = list(
+    # nolint start: indentation_linter, line_length_linter
     .search_space = ps(
         lightgbm.learning_rate    = p_dbl(1e-3, 1, logscale = TRUE),
         lightgbm.feature_fraction = p_dbl(0.1, 1),
@@ -108,6 +112,7 @@ AutoLightgbm = R6Class("AutoLightgbm",
         lightgbm.num_leaves       = p_int(10L, 255L),
         lightgbm.num_iterations   = p_int(1L, 5000L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
     ),
+    # nolint end
 
     .default_values = list(
       lightgbm.learning_rate = log(0.1),
@@ -119,5 +124,3 @@ AutoLightgbm = R6Class("AutoLightgbm",
 )
 
 mlr_auto$add("lightgbm", function() AutoLightgbm$new())
-
-

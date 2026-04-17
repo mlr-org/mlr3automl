@@ -22,7 +22,8 @@ test_that("LearnerClassifAutoFastai works", {
 
     task = tsk("penguins")
 
-    learner = lrn("classif.auto_fastai",
+    learner = lrn(
+      "classif.auto_fastai",
       small_data_size = 1,
       resampling = rsmp("holdout"),
       measure = msr("classif.ce"),
@@ -31,10 +32,9 @@ test_that("LearnerClassifAutoFastai works", {
       initial_design_size = 2,
       encapsulate_learner = FALSE,
       encapsulate_mbo = FALSE,
-      check_learners = TRUE)
+      check_learners = TRUE
+    )
 
     expect_class(learner$train(task), "LearnerClassifAutoFastai")
   }))
 })
-
-

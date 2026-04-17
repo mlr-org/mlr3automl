@@ -6,10 +6,10 @@
 #' @template param_id
 #'
 #' @export
-LearnerRegrAutoMLP = R6Class("LearnerRegrAutoMLP",
+LearnerRegrAutoMLP = R6Class(
+  "LearnerRegrAutoMLP",
   inherit = LearnerRegrAuto,
   public = list(
-
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "regr.auto_mlp") {
@@ -20,5 +20,3 @@ LearnerRegrAutoMLP = R6Class("LearnerRegrAutoMLP",
 
 #' @include aaa.R
 learners[["regr.auto_mlp"]] = LearnerRegrAutoMLP
-
-
