@@ -9,7 +9,6 @@ Package website: [release](https://mlr3automl.mlr-org.com/) \|
 [![r-cmd-check](https://github.com/mlr-org/mlr3automl/actions/workflows/r-cmd-check.yml/badge.svg)](https://github.com/mlr-org/mlr3automl/actions/workflows/r-cmd-check.yml)
 [![CRAN
 Status](https://www.r-pkg.org/badges/version-ago/mlr3automl)](https://cran.r-project.org/package=mlr3automl)
-[![StackOverflow](https://img.shields.io/badge/stackoverflow-mlr3-orange.svg)](https://stackoverflow.com/questions/tagged/mlr3)
 [![Mattermost](https://img.shields.io/badge/chat-mattermost-orange.svg)](https://lmmisld-lmu-stats-slds.srv.mwn.de/mlr_invite/)
 <!-- badges: end -->
 
@@ -30,7 +29,7 @@ efficient and scalable AutoML.
 Install the development version from GitHub:
 
 ``` r
-remotes::install_github("mlr-org/mlr3automl")
+pak::pkg_install("mlr-org/mlr3automl")
 ```
 
 ## Examples
@@ -38,8 +37,8 @@ remotes::install_github("mlr-org/mlr3automl")
 ``` r
 library("mlr3automl")
 
-  rush_plan(n_workers = 2, worker_type = "remote")
-  mirai::daemons(2)
+rush_plan(n_workers = 2, worker_type = "mirai")
+mirai::daemons(2)
 
 task = tsk("spam")
 
@@ -48,4 +47,14 @@ learner = lrn("classif.auto",
 )
 
 learner$train(task)
+```
+
+## Test with Redis
+
+To test the package, set the `RUSH_TEST_USE_REDIS` environment variable
+to `true`. The test suite deletes the Redis database before execution,
+so never run it against a production server.
+
+``` r
+Sys.setenv(RUSH_TEST_USE_REDIS = "true")
 ```
