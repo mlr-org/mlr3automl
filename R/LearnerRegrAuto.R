@@ -63,7 +63,7 @@ LearnerRegrAuto = R6Class(
         small_data_size         = p_int(lower = 1L, init = 5000L, tags = c("train", "super")),
         store_benchmark_result  = p_lgl(init = FALSE, tags = c("train", "super")),
         store_models            = p_lgl(init = FALSE, tags = c("train", "super")),
-        terminator              = p_uty(init = trm("run_time", secs = 3600), tags = c("train", "super")),
+        terminator              = p_uty(init = trm("run_time", secs = 3600), tags = c("train", "super"))
       )
       # nolint end
       # subset to relevant parameters for selected learners
