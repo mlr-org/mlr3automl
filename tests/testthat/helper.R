@@ -14,7 +14,7 @@ lapply(list.files(system.file("testthat", package = "rush"), pattern = "^helper.
 
 skip_if_not_all_installed = function(pkgs) {
   for (pkg in pkgs) {
-    skip_if_not_installed(pkg)
+    testthat::skip_if_not_installed(pkg)
   }
 }
 
@@ -26,11 +26,14 @@ test_classif_learner = function(
   task = NULL,
   check_learners = TRUE
 ) {
-  skip_on_cran()
+  testthat::skip_on_cran()
+  # nolint next: object_usage_linter
   skip_if_not_all_installed(unlist(map(mlr_auto$mget(learner_id), "packages")))
-  skip_if_not_installed("rush")
+  testthat::skip_if_not_installed("rush")
+  # nolint next: object_usage_linter
   skip_if_no_redis()
 
+  # nolint next: object_usage_linter
   rush = start_rush()
   on.exit({
     rush$reset()
@@ -45,7 +48,7 @@ test_classif_learner = function(
     small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
-    terminator = trm("evals", n_evals = n_evals),
+    terminator = bbotk::trm("evals", n_evals = n_evals),
     initial_design_type = initial_design_type,
     initial_design_size = initial_design_size,
     encapsulate_learner = FALSE,
@@ -68,11 +71,14 @@ test_regr_learner = function(
   task = NULL,
   check_learners = TRUE
 ) {
-  skip_on_cran()
+  testthat::skip_on_cran()
+  # nolint next: object_usage_linter
   skip_if_not_all_installed(unlist(map(mlr_auto$mget(learner_id), "packages")))
-  skip_if_not_installed("rush")
+  testthat::skip_if_not_installed("rush")
+  # nolint next: object_usage_linter
   skip_if_no_redis()
 
+  # nolint next: object_usage_linter
   rush = start_rush()
   on.exit({
     rush$reset()
@@ -87,7 +93,7 @@ test_regr_learner = function(
     small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("regr.rmse"),
-    terminator = trm("evals", n_evals = n_evals),
+    terminator = bbotk::trm("evals", n_evals = n_evals),
     initial_design_type = initial_design_type,
     initial_design_size = initial_design_size,
     encapsulate_learner = FALSE,

@@ -19,6 +19,7 @@ cb_timeout_xgboost = function(timeout) {
 
 
 cb_timeout_lightgbm = function(timeout) {
+  # nolint next: object_usage_linter
   state = new.env(parent = emptyenv())
 
   callback = function(env) {
