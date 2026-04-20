@@ -1,8 +1,8 @@
 test_that("LearnerClassifAutoMlp works", {
   skip_on_cran()
-  skip_if_not_installed(unlist(map(mlr_auto$mget("mlp"), "packages")))
+  skip_if_not_all_installed(unlist(map(mlr_auto$mget("mlp"), "packages")))
   skip_if_not_installed("rush")
-  flush_redis()
+  skip_if_no_redis()
 
   expect_true(callr::r(function() {
     Sys.setenv(RETICULATE_PYTHON = "managed")
@@ -10,8 +10,11 @@ test_that("LearnerClassifAutoMlp works", {
     library(testthat)
     library(checkmate)
 
-    rush_plan(n_workers = 2, worker_type = "remote")
-    mirai::daemons(2)
+    rush = start_rush()
+    on.exit({
+      rush$reset()
+      mirai::daemons(0)
+    })
 
     mirai::everywhere({
       Sys.setenv(RETICULATE_PYTHON = "managed")
@@ -20,7 +23,8 @@ test_that("LearnerClassifAutoMlp works", {
     task = tsk("penguins")
     task$filter(c(1, 153, 277))
 
-    learner = lrn("classif.auto_mlp",
+    learner = lrn(
+      "classif.auto_mlp",
       small_data_size = 1,
       resampling = rsmp("holdout"),
       measure = msr("classif.ce"),
@@ -29,11 +33,11 @@ test_that("LearnerClassifAutoMlp works", {
       initial_design_size = 2,
       encapsulate_learner = FALSE,
       encapsulate_mbo = FALSE,
-      check_learners = FALSE)
+      check_learners = FALSE,
+      rush = rush
+    )
 
     expect_class(learner$train(task), "LearnerClassifAutoMLP")
     TRUE
   }))
 })
-
-

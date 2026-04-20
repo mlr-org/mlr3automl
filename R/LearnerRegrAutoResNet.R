@@ -12,8 +12,8 @@ LearnerRegrAutoResNet = R6Class("LearnerRegrAutoResNet",
 
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
-    initialize = function(id = "regr.auto_resnet") {
-      super$initialize(id = id, learner_ids = "resnet")
+    initialize = function(id = "regr.auto_resnet", rush = NULL) {
+      super$initialize(id = id, learner_ids = "resnet", rush = rush)
     }
   )
 )

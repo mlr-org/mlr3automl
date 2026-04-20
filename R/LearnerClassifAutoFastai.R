@@ -12,8 +12,8 @@ LearnerClassifAutoFastai = R6Class("LearnerClassifAutoFastai",
 
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
-    initialize = function(id = "classif.auto_fastai") {
-      super$initialize(id = id, learner_ids = "fastai")
+    initialize = function(id = "classif.auto_fastai", rush = NULL) {
+      super$initialize(id = id, learner_ids = "fastai", rush = rush)
     }
   )
 )

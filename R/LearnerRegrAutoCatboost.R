@@ -12,8 +12,8 @@ LearnerRegrAutoCatboost = R6Class("LearnerRegrAutoCatboost",
 
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
-    initialize = function(id = "regr.auto_catboost") {
-      super$initialize(id = id, learner_ids = "catboost")
+    initialize = function(id = "regr.auto_catboost", rush = NULL) {
+      super$initialize(id = id, learner_ids = "catboost", rush = rush)
     }
   )
 )
