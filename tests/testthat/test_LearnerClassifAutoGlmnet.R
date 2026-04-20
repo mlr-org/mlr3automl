@@ -11,7 +11,8 @@ test_that("LearnerClassifAutoGlmnet works", {
   })
 
   task = tsk("penguins")
-  learner = lrn("classif.auto_glmnet",
+  learner = lrn(
+    "classif.auto_glmnet",
     rush = rush,
     small_data_size = 1,
     resampling = rsmp("holdout"),

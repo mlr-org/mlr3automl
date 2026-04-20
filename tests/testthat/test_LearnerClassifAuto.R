@@ -1,7 +1,5 @@
 test_that("LearnerClassifAuto is initialized", {
-  learner = lrn("classif.auto",
-    measure = msr("classif.ce"),
-    terminator = trm("evals", n_evals = 10))
+  learner = lrn("classif.auto", measure = msr("classif.ce"), terminator = trm("evals", n_evals = 10))
 
   expect_learner(learner, task = tsk("penguins"))
 })
@@ -12,13 +10,17 @@ test_that("only lda fails", {
   skip_if_no_redis()
 
   task = tsk("penguins")
-  expect_error(lrn("classif.auto",
-    learner_ids = "lda",
-    small_data_size = 1,
-    resampling = rsmp("holdout"),
-    measure = msr("classif.ce"),
-    terminator = trm("evals", n_evals = 6))$train(task),
-    "All learners have no hyperparameters to tune")
+  expect_error(
+    lrn(
+      "classif.auto",
+      learner_ids = "lda",
+      small_data_size = 1,
+      resampling = rsmp("holdout"),
+      measure = msr("classif.ce"),
+      terminator = trm("evals", n_evals = 6)
+    )$train(task),
+    "All learners have no hyperparameters to tune"
+  )
 })
 
 test_that("only extra_trees fails", {
@@ -28,17 +30,24 @@ test_that("only extra_trees fails", {
   skip_if_no_redis()
 
   task = tsk("penguins")
-  expect_error(lrn("classif.auto",
-    learner_ids = "extra_trees",
-    resampling = rsmp("holdout"),
-    measure = msr("classif.ce"),
-    terminator = trm("evals", n_evals = 6))$train(task),
-    "All learners have no hyperparameters to tune")
+  expect_error(
+    lrn(
+      "classif.auto",
+      learner_ids = "extra_trees",
+      resampling = rsmp("holdout"),
+      measure = msr("classif.ce"),
+      terminator = trm("evals", n_evals = 6)
+    )$train(task),
+    "All learners have no hyperparameters to tune"
+  )
 })
 
 test_that("all learner on cpu work", {
   skip_on_cran()
-  skip_if_not_all_installed(unlist(map(mlr_auto$mget(c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees")), "packages")))
+  skip_if_not_all_installed(unlist(map(
+    mlr_auto$mget(c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees")),
+    "packages"
+  )))
   skip_if_not_installed("rush")
   skip_if_no_redis()
 
@@ -49,7 +58,8 @@ test_that("all learner on cpu work", {
   })
 
   task = tsk("penguins")
-  learner = lrn("classif.auto",
+  learner = lrn(
+    "classif.auto",
     rush = rush,
     learner_ids = c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees"),
     small_data_size = 1,
@@ -63,7 +73,10 @@ test_that("all learner on cpu work", {
   )
 
   expect_class(learner$train(task), "LearnerClassifAuto")
-  expect_set_equal(learner$model$instance$archive$data$branch.selection, c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees"))
+  expect_set_equal(
+    learner$model$instance$archive$data$branch.selection,
+    c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees")
+  )
 })
 
 test_that("memory limit works", {
@@ -79,7 +92,8 @@ test_that("memory limit works", {
   })
 
   task = tsk("spam")
-  learner = lrn("classif.auto",
+  learner = lrn(
+    "classif.auto",
     rush = rush,
     learner_ids = c("ranger", "xgboost", "catboost", "kknn"),
     memory_limit = 5,
@@ -110,7 +124,8 @@ test_that("small data set switch works", {
   })
 
   task = tsk("penguins")
-  learner = lrn("classif.auto",
+  learner = lrn(
+    "classif.auto",
     rush = rush,
     learner_ids = "glmnet",
     small_data_size = 1000,
@@ -140,7 +155,8 @@ test_that("large data set switch works", {
   })
 
   task = tsk("penguins")
-  learner = lrn("classif.auto",
+  learner = lrn(
+    "classif.auto",
     rush = rush,
     learner_ids = c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees"),
     initial_design_type = "sobol",
@@ -156,7 +172,10 @@ test_that("large data set switch works", {
   )
 
   expect_class(learner$train(task), "LearnerClassifAuto")
-  expect_set_equal(learner$model$instance$archive$data$branch.selection, c("ranger", "xgboost", "catboost", "lightgbm", "extra_trees"))
+  expect_set_equal(
+    learner$model$instance$archive$data$branch.selection,
+    c("ranger", "xgboost", "catboost", "lightgbm", "extra_trees")
+  )
 })
 
 test_that("resample works", {
@@ -172,7 +191,8 @@ test_that("resample works", {
   })
 
   task = tsk("penguins")
-  learner = lrn("classif.auto",
+  learner = lrn(
+    "classif.auto",
     rush = rush,
     learner_ids = "glmnet",
     small_data_size = 1,
@@ -201,7 +221,8 @@ test_that("best initial design works with evals terminator", {
   })
 
   task = tsk("penguins")
-  learner = lrn("classif.auto",
+  learner = lrn(
+    "classif.auto",
     rush = rush,
     learner_ids = c("kknn", "glmnet"),
     initial_design_set = 1,
@@ -228,7 +249,8 @@ test_that("initial design runtime limit works", {
   })
 
   task = tsk("penguins")
-  learner = lrn("classif.auto",
+  learner = lrn(
+    "classif.auto",
     rush = rush,
     learner_ids = "glmnet",
     small_data_size = 1,
@@ -238,7 +260,7 @@ test_that("initial design runtime limit works", {
     terminator = trm("run_time", secs = 40)
   )
 
-   expect_class(learner$train(task), "LearnerClassifAuto")
+  expect_class(learner$train(task), "LearnerClassifAuto")
 })
 
 test_that("devices works", {
@@ -254,7 +276,8 @@ test_that("devices works", {
   })
 
   task = tsk("penguins")
-  learner = lrn("classif.auto",
+  learner = lrn(
+    "classif.auto",
     rush = rush,
     devices = "cpu",
     measure = msr("classif.ce"),
@@ -281,7 +304,8 @@ test_that("devices works", {
   })
 
   task = tsk("penguins")
-  learner = lrn("classif.auto",
+  learner = lrn(
+    "classif.auto",
     rush = rush,
     devices = "cuda",
     measure = msr("classif.ce"),
@@ -308,7 +332,8 @@ test_that("lightgbm time limit works", {
 
   task = tsk("spam")
 
-  learner = lrn("classif.auto",
+  learner = lrn(
+    "classif.auto",
     rush = rush,
     learner_ids = "lightgbm",
     learner_timeout = 1,
@@ -320,8 +345,8 @@ test_that("lightgbm time limit works", {
     encapsulate_mbo = FALSE
   )
 
-   learner$train(task)
-   expect_true(all(learner$instance$archive$data[state == "finished"]$runtime_learners < 3))
+  learner$train(task)
+  expect_true(all(learner$instance$archive$data[state == "finished"]$runtime_learners < 3))
 })
 
 test_that("xgboost time limit works", {
@@ -338,7 +363,8 @@ test_that("xgboost time limit works", {
 
   task = tsk("spam")
 
-  learner = lrn("classif.auto",
+  learner = lrn(
+    "classif.auto",
     rush = rush,
     learner_ids = "xgboost",
     learner_timeout = 1,
@@ -368,7 +394,8 @@ test_that("adaptive design works", {
 
   task = tsk("penguins")
 
-  learner = lrn("classif.auto",
+  learner = lrn(
+    "classif.auto",
     rush = rush,
     learner_ids = c("kknn", "ranger"),
     small_data_size = 1,
@@ -400,7 +427,8 @@ test_that("adaptive design works", {
 
   task = tsk("penguins")
 
-  learner = lrn("classif.auto",
+  learner = lrn(
+    "classif.auto",
     rush = rush,
     learner_ids = c("lda", "ranger"),
     small_data_size = 1,

@@ -13,14 +13,15 @@
 #' @template param_devices
 #'
 #' @export
-AutoXgboost = R6Class("AutoXgboost",
+AutoXgboost = R6Class(
+  "AutoXgboost",
   inherit = Auto,
   public = list(
-
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "xgboost") {
-      super$initialize(id = id,
+      super$initialize(
+        id = id,
         properties = c("internal_tuning", "large_data_sets"),
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3learners", "xgboost"),
@@ -39,7 +40,8 @@ AutoXgboost = R6Class("AutoXgboost",
 
       require_namespaces("mlr3learners")
 
-      learner = lrn(sprintf("%s.xgboost", task$task_type),
+      learner = lrn(
+        sprintf("%s.xgboost", task$task_type),
         id = "xgboost",
         booster = "gbtree",
         early_stopping_rounds = self$early_stopping_rounds(task),
@@ -70,7 +72,9 @@ AutoXgboost = R6Class("AutoXgboost",
       # histogram size
       max_depth = upper["xgboost.max_depth"]
       max_bin = 265
-      if (max_depth < 6) max_depth = 6
+      if (max_depth < 6) {
+        max_depth = 6
+      }
       histogram_size = max_bin * task$ncol * 2^max_depth
 
       # data size
@@ -85,7 +89,8 @@ AutoXgboost = R6Class("AutoXgboost",
     #' Get the internal measure for the auto.
     internal_measure = function(measure, task) {
       if (task$task_type == "regr") {
-        switch(measure$id,
+        switch(
+          measure$id,
           "regr.rmse" = "rmse",
           "regr.rmsle" = "rmsle",
           "regr.mae" = "mae",
@@ -93,7 +98,8 @@ AutoXgboost = R6Class("AutoXgboost",
           "rmse" # default
         )
       } else if ("twoclass" %in% task$properties) {
-        switch(measure$id,
+        switch(
+          measure$id,
           "classif.ce" = "error",
           "classif.acc" = "error",
           "classif.auc" = "auc",
@@ -102,7 +108,8 @@ AutoXgboost = R6Class("AutoXgboost",
           "error" # default
         )
       } else if ("multiclass" %in% task$properties) {
-        switch(measure$id,
+        switch(
+          measure$id,
           "classif.ce" = "merror",
           "classif.acc" = "merror",
           "classif.mauc_aunp" = "auc",
@@ -114,6 +121,7 @@ AutoXgboost = R6Class("AutoXgboost",
   ),
 
   private = list(
+    # nolint start: indentation_linter, line_length_linter
     .search_space = ps(
         xgboost.eta               = p_dbl(1e-4, 1, logscale = TRUE),
         xgboost.max_depth         = p_int(1, 12),
@@ -124,6 +132,7 @@ AutoXgboost = R6Class("AutoXgboost",
         xgboost.subsample         = p_dbl(1e-1, 1),
         xgboost.nrounds           = p_int(1, 5000, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
     ),
+    # nolint end
 
     .default_values = list(
       xgboost.eta = log(0.3),

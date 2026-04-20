@@ -13,14 +13,15 @@
 #' @template param_devices
 #'
 #' @export
-AutoSvm = R6Class("AutoSvm",
+AutoSvm = R6Class(
+  "AutoSvm",
   inherit = Auto,
   public = list(
-
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "svm") {
-      super$initialize(id = id,
+      super$initialize(
+        id = id,
         properties = character(0),
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3learners", "e1071"),
@@ -62,10 +63,12 @@ AutoSvm = R6Class("AutoSvm",
   ),
 
   private = list(
+    # nolint start: indentation_linter
     .search_space = ps(
         svm.cost    = p_dbl(1e-4, 1e4, logscale = TRUE),
         svm.gamma   = p_dbl(1e-4, 1e4, logscale = TRUE)
     )
+    # nolint end
   )
 )
 

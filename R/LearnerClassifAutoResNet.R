@@ -6,10 +6,10 @@
 #' @template param_id
 #'
 #' @export
-LearnerClassifAutoResNet = R6Class("LearnerClassifAutoResNet",
+LearnerClassifAutoResNet = R6Class(
+  "LearnerClassifAutoResNet",
   inherit = LearnerClassifAuto,
   public = list(
-
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "classif.auto_resnet", rush = NULL) {
@@ -20,5 +20,3 @@ LearnerClassifAutoResNet = R6Class("LearnerClassifAutoResNet",
 
 #' @include aaa.R
 learners[["classif.auto_resnet"]] = LearnerClassifAutoResNet
-
-

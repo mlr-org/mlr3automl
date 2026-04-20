@@ -13,14 +13,15 @@
 #' @template param_devices
 #'
 #' @export
-AutoKknn = R6Class("AutoKknn",
+AutoKknn = R6Class(
+  "AutoKknn",
   inherit = Auto,
   public = list(
-
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "kknn") {
-      super$initialize(id = id,
+      super$initialize(
+        id = id,
         properties = character(),
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3learners", "kknn"),
@@ -71,4 +72,3 @@ AutoKknn = R6Class("AutoKknn",
 )
 
 mlr_auto$add("kknn", function() AutoKknn$new())
-

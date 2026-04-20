@@ -37,7 +37,7 @@ register_mlr3 = function() {
   lg$set_filters(list(f))
 } # nocov end
 
-.onUnload = function(libpaths) { # nolint
+.onUnload = function(libpaths) {
   mlr_learners = mlr3::mlr_learners
   mlr_callbacks = mlr3misc::mlr_callbacks
   walk(names(learners), function(id) mlr_learners$remove(id))

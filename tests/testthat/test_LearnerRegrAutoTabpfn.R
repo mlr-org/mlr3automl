@@ -20,7 +20,8 @@ test_that("LearnerRegrAutoTabpfn works", {
 
     task = tsk("mtcars")
 
-    learner = lrn("regr.auto_tabpfn",
+    learner = lrn(
+      "regr.auto_tabpfn",
       small_data_size = 1,
       resampling = rsmp("holdout"),
       measure = msr("regr.rmse"),
@@ -29,7 +30,8 @@ test_that("LearnerRegrAutoTabpfn works", {
       initial_design_size = 2,
       encapsulate_learner = FALSE,
       encapsulate_mbo = FALSE,
-      check_learners = TRUE)
+      check_learners = TRUE
+    )
 
     expect_class(learner$train(task), "LearnerRegrAutoTabPFN")
     TRUE

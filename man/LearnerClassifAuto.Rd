@@ -5,7 +5,8 @@
 \title{Classification AutoML Learner}
 \description{
 The \link{LearnerClassifAuto} is an automated machine learning (AutoML) system for classification tasks.
-It combines preprocessing, a switch between multiple learners and hyperparameter tuning to find the best model for the given task.
+It combines preprocessing, a switch between multiple learners,
+and hyperparameter tuning to find the best model for the given task.
 }
 \section{Debugging}{
 

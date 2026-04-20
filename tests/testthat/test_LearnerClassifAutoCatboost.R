@@ -11,7 +11,8 @@ test_that("LearnerClassifAutoCatboost works", {
   })
 
   task = tsk("penguins")
-  learner = lrn("classif.auto_catboost",
+  learner = lrn(
+    "classif.auto_catboost",
     rush = rush,
     small_data_size = 1,
     resampling = rsmp("holdout"),

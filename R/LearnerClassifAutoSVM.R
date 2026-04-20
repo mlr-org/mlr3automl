@@ -6,10 +6,10 @@
 #' @template param_id
 #'
 #' @export
-LearnerClassifAutoSVM = R6Class("LearnerClassifAutoSVM",
+LearnerClassifAutoSVM = R6Class(
+  "LearnerClassifAutoSVM",
   inherit = LearnerClassifAuto,
   public = list(
-
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "classif.auto_svm", rush = NULL) {

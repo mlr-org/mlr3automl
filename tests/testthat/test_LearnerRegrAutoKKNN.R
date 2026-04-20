@@ -11,7 +11,8 @@ test_that("LearnerRegrAutoKKNN works", {
   })
 
   task = tsk("mtcars")
-  learner = lrn("regr.auto_kknn",
+  learner = lrn(
+    "regr.auto_kknn",
     rush = rush,
     small_data_size = 1,
     resampling = rsmp("holdout"),

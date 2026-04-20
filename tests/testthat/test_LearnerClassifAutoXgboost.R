@@ -11,7 +11,8 @@ test_that("LearnerClassifAutoXgboost works", {
   })
 
   task = tsk("penguins")
-  learner = lrn("classif.auto_xgboost",
+  learner = lrn(
+    "classif.auto_xgboost",
     rush = rush,
     small_data_size = 1,
     resampling = rsmp("holdout"),

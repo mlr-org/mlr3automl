@@ -11,7 +11,8 @@ test_that("LearnerClassifAutoKKNN works", {
   })
 
   task = tsk("penguins")
-  learner = lrn("classif.auto_kknn",
+  learner = lrn(
+    "classif.auto_kknn",
     rush = rush,
     small_data_size = 1,
     resampling = rsmp("holdout"),

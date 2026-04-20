@@ -18,12 +18,21 @@ train_auto = function(self, private, task) {
     memory_limit = memory_limit * 4L
 
     tuner$param_set$set_values(n_workers = n_workers)
-    lg$info("Large data set detected. Reducing number of workers to %i. Increasing number of threads to %i and memory limit to %i MB", n_workers, n_threads, memory_limit)
+    lg$info(
+      # nolint next: line_length_linter
+      "Large data set detected. Reducing number of workers to %i. Increasing number of threads to %i and memory limit to %i MB",
+      n_workers,
+      n_threads,
+      memory_limit
+    )
   }
 
   # resampling
   resampling = if (task$nrow < pv$small_data_size) {
-    lg$info("Small data set detected. Using small data set resampling with %i iterations", pv$small_data_resampling$iters)
+    lg$info(
+      "Small data set detected. Using small data set resampling with %i iterations",
+      pv$small_data_resampling$iters
+    )
     pv$small_data_resampling
   } else {
     pv$resampling
@@ -31,7 +40,9 @@ train_auto = function(self, private, task) {
 
   # initialize graph learner
   if (pv$check_learners) {
-    autos = keep(autos, function(auto) auto$check(task, memory_limit = memory_limit, large_data_set = large_data_set, devices = pv$devices))
+    autos = keep(autos, function(auto) {
+      auto$check(task, memory_limit = memory_limit, large_data_set = large_data_set, devices = pv$devices)
+    })
 
     if (!length(autos)) {
       error_config("No learner is compatible with the task.")
@@ -43,9 +54,12 @@ train_auto = function(self, private, task) {
   }
 
   branches = map(autos, function(auto) auto$graph(task, pv$measure, n_threads, pv$learner_timeout, pv$devices))
-  graph_learner = as_learner(po("branch", options = names(branches)) %>>%
-    gunion(unname(branches)) %>>%
-    po("unbranch", options = names(branches)), clone = TRUE)
+  graph_learner = as_learner(
+    po("branch", options = names(branches)) %>>%
+      gunion(unname(branches)) %>>%
+      po("unbranch", options = names(branches)),
+    clone = TRUE
+  )
   graph_learner$id = "graph_learner"
   graph_learner$predict_type = pv$measure$predict_type
 
@@ -58,7 +72,10 @@ train_auto = function(self, private, task) {
 
   learner_ids = map_chr(autos, "id")
   learners_with_validation = learner_ids[map_lgl(autos, function(auto) "internal_tuning" %in% auto$properties)]
-  learners_without_hyperparameters = learner_ids[map_lgl(autos, function(auto) "hyperparameter-free" %in% auto$properties)]
+  # nolint next: object_length_linter
+  learners_without_hyperparameters = learner_ids[map_lgl(autos, function(auto) {
+    "hyperparameter-free" %in% auto$properties
+  })]
 
   if (length(learners_with_validation)) {
     set_validate(graph_learner, "test", ids = learners_with_validation)
@@ -67,7 +84,11 @@ train_auto = function(self, private, task) {
   # initialize search space
   search_space = combine_search_spaces(autos, task)
 
-  callbacks = c(pv$callbacks, clbk("mlr3tuning.async_save_logs"), clbk("mlr3automl.initial_design_runtime", initial_design_fraction = pv$initial_design_fraction))
+  callbacks = c(
+    pv$callbacks,
+    clbk("mlr3tuning.async_save_logs"),
+    clbk("mlr3automl.initial_design_runtime", initial_design_fraction = pv$initial_design_fraction)
+  )
 
   # tuning instance
   self$instance = ti_async(
@@ -89,27 +110,41 @@ train_auto = function(self, private, task) {
   }
 
   initial_design_set = if (pv$initial_design_set) {
-    map_dtr(autos, function(auto) auto$design_set(task, measure = pv$measure, size = pv$initial_design_set), .fill = TRUE)
+    map_dtr(
+      autos,
+      function(auto) auto$design_set(task, measure = pv$measure, size = pv$initial_design_set),
+      .fill = TRUE
+    )
   }
 
   initial_design = if (!is.null(pv$initial_design_type) && pv$initial_design_size) {
     autos_with_hyperparameters = autos[!map_lgl(autos, function(auto) "hyperparameter-free" %in% auto$properties)]
+    # nolint next: object_length_linter
     search_space_with_hyperparameters = combine_search_spaces(autos_with_hyperparameters, task)
     generate_initial_design(pv$initial_design_type, search_space_with_hyperparameters, pv$initial_design_size)
   }
 
   # add learners without hyperparameters to initial design
   if (!pv$initial_design_default && length(learners_without_hyperparameters)) {
-    initial_design_default = map_dtr(autos[learners_without_hyperparameters], function(auto) auto$design_default(task), .fill = TRUE)
+    initial_design_default = map_dtr(
+      autos[learners_without_hyperparameters],
+      function(auto) auto$design_default(task),
+      .fill = TRUE
+    )
   }
 
-  initial_designs = rbindlist(list(initial_design_default, initial_design_set, initial_design), use.names = TRUE, fill = TRUE)
+  initial_designs = rbindlist(
+    list(initial_design_default, initial_design_set, initial_design),
+    use.names = TRUE,
+    fill = TRUE
+  )
   lg$info("Initial design size: %i", nrow(initial_designs))
 
   tuner$param_set$set_values(initial_design = initial_designs)
 
   # configure tuner
-  learner = lrn("regr.ranger",
+  learner = lrn(
+    "regr.ranger",
     num.trees = 500L,
     se.method = "jack",
     splitrule = "variance",
@@ -118,10 +153,10 @@ train_auto = function(self, private, task) {
     sample.fraction = 1,
     min.node.size = 3,
     min.bucket = 3,
-    mtry.ratio = 5/6
+    mtry.ratio = 5 / 6
   )
 
-  tuner$surrogate =  srlrn(learner)
+  tuner$surrogate = srlrn(learner)
   tuner$surrogate$param_set$set_values(catch_errors = pv$encapsulate_mbo)
 
   if (!pv$encapsulate_mbo) {
@@ -131,7 +166,8 @@ train_auto = function(self, private, task) {
   budget = 100L * search_space$length^2
   tuner$acq_function = acqf("stochastic_cb", lambda = 1.96, rate = 0.1, period = 25L)
   tuner$acq_optimizer = AcqOptimizerLocalSearch$new()
-  tuner$acq_optimizer$param_set$set_values(n_searches = 10L, n_steps = ceiling(budget / 300L), n_neighs = 30L) #  catch_errors = pv$encapsulate_mbo
+  #  catch_errors = pv$encapsulate_mbo
+  tuner$acq_optimizer$param_set$set_values(n_searches = 10L, n_steps = ceiling(budget / 300L), n_neighs = 30L)
 
   # tune
   lg$info("Learner '%s' starts tuning phase", self$id)
@@ -139,7 +175,6 @@ train_auto = function(self, private, task) {
 
   # fit final model
   lg$info("Learner '%s' fits final model", self$id)
-
 
   if (length(learners_with_validation)) {
     set_validate(graph_learner, NULL, ids = learners_with_validation)

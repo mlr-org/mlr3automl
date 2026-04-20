@@ -11,7 +11,8 @@ test_that("LearnerRegrAutoSVM works", {
   })
 
   task = tsk("mtcars")
-  learner = lrn("regr.auto_svm",
+  learner = lrn(
+    "regr.auto_svm",
     rush = rush,
     small_data_size = 1,
     resampling = rsmp("holdout"),

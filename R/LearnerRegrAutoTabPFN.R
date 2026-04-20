@@ -6,10 +6,10 @@
 #' @template param_id
 #'
 #' @export
-LearnerRegrAutoTabPFN = R6Class("LearnerRegrAutoTabPFN",
+LearnerRegrAutoTabPFN = R6Class(
+  "LearnerRegrAutoTabPFN",
   inherit = LearnerRegrAuto,
   public = list(
-
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "regr.auto_tabpfn", rush = NULL) {
@@ -20,5 +20,3 @@ LearnerRegrAutoTabPFN = R6Class("LearnerRegrAutoTabPFN",
 
 #' @include aaa.R
 learners[["regr.auto_tabpfn"]] = LearnerRegrAutoTabPFN
-
-

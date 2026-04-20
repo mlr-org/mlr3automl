@@ -6,10 +6,10 @@
 #' @template param_id
 #'
 #' @export
-LearnerClassifAutoKKNN = R6Class("LearnerClassifAutoKKNN",
+LearnerClassifAutoKKNN = R6Class(
+  "LearnerClassifAutoKKNN",
   inherit = LearnerClassifAuto,
   public = list(
-
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "classif.auto_kknn", rush = NULL) {

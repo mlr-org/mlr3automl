@@ -11,7 +11,8 @@ test_that("LearnerClassifAutoRanger works", {
   })
 
   task = tsk("penguins")
-  learner = lrn("classif.auto_ranger",
+  learner = lrn(
+    "classif.auto_ranger",
     rush = rush,
     small_data_size = 1,
     resampling = rsmp("holdout"),

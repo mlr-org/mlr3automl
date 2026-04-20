@@ -11,7 +11,8 @@ test_that("LearnerRegrAutoCatboost works", {
   })
 
   task = tsk("mtcars")
-  learner = lrn("regr.auto_catboost",
+  learner = lrn(
+    "regr.auto_catboost",
     rush = rush,
     small_data_size = 1,
     resampling = rsmp("holdout"),

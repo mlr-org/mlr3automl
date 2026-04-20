@@ -15,10 +15,10 @@
 #' @template param_devices
 #'
 #' @export
-AutoFastai = R6Class("AutoFastai",
+AutoFastai = R6Class(
+  "AutoFastai",
   inherit = Auto,
   public = list(
-
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "fastai") {
@@ -58,7 +58,8 @@ AutoFastai = R6Class("AutoFastai",
 
       require_namespaces("mlr3extralearners")
 
-      learner = lrn(sprintf("%s.fastai", task$task_type),
+      learner = lrn(
+        sprintf("%s.fastai", task$task_type),
         id = "fastai",
         patience = self$early_stopping_rounds(task),
         layers = c(200, 100),
@@ -87,7 +88,8 @@ AutoFastai = R6Class("AutoFastai",
     #' Get the internal measure for the auto.
     internal_measure = function(measure, task) {
       if ("twoclass" %in% task$properties) {
-        switch(measure$id,
+        switch(
+          measure$id,
           "classif.ce" = "error_rate",
           "classif.acc" = "accuracy",
           "classif.bacc" = "BalancedAccuracy",
@@ -97,7 +99,8 @@ AutoFastai = R6Class("AutoFastai",
           "error_rate" # default
         )
       } else if ("multiclass" %in% task$properties) {
-        switch(measure$id,
+        switch(
+          measure$id,
           "classif.ce" = "error_rate",
           "classif.acc" = "accuracy",
           "classif.mauc_aunp" = "RocAuc",
@@ -117,7 +120,10 @@ AutoFastai = R6Class("AutoFastai",
       fastai.lr = p_dbl(1e-4, 1e-1, logscale = TRUE),
       fastai.bs = p_int(50, 500),
       fastai.n_epoch = p_int(1, 100, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x))))),
-      fastai.layers = p_fct(levels = list(c(200, 100), c(200, 100, 50), c(500, 200), c(500, 200, 100), c(1000, 500), c(1000, 500, 200)), default = "c(200, 100)")
+      fastai.layers = p_fct(
+        levels = list(c(200, 100), c(200, 100, 50), c(500, 200), c(500, 200, 100), c(1000, 500), c(1000, 500, 200)),
+        default = "c(200, 100)"
+      )
     )
   )
 )

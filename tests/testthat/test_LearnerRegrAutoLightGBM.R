@@ -11,7 +11,8 @@ test_that("LearnerRegrAutoLightGBM works", {
   })
 
   task = tsk("mtcars")
-  learner = lrn("regr.auto_lightgbm",
+  learner = lrn(
+    "regr.auto_lightgbm",
     rush = rush,
     small_data_size = 1,
     resampling = rsmp("holdout"),

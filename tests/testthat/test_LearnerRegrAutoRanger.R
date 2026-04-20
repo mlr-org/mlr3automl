@@ -11,7 +11,8 @@ test_that("LearnerRegrAutoRanger works", {
   })
 
   task = tsk("mtcars")
-  learner = lrn("regr.auto_ranger",
+  learner = lrn(
+    "regr.auto_ranger",
     rush = rush,
     small_data_size = 1,
     resampling = rsmp("holdout"),

@@ -14,10 +14,10 @@
 #' @template param_devices
 #'
 #' @export
-AutoExtraTrees = R6Class("AutoExtraTrees",
+AutoExtraTrees = R6Class(
+  "AutoExtraTrees",
   inherit = Auto,
   public = list(
-
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "extra_trees") {
@@ -45,12 +45,14 @@ AutoExtraTrees = R6Class("AutoExtraTrees",
 
       require_namespaces("mlr3learners")
 
-      learner = lrn(sprintf("%s.ranger", task$task_type),
+      learner = lrn(
+        sprintf("%s.ranger", task$task_type),
         id = "extra_trees",
         splitrule = "extratrees",
         num.trees = 100L,
         replace = FALSE,
-        sample.fraction = 1)
+        sample.fraction = 1
+      )
       set_threads(learner, n_threads)
 
       po("removeconstants", id = "extra_trees_removeconstants") %>>%
@@ -75,5 +77,3 @@ AutoExtraTrees = R6Class("AutoExtraTrees",
 )
 
 mlr_auto$add("extra_trees", function() AutoExtraTrees$new())
-
-

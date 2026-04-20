@@ -1,14 +1,15 @@
 test_that("LearnerRegrAuto is initialized", {
-  learner = lrn("regr.auto",
-    measure = msr("regr.rmse"),
-    terminator = trm("evals", n_evals = 10))
+  learner = lrn("regr.auto", measure = msr("regr.rmse"), terminator = trm("evals", n_evals = 10))
 
   expect_learner(learner, task = tsk("california_housing"))
 })
 
 test_that("all learner on cpu work", {
   skip_on_cran()
-  skip_if_not_all_installed(unlist(map(mlr_auto$mget(c("catboost", "glmnet", "lightgbm", "ranger", "svm", "xgboost", "extra_trees")), "packages")))
+  skip_if_not_all_installed(unlist(map(
+    mlr_auto$mget(c("catboost", "glmnet", "lightgbm", "ranger", "svm", "xgboost", "extra_trees")),
+    "packages"
+  )))
   skip_if_not_installed("rush")
   skip_if_no_redis()
 
@@ -19,7 +20,8 @@ test_that("all learner on cpu work", {
   })
 
   task = tsk("mtcars")
-  learner = lrn("regr.auto",
+  learner = lrn(
+    "regr.auto",
     rush = rush,
     learner_ids = c("catboost", "glmnet", "lightgbm", "ranger", "svm", "xgboost", "extra_trees"),
     small_data_size = 1,
@@ -34,5 +36,8 @@ test_that("all learner on cpu work", {
   )
 
   expect_class(learner$train(task), "LearnerRegrAuto")
-  expect_set_equal(learner$model$instance$archive$data$branch.selection, c("catboost", "glmnet", "lightgbm", "ranger", "svm", "xgboost", "extra_trees"))
+  expect_set_equal(
+    learner$model$instance$archive$data$branch.selection,
+    c("catboost", "glmnet", "lightgbm", "ranger", "svm", "xgboost", "extra_trees")
+  )
 })

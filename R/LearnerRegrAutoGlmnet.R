@@ -6,10 +6,10 @@
 #' @template param_id
 #'
 #' @export
-LearnerRegrAutoGlmnet = R6Class("LearnerRegrAutoGlmnet",
+LearnerRegrAutoGlmnet = R6Class(
+  "LearnerRegrAutoGlmnet",
   inherit = LearnerRegrAuto,
   public = list(
-
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "regr.auto_glmnet", rush = NULL) {
@@ -20,5 +20,3 @@ LearnerRegrAutoGlmnet = R6Class("LearnerRegrAutoGlmnet",
 
 #' @include aaa.R
 learners[["regr.auto_glmnet"]] = LearnerRegrAutoGlmnet
-
-

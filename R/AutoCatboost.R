@@ -13,10 +13,10 @@
 #' @template param_devices
 #'
 #' @export
-AutoCatboost = R6Class("AutoCatboost",
+AutoCatboost = R6Class(
+  "AutoCatboost",
   inherit = Auto,
   public = list(
-
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "catboost") {
@@ -41,19 +41,26 @@ AutoCatboost = R6Class("AutoCatboost",
       require_namespaces("mlr3extralearners")
 
       # catboost only supports gpu via cuda
-      task_type =  if ("cuda" %in% devices) "GPU" else "CPU"
+      task_type = if ("cuda" %in% devices) "GPU" else "CPU"
 
-      learner = lrn(sprintf("%s.catboost", task$task_type),
+      learner = lrn(
+        sprintf("%s.catboost", task$task_type),
         id = "catboost",
         iterations = self$search_space(task)$upper["catboost.iterations"] %??% 1000L,
         early_stopping_rounds = self$early_stopping_rounds(task),
         use_best_model = TRUE,
         eval_metric = self$internal_measure(measure, task),
-        task_type = task_type)
+        task_type = task_type
+      )
       set_threads(learner, n_threads)
 
       po("removeconstants", id = "catboost_removeconstants") %>>%
-        po("colapply", id = "catboost_colapply", applicator = as.numeric, affect_columns = selector_type("integer")) %>>%
+        po(
+          "colapply",
+          id = "catboost_colapply",
+          applicator = as.numeric,
+          affect_columns = selector_type("integer")
+        ) %>>%
         po("removeconstants", id = "catboost_post_removeconstants") %>>%
         learner
     },
@@ -82,17 +89,19 @@ AutoCatboost = R6Class("AutoCatboost",
     #' Get the internal measure for the auto.
     internal_measure = function(measure, task) {
       if (task$task_type == "regr") {
-        switch(measure$id,
+        switch(
+          measure$id,
           "regr.rmse" = "RMSE",
           "regr.mae" = "MAE",
           "regr.mape" = "MAPE",
           "regr.smape" = "SMAPE",
           "regr.medae" = "MedianAbsoluteError",
-          "regr.rsq" = "R2",  # regr.rsq has id `rsq`
+          "regr.rsq" = "R2", # regr.rsq has id `rsq`
           "rmse" # default
         )
       } else if ("twoclass" %in% task$properties) {
-        switch(measure$id,
+        switch(
+          measure$id,
           "classif.ce" = "Accuracy",
           "classif.acc" = "Accuracy",
           "classif.bacc" = "BalancedAccuracy",
@@ -106,7 +115,8 @@ AutoCatboost = R6Class("AutoCatboost",
           "error" # default
         )
       } else if ("multiclass" %in% task$properties) {
-        switch(measure$id,
+        switch(
+          measure$id,
           "classif.ce" = "Accuracy",
           "classif.acc" = "Accuracy",
           "classif.mauc_mu" = "AUC",
@@ -119,12 +129,14 @@ AutoCatboost = R6Class("AutoCatboost",
   ),
 
   private = list(
+    # nolint start: line_length_linter
     .search_space =  ps(
       catboost.depth          = p_int(1, 12),
       catboost.learning_rate  = p_dbl(1e-3, 1, logscale = TRUE),
       catboost.l2_leaf_reg    = p_dbl(1e-3, 1e3),
       catboost.iterations     = p_int(1L, 1000L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
     ),
+    # nolint end
 
     .default_values = list(
       catboost.depth = 6L,
@@ -135,5 +147,3 @@ AutoCatboost = R6Class("AutoCatboost",
 )
 
 mlr_auto$add("catboost", function() AutoCatboost$new())
-
-

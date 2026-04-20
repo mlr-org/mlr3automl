@@ -11,7 +11,8 @@ test_that("LearnerClassifAutoSVM works", {
   })
 
   task = tsk("penguins")
-  learner = lrn("classif.auto_svm",
+  learner = lrn(
+    "classif.auto_svm",
     rush = rush,
     small_data_size = 1,
     resampling = rsmp("holdout"),

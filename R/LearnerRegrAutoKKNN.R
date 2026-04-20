@@ -6,10 +6,10 @@
 #' @template param_id
 #'
 #' @export
-LearnerRegrAutoKKNN = R6Class("LearnerRegrAutoKKNN",
+LearnerRegrAutoKKNN = R6Class(
+  "LearnerRegrAutoKKNN",
   inherit = LearnerRegrAuto,
   public = list(
-
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "regr.auto_kknn", rush = NULL) {
@@ -20,5 +20,3 @@ LearnerRegrAutoKKNN = R6Class("LearnerRegrAutoKKNN",
 
 #' @include aaa.R
 learners[["regr.auto_kknn"]] = LearnerRegrAutoKKNN
-
-

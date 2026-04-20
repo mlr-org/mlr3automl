@@ -13,10 +13,10 @@
 #' @template param_devices
 #'
 #' @export
-AutoMlp = R6Class("AutoMlp",
+AutoMlp = R6Class(
+  "AutoMlp",
   inherit = Auto,
   public = list(
-
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(id = "mlp") {
@@ -42,12 +42,13 @@ AutoMlp = R6Class("AutoMlp",
 
       device = if ("cuda" %in% devices) "cuda" else "auto"
 
-      learner = lrn(sprintf("%s.mlp", task$task_type),
-       id = "mlp",
-       measures_valid = measure,
-       patience = self$early_stopping_rounds(task),
-       batch_size = 32L,
-       device = device
+      learner = lrn(
+        sprintf("%s.mlp", task$task_type),
+        id = "mlp",
+        measures_valid = measure,
+        patience = self$early_stopping_rounds(task),
+        batch_size = 32L,
+        device = device
       )
       set_threads(learner, n_threads)
 
@@ -70,6 +71,7 @@ AutoMlp = R6Class("AutoMlp",
   ),
 
   private = list(
+    # nolint start: indentation_linter, line_length_linter
     .search_space = ps(
         mlp.n_layers              = p_int(1L, 16L),
         mlp.neurons               = p_int(1L, 1024L),
@@ -78,6 +80,7 @@ AutoMlp = R6Class("AutoMlp",
         mlp.opt.weight_decay      = p_dbl(1e-6, 1e-3, logscale = TRUE),
         mlp.epochs                = p_int(1L, 100L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
     ),
+    # nolint end
 
     .default_values = list(
       mlp.n_layers = 4L,
