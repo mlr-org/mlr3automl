@@ -10,8 +10,11 @@ test_that("LearnerRegrAutoFTTransformer works", {
     library(testthat)
     library(checkmate)
 
-    rush_plan(n_workers = 2, worker_type = "mirai")
-    mirai::daemons(2)
+    rush = start_rush()
+    on.exit({
+      rush$reset()
+      mirai::daemons(0)
+    })
 
     mirai::everywhere({
       Sys.setenv(RETICULATE_PYTHON = "managed")
@@ -19,7 +22,8 @@ test_that("LearnerRegrAutoFTTransformer works", {
 
     task = tsk("mtcars")
 
-    learner = lrn("regr.auto_ft_transformer",
+    learner = lrn(
+      "regr.auto_ft_transformer",
       small_data_size = 1,
       resampling = rsmp("holdout"),
       measure = msr("regr.rmse"),
@@ -28,7 +32,9 @@ test_that("LearnerRegrAutoFTTransformer works", {
       initial_design_size = 2,
       encapsulate_learner = FALSE,
       encapsulate_mbo = FALSE,
-      check_learners = FALSE)
+      check_learners = FALSE,
+      rush = rush
+    )
 
     expect_class(learner$train(task), "LearnerRegrAutoFTTransformer")
     TRUE
