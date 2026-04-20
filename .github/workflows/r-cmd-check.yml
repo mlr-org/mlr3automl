@@ -67,4 +67,4 @@ jobs:
       - uses: r-lib/actions/check-r-package@v2
         with:
           error-on: '"note"'
-          args: 'c("--no-manual", "--as-cran")'
+          args: 'c("--no-manual")' # "--as-cran" prevents to start external processes
