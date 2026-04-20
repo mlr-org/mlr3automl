@@ -1,6 +1,6 @@
 test_that("LearnerRegrAutoFTTransformer works", {
   skip_on_cran()
-  skip_if_not_installed(unlist(map(mlr_auto$mget("ft_transformer"), "packages")))
+  skip_if_not_all_installed(unlist(map(mlr_auto$mget("ft_transformer"), "packages")))
   skip_if_not_installed("rush")
   skip_if_no_redis()
 

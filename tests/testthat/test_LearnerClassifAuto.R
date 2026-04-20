@@ -23,6 +23,7 @@ test_that("only lda fails", {
 
 test_that("only extra_trees fails", {
   skip_on_cran()
+  skip_if_not_all_installed(unlist(map(mlr_auto$mget("extra_trees"), "packages")))
   skip_if_not_installed("rush")
   skip_if_no_redis()
 
@@ -37,7 +38,7 @@ test_that("only extra_trees fails", {
 
 test_that("all learner on cpu work", {
   skip_on_cran()
-  skip_if_not_installed(unlist(map(mlr_auto$mget(c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees")), "packages")))
+  skip_if_not_all_installed(unlist(map(mlr_auto$mget(c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees")), "packages")))
   skip_if_not_installed("rush")
   skip_if_no_redis()
 
@@ -68,7 +69,7 @@ test_that("all learner on cpu work", {
 test_that("memory limit works", {
   skip_on_cran()
   skip_if_not_installed("rush")
-  skip_if_not_installed(all_packages)
+  skip_if_not_all_installed(all_packages)
   skip_if_no_redis()
 
   rush = start_rush()
@@ -129,7 +130,7 @@ test_that("small data set switch works", {
 test_that("large data set switch works", {
   skip_on_cran()
   skip_if_not_installed("rush")
-  skip_if_not_installed(all_packages)
+  skip_if_not_all_installed(all_packages)
   skip_if_no_redis()
 
   rush = start_rush()
@@ -190,7 +191,7 @@ test_that("resample works", {
 test_that("best initial design works with evals terminator", {
   skip_on_cran()
   skip_if_not_installed("rush")
-  skip_if_not_installed(all_packages)
+  skip_if_not_all_installed(all_packages)
   skip_if_no_redis()
 
   rush = start_rush()
@@ -217,7 +218,7 @@ test_that("best initial design works with evals terminator", {
 test_that("initial design runtime limit works", {
   skip_on_cran()
   skip_if_not_installed("rush")
-  skip_if_not_installed(all_packages)
+  skip_if_not_all_installed(all_packages)
   skip_if_no_redis()
 
   rush = start_rush()
@@ -243,7 +244,7 @@ test_that("initial design runtime limit works", {
 test_that("devices works", {
   skip_on_cran()
   skip_if_not_installed("rush")
-  skip_if_not_installed(all_packages)
+  skip_if_not_all_installed(all_packages)
   skip_if_no_redis()
 
   rush = start_rush()
@@ -270,7 +271,7 @@ test_that("devices works", {
   skip_if(TRUE)
   skip_on_cran()
   skip_if_not_installed("rush")
-  skip_if_not_installed(all_packages)
+  skip_if_not_all_installed(all_packages)
   skip_if_no_redis()
 
   rush = start_rush()
@@ -296,7 +297,7 @@ test_that("devices works", {
 test_that("lightgbm time limit works", {
   skip_on_cran()
   skip_if_not_installed("rush")
-  skip_if_not_installed(all_packages)
+  skip_if_not_all_installed(all_packages)
   skip_if_no_redis()
 
   rush = start_rush()
@@ -326,7 +327,7 @@ test_that("lightgbm time limit works", {
 test_that("xgboost time limit works", {
   skip_on_cran()
   skip_if_not_installed("rush")
-  skip_if_not_installed(all_packages)
+  skip_if_not_all_installed(all_packages)
   skip_if_no_redis()
 
   rush = start_rush()
@@ -356,7 +357,7 @@ test_that("xgboost time limit works", {
 test_that("adaptive design works", {
   skip_on_cran()
   skip_if_not_installed("rush")
-  skip_if_not_installed(all_packages)
+  skip_if_not_all_installed(all_packages)
   skip_if_no_redis()
 
   rush = start_rush()
@@ -388,7 +389,7 @@ test_that("adaptive design works", {
 test_that("adaptive design works", {
   skip_on_cran()
   skip_if_not_installed("rush")
-  skip_if_not_installed(all_packages)
+  skip_if_not_all_installed(all_packages)
   skip_if_no_redis()
 
   rush = start_rush()

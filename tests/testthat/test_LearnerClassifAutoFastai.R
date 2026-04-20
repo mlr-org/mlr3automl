@@ -1,7 +1,7 @@
 test_that("LearnerClassifAutoFastai works", {
   skip_if(TRUE)
   skip_on_cran()
-  skip_if_not_installed(unlist(map(mlr_auto$mget("fastai"), "packages")))
+  skip_if_not_all_installed(unlist(map(mlr_auto$mget("fastai"), "packages")))
   skip_if_not_installed("rush")
   skip_if_no_redis()
 

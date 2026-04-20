@@ -1,6 +1,6 @@
 test_that("LearnerClassifAutoResNet works", {
   skip_on_cran()
-  skip_if_not_installed(unlist(map(mlr_auto$mget("resnet"), "packages")))
+  skip_if_not_all_installed(unlist(map(mlr_auto$mget("resnet"), "packages")))
   skip_if_not_installed("rush")
   skip_if_no_redis()
 
