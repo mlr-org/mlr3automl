@@ -47,7 +47,7 @@ Suggests:
     reticulate,
     rpart,
     testthat (>= 3.0.0),
-    xgboost
+    xgboost (>= 3.2.1.1)
 Remotes:
     catboost/catboost/catboost/R-package,
     eagerai/fastai,
