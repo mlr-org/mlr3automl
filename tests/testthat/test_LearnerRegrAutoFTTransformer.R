@@ -9,6 +9,10 @@ test_that("LearnerRegrAutoFTTransformer works", {
     library(mlr3automl)
     library(testthat)
     library(checkmate)
+    lapply(
+      list.files(system.file("testthat", package = "rush"), pattern = "^helper.*\\.[rR]", full.names = TRUE),
+      source
+    )
 
     rush = start_rush()
     on.exit({
