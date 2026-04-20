@@ -41,6 +41,7 @@ AutoXgboost = R6Class("AutoXgboost",
 
       learner = lrn(sprintf("%s.xgboost", task$task_type),
         id = "xgboost",
+        booster = "gbtree",
         early_stopping_rounds = self$early_stopping_rounds(task),
         callbacks = list(cb_timeout_xgboost(timeout * 0.9)),
         eval_metric = self$internal_measure(measure, task),
