@@ -12,8 +12,8 @@ LearnerClassifAutoXgboost = R6Class("LearnerClassifAutoXgboost",
 
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
-    initialize = function(id = "classif.auto_xgboost") {
-      super$initialize(id = id, learner_ids = "xgboost")
+    initialize = function(id = "classif.auto_xgboost", rush = NULL) {
+      super$initialize(id = id, learner_ids = "xgboost", rush = rush)
     }
   )
 )

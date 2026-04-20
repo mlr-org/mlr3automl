@@ -12,8 +12,8 @@ LearnerRegrAutoExtraTrees = R6Class("LearnerRegrAutoExtraTrees",
 
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
-    initialize = function(id = "regr.auto_extra_trees") {
-      super$initialize(id = id, learner_ids = "extra_trees")
+    initialize = function(id = "regr.auto_extra_trees", rush = NULL) {
+      super$initialize(id = id, learner_ids = "extra_trees", rush = rush)
     }
   )
 )

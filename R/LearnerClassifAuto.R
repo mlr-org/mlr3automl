@@ -20,16 +20,22 @@ LearnerClassifAuto = R6Class("LearnerClassifAuto",
     #' @field instance ([mlr3tuning::TuningInstanceAsyncSingleCrit]).
     instance = NULL,
 
+    #' @field rush ([rush::Rush])\cr
+    #' Rush instance for parallel tuning.
+    rush = NULL,
+
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function(
       id = "classif.auto",
-      learner_ids
+      learner_ids,
+      rush = NULL
       ) {
       all_learner_ids = mlr_auto$keys()
       if (missing(learner_ids)) learner_ids = all_learner_ids
       assert_subset(learner_ids, all_learner_ids)
       private$.learner_ids = learner_ids
+      self$rush = assert_r6(rush, "Rush", null.ok = TRUE)
 
       param_set = ps(
         learner_timeout = p_int(lower = 1L, init = 900L, tags = c("train", "super")),

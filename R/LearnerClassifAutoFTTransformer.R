@@ -12,8 +12,8 @@ LearnerClassifAutoFTTransformer = R6Class("LearnerClassifAutoFTTransformer",
 
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
-    initialize = function(id = "classif.auto_ft_transformer") {
-      super$initialize(id = id, learner_ids = "ft_transformer")
+    initialize = function(id = "classif.auto_ft_transformer", rush = NULL) {
+      super$initialize(id = id, learner_ids = "ft_transformer", rush = rush)
     }
   )
 )

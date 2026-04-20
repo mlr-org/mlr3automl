@@ -79,7 +79,8 @@ train_auto = function(self, private, task) {
     search_space = search_space,
     callbacks = callbacks,
     store_benchmark_result = pv$store_benchmark_result,
-    store_models = pv$store_models
+    store_models = pv$store_models,
+    rush = self$rush
   )
 
   # initial design

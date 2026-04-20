@@ -9,7 +9,7 @@ test_that("LearnerClassifAuto is initialized", {
 test_that("only lda fails", {
   skip_on_cran()
   skip_if_not_installed("rush")
-  flush_redis()
+  skip_if_no_redis()
 
   task = tsk("penguins")
   expect_error(lrn("classif.auto",
@@ -24,7 +24,7 @@ test_that("only lda fails", {
 test_that("only extra_trees fails", {
   skip_on_cran()
   skip_if_not_installed("rush")
-  flush_redis()
+  skip_if_no_redis()
 
   task = tsk("penguins")
   expect_error(lrn("classif.auto",
@@ -39,13 +39,17 @@ test_that("all learner on cpu work", {
   skip_on_cran()
   skip_if_not_installed(unlist(map(mlr_auto$mget(c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees")), "packages")))
   skip_if_not_installed("rush")
-  flush_redis()
+  skip_if_no_redis()
 
-  rush_plan(n_workers = 2, worker_type = "remote")
-  mirai::daemons(2)
+  rush = start_rush()
+  on.exit({
+    rush$reset()
+    mirai::daemons(0)
+  })
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
+    rush = rush,
     learner_ids = c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees"),
     small_data_size = 1,
     resampling = rsmp("holdout"),
@@ -65,13 +69,17 @@ test_that("memory limit works", {
   skip_on_cran()
   skip_if_not_installed("rush")
   skip_if_not_installed(all_packages)
-  flush_redis()
+  skip_if_no_redis()
 
-  rush_plan(n_workers = 2, worker_type = "remote")
-  mirai::daemons(2)
+  rush = start_rush()
+  on.exit({
+    rush$reset()
+    mirai::daemons(0)
+  })
 
   task = tsk("spam")
   learner = lrn("classif.auto",
+    rush = rush,
     learner_ids = c("ranger", "xgboost", "catboost", "kknn"),
     memory_limit = 5,
     small_data_size = 100,
@@ -92,13 +100,17 @@ test_that("small data set switch works", {
   skip_on_cran()
   skip_if_not_installed("rush")
   skip_if_not_installed("glmnet")
-  flush_redis()
+  skip_if_no_redis()
 
-  rush_plan(n_workers = 2, worker_type = "remote")
-  mirai::daemons(2)
+  rush = start_rush()
+  on.exit({
+    rush$reset()
+    mirai::daemons(0)
+  })
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
+    rush = rush,
     learner_ids = "glmnet",
     small_data_size = 1000,
     small_data_resampling = rsmp("cv", folds = 2),
@@ -118,13 +130,17 @@ test_that("large data set switch works", {
   skip_on_cran()
   skip_if_not_installed("rush")
   skip_if_not_installed(all_packages)
-  flush_redis()
+  skip_if_no_redis()
 
-  rush_plan(n_workers = 2, worker_type = "remote")
-  mirai::daemons(2)
+  rush = start_rush()
+  on.exit({
+    rush$reset()
+    mirai::daemons(0)
+  })
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
+    rush = rush,
     learner_ids = c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees"),
     initial_design_type = "sobol",
     large_data_size = 100,
@@ -146,13 +162,17 @@ test_that("resample works", {
   skip_on_cran()
   skip_if_not_installed("rush")
   skip_if_not_installed("glmnet")
-  flush_redis()
+  skip_if_no_redis()
 
-  rush_plan(n_workers = 2, worker_type = "remote")
-  mirai::daemons(2)
+  rush = start_rush()
+  on.exit({
+    rush$reset()
+    mirai::daemons(0)
+  })
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
+    rush = rush,
     learner_ids = "glmnet",
     small_data_size = 1,
     resampling = rsmp("holdout"),
@@ -171,13 +191,17 @@ test_that("best initial design works with evals terminator", {
   skip_on_cran()
   skip_if_not_installed("rush")
   skip_if_not_installed(all_packages)
-  flush_redis()
+  skip_if_no_redis()
 
-  rush_plan(n_workers = 2, worker_type = "remote")
-  mirai::daemons(2)
+  rush = start_rush()
+  on.exit({
+    rush$reset()
+    mirai::daemons(0)
+  })
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
+    rush = rush,
     learner_ids = c("kknn", "glmnet"),
     initial_design_set = 1,
     small_data_size = 1,
@@ -194,13 +218,17 @@ test_that("initial design runtime limit works", {
   skip_on_cran()
   skip_if_not_installed("rush")
   skip_if_not_installed(all_packages)
-  flush_redis()
+  skip_if_no_redis()
 
-  rush_plan(n_workers = 2, worker_type = "remote")
-  mirai::daemons(2)
+  rush = start_rush()
+  on.exit({
+    rush$reset()
+    mirai::daemons(0)
+  })
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
+    rush = rush,
     learner_ids = "glmnet",
     small_data_size = 1,
     initial_design_type = "random",
@@ -216,13 +244,17 @@ test_that("devices works", {
   skip_on_cran()
   skip_if_not_installed("rush")
   skip_if_not_installed(all_packages)
-  flush_redis()
+  skip_if_no_redis()
 
-  rush_plan(n_workers = 2, worker_type = "remote")
-  mirai::daemons(2)
+  rush = start_rush()
+  on.exit({
+    rush$reset()
+    mirai::daemons(0)
+  })
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
+    rush = rush,
     devices = "cpu",
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 10),
@@ -239,13 +271,17 @@ test_that("devices works", {
   skip_on_cran()
   skip_if_not_installed("rush")
   skip_if_not_installed(all_packages)
-  flush_redis()
+  skip_if_no_redis()
 
-  rush_plan(n_workers = 2, worker_type = "remote")
-  mirai::daemons(2)
+  rush = start_rush()
+  on.exit({
+    rush$reset()
+    mirai::daemons(0)
+  })
 
   task = tsk("penguins")
   learner = lrn("classif.auto",
+    rush = rush,
     devices = "cuda",
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 10),
@@ -261,14 +297,18 @@ test_that("lightgbm time limit works", {
   skip_on_cran()
   skip_if_not_installed("rush")
   skip_if_not_installed(all_packages)
-  flush_redis()
+  skip_if_no_redis()
 
-  rush_plan(n_workers = 2, worker_type = "remote")
-  mirai::daemons(2)
+  rush = start_rush()
+  on.exit({
+    rush$reset()
+    mirai::daemons(0)
+  })
 
   task = tsk("spam")
 
   learner = lrn("classif.auto",
+    rush = rush,
     learner_ids = "lightgbm",
     learner_timeout = 1,
     measure = msr("classif.ce"),
@@ -287,14 +327,18 @@ test_that("xgboost time limit works", {
   skip_on_cran()
   skip_if_not_installed("rush")
   skip_if_not_installed(all_packages)
-  flush_redis()
+  skip_if_no_redis()
 
-  rush_plan(n_workers = 2, worker_type = "remote")
-  mirai::daemons(2)
+  rush = start_rush()
+  on.exit({
+    rush$reset()
+    mirai::daemons(0)
+  })
 
   task = tsk("spam")
 
   learner = lrn("classif.auto",
+    rush = rush,
     learner_ids = "xgboost",
     learner_timeout = 1,
     measure = msr("classif.ce"),
@@ -313,14 +357,18 @@ test_that("adaptive design works", {
   skip_on_cran()
   skip_if_not_installed("rush")
   skip_if_not_installed(all_packages)
-  flush_redis()
+  skip_if_no_redis()
 
-  rush_plan(n_workers = 2, worker_type = "remote")
-  mirai::daemons(2)
+  rush = start_rush()
+  on.exit({
+    rush$reset()
+    mirai::daemons(0)
+  })
 
   task = tsk("penguins")
 
   learner = lrn("classif.auto",
+    rush = rush,
     learner_ids = c("kknn", "ranger"),
     small_data_size = 1,
     measure = msr("classif.ce"),
@@ -341,14 +389,18 @@ test_that("adaptive design works", {
   skip_on_cran()
   skip_if_not_installed("rush")
   skip_if_not_installed(all_packages)
-  flush_redis()
+  skip_if_no_redis()
 
-  rush_plan(n_workers = 2, worker_type = "remote")
-  mirai::daemons(2)
+  rush = start_rush()
+  on.exit({
+    rush$reset()
+    mirai::daemons(0)
+  })
 
   task = tsk("penguins")
 
   learner = lrn("classif.auto",
+    rush = rush,
     learner_ids = c("lda", "ranger"),
     small_data_size = 1,
     measure = msr("classif.ce"),
@@ -364,7 +416,3 @@ test_that("adaptive design works", {
 
   expect_class(learner$train(task), "LearnerClassifAuto")
 })
-
-
-
-

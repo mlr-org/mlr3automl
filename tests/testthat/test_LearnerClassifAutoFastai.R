@@ -3,7 +3,7 @@ test_that("LearnerClassifAutoFastai works", {
   skip_on_cran()
   skip_if_not_installed(unlist(map(mlr_auto$mget("fastai"), "packages")))
   skip_if_not_installed("rush")
-  flush_redis()
+  skip_if_no_redis()
 
   expect_true(callr::r(function() {
     Sys.setenv(RETICULATE_PYTHON = "managed")
@@ -11,7 +11,7 @@ test_that("LearnerClassifAutoFastai works", {
     library(testthat)
     library(checkmate)
 
-    rush_plan(n_workers = 2, worker_type = "remote")
+    rush_plan(n_workers = 2, worker_type = "mirai")
     mirai::daemons(2)
 
     mirai::everywhere({
@@ -36,5 +36,3 @@ test_that("LearnerClassifAutoFastai works", {
     expect_class(learner$train(task), "LearnerClassifAutoFastai")
   }))
 })
-
-
