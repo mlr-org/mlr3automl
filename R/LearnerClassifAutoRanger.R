@@ -12,8 +12,8 @@ LearnerClassifAutoRanger = R6Class(
   public = list(
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
-    initialize = function(id = "classif.auto_ranger") {
-      super$initialize(id = id, learner_ids = "ranger")
+    initialize = function(id = "classif.auto_ranger", rush = NULL) {
+      super$initialize(id = id, learner_ids = "ranger", rush = rush)
     }
   )
 )

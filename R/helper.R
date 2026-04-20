@@ -1,19 +1,20 @@
 cb_timeout_xgboost = function(timeout) {
-  callback = function(env = parent.frame()) {
-    if (is.null(env$start_time)) {
-      env$start_time = Sys.time()
+  cb_env = new.env(parent = emptyenv())
+  xgboost::xgb.Callback(
+    cb_name = "cb_timeout_xgboost",
+    env = cb_env,
+    f_after_iter = function(env, model, data, evals, iteration, iter_feval) {
+      if (is.null(env$start_time)) {
+        env$start_time = Sys.time()
+      }
+      if (difftime(Sys.time(), env$start_time, units = "secs") > timeout) {
+        message("Timeout reached")
+        TRUE
+      } else {
+        FALSE
+      }
     }
-
-    if (difftime(Sys.time(), env$start_time, units = "secs") > timeout) {
-      message("Timeout reached")
-      env$stop_condition = TRUE
-    } else {
-      env$stop_condition = FALSE
-    }
-  }
-  attr(callback, "call") = match.call()
-  attr(callback, "name") = "cb_timeout_xgboost"
-  callback
+  )
 }
 
 

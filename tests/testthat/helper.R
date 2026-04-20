@@ -10,23 +10,13 @@ lapply(
   list.files(system.file("testthat", package = "mlr3tuning"), pattern = "^helper.*\\.[rR]", full.names = TRUE),
   source
 )
+lapply(list.files(system.file("testthat", package = "rush"), pattern = "^helper.*\\.[rR]", full.names = TRUE), source)
 
-flush_redis = function() {
-  config = redux::redis_config()
-  r = redux::hiredis(config)
-  r$FLUSHDB()
-}
-
-expect_rush_reset = function(rush, type = "kill") {
-  rush$reset(type = type)
-  Sys.sleep(1)
-  keys = rush$connector$command(c("KEYS", "*"))
-  if (!test_list(keys, len = 0)) {
-    stopf("Found keys in redis after reset: %s", keys)
+skip_if_not_all_installed = function(pkgs) {
+  for (pkg in pkgs) {
+    skip_if_not_installed(pkg)
   }
-  mirai::daemons(0)
 }
-
 
 test_classif_learner = function(
   learner_id,
@@ -37,17 +27,21 @@ test_classif_learner = function(
   check_learners = TRUE
 ) {
   skip_on_cran()
-  skip_if_not_installed(unlist(map(mlr_auto$mget(learner_id), "packages")))
+  skip_if_not_all_installed(unlist(map(mlr_auto$mget(learner_id), "packages")))
   skip_if_not_installed("rush")
-  flush_redis()
+  skip_if_no_redis()
 
-  rush_plan(n_workers = 2, worker_type = "remote")
-  mirai::daemons(2)
+  rush = start_rush()
+  on.exit({
+    rush$reset()
+    mirai::daemons(0)
+  })
 
   task = if (is.null(task)) tsk("penguins") else task
   learner = lrn(
     "classif.auto",
     learner_ids = learner_id,
+    rush = rush,
     small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
@@ -75,17 +69,21 @@ test_regr_learner = function(
   check_learners = TRUE
 ) {
   skip_on_cran()
-  skip_if_not_installed(unlist(map(mlr_auto$mget(learner_id), "packages")))
+  skip_if_not_all_installed(unlist(map(mlr_auto$mget(learner_id), "packages")))
   skip_if_not_installed("rush")
-  flush_redis()
+  skip_if_no_redis()
 
-  rush_plan(n_workers = 2, worker_type = "remote")
-  mirai::daemons(2)
+  rush = start_rush()
+  on.exit({
+    rush$reset()
+    mirai::daemons(0)
+  })
 
   task = if (is.null(task)) tsk("mtcars") else task
   learner = lrn(
     "regr.auto",
     learner_ids = learner_id,
+    rush = rush,
     small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("regr.rmse"),

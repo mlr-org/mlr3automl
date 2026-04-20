@@ -12,8 +12,8 @@ LearnerRegrAutoMLP = R6Class(
   public = list(
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
-    initialize = function(id = "regr.auto_mlp") {
-      super$initialize(id = id, learner_ids = "mlp")
+    initialize = function(id = "regr.auto_mlp", rush = NULL) {
+      super$initialize(id = id, learner_ids = "mlp", rush = rush)
     }
   )
 )

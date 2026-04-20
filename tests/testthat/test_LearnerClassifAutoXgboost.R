@@ -1,15 +1,19 @@
 test_that("LearnerClassifAutoXgboost works", {
   skip_on_cran()
-  skip_if_not_installed(unlist(map(mlr_auto$mget("xgboost"), "packages")))
+  skip_if_not_all_installed(unlist(map(mlr_auto$mget("xgboost"), "packages")))
   skip_if_not_installed("rush")
-  flush_redis()
+  skip_if_no_redis()
 
-  rush_plan(n_workers = 2, worker_type = "remote")
-  mirai::daemons(2)
+  rush = start_rush()
+  on.exit({
+    rush$reset()
+    mirai::daemons(0)
+  })
 
   task = tsk("penguins")
   learner = lrn(
     "classif.auto_xgboost",
+    rush = rush,
     small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),

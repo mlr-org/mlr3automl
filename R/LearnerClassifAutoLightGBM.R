@@ -12,8 +12,8 @@ LearnerClassifAutoLightGBM = R6Class(
   public = list(
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
-    initialize = function(id = "classif.auto_lightgbm") {
-      super$initialize(id = id, learner_ids = "lightgbm")
+    initialize = function(id = "classif.auto_lightgbm", rush = NULL) {
+      super$initialize(id = id, learner_ids = "lightgbm", rush = rush)
     }
   )
 )

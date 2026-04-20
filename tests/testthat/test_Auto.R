@@ -1,5 +1,5 @@
 test_that("default design is generated", {
-  skip_if_not_installed(all_packages)
+  skip_if_not_all_installed(all_packages)
 
   autos = mlr_auto$mget(mlr_auto$keys())
   xdt = map_dtr(autos, function(auto) auto$design_default(tsk("penguins")), .fill = TRUE)
@@ -8,7 +8,7 @@ test_that("default design is generated", {
 })
 
 test_that("lhs design is generated", {
-  skip_if_not_installed(all_packages)
+  skip_if_not_all_installed(all_packages)
 
   autos = mlr_auto$mget(mlr_auto$keys())
   xdt = generate_initial_design("lhs", combine_search_spaces(autos, tsk("penguins")), 256L)
@@ -17,7 +17,7 @@ test_that("lhs design is generated", {
 })
 
 test_that("sobol design is generated", {
-  skip_if_not_installed(all_packages)
+  skip_if_not_all_installed(all_packages)
 
   autos = mlr_auto$mget(mlr_auto$keys())
   xdt = generate_initial_design("sobol", combine_search_spaces(autos, tsk("penguins")), 256L)
@@ -26,7 +26,7 @@ test_that("sobol design is generated", {
 })
 
 test_that("random design is generated", {
-  skip_if_not_installed(all_packages)
+  skip_if_not_all_installed(all_packages)
 
   autos = mlr_auto$mget(mlr_auto$keys())
   xdt = generate_initial_design("random", combine_search_spaces(autos, tsk("penguins")), 256L)
@@ -35,7 +35,7 @@ test_that("random design is generated", {
 })
 
 test_that("set design is generated", {
-  skip_if_not_installed(all_packages)
+  skip_if_not_all_installed(all_packages)
 
   autos = mlr_auto$mget(mlr_auto$keys())
   xdt = map_dtr(autos, function(auto) auto$design_set(tsk("penguins"), msr("classif.ce"), 10L), .fill = TRUE)
@@ -44,7 +44,7 @@ test_that("set design is generated", {
 })
 
 test_that("estimate memory works", {
-  skip_if_not_installed(all_packages)
+  skip_if_not_all_installed(all_packages)
 
   autos = mlr_auto$mget(mlr_auto$keys())
   memory = map_dbl(autos, function(auto) auto$estimate_memory(tsk("penguins")))

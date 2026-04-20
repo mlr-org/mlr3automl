@@ -12,8 +12,8 @@ LearnerClassifAutoCatboost = R6Class(
   public = list(
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
-    initialize = function(id = "classif.auto_catboost") {
-      super$initialize(id = id, learner_ids = "catboost")
+    initialize = function(id = "classif.auto_catboost", rush = NULL) {
+      super$initialize(id = id, learner_ids = "catboost", rush = rush)
     }
   )
 )

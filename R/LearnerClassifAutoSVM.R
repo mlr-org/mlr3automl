@@ -12,8 +12,8 @@ LearnerClassifAutoSVM = R6Class(
   public = list(
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
-    initialize = function(id = "classif.auto_svm") {
-      super$initialize(id = id, learner_ids = "svm")
+    initialize = function(id = "classif.auto_svm", rush = NULL) {
+      super$initialize(id = id, learner_ids = "svm", rush = rush)
     }
   )
 )
