@@ -143,7 +143,7 @@ Auto = R6Class(
       data = fread(file)
 
       # exclude tasks
-      exclude_tasks = getOption("mlr3automl.exclude_tasks", "")
+      exclude_tasks = getOption("mlr3automl.exclude_tasks", character(0))
       if (any(exclude_tasks %in% data$task)) {
         lg$info("Excluding tasks from initial design: %s", as_short_string(exclude_tasks[exclude_tasks %in% data$task]))
         data = data[task %nin% exclude_tasks]
