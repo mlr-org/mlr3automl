@@ -54,7 +54,7 @@ AutoFastai = R6Class(
       assert_measure(measure)
       assert_count(n_threads)
       assert_count(timeout)
-      assert_subset(devices, self$devices)
+      assert_subset(devices, c("cpu", "cuda"))
 
       require_namespaces("mlr3extralearners")
 
