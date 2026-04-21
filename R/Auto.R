@@ -59,6 +59,11 @@ Auto = R6Class(
     #' @description
     #' Check if the auto is compatible with the task.
     check = function(task, memory_limit = Inf, large_data_set = FALSE, devices) {
+      assert_task(task)
+      assert_number(memory_limit)
+      assert_flag(large_data_set)
+      assert_character(devices)
+
       if (!task$task_type %in% self$task_types) {
         lg$info("Learner '%s' is not compatible with task type '%s'", self$id, task$task_type)
         return(FALSE)
