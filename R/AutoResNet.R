@@ -90,8 +90,8 @@ AutoResNet = R6Class(
       resnet.d_hidden_multiplier = 1L,
       resnet.dropout1 = 0.2,
       resnet.dropout2 = 0.2,
-      resnet.opt.lr = 1e-5,
-      resnet.opt.weight_decay = 1e-6
+      resnet.opt.lr = log(1e-5),
+      resnet.opt.weight_decay = log(1e-6)
     )
   )
 )

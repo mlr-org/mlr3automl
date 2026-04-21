@@ -123,14 +123,16 @@ AutoXgboost = R6Class(
   private = list(
     # nolint start: indentation_linter, line_length_linter
     .search_space = ps(
-        xgboost.eta               = p_dbl(1e-4, 1, logscale = TRUE),
-        xgboost.max_depth         = p_int(1, 12),
-        xgboost.colsample_bytree  = p_dbl(1e-1, 1),
-        xgboost.colsample_bylevel = p_dbl(1e-1, 1),
-        xgboost.lambda            = p_dbl(1e-3, 1e3, logscale = TRUE),
-        xgboost.alpha             = p_dbl(1e-3, 1e3, logscale = TRUE),
-        xgboost.subsample         = p_dbl(1e-1, 1),
-        xgboost.nrounds           = p_int(1, 5000, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
+      xgboost.eta = p_dbl(1e-4, 1, logscale = TRUE),
+      xgboost.max_depth = p_int(1, 12),
+      xgboost.colsample_bytree = p_dbl(1e-1, 1),
+      xgboost.colsample_bylevel = p_dbl(1e-1, 1),
+      xgboost.lambda = p_dbl(1e-3, 1e3, logscale = TRUE),
+      xgboost.alpha = p_dbl(1e-3, 1e3, logscale = TRUE),
+      xgboost.subsample = p_dbl(1e-1, 1),
+      xgboost.nrounds = p_int(1, 5000, tags = "internal_tuning", aggr = function(x) {
+        as.integer(ceiling(mean(unlist(x))))
+      })
     ),
     # nolint end
 
@@ -139,8 +141,8 @@ AutoXgboost = R6Class(
       xgboost.max_depth = 6L,
       xgboost.colsample_bytree = 1L,
       xgboost.colsample_bylevel = 1L,
-      xgboost.lambda = log(1L),
-      xgboost.alpha = log(0L),
+      xgboost.lambda = log(1),
+      xgboost.alpha = log(1),
       xgboost.subsample = 1L
     )
   )

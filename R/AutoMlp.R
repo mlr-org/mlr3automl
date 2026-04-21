@@ -86,8 +86,8 @@ AutoMlp = R6Class(
       mlp.n_layers = 4L,
       mlp.neurons = 128L,
       mlp.p = 0.2,
-      mlp.opt.lr = 1e-5,
-      mlp.opt.weight_decay = 1e-6
+      mlp.opt.lr = log(1e-5),
+      mlp.opt.weight_decay = log(1e-6)
     )
   )
 )
