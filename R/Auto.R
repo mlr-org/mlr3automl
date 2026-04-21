@@ -76,7 +76,7 @@ Auto = R6Class(
         lg$info("Learner '%s' is not compatible with large data sets", self$id)
         return(FALSE)
       }
-      if (any(devices %nin% self$devices)) {
+      if (!any(devices %in% self$devices)) {
         lg$info("Learner '%s' is not compatible with devices '%s'", self$id, as_short_string(devices))
         return(FALSE)
       }
