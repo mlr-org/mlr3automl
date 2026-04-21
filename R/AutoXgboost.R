@@ -78,7 +78,7 @@ AutoXgboost = R6Class(
 
       # histogram size
       max_depth = upper["xgboost.max_depth"]
-      max_bin = 265
+      max_bin = 256
       if (max_depth < 6) {
         max_depth = 6
       }
