@@ -3,12 +3,17 @@ test_that("LearnerRegrAutoMlp works", {
   skip_if_not_all_installed(unlist(map(mlr_auto$mget("mlp"), "packages")))
   skip_if_not_installed("rush")
   skip_if_no_redis()
+  skip_if(!torch::torch_is_installed(), "torch backend (LibTorch) not installed")
 
   expect_true(callr::r(function() {
     Sys.setenv(RETICULATE_PYTHON = "managed")
     library(mlr3automl)
     library(testthat)
     library(checkmate)
+    lapply(
+      list.files(system.file("testthat", package = "rush"), pattern = "^helper.*\\.[rR]", full.names = TRUE),
+      source
+    )
 
     rush = start_rush()
     on.exit({

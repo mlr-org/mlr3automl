@@ -10,15 +10,20 @@ test_that("LearnerClassifAutoFastai works", {
     library(mlr3automl)
     library(testthat)
     library(checkmate)
+    lapply(
+      list.files(system.file("testthat", package = "rush"), pattern = "^helper.*\\.[rR]", full.names = TRUE),
+      source
+    )
 
-    rush_plan(n_workers = 2, worker_type = "mirai")
-    mirai::daemons(2)
+    rush = start_rush()
+    on.exit({
+      rush$reset()
+      mirai::daemons(0)
+    })
 
     mirai::everywhere({
       Sys.setenv(RETICULATE_PYTHON = "managed")
     })
-
-    options(bbotk_debug = TRUE)
 
     task = tsk("penguins")
 
@@ -32,7 +37,8 @@ test_that("LearnerClassifAutoFastai works", {
       initial_design_size = 2,
       encapsulate_learner = FALSE,
       encapsulate_mbo = FALSE,
-      check_learners = TRUE
+      check_learners = TRUE,
+      rush = rush
     )
 
     expect_class(learner$train(task), "LearnerClassifAutoFastai")
