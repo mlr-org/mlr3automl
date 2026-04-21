@@ -133,8 +133,8 @@ AutoFTTransformer = R6Class(
       ft_transformer.attention_dropout = 0.2,
       ft_transformer.ffn_dropout = 0.2,
       ft_transformer.ffn_d_hidden_multiplier = 2 / 3,
-      ft_transformer.opt.lr = 1e-5,
-      ft_transformer.opt.weight_decay = 1e-6
+      ft_transformer.opt.lr = log(1e-5),
+      ft_transformer.opt.weight_decay = log(1e-6)
     )
   )
 )

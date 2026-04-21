@@ -113,7 +113,7 @@ AutoFastai = R6Class(
     .default_values = list(
       fastai.lr = log(1e-3),
       fastai.bs = 50,
-      fastai.layers = "c(200, 200)"
+      fastai.layers = "c(200, 100)"
     ),
 
     .search_space = ps(
