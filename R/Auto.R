@@ -106,6 +106,7 @@ Auto = R6Class(
     #' @description
     #' Estimate the memory for the auto.
     estimate_memory = function(task) {
+      # -Inf allows learners without a memory estimate to always pass memory checks
       -Inf
     },
 

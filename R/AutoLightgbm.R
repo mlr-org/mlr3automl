@@ -52,6 +52,7 @@ AutoLightgbm = R6Class(
       )
       set_threads(learner, n_threads)
 
+      # no preprocessing pipeline needed; lightgbm handles NAs and categoricals natively
       learner
     },
 
