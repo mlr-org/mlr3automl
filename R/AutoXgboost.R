@@ -65,6 +65,13 @@ AutoXgboost = R6Class(
     },
 
     #' @description
+    #' Prepare the graph learner for the final model fit.
+    finalize_model = function(graph_learner) {
+      graph_learner$param_set$values$xgboost.callbacks = NULL
+      invisible(graph_learner)
+    },
+
+    #' @description
     #' Estimate the memory for the auto.
     estimate_memory = function(task) {
       upper = self$search_space(task)$upper

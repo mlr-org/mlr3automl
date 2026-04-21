@@ -29,6 +29,7 @@ This class is the base class for all autos.
 \item \href{#method-Auto-graph}{\code{Auto$graph()}}
 \item \href{#method-Auto-early_stopping_rounds}{\code{Auto$early_stopping_rounds()}}
 \item \href{#method-Auto-estimate_memory}{\code{Auto$estimate_memory()}}
+\item \href{#method-Auto-finalize_model}{\code{Auto$finalize_model()}}
 \item \href{#method-Auto-design_default}{\code{Auto$design_default()}}
 \item \href{#method-Auto-design_set}{\code{Auto$design_set()}}
 \item \href{#method-Auto-search_space}{\code{Auto$search_space()}}
@@ -150,6 +151,24 @@ Estimate the memory for the auto.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Auto-finalize_model"></a>}}
+\if{latex}{\out{\hypertarget{method-Auto-finalize_model}{}}}
+\subsection{Method \code{finalize_model()}}{
+Prepare the graph learner for the final model fit.
+Called after tuning to undo tuning-only setup (e.g., timeout callbacks).
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Auto$finalize_model(graph_learner)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{graph_learner}}{(\link[mlr3pipelines:mlr_learners_graph]{mlr3pipelines::GraphLearner}).}
 }
 \if{html}{\out{</div>}}
 }

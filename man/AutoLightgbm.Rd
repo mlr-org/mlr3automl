@@ -14,6 +14,7 @@ Lightgbm auto.
 \itemize{
 \item \href{#method-AutoLightgbm-new}{\code{AutoLightgbm$new()}}
 \item \href{#method-AutoLightgbm-graph}{\code{AutoLightgbm$graph()}}
+\item \href{#method-AutoLightgbm-finalize_model}{\code{AutoLightgbm$finalize_model()}}
 \item \href{#method-AutoLightgbm-estimate_memory}{\code{AutoLightgbm$estimate_memory()}}
 \item \href{#method-AutoLightgbm-internal_measure}{\code{AutoLightgbm$internal_measure()}}
 \item \href{#method-AutoLightgbm-clone}{\code{AutoLightgbm$clone()}}
@@ -75,6 +76,16 @@ Default is "cpu".}
 }
 \if{html}{\out{</div>}}
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AutoLightgbm-finalize_model"></a>}}
+\if{latex}{\out{\hypertarget{method-AutoLightgbm-finalize_model}{}}}
+\subsection{Method \code{finalize_model()}}{
+Prepare the graph learner for the final model fit.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AutoLightgbm$finalize_model(graph_learner)}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AutoLightgbm-estimate_memory"></a>}}

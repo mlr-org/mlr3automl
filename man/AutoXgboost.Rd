@@ -14,6 +14,7 @@ Xgboost auto.
 \itemize{
 \item \href{#method-AutoXgboost-new}{\code{AutoXgboost$new()}}
 \item \href{#method-AutoXgboost-graph}{\code{AutoXgboost$graph()}}
+\item \href{#method-AutoXgboost-finalize_model}{\code{AutoXgboost$finalize_model()}}
 \item \href{#method-AutoXgboost-estimate_memory}{\code{AutoXgboost$estimate_memory()}}
 \item \href{#method-AutoXgboost-internal_measure}{\code{AutoXgboost$internal_measure()}}
 \item \href{#method-AutoXgboost-clone}{\code{AutoXgboost$clone()}}
@@ -75,6 +76,16 @@ Default is "cpu".}
 }
 \if{html}{\out{</div>}}
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AutoXgboost-finalize_model"></a>}}
+\if{latex}{\out{\hypertarget{method-AutoXgboost-finalize_model}{}}}
+\subsection{Method \code{finalize_model()}}{
+Prepare the graph learner for the final model fit.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AutoXgboost$finalize_model(graph_learner)}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AutoXgboost-estimate_memory"></a>}}

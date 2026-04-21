@@ -110,6 +110,15 @@ Auto = R6Class(
     },
 
     #' @description
+    #' Prepare the graph learner for the final model fit.
+    #' Called after tuning to undo tuning-only setup (e.g., timeout callbacks).
+    #'
+    #' @param graph_learner ([mlr3pipelines::GraphLearner]).
+    finalize_model = function(graph_learner) {
+      invisible(graph_learner)
+    },
+
+    #' @description
     #' Default hyperparameters for the learner.
     design_default = function(task) {
       xdt = as.data.table(private$.default_values)

@@ -25,6 +25,7 @@ Lda auto.
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_set"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_set'><code>mlr3automl::Auto$design_set()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="early_stopping_rounds"><a href='../../mlr3automl/html/Auto.html#method-Auto-early_stopping_rounds'><code>mlr3automl::Auto$early_stopping_rounds()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="estimate_memory"><a href='../../mlr3automl/html/Auto.html#method-Auto-estimate_memory'><code>mlr3automl::Auto$estimate_memory()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="finalize_model"><a href='../../mlr3automl/html/Auto.html#method-Auto-finalize_model'><code>mlr3automl::Auto$finalize_model()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="search_space"><a href='../../mlr3automl/html/Auto.html#method-Auto-search_space'><code>mlr3automl::Auto$search_space()</code></a></span></li>
 </ul>
 </details>
@@ -60,10 +61,6 @@ Create the graph for the auto.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-
-\item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
 
 \item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
 

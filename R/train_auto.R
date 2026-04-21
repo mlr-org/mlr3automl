@@ -159,10 +159,8 @@ train_auto = function(self, private, task) {
 
   if (length(learners_with_validation)) {
     set_validate(graph_learner, NULL, ids = learners_with_validation)
-    # FIXME: remove this once we have a better way to handle this
-    graph_learner$param_set$values$xgboost.callbacks = NULL
-    graph_learner$param_set$values$lightgbm.callbacks = NULL
   }
+  walk(autos, function(auto) auto$finalize_model(graph_learner))
   graph_learner$param_set$set_values(.values = self$instance$result_learner_param_vals, .insert = FALSE)
   graph_learner$timeout = c(train = Inf, predict = Inf)
   graph_learner$train(task)
