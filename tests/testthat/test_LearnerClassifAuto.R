@@ -290,7 +290,7 @@ test_that("devices works", {
   expect_class(learner$train(task), "LearnerClassifAuto")
 })
 
-test_that("devices works", {
+test_that("cuda devices works", {
   skip_if(TRUE)
   skip_on_cran()
   skip_if_not_installed("rush")
@@ -413,7 +413,7 @@ test_that("adaptive design works", {
   expect_class(learner$train(task), "LearnerClassifAuto")
 })
 
-test_that("adaptive design works", {
+test_that("adaptive design works with hyperparameter-free learner", {
   skip_on_cran()
   skip_if_not_installed("rush")
   skip_if_not_all_installed(all_packages)
