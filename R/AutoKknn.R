@@ -65,7 +65,7 @@ AutoKknn = R6Class(
 
   private = list(
     .default_values = list(
-      kknn.k = 7L,
+      kknn.k = log(7),
       kknn.distance = 2
     )
   )

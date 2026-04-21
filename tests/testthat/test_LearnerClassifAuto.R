@@ -178,6 +178,41 @@ test_that("large data set switch works", {
   )
 })
 
+test_that("deep clone works after training", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  skip_if_not_installed("glmnet")
+  skip_if_no_redis()
+
+  rush = start_rush()
+  on.exit({
+    rush$reset()
+    mirai::daemons(0)
+  })
+
+  task = tsk("penguins")
+  learner = lrn(
+    "classif.auto",
+    rush = rush,
+    learner_ids = "glmnet",
+    small_data_size = 1,
+    resampling = rsmp("holdout"),
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 2),
+    initial_design_size = 1,
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE
+  )
+  learner$train(task)
+
+  learner2 = learner$clone(deep = TRUE)
+  expect_class(learner2$model$graph_learner, "GraphLearner")
+  expect_class(learner2$model$instance, "TuningInstanceAsyncSingleCrit")
+  expect_false(identical(learner$model$graph_learner, learner2$model$graph_learner))
+  expect_false(identical(learner$model$instance, learner2$model$instance))
+  expect_prediction(learner2$predict(task))
+})
+
 test_that("resample works", {
   skip_on_cran()
   skip_if_not_installed("rush")
@@ -290,7 +325,7 @@ test_that("devices works", {
   expect_class(learner$train(task), "LearnerClassifAuto")
 })
 
-test_that("devices works", {
+test_that("cuda devices works", {
   skip_if(TRUE)
   skip_on_cran()
   skip_if_not_installed("rush")
@@ -413,7 +448,7 @@ test_that("adaptive design works", {
   expect_class(learner$train(task), "LearnerClassifAuto")
 })
 
-test_that("adaptive design works", {
+test_that("adaptive design works with hyperparameter-free learner", {
   skip_on_cran()
   skip_if_not_installed("rush")
   skip_if_not_all_installed(all_packages)

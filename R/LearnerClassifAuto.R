@@ -102,9 +102,8 @@ LearnerClassifAuto = R6Class(
         value$clone(deep = TRUE)
       } else if (name == "state") {
         if (!is.null(value)) {
-          value = list(
-            instance = value$instance$clone(deep = TRUE)
-          )
+          value$model$graph_learner = value$model$graph_learner$clone(deep = TRUE)
+          value$model$instance = value$model$instance$clone(deep = TRUE)
         }
         value
       } else {
