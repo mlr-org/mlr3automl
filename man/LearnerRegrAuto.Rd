@@ -151,6 +151,9 @@ Identifier for the new instance.}
 
 \item{\code{learner_ids}}{(\code{character()})\cr
 Learner that should be used.}
+
+\item{\code{rush}}{\link[rush:Rush]{rush::Rush}\cr
+Rush instance.}
 }
 \if{html}{\out{</div>}}
 }

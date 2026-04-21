@@ -47,6 +47,9 @@ Creates a new instance of this \link[R6:R6Class]{R6} class.
 \describe{
 \item{\code{id}}{(\code{character(1)})\cr
 Identifier for the new instance.}
+
+\item{\code{rush}}{\link[rush:Rush]{rush::Rush}\cr
+Rush instance.}
 }
 \if{html}{\out{</div>}}
 }

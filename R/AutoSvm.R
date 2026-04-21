@@ -53,12 +53,14 @@ AutoSvm = R6Class(
     },
 
     #' @description
-    #' Get the default values for the auto.
-    default_values = function(task) {
-      list(
+    #' Default hyperparameters for the learner.
+    design_default = function(task) {
+      xdt = as.data.table(list(
         svm.cost = log(1),
         svm.gamma = log(1 / length(task$feature_names))
-      )
+      ))
+      set(xdt, j = "branch.selection", value = self$id)
+      xdt
     }
   ),
 

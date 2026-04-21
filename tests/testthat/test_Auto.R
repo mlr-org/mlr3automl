@@ -2,9 +2,19 @@ test_that("default design is generated", {
   skip_if_not_all_installed(all_packages)
 
   autos = mlr_auto$mget(mlr_auto$keys())
-  xdt = map_dtr(autos, function(auto) auto$design_default(tsk("penguins")), .fill = TRUE)
+  task = tsk("penguins")
+  xdt = map_dtr(autos, function(auto) auto$design_default(task), .fill = TRUE)
   expect_data_table(xdt, nrows = length(autos))
   expect_set_equal(xdt$branch.selection, mlr_auto$keys())
+
+  iwalk(autos, function(auto, id) {
+    row = xdt[branch.selection == id]
+    search_space = auto$search_space(task)
+    param_ids = setdiff(search_space$ids(), search_space$ids(any_tags = "internal_tuning"))
+    for (param_id in param_ids) {
+      expect_false(is.na(row[[param_id]]), info = sprintf("NA default for %s in %s", param_id, id))
+    }
+  })
 })
 
 test_that("lhs design is generated", {

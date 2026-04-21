@@ -101,7 +101,6 @@ Collate:
     'LearnerRegrAutoCatboost.R'
     'LearnerRegrAutoExtraTrees.R'
     'LearnerRegrAutoFTTransformer.R'
-    'LearnerRegrAutoFastai.R'
     'LearnerRegrAutoGlmnet.R'
     'LearnerRegrAutoKKNN.R'
     'LearnerRegrAutoLightGBM.R'
