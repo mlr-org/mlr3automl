@@ -39,7 +39,7 @@ Classification auto learner.
 \subsection{Method \code{new()}}{
 Creates a new instance of this \link[R6:R6Class]{R6} class.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LearnerClassifAutoRanger$new(id = "classif.auto_ranger")}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LearnerClassifAutoRanger$new(id = "classif.auto_ranger", rush = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
