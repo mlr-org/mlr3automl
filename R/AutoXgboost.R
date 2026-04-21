@@ -146,11 +146,11 @@ AutoXgboost = R6Class(
     .default_values = list(
       xgboost.eta = log(0.3),
       xgboost.max_depth = 6L,
-      xgboost.colsample_bytree = 1L,
-      xgboost.colsample_bylevel = 1L,
+      xgboost.colsample_bytree = 1,
+      xgboost.colsample_bylevel = 1,
       xgboost.lambda = log(1),
       xgboost.alpha = log(1),
-      xgboost.subsample = 1L
+      xgboost.subsample = 1
     )
   )
 )
