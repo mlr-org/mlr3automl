@@ -143,6 +143,7 @@ train_auto = function(self, private, task) {
   tuner$param_set$set_values(initial_design = initial_designs)
 
   # configure tuner
+  tuner$surrogate = mlr3mbo::default_surrogate(self$instance)
   tuner$surrogate$param_set$set_values(catch_errors = pv$encapsulate_mbo)
 
   if (!pv$encapsulate_mbo) {
