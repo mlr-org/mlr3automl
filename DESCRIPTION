@@ -85,6 +85,7 @@ Collate:
     'aaa.R'
     'LearnerClassifAuto.R'
     'LearnerClassifAutoCatboost.R'
+    'LearnerClassifAutoExtraTrees.R'
     'LearnerClassifAutoFTTransformer.R'
     'LearnerClassifAutoFastai.R'
     'LearnerClassifAutoGlmnet.R'
