@@ -83,6 +83,7 @@ Collate:
     'AutoTabpfn.R'
     'AutoXgboost.R'
     'aaa.R'
+    'LearnerAuto.R'
     'LearnerClassifAuto.R'
     'LearnerClassifAutoCatboost.R'
     'LearnerClassifAutoExtraTrees.R'

@@ -95,20 +95,8 @@ Change to \code{FALSE} to debug.}
 }
 }
 
-\section{Super class}{
-\code{\link[mlr3:Learner]{mlr3::Learner}} -> \code{LearnerClassifAuto}
-}
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{tuning_space}}{(\code{list()}).}
-
-\item{\code{instance}}{(\link[mlr3tuning:TuningInstanceAsyncSingleCrit]{mlr3tuning::TuningInstanceAsyncSingleCrit}).}
-
-\item{\code{rush}}{(\link[rush:Rush]{rush::Rush})\cr
-Rush instance for parallel tuning.}
-}
-\if{html}{\out{</div>}}
+\section{Super classes}{
+\code{\link[mlr3:Learner]{mlr3::Learner}} -> \code{mlr3automl::LearnerAuto} -> \code{LearnerClassifAuto}
 }
 \section{Methods}{
 \subsection{Public methods}{

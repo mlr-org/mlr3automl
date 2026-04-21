@@ -7,7 +7,7 @@
 Regression auto learner.
 }
 \section{Super classes}{
-\code{\link[mlr3:Learner]{mlr3::Learner}} -> \code{\link[mlr3automl:LearnerRegrAuto]{mlr3automl::LearnerRegrAuto}} -> \code{LearnerRegrAutoGlmnet}
+\code{\link[mlr3:Learner]{mlr3::Learner}} -> \code{mlr3automl::LearnerAuto} -> \code{\link[mlr3automl:LearnerRegrAuto]{mlr3automl::LearnerRegrAuto}} -> \code{LearnerRegrAutoGlmnet}
 }
 \section{Methods}{
 \subsection{Public methods}{

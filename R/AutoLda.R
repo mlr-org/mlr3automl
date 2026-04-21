@@ -8,8 +8,6 @@
 #' @template param_id
 #' @template param_task
 #' @template param_measure
-#' @template param_task
-#' @template param_measure
 #' @template param_size
 #' @template param_n_threads
 #' @template param_timeout

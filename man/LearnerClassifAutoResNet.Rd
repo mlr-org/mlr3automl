@@ -7,7 +7,7 @@
 Classification auto learner.
 }
 \section{Super classes}{
-\code{\link[mlr3:Learner]{mlr3::Learner}} -> \code{\link[mlr3automl:LearnerClassifAuto]{mlr3automl::LearnerClassifAuto}} -> \code{LearnerClassifAutoResNet}
+\code{\link[mlr3:Learner]{mlr3::Learner}} -> \code{mlr3automl::LearnerAuto} -> \code{\link[mlr3automl:LearnerClassifAuto]{mlr3automl::LearnerClassifAuto}} -> \code{LearnerClassifAutoResNet}
 }
 \section{Methods}{
 \subsection{Public methods}{
