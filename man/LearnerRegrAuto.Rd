@@ -104,6 +104,9 @@ Change to \code{FALSE} to debug.}
 \item{\code{tuning_space}}{(\code{list()}).}
 
 \item{\code{instance}}{(\link[mlr3tuning:TuningInstanceAsyncSingleCrit]{mlr3tuning::TuningInstanceAsyncSingleCrit}).}
+
+\item{\code{rush}}{(\link[rush:Rush]{rush::Rush})\cr
+Rush instance for parallel tuning.}
 }
 \if{html}{\out{</div>}}
 }
@@ -137,7 +140,7 @@ Change to \code{FALSE} to debug.}
 \subsection{Method \code{new()}}{
 Creates a new instance of this \link[R6:R6Class]{R6} class.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LearnerRegrAuto$new(id = "regr.auto", learner_ids)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LearnerRegrAuto$new(id = "regr.auto", learner_ids, rush = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -148,6 +151,9 @@ Identifier for the new instance.}
 
 \item{\code{learner_ids}}{(\code{character()})\cr
 Learner that should be used.}
+
+\item{\code{rush}}{\link[rush:Rush]{rush::Rush}\cr
+Rush instance.}
 }
 \if{html}{\out{</div>}}
 }

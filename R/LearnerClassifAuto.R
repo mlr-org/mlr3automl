@@ -7,6 +7,7 @@
 #'
 #' @template param_id
 #' @template param_learner_ids
+#' @template param_rush
 #' @template section_debugging
 #' @template section_parameters
 #'

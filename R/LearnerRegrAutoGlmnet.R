@@ -4,6 +4,7 @@
 #' Regression auto learner.
 #'
 #' @template param_id
+#' @template param_rush
 #'
 #' @export
 LearnerRegrAutoGlmnet = R6Class(

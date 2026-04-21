@@ -39,7 +39,10 @@ Classification auto learner.
 \subsection{Method \code{new()}}{
 Creates a new instance of this \link[R6:R6Class]{R6} class.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LearnerClassifAutoFTTransformer$new(id = "classif.auto_ft_transformer")}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LearnerClassifAutoFTTransformer$new(
+  id = "classif.auto_ft_transformer",
+  rush = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -47,6 +50,9 @@ Creates a new instance of this \link[R6:R6Class]{R6} class.
 \describe{
 \item{\code{id}}{(\code{character(1)})\cr
 Identifier for the new instance.}
+
+\item{\code{rush}}{\link[rush:Rush]{rush::Rush}\cr
+Rush instance.}
 }
 \if{html}{\out{</div>}}
 }
