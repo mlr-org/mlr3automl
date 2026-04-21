@@ -87,6 +87,27 @@ AutoTabpfn = R6Class(
     },
 
     #' @description
+    #' Default hyperparameters for the learner.
+    design_default = function(task) {
+      values = if (task$task_type == "classif") {
+        list(
+          tabpfn.n_estimators = 4L,
+          tabpfn.softmax_temperature = 1.0,
+          tabpfn.balance_probabilities = FALSE,
+          tabpfn.average_before_softmax = FALSE
+        )
+      } else {
+        list(
+          tabpfn.n_estimators = 4L,
+          tabpfn.average_before_softmax = FALSE
+        )
+      }
+      xdt = as.data.table(values)
+      set(xdt, j = "branch.selection", value = self$id)
+      xdt
+    },
+
+    #' @description
     #' Get the search space for the auto.
     search_space = function(task) {
       if (task$task_type == "classif") {
@@ -106,12 +127,6 @@ AutoTabpfn = R6Class(
   ),
 
   private = list(
-    .default_values = list(
-      tabpfn.n_estimators = 4L,
-      tabpfn.softmax_temperature = 1.0,
-      tabpfn.balance_probabilities = FALSE,
-      tabpfn.average_before_softmax = FALSE
-    )
   )
 )
 
