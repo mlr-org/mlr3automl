@@ -198,7 +198,7 @@ test_that("resample works", {
     small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
-    terminator = trm("evals", n_evals = 1),
+    terminator = trm("evals", n_evals = 10),
     initial_design_size = 1,
     encapsulate_learner = FALSE,
     encapsulate_mbo = FALSE
