@@ -1,6 +1,6 @@
 Package: mlr3automl
 Title: AutoML extension for 'mlr3'
-Version: 0.0.1
+Version: 0.0.1.9000
 Authors@R: c(
     person("Damir", "Pulatov", , "damirpolat@protonmail.com", role = "aut"),
     person("Marc", "Becker", , "marcbecker@posteo.de", role = c("cre", "aut"),
