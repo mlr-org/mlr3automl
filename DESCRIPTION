@@ -2,8 +2,8 @@ Package: mlr3automl
 Title: AutoML extension for 'mlr3'
 Version: 0.0.1
 Authors@R: c(
-    person("Damir", "Pulatov", , "damirpolat@protonmail.com", role = c("cre", "aut")),
-    person("Marc", "Becker", , "marcbecker@posteo.de", role = "aut",
+    person("Damir", "Pulatov", , "damirpolat@protonmail.com", role = "aut"),
+    person("Marc", "Becker", , "marcbecker@posteo.de", role = c("cre", "aut"),
            comment = c(ORCID = "0000-0002-8115-0400")),
     person("Baisu", "Zhou", , "baisu.zhou@outlook.com", role = "aut")
   )
