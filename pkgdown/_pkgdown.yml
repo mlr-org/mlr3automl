@@ -1,0 +1,98 @@
+url: https://mlr3automl.mlr-org.com
+
+template:
+  bootstrap: 5
+  light-switch: true
+  math-rendering: mathjax
+  package: mlr3pkgdowntemplate
+
+development:
+  mode: auto
+  version_label: default
+  version_tooltip: "Version"
+
+toc:
+  depth: 3
+
+navbar:
+  structure:
+    left:  [reference, news, book]
+    right: [search, github, mattermost, stackoverflow, rss, lightswitch]
+  components:
+    home: ~
+    reference:
+      icon: fa fa-file-alt
+      text: Reference
+      href: reference/index.html
+    mattermost:
+      icon: fa fa-comments
+      href: https://lmmisld-lmu-stats-slds.srv.mwn.de/mlr_invite/
+    book:
+      text: mlr3book
+      icon: fa fa-link
+      href: https://mlr3book.mlr-org.com
+    stackoverflow:
+      icon: fab fa-stack-overflow
+      href: https://stackoverflow.com/questions/tagged/mlr3
+    rss:
+      icon: fa-rss
+      href: https://mlr-org.com/
+
+reference:
+  - title: Auto Learners
+    contents:
+      - LearnerClassifAuto
+      - LearnerRegrAuto
+  - title: Classification Auto Learners
+    contents:
+      - LearnerClassifAutoCatboost
+      - LearnerClassifAutoFastai
+      - LearnerClassifAutoFTTransformer
+      - LearnerClassifAutoGlmnet
+      - LearnerClassifAutoKKNN
+      - LearnerClassifAutoLightGBM
+      - LearnerClassifAutoMLP
+      - LearnerClassifAutoRanger
+      - LearnerClassifAutoResNet
+      - LearnerClassifAutoSVM
+      - LearnerClassifAutoTabPFN
+      - LearnerClassifAutoXgboost
+  - title: Regression Auto Learners
+    contents:
+      - LearnerRegrAutoCatboost
+      - LearnerRegrAutoFTTransformer
+      - LearnerRegrAutoGlmnet
+      - LearnerRegrAutoKKNN
+      - LearnerRegrAutoLightGBM
+      - LearnerRegrAutoMLP
+      - LearnerRegrAutoRanger
+      - LearnerRegrAutoResNet
+      - LearnerRegrAutoSVM
+      - LearnerRegrAutoTabPFN
+      - LearnerRegrAutoXgboost
+  - title: Auto Configuration
+    contents:
+      - Auto
+      - AutoCatboost
+      - AutoExtraTrees
+      - AutoFastai
+      - AutoFTTransformer
+      - AutoGlmnet
+      - AutoKknn
+      - AutoLda
+      - AutoLightgbm
+      - AutoMlp
+      - AutoRanger
+      - AutoResNet
+      - AutoSvm
+      - AutoTabpfn
+      - AutoXgboost
+  - title: Dictionary
+    contents:
+      - mlr_auto
+  - title: Callbacks
+    contents:
+      - mlr3automl.initial_design_runtime
+  - title: Package
+    contents:
+      - mlr3automl-package

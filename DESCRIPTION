@@ -9,7 +9,8 @@ Authors@R: c(
   )
 Description: Flexible AutoML system for the 'mlr3' ecosystem.
 License: LGPL-3
-URL: https://github.com/mlr-org/mlr3automl
+URL: https://mlr3automl.mlr-org.com,
+    https://github.com/mlr-org/mlr3automl
 BugReports: https://github.com/mlr-org/mlr3automl/issues
 Depends:
     mlr3 (>= 1.2.0.9000),
