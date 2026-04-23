@@ -1,0 +1,51 @@
+# mlr3automl
+
+Package website: [release](https://mlr3automl.mlr-org.com/) \|
+[dev](https://mlr3automl.mlr-org.com/dev/)
+
+**mlr3automl** is the Automated Machine Learning (AutoML) package of the
+[mlr3](https://mlr-org.com/) ecosystem. It automatically selects the
+most suitable machine learning algorithm and tunes its hyperparameters
+for a given task. The package includes 10 learners from the
+`mlr3learners` package, ranging from simple models like `glmnet` to more
+powerful algorithms such as `ranger` and `xgboost`. Leveraging the
+`mlr3pipelines` package, it constructs sophisticated preprocessing
+graphs with multiple parallel branches, which are jointly optimized
+using the `mlr3tuning` package. The optimization is driven by
+Asynchronous Decentralized Bayesian Optimization (ADBO), enabling
+efficient and scalable AutoML.
+
+## Installation
+
+Install the development version from GitHub:
+
+``` r
+pak::pkg_install("mlr-org/mlr3automl")
+```
+
+## Examples
+
+``` r
+library("mlr3automl")
+
+rush_plan(n_workers = 2, worker_type = "mirai")
+mirai::daemons(2)
+
+task = tsk("spam")
+
+learner = lrn("classif.auto",
+  terminator = trm("evals", n_evals = 100)
+)
+
+learner$train(task)
+```
+
+## Test with Redis
+
+To test the package, set the `RUSH_TEST_USE_REDIS` environment variable
+to `true`. The test suite deletes the Redis database before execution,
+so never run it against a production server.
+
+``` r
+Sys.setenv(RUSH_TEST_USE_REDIS = "true")
+```

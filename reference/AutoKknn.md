@@ -1,0 +1,113 @@
+# Kknn Auto
+
+Kknn auto.
+
+## Super class
+
+[`mlr3automl::Auto`](https://mlr3automl.mlr-org.com/reference/Auto.md)
+-\> `AutoKknn`
+
+## Methods
+
+### Public methods
+
+- [`AutoKknn$new()`](#method-AutoKknn-new)
+
+- [`AutoKknn$graph()`](#method-AutoKknn-graph)
+
+- [`AutoKknn$search_space()`](#method-AutoKknn-search_space)
+
+- [`AutoKknn$clone()`](#method-AutoKknn-clone)
+
+Inherited methods
+
+- [`mlr3automl::Auto$check()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-check)
+- [`mlr3automl::Auto$design_default()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-design_default)
+- [`mlr3automl::Auto$design_set()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-design_set)
+- [`mlr3automl::Auto$early_stopping_rounds()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-early_stopping_rounds)
+- [`mlr3automl::Auto$estimate_memory()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-estimate_memory)
+- [`mlr3automl::Auto$finalize_model()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-finalize_model)
+
+------------------------------------------------------------------------
+
+### Method `new()`
+
+Creates a new instance of this
+[R6](https://r6.r-lib.org/reference/R6Class.html) class.
+
+#### Usage
+
+    AutoKknn$new(id = "kknn")
+
+#### Arguments
+
+- `id`:
+
+  (`character(1)`)  
+  Identifier for the new instance.
+
+------------------------------------------------------------------------
+
+### Method `graph()`
+
+Create the graph for the auto.
+
+#### Usage
+
+    AutoKknn$graph(task, measure, n_threads, timeout, devices)
+
+#### Arguments
+
+- `task`:
+
+  ([mlr3::Task](https://mlr3.mlr-org.com/reference/Task.html)).
+
+- `measure`:
+
+  ([mlr3::Measure](https://mlr3.mlr-org.com/reference/Measure.html)).
+
+- `n_threads`:
+
+  (`integer(1)`).
+
+- `timeout`:
+
+  (`integer(1)`).
+
+- `devices`:
+
+  ([`character()`](https://rdrr.io/r/base/character.html))  
+  Devices to use. Allowed values are `"cpu"` and `"cuda"`. Default is
+  "cpu".
+
+------------------------------------------------------------------------
+
+### Method `search_space()`
+
+Get the search space for the auto.
+
+#### Usage
+
+    AutoKknn$search_space(task)
+
+#### Arguments
+
+- `task`:
+
+  ([mlr3::Task](https://mlr3.mlr-org.com/reference/Task.html)).
+
+------------------------------------------------------------------------
+
+### Method `clone()`
+
+The objects of this class are cloneable with this method.
+
+#### Usage
+
+    AutoKknn$clone(deep = FALSE)
+
+#### Arguments
+
+- `deep`:
+
+  Whether to make a deep clone.
