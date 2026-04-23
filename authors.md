@@ -2,9 +2,10 @@
 
 ## Authors
 
-- **Damir Pulatov**. Maintainer, author.
+- **Damir Pulatov**. Author.
 
-- **Marc Becker**. Author. [](https://orcid.org/0000-0002-8115-0400)
+- **Marc Becker**. Maintainer, author.
+  [](https://orcid.org/0000-0002-8115-0400)
 
 - **Baisu Zhou**. Author.
 
