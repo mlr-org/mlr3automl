@@ -11,6 +11,7 @@
 #'
 #' @return [Auto]
 #' @export
+#' @rdname mlr_auto
 #' @examples
 #' auto("catboost")
 auto = function(.key, ...) {
