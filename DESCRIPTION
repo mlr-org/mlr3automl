@@ -47,6 +47,9 @@ Suggests:
     rpart,
     testthat (>= 3.0.0),
     xgboost (>= 3.2.1.1)
+Remotes:
+    mlr-org/mlr3mbo,
+    mlr-org/rush
 Additional_repositories:
     https://mlr-org.r-universe.dev
     https://eagerai.r-universe.dev
@@ -100,8 +103,8 @@ Collate:
     'LearnerRegrAutoSVM.R'
     'LearnerRegrAutoTabPFN.R'
     'LearnerRegrAutoXgboost.R'
-    'auto.R'
     'helper.R'
     'mlr_callbacks.R'
+    'sugar.R'
     'train_auto.R'
     'zzz.R'
