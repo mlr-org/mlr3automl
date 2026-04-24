@@ -86,6 +86,13 @@ Prepare the graph learner for the final model fit.
 \if{html}{\out{<div class="r">}}\preformatted{AutoXgboost$finalize_model(graph_learner)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{graph_learner}}{(\link[mlr3pipelines:mlr_learners_graph]{mlr3pipelines::GraphLearner}).}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AutoXgboost-estimate_memory"></a>}}

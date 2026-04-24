@@ -1,6 +1,6 @@
 test_that("LearnerRegrAutoKKNN works", {
   skip_on_cran()
-  skip_if_not_all_installed(unlist(map(mlr_auto$mget("kknn"), "packages")))
+  skip_if_auto_not_installed("kknn")
   skip_if_not_installed("rush")
   skip_if_no_redis()
 

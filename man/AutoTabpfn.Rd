@@ -16,6 +16,7 @@ Tabpfn auto.
 \item \href{#method-AutoTabpfn-check}{\code{AutoTabpfn$check()}}
 \item \href{#method-AutoTabpfn-graph}{\code{AutoTabpfn$graph()}}
 \item \href{#method-AutoTabpfn-estimate_memory}{\code{AutoTabpfn$estimate_memory()}}
+\item \href{#method-AutoTabpfn-design_default}{\code{AutoTabpfn$design_default()}}
 \item \href{#method-AutoTabpfn-search_space}{\code{AutoTabpfn$search_space()}}
 \item \href{#method-AutoTabpfn-clone}{\code{AutoTabpfn$clone()}}
 }
@@ -23,7 +24,6 @@ Tabpfn auto.
 \if{html}{\out{
 <details open><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_default"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_default'><code>mlr3automl::Auto$design_default()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_set"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_set'><code>mlr3automl::Auto$design_set()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="early_stopping_rounds"><a href='../../mlr3automl/html/Auto.html#method-Auto-early_stopping_rounds'><code>mlr3automl::Auto$early_stopping_rounds()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="finalize_model"><a href='../../mlr3automl/html/Auto.html#method-Auto-finalize_model'><code>mlr3automl::Auto$finalize_model()</code></a></span></li>
@@ -114,6 +114,23 @@ Default is "cpu".}
 Estimate the memory for the auto.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AutoTabpfn$estimate_memory(task)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AutoTabpfn-design_default"></a>}}
+\if{latex}{\out{\hypertarget{method-AutoTabpfn-design_default}{}}}
+\subsection{Method \code{design_default()}}{
+Default hyperparameters for the learner.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AutoTabpfn$design_default(task)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

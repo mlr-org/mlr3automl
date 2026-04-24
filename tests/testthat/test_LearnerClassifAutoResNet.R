@@ -1,6 +1,6 @@
 test_that("LearnerClassifAutoResNet works", {
   skip_on_cran()
-  skip_if_not_all_installed(unlist(map(mlr_auto$mget("resnet"), "packages")))
+  skip_if_auto_not_installed("resnet")
   skip_if_not_installed("rush")
   skip_if_no_redis()
   skip_if(!torch::torch_is_installed(), "torch backend (LibTorch) not installed")

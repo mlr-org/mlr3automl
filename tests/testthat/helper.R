@@ -18,6 +18,10 @@ skip_if_not_all_installed = function(pkgs) {
   }
 }
 
+skip_if_auto_not_installed = function(auto_id) {
+  skip_if_not_all_installed(unlist(map(mlr_auto$mget(auto_id), "packages")))
+}
+
 test_classif_learner = function(
   learner_id,
   initial_design_size = 2,
@@ -28,7 +32,7 @@ test_classif_learner = function(
 ) {
   testthat::skip_on_cran()
   # nolint next: object_usage_linter
-  skip_if_not_all_installed(unlist(map(mlr_auto$mget(learner_id), "packages")))
+  skip_if_auto_not_installed(learner_id)
   testthat::skip_if_not_installed("rush")
   # nolint next: object_usage_linter
   skip_if_no_redis()
@@ -73,7 +77,7 @@ test_regr_learner = function(
 ) {
   testthat::skip_on_cran()
   # nolint next: object_usage_linter
-  skip_if_not_all_installed(unlist(map(mlr_auto$mget(learner_id), "packages")))
+  skip_if_auto_not_installed(learner_id)
   testthat::skip_if_not_installed("rush")
   # nolint next: object_usage_linter
   skip_if_no_redis()
