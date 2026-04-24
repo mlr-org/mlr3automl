@@ -1,2 +1,21 @@
 # Project-specific words — commit and share with the team.
 # Add words here (or via "Add to project dictionary" in VS Code / Cursor).
+automl
+Baisu
+catboost
+Damir
+eagerai
+fastai
+glmnet
+kknn
+lightgbm
+mxschmitt
+ORCID
+pandoc
+Pulatov
+rcmdcheck
+Regr
+Roxygen
+Tabpfn
+xgboost
+Zhou
