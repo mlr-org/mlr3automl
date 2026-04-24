@@ -1,6 +1,6 @@
 test_that("LearnerClassifAutoLightGBM works", {
   skip_on_cran()
-  skip_if_not_all_installed(unlist(map(mlr_auto$mget("lightgbm"), "packages")))
+  skip_if_auto_not_installed("lightgbm")
   skip_if_not_installed("rush")
   skip_if_no_redis()
 

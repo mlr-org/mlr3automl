@@ -49,6 +49,7 @@ Suggests:
     xgboost (>= 3.2.1.1)
 Additional_repositories:
     https://mlr-org.r-universe.dev
+    https://eagerai.r-universe.dev
 Config/testthat/edition: 3
 Config/testthat/parallel: false
 Encoding: UTF-8
@@ -99,6 +100,7 @@ Collate:
     'LearnerRegrAutoSVM.R'
     'LearnerRegrAutoTabPFN.R'
     'LearnerRegrAutoXgboost.R'
+    'auto.R'
     'helper.R'
     'mlr_callbacks.R'
     'train_auto.R'

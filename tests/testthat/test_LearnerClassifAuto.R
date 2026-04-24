@@ -25,7 +25,7 @@ test_that("only lda fails", {
 
 test_that("only extra_trees fails", {
   skip_on_cran()
-  skip_if_not_all_installed(unlist(map(mlr_auto$mget("extra_trees"), "packages")))
+  skip_if_auto_not_installed("extra_trees")
   skip_if_not_installed("rush")
   skip_if_no_redis()
 

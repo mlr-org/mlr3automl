@@ -87,6 +87,9 @@ reference:
       - AutoSvm
       - AutoTabpfn
       - AutoXgboost
+  - title: Sugar Functions
+    contents:
+      - auto
   - title: Dictionary
     contents:
       - mlr_auto
