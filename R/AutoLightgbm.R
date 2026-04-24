@@ -11,7 +11,6 @@
 #' @template param_n_threads
 #' @template param_timeout
 #' @template param_devices
-#'
 #' @export
 AutoLightgbm = R6Class(
   "AutoLightgbm",
@@ -58,6 +57,8 @@ AutoLightgbm = R6Class(
 
     #' @description
     #' Prepare the graph learner for the final model fit.
+    #'
+    #' @param graph_learner ([mlr3pipelines::GraphLearner]).
     finalize_model = function(graph_learner) {
       graph_learner$param_set$values$lightgbm.callbacks = NULL
       invisible(graph_learner)
@@ -114,11 +115,13 @@ AutoLightgbm = R6Class(
   private = list(
     # nolint start: indentation_linter, line_length_linter
     .search_space = ps(
-        lightgbm.learning_rate    = p_dbl(1e-3, 1, logscale = TRUE),
-        lightgbm.feature_fraction = p_dbl(0.1, 1),
-        lightgbm.min_data_in_leaf = p_int(1L, 200L),
-        lightgbm.num_leaves       = p_int(10L, 255L),
-        lightgbm.num_iterations   = p_int(1L, 5000L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
+      lightgbm.learning_rate = p_dbl(1e-3, 1, logscale = TRUE),
+      lightgbm.feature_fraction = p_dbl(0.1, 1),
+      lightgbm.min_data_in_leaf = p_int(1L, 200L),
+      lightgbm.num_leaves = p_int(10L, 255L),
+      lightgbm.num_iterations = p_int(1L, 5000L, tags = "internal_tuning", aggr = function(x) {
+        as.integer(ceiling(mean(unlist(x))))
+      })
     ),
     # nolint end
 
