@@ -38,7 +38,7 @@ AutoFastai = R6Class(
       if (!isTRUE(ok)) {
         return(FALSE)
       }
-      ok = check_python_packages(c("fastai", "torch"))
+      ok = check_python_packages(c("IPython", "torch", "torchvision", "fastai", "pydicom", "kornia"))
       if (!isTRUE(ok)) {
         lg$info(ok)
         lg$info("Remove fastai from search space")

@@ -104,6 +104,7 @@ Collate:
     'LearnerRegrAutoTabPFN.R'
     'LearnerRegrAutoXgboost.R'
     'helper.R'
+    'install_fastai.R'
     'mlr_callbacks.R'
     'sugar.R'
     'train_auto.R'

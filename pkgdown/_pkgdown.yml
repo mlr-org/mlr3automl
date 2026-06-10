@@ -96,6 +96,9 @@ reference:
   - title: Callbacks
     contents:
       - mlr3automl.initial_design_runtime
+  - title: Installation
+    contents:
+      - install_fastai
   - title: Package
     contents:
       - mlr3automl-package

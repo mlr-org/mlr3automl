@@ -64,6 +64,12 @@ Auto = R6Class(
       assert_flag(large_data_set)
       assert_character(devices)
 
+      missing_packages = self$packages[!map_lgl(self$packages, requireNamespace, quietly = TRUE)]
+      if (length(missing_packages)) {
+        lg$info("Learner '%s' is not available. Missing packages: %s", self$id, str_collapse(missing_packages))
+        return(FALSE)
+      }
+
       if (!task$task_type %in% self$task_types) {
         lg$info("Learner '%s' is not compatible with task type '%s'", self$id, task$task_type)
         return(FALSE)

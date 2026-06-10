@@ -34,12 +34,12 @@ AutoTabpfn = R6Class(
     #' @description
     #' Check if the auto is compatible with the task.
     check = function(task, memory_limit = Inf, large_data_set = FALSE, devices = "cpu") {
-      ok = check_python_packages(c("torch", "tabpfn"))
-      if (!isTRUE(ok)) {
-        lg$info(ok)
-        lg$info("Remove tabpfn from search space")
-        return(FALSE)
-      }
+      # ok = check_python_packages(c("torch", "tabpfn"))
+      # if (!isTRUE(ok)) {
+      #   lg$info(ok)
+      #   lg$info("Remove tabpfn from search space")
+      #   return(FALSE)
+      # }
       if ("cuda" %nin% devices && task$nrow > 1e3) {
         lg$info(
           "Learner '%s' is not compatible with tasks with more than 1,000 rows when using 'cpu' as device",
@@ -112,22 +112,21 @@ AutoTabpfn = R6Class(
     search_space = function(task) {
       if (task$task_type == "classif") {
         ps(
-          tabpfn.n_estimators           = p_int(1, 8),
-          tabpfn.softmax_temperature    = p_dbl(0.75, 1.0),
-          tabpfn.balance_probabilities  = p_lgl(),
+          tabpfn.n_estimators = p_int(1, 8),
+          tabpfn.softmax_temperature = p_dbl(0.75, 1.0),
+          tabpfn.balance_probabilities = p_lgl(),
           tabpfn.average_before_softmax = p_lgl()
         )
       } else if (task$task_type == "regr") {
         ps(
-          tabpfn.n_estimators           = p_int(1, 8),
+          tabpfn.n_estimators = p_int(1, 8),
           tabpfn.average_before_softmax = p_lgl()
         )
       }
     }
   ),
 
-  private = list(
-  )
+  private = list()
 )
 
 mlr_auto$add("tabpfn", function() AutoTabpfn$new())
