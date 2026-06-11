@@ -7,242 +7,249 @@
 This class is the base class for all autos.
 }
 \section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{id}}{(\code{character(1)}).}
+  \if{html}{\out{<div class="r6-fields">}}
+  \describe{
+    \item{\code{id}}{(\code{character(1)}).}
 
-\item{\code{properties}}{(\code{character()}).}
+    \item{\code{properties}}{(\code{character()}).}
 
-\item{\code{task_types}}{(\code{character()}).}
+    \item{\code{task_types}}{(\code{character()}).}
 
-\item{\code{packages}}{(\code{character()}).}
+    \item{\code{packages}}{(\code{character()}).}
 
-\item{\code{devices}}{(\code{character()}).}
-}
-\if{html}{\out{</div>}}
+    \item{\code{devices}}{(\code{character()}).}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-Auto-new}{\code{Auto$new()}}
-\item \href{#method-Auto-check}{\code{Auto$check()}}
-\item \href{#method-Auto-graph}{\code{Auto$graph()}}
-\item \href{#method-Auto-early_stopping_rounds}{\code{Auto$early_stopping_rounds()}}
-\item \href{#method-Auto-estimate_memory}{\code{Auto$estimate_memory()}}
-\item \href{#method-Auto-finalize_model}{\code{Auto$finalize_model()}}
-\item \href{#method-Auto-design_default}{\code{Auto$design_default()}}
-\item \href{#method-Auto-design_set}{\code{Auto$design_set()}}
-\item \href{#method-Auto-search_space}{\code{Auto$search_space()}}
-\item \href{#method-Auto-clone}{\code{Auto$clone()}}
-}
+  \itemize{
+    \item \href{#method-Auto-initialize}{\code{Auto$new()}}
+    \item \href{#method-Auto-check}{\code{Auto$check()}}
+    \item \href{#method-Auto-graph}{\code{Auto$graph()}}
+    \item \href{#method-Auto-early_stopping_rounds}{\code{Auto$early_stopping_rounds()}}
+    \item \href{#method-Auto-estimate_memory}{\code{Auto$estimate_memory()}}
+    \item \href{#method-Auto-finalize_model}{\code{Auto$finalize_model()}}
+    \item \href{#method-Auto-design_default}{\code{Auto$design_default()}}
+    \item \href{#method-Auto-design_set}{\code{Auto$design_set()}}
+    \item \href{#method-Auto-search_space}{\code{Auto$search_space()}}
+    \item \href{#method-Auto-clone}{\code{Auto$clone()}}
+  }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Auto-new"></a>}}
-\if{latex}{\out{\hypertarget{method-Auto-new}{}}}
-\subsection{Method \code{new()}}{
-Creates a new instance of this \link[R6:R6Class]{R6} class.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Auto$new(
+\if{html}{\out{<a id="method-Auto-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-Auto-initialize}{}}}
+\subsection{\code{Auto$new()}}{
+  Creates a new instance of this \link[R6:R6Class]{R6} class.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Auto$new(
   id,
   properties = character(0),
   task_types = character(0),
   packages = character(0),
   devices = character(0)
-)}\if{html}{\out{</div>}}
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{id}}{(\code{character(1)}).}
+      \item{\code{properties}}{(\code{character()}).}
+      \item{\code{task_types}}{(\code{character()}).}
+      \item{\code{packages}}{(\code{character()}).}
+      \item{\code{devices}}{(\code{character()}).}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{id}}{(\code{character(1)}).}
-
-\item{\code{properties}}{(\code{character()}).}
-
-\item{\code{task_types}}{(\code{character()}).}
-
-\item{\code{packages}}{(\code{character()}).}
-
-\item{\code{devices}}{(\code{character()}).}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Auto-check"></a>}}
 \if{latex}{\out{\hypertarget{method-Auto-check}{}}}
-\subsection{Method \code{check()}}{
-Check if the auto is compatible with the task.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Auto$check(task, memory_limit = Inf, large_data_set = FALSE, devices)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-
-\item{\code{memory_limit}}{(\code{integer(1)}).}
-
-\item{\code{large_data_set}}{(\code{logical(1)}).}
-
-\item{\code{devices}}{(\code{character()})\cr
+\subsection{\code{Auto$check()}}{
+  Check if the auto is compatible with the task.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Auto$check(task, memory_limit = Inf, large_data_set = FALSE, devices)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+      \item{\code{memory_limit}}{(\code{integer(1)}).}
+      \item{\code{large_data_set}}{(\code{logical(1)}).}
+      \item{\code{devices}}{(\code{character()})\cr
 Devices to use.
 Allowed values are \code{"cpu"} and \code{"cuda"}.
 Default is "cpu".}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
-\if{html}{\out{</div>}}
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Auto-graph"></a>}}
 \if{latex}{\out{\hypertarget{method-Auto-graph}{}}}
-\subsection{Method \code{graph()}}{
-Create the graph for the auto.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Auto$graph(task, measure, n_threads, timeout, devices)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-
-\item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
-
-\item{\code{n_threads}}{(\code{integer(1)}).}
-
-\item{\code{timeout}}{(\code{integer(1)}).}
-
-\item{\code{devices}}{(\code{character()})\cr
+\subsection{\code{Auto$graph()}}{
+  Create the graph for the auto.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Auto$graph(task, measure, n_threads, timeout, devices)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+      \item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
+      \item{\code{n_threads}}{(\code{integer(1)}).}
+      \item{\code{timeout}}{(\code{integer(1)}).}
+      \item{\code{devices}}{(\code{character()})\cr
 Devices to use.
 Allowed values are \code{"cpu"} and \code{"cuda"}.
 Default is "cpu".}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
-\if{html}{\out{</div>}}
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Auto-early_stopping_rounds"></a>}}
 \if{latex}{\out{\hypertarget{method-Auto-early_stopping_rounds}{}}}
-\subsection{Method \code{early_stopping_rounds()}}{
-Estimate the number of early stopping rounds.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Auto$early_stopping_rounds(task)}\if{html}{\out{</div>}}
+\subsection{\code{Auto$early_stopping_rounds()}}{
+  Estimate the number of early stopping rounds.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Auto$early_stopping_rounds(task)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Auto-estimate_memory"></a>}}
 \if{latex}{\out{\hypertarget{method-Auto-estimate_memory}{}}}
-\subsection{Method \code{estimate_memory()}}{
-Estimate the memory for the auto.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Auto$estimate_memory(task)}\if{html}{\out{</div>}}
+\subsection{\code{Auto$estimate_memory()}}{
+  Estimate the memory for the auto.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Auto$estimate_memory(task)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Auto-finalize_model"></a>}}
 \if{latex}{\out{\hypertarget{method-Auto-finalize_model}{}}}
-\subsection{Method \code{finalize_model()}}{
-Prepare the graph learner for the final model fit.
+\subsection{\code{Auto$finalize_model()}}{
+  Prepare the graph learner for the final model fit.
 Called after tuning to undo tuning-only setup (e.g., timeout callbacks).
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Auto$finalize_model(graph_learner)}\if{html}{\out{</div>}}
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Auto$finalize_model(graph_learner)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{graph_learner}}{(\link[mlr3pipelines:GraphLearner]{mlr3pipelines::GraphLearner}).}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{graph_learner}}{(\link[mlr3pipelines:mlr_learners_graph]{mlr3pipelines::GraphLearner}).}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Auto-design_default"></a>}}
 \if{latex}{\out{\hypertarget{method-Auto-design_default}{}}}
-\subsection{Method \code{design_default()}}{
-Default hyperparameters for the learner.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Auto$design_default(task)}\if{html}{\out{</div>}}
+\subsection{\code{Auto$design_default()}}{
+  Default hyperparameters for the learner.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Auto$design_default(task)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Auto-design_set"></a>}}
 \if{latex}{\out{\hypertarget{method-Auto-design_set}{}}}
-\subsection{Method \code{design_set()}}{
-Get the initial hyperparameter set for the learner.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Auto$design_set(task, measure, size)}\if{html}{\out{</div>}}
+\subsection{\code{Auto$design_set()}}{
+  Get the initial hyperparameter set for the learner.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Auto$design_set(task, measure, size)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+      \item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
+      \item{\code{size}}{(\code{integer(1)}).}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-
-\item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
-
-\item{\code{size}}{(\code{integer(1)}).}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Auto-search_space"></a>}}
 \if{latex}{\out{\hypertarget{method-Auto-search_space}{}}}
-\subsection{Method \code{search_space()}}{
-Get the search space for the learner.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Auto$search_space(task)}\if{html}{\out{</div>}}
+\subsection{\code{Auto$search_space()}}{
+  Get the search space for the learner.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Auto$search_space(task)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Auto-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-Auto-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Auto$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{Auto$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Auto$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }
