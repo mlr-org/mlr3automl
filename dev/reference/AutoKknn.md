@@ -4,14 +4,14 @@ Kknn auto.
 
 ## Super class
 
-[`mlr3automl::Auto`](https://mlr3automl.mlr-org.com/dev/reference/Auto.md)
--\> `AutoKknn`
+[`Auto`](https://mlr3automl.mlr-org.com/dev/reference/Auto.md) -\>
+`AutoKknn`
 
 ## Methods
 
 ### Public methods
 
-- [`AutoKknn$new()`](#method-AutoKknn-new)
+- [`AutoKknn$new()`](#method-AutoKknn-initialize)
 
 - [`AutoKknn$graph()`](#method-AutoKknn-graph)
 
@@ -21,16 +21,16 @@ Kknn auto.
 
 Inherited methods
 
-- [`mlr3automl::Auto$check()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-check)
-- [`mlr3automl::Auto$design_default()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_default)
-- [`mlr3automl::Auto$design_set()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_set)
-- [`mlr3automl::Auto$early_stopping_rounds()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-early_stopping_rounds)
-- [`mlr3automl::Auto$estimate_memory()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-estimate_memory)
-- [`mlr3automl::Auto$finalize_model()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-finalize_model)
+- [`Auto$check()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-check)
+- [`Auto$design_default()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_default)
+- [`Auto$design_set()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_set)
+- [`Auto$early_stopping_rounds()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-early_stopping_rounds)
+- [`Auto$estimate_memory()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-estimate_memory)
+- [`Auto$finalize_model()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-finalize_model)
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `AutoKknn$new()`
 
 Creates a new instance of this
 [R6](https://r6.r-lib.org/reference/R6Class.html) class.
@@ -48,7 +48,7 @@ Creates a new instance of this
 
 ------------------------------------------------------------------------
 
-### Method `graph()`
+### `AutoKknn$graph()`
 
 Create the graph for the auto.
 
@@ -82,7 +82,7 @@ Create the graph for the auto.
 
 ------------------------------------------------------------------------
 
-### Method `search_space()`
+### `AutoKknn$search_space()`
 
 Get the search space for the auto.
 
@@ -98,7 +98,7 @@ Get the search space for the auto.
 
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `AutoKknn$clone()`
 
 The objects of this class are cloneable with this method.
 

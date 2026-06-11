@@ -28,7 +28,7 @@ This class is the base class for all autos.
 
 ### Public methods
 
-- [`Auto$new()`](#method-Auto-new)
+- [`Auto$new()`](#method-Auto-initialize)
 
 - [`Auto$check()`](#method-Auto-check)
 
@@ -50,7 +50,7 @@ This class is the base class for all autos.
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `Auto$new()`
 
 Creates a new instance of this
 [R6](https://r6.r-lib.org/reference/R6Class.html) class.
@@ -89,7 +89,7 @@ Creates a new instance of this
 
 ------------------------------------------------------------------------
 
-### Method `check()`
+### `Auto$check()`
 
 Check if the auto is compatible with the task.
 
@@ -119,7 +119,7 @@ Check if the auto is compatible with the task.
 
 ------------------------------------------------------------------------
 
-### Method `graph()`
+### `Auto$graph()`
 
 Create the graph for the auto.
 
@@ -153,7 +153,7 @@ Create the graph for the auto.
 
 ------------------------------------------------------------------------
 
-### Method `early_stopping_rounds()`
+### `Auto$early_stopping_rounds()`
 
 Estimate the number of early stopping rounds.
 
@@ -169,7 +169,7 @@ Estimate the number of early stopping rounds.
 
 ------------------------------------------------------------------------
 
-### Method `estimate_memory()`
+### `Auto$estimate_memory()`
 
 Estimate the memory for the auto.
 
@@ -185,7 +185,7 @@ Estimate the memory for the auto.
 
 ------------------------------------------------------------------------
 
-### Method `finalize_model()`
+### `Auto$finalize_model()`
 
 Prepare the graph learner for the final model fit. Called after tuning
 to undo tuning-only setup (e.g., timeout callbacks).
@@ -202,7 +202,7 @@ to undo tuning-only setup (e.g., timeout callbacks).
 
 ------------------------------------------------------------------------
 
-### Method `design_default()`
+### `Auto$design_default()`
 
 Default hyperparameters for the learner.
 
@@ -218,7 +218,7 @@ Default hyperparameters for the learner.
 
 ------------------------------------------------------------------------
 
-### Method `design_set()`
+### `Auto$design_set()`
 
 Get the initial hyperparameter set for the learner.
 
@@ -242,7 +242,7 @@ Get the initial hyperparameter set for the learner.
 
 ------------------------------------------------------------------------
 
-### Method `search_space()`
+### `Auto$search_space()`
 
 Get the search space for the learner.
 
@@ -258,7 +258,7 @@ Get the search space for the learner.
 
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `Auto$clone()`
 
 The objects of this class are cloneable with this method.
 

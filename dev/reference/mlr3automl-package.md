@@ -6,17 +6,22 @@ Flexible AutoML system for the 'mlr3' ecosystem.
 
 Useful links:
 
+- <https://mlr3automl.mlr-org.com>
+
 - <https://github.com/mlr-org/mlr3automl>
 
 - Report bugs at <https://github.com/mlr-org/mlr3automl/issues>
 
 ## Author
 
-**Maintainer**: Damir Pulatov <damirpolat@protonmail.com>
+**Maintainer**: Marc Becker <marcbecker@posteo.de>
+([ORCID](https://orcid.org/0000-0002-8115-0400))
 
 Authors:
 
 - Marc Becker <marcbecker@posteo.de>
   ([ORCID](https://orcid.org/0000-0002-8115-0400))
+
+- Damir Pulatov <damirpolat@protonmail.com>
 
 - Baisu Zhou <baisu.zhou@outlook.com>

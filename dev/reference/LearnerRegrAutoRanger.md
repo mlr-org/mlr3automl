@@ -5,16 +5,16 @@ Regression auto learner.
 ## Super classes
 
 [`mlr3::Learner`](https://mlr3.mlr-org.com/reference/Learner.html) -\>
-[`mlr3automl::LearnerAuto`](https://mlr3automl.mlr-org.com/dev/reference/LearnerAuto.md)
+[`LearnerAuto`](https://mlr3automl.mlr-org.com/dev/reference/LearnerAuto.md)
 -\>
-[`mlr3automl::LearnerRegrAuto`](https://mlr3automl.mlr-org.com/dev/reference/LearnerRegrAuto.md)
+[`LearnerRegrAuto`](https://mlr3automl.mlr-org.com/dev/reference/LearnerRegrAuto.md)
 -\> `LearnerRegrAutoRanger`
 
 ## Methods
 
 ### Public methods
 
-- [`LearnerRegrAutoRanger$new()`](#method-LearnerRegrAutoRanger-new)
+- [`LearnerRegrAutoRanger$new()`](#method-LearnerRegrAutoRanger-initialize)
 
 - [`LearnerRegrAutoRanger$clone()`](#method-LearnerRegrAutoRanger-clone)
 
@@ -34,7 +34,7 @@ Inherited methods
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `LearnerRegrAutoRanger$new()`
 
 Creates a new instance of this
 [R6](https://r6.r-lib.org/reference/R6Class.html) class.
@@ -57,7 +57,7 @@ Creates a new instance of this
 
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `LearnerRegrAutoRanger$clone()`
 
 The objects of this class are cloneable with this method.
 

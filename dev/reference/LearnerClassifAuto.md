@@ -128,14 +128,14 @@ learner. Set `encapsulate_mbo = FALSE` to catch no errors in mbo.
 ## Super classes
 
 [`mlr3::Learner`](https://mlr3.mlr-org.com/reference/Learner.html) -\>
-[`mlr3automl::LearnerAuto`](https://mlr3automl.mlr-org.com/dev/reference/LearnerAuto.md)
+[`LearnerAuto`](https://mlr3automl.mlr-org.com/dev/reference/LearnerAuto.md)
 -\> `LearnerClassifAuto`
 
 ## Methods
 
 ### Public methods
 
-- [`LearnerClassifAuto$new()`](#method-LearnerClassifAuto-new)
+- [`LearnerClassifAuto$new()`](#method-LearnerClassifAuto-initialize)
 
 - [`LearnerClassifAuto$clone()`](#method-LearnerClassifAuto-clone)
 
@@ -155,7 +155,7 @@ Inherited methods
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `LearnerClassifAuto$new()`
 
 Creates a new instance of this
 [R6](https://r6.r-lib.org/reference/R6Class.html) class.
@@ -183,7 +183,7 @@ Creates a new instance of this
 
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `LearnerClassifAuto$clone()`
 
 The objects of this class are cloneable with this method.
 

@@ -4,14 +4,14 @@ Xgboost auto.
 
 ## Super class
 
-[`mlr3automl::Auto`](https://mlr3automl.mlr-org.com/dev/reference/Auto.md)
--\> `AutoXgboost`
+[`Auto`](https://mlr3automl.mlr-org.com/dev/reference/Auto.md) -\>
+`AutoXgboost`
 
 ## Methods
 
 ### Public methods
 
-- [`AutoXgboost$new()`](#method-AutoXgboost-new)
+- [`AutoXgboost$new()`](#method-AutoXgboost-initialize)
 
 - [`AutoXgboost$graph()`](#method-AutoXgboost-graph)
 
@@ -25,15 +25,15 @@ Xgboost auto.
 
 Inherited methods
 
-- [`mlr3automl::Auto$check()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-check)
-- [`mlr3automl::Auto$design_default()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_default)
-- [`mlr3automl::Auto$design_set()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_set)
-- [`mlr3automl::Auto$early_stopping_rounds()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-early_stopping_rounds)
-- [`mlr3automl::Auto$search_space()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-search_space)
+- [`Auto$check()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-check)
+- [`Auto$design_default()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_default)
+- [`Auto$design_set()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_set)
+- [`Auto$early_stopping_rounds()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-early_stopping_rounds)
+- [`Auto$search_space()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-search_space)
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `AutoXgboost$new()`
 
 Creates a new instance of this
 [R6](https://r6.r-lib.org/reference/R6Class.html) class.
@@ -51,7 +51,7 @@ Creates a new instance of this
 
 ------------------------------------------------------------------------
 
-### Method `graph()`
+### `AutoXgboost$graph()`
 
 Create the graph for the auto.
 
@@ -85,7 +85,7 @@ Create the graph for the auto.
 
 ------------------------------------------------------------------------
 
-### Method `finalize_model()`
+### `AutoXgboost$finalize_model()`
 
 Prepare the graph learner for the final model fit.
 
@@ -93,9 +93,15 @@ Prepare the graph learner for the final model fit.
 
     AutoXgboost$finalize_model(graph_learner)
 
+#### Arguments
+
+- `graph_learner`:
+
+  ([mlr3pipelines::GraphLearner](https://mlr3pipelines.mlr-org.com/reference/mlr_learners_graph.html)).
+
 ------------------------------------------------------------------------
 
-### Method `estimate_memory()`
+### `AutoXgboost$estimate_memory()`
 
 Estimate the memory for the auto.
 
@@ -111,7 +117,7 @@ Estimate the memory for the auto.
 
 ------------------------------------------------------------------------
 
-### Method `internal_measure()`
+### `AutoXgboost$internal_measure()`
 
 Get the internal measure for the auto.
 
@@ -131,7 +137,7 @@ Get the internal measure for the auto.
 
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `AutoXgboost$clone()`
 
 The objects of this class are cloneable with this method.
 

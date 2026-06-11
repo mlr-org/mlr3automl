@@ -4,14 +4,14 @@ Tabpfn auto.
 
 ## Super class
 
-[`mlr3automl::Auto`](https://mlr3automl.mlr-org.com/dev/reference/Auto.md)
--\> `AutoTabpfn`
+[`Auto`](https://mlr3automl.mlr-org.com/dev/reference/Auto.md) -\>
+`AutoTabpfn`
 
 ## Methods
 
 ### Public methods
 
-- [`AutoTabpfn$new()`](#method-AutoTabpfn-new)
+- [`AutoTabpfn$new()`](#method-AutoTabpfn-initialize)
 
 - [`AutoTabpfn$check()`](#method-AutoTabpfn-check)
 
@@ -19,20 +19,21 @@ Tabpfn auto.
 
 - [`AutoTabpfn$estimate_memory()`](#method-AutoTabpfn-estimate_memory)
 
+- [`AutoTabpfn$design_default()`](#method-AutoTabpfn-design_default)
+
 - [`AutoTabpfn$search_space()`](#method-AutoTabpfn-search_space)
 
 - [`AutoTabpfn$clone()`](#method-AutoTabpfn-clone)
 
 Inherited methods
 
-- [`mlr3automl::Auto$design_default()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_default)
-- [`mlr3automl::Auto$design_set()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_set)
-- [`mlr3automl::Auto$early_stopping_rounds()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-early_stopping_rounds)
-- [`mlr3automl::Auto$finalize_model()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-finalize_model)
+- [`Auto$design_set()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_set)
+- [`Auto$early_stopping_rounds()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-early_stopping_rounds)
+- [`Auto$finalize_model()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-finalize_model)
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `AutoTabpfn$new()`
 
 Creates a new instance of this
 [R6](https://r6.r-lib.org/reference/R6Class.html) class.
@@ -50,7 +51,7 @@ Creates a new instance of this
 
 ------------------------------------------------------------------------
 
-### Method `check()`
+### `AutoTabpfn$check()`
 
 Check if the auto is compatible with the task.
 
@@ -85,7 +86,7 @@ Check if the auto is compatible with the task.
 
 ------------------------------------------------------------------------
 
-### Method `graph()`
+### `AutoTabpfn$graph()`
 
 Create the graph for the auto.
 
@@ -119,7 +120,7 @@ Create the graph for the auto.
 
 ------------------------------------------------------------------------
 
-### Method `estimate_memory()`
+### `AutoTabpfn$estimate_memory()`
 
 Estimate the memory for the auto.
 
@@ -135,7 +136,23 @@ Estimate the memory for the auto.
 
 ------------------------------------------------------------------------
 
-### Method `search_space()`
+### `AutoTabpfn$design_default()`
+
+Default hyperparameters for the learner.
+
+#### Usage
+
+    AutoTabpfn$design_default(task)
+
+#### Arguments
+
+- `task`:
+
+  ([mlr3::Task](https://mlr3.mlr-org.com/reference/Task.html)).
+
+------------------------------------------------------------------------
+
+### `AutoTabpfn$search_space()`
 
 Get the search space for the auto.
 
@@ -151,7 +168,7 @@ Get the search space for the auto.
 
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `AutoTabpfn$clone()`
 
 The objects of this class are cloneable with this method.
 

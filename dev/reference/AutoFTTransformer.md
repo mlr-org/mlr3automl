@@ -4,14 +4,14 @@ FTTransformer auto.
 
 ## Super class
 
-[`mlr3automl::Auto`](https://mlr3automl.mlr-org.com/dev/reference/Auto.md)
--\> `AutoFTTransformer`
+[`Auto`](https://mlr3automl.mlr-org.com/dev/reference/Auto.md) -\>
+`AutoFTTransformer`
 
 ## Methods
 
 ### Public methods
 
-- [`AutoFTTransformer$new()`](#method-AutoFTTransformer-new)
+- [`AutoFTTransformer$new()`](#method-AutoFTTransformer-initialize)
 
 - [`AutoFTTransformer$graph()`](#method-AutoFTTransformer-graph)
 
@@ -21,16 +21,16 @@ FTTransformer auto.
 
 Inherited methods
 
-- [`mlr3automl::Auto$check()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-check)
-- [`mlr3automl::Auto$design_default()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_default)
-- [`mlr3automl::Auto$design_set()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_set)
-- [`mlr3automl::Auto$early_stopping_rounds()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-early_stopping_rounds)
-- [`mlr3automl::Auto$finalize_model()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-finalize_model)
-- [`mlr3automl::Auto$search_space()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-search_space)
+- [`Auto$check()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-check)
+- [`Auto$design_default()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_default)
+- [`Auto$design_set()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_set)
+- [`Auto$early_stopping_rounds()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-early_stopping_rounds)
+- [`Auto$finalize_model()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-finalize_model)
+- [`Auto$search_space()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-search_space)
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `AutoFTTransformer$new()`
 
 Creates a new instance of this
 [R6](https://r6.r-lib.org/reference/R6Class.html) class.
@@ -48,7 +48,7 @@ Creates a new instance of this
 
 ------------------------------------------------------------------------
 
-### Method `graph()`
+### `AutoFTTransformer$graph()`
 
 Create the graph for the auto.
 
@@ -82,7 +82,7 @@ Create the graph for the auto.
 
 ------------------------------------------------------------------------
 
-### Method `estimate_memory()`
+### `AutoFTTransformer$estimate_memory()`
 
 Estimate the memory for the auto.
 
@@ -98,7 +98,7 @@ Estimate the memory for the auto.
 
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `AutoFTTransformer$clone()`
 
 The objects of this class are cloneable with this method.
 

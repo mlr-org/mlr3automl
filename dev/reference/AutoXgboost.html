@@ -54,33 +54,30 @@
 
     <div class="section level2">
     <h2 id="super-class">Super class<a class="anchor" aria-label="anchor" href="#super-class"></a></h2>
-    <p><code><a href="Auto.html">mlr3automl::Auto</a></code> -&gt; <code>AutoXgboost</code></p>
+    <p><code><a href="Auto.html">Auto</a></code> -&gt; <code>AutoXgboost</code></p>
     </div>
     <div class="section level2">
     <h2 id="methods">Methods<a class="anchor" aria-label="anchor" href="#methods"></a></h2>
 
 <div class="section">
 <h3 id="public-methods">Public methods<a class="anchor" aria-label="anchor" href="#public-methods"></a></h3>
-
-<ul><li><p><a href="#method-AutoXgboost-new"><code>AutoXgboost$new()</code></a></p></li>
+<p></p><ul><li><p><a href="#method-AutoXgboost-initialize"><code>AutoXgboost$new()</code></a></p></li>
 <li><p><a href="#method-AutoXgboost-graph"><code>AutoXgboost$graph()</code></a></p></li>
 <li><p><a href="#method-AutoXgboost-finalize_model"><code>AutoXgboost$finalize_model()</code></a></p></li>
 <li><p><a href="#method-AutoXgboost-estimate_memory"><code>AutoXgboost$estimate_memory()</code></a></p></li>
 <li><p><a href="#method-AutoXgboost-internal_measure"><code>AutoXgboost$internal_measure()</code></a></p></li>
 <li><p><a href="#method-AutoXgboost-clone"><code>AutoXgboost$clone()</code></a></p></li>
-</ul></div><p><details open><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="check"><a href="Auto.html#method-check"><code>mlr3automl::Auto$check()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_default"><a href="Auto.html#method-design_default"><code>mlr3automl::Auto$design_default()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_set"><a href="Auto.html#method-design_set"><code>mlr3automl::Auto$design_set()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="early_stopping_rounds"><a href="Auto.html#method-early_stopping_rounds"><code>mlr3automl::Auto$early_stopping_rounds()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="search_space"><a href="Auto.html#method-search_space"><code>mlr3automl::Auto$search_space()</code></a></span></li>
-</ul></details></p><hr><a id="method-AutoXgboost-new"></a><div class="section">
-<h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
+</ul></div><p><details open><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="check"><a href="Auto.html#method-check"><code>Auto$check()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_default"><a href="Auto.html#method-design_default"><code>Auto$design_default()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_set"><a href="Auto.html#method-design_set"><code>Auto$design_set()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="early_stopping_rounds"><a href="Auto.html#method-early_stopping_rounds"><code>Auto$early_stopping_rounds()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="search_space"><a href="Auto.html#method-search_space"><code>Auto$search_space()</code></a></span></li>
+</ul></details></p><hr><a id="method-AutoXgboost-initialize"></a><div class="section">
+<h3 id="autoxgboost-new-"><code>AutoXgboost$new()</code><a class="anchor" aria-label="anchor" href="#autoxgboost-new-"></a></h3>
 <p>Creates a new instance of this <a href="https://r6.r-lib.org/reference/R6Class.html" class="external-link">R6</a> class.</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/AutoXgboost.html">AutoXgboost</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>id <span class="op">=</span> <span class="st">"xgboost"</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>id</code></dt>
 <dd><p>(<code>character(1)</code>)<br>
@@ -90,32 +87,28 @@ Identifier for the new instance.</p></dd>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-AutoXgboost-graph"></a><div class="section">
-<h3 id="method-graph-">Method <code>graph()</code><a class="anchor" aria-label="anchor" href="#method-graph-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-AutoXgboost-graph"></a><div class="section">
+<h3 id="autoxgboost-graph-"><code>AutoXgboost$graph()</code><a class="anchor" aria-label="anchor" href="#autoxgboost-graph-"></a></h3>
 <p>Create the graph for the auto.</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">AutoXgboost</span><span class="op">$</span><span class="fu">graph</span><span class="op">(</span><span class="va">task</span>, <span class="va">measure</span>, <span class="va">n_threads</span>, <span class="va">timeout</span>, <span class="va">devices</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>task</code></dt>
 <dd><p>(<a href="https://mlr3.mlr-org.com/reference/Task.html" class="external-link">mlr3::Task</a>).</p></dd>
 
-
-<dt><code>measure</code></dt>
+      <dt><code>measure</code></dt>
 <dd><p>(<a href="https://mlr3.mlr-org.com/reference/Measure.html" class="external-link">mlr3::Measure</a>).</p></dd>
 
-
-<dt><code>n_threads</code></dt>
+      <dt><code>n_threads</code></dt>
 <dd><p>(<code>integer(1)</code>).</p></dd>
 
-
-<dt><code>timeout</code></dt>
+      <dt><code>timeout</code></dt>
 <dd><p>(<code>integer(1)</code>).</p></dd>
 
-
-<dt><code>devices</code></dt>
+      <dt><code>devices</code></dt>
 <dd><p>(<code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code>)<br>
 Devices to use.
 Allowed values are <code>"cpu"</code> and <code>"cuda"</code>.
@@ -125,23 +118,31 @@ Default is "cpu".</p></dd>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-AutoXgboost-finalize_model"></a><div class="section">
-<h3 id="method-finalize-model-">Method <code>finalize_model()</code><a class="anchor" aria-label="anchor" href="#method-finalize-model-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-AutoXgboost-finalize_model"></a><div class="section">
+<h3 id="autoxgboost-finalize-model-"><code>AutoXgboost$finalize_model()</code><a class="anchor" aria-label="anchor" href="#autoxgboost-finalize-model-"></a></h3>
 <p>Prepare the graph learner for the final model fit.</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">AutoXgboost</span><span class="op">$</span><span class="fu">finalize_model</span><span class="op">(</span><span class="va">graph_learner</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div><p></p><div class="section">
+<h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>graph_learner</code></dt>
+<dd><p>(<a href="https://mlr3pipelines.mlr-org.com/reference/mlr_learners_graph.html" class="external-link">mlr3pipelines::GraphLearner</a>).</p></dd>
+
+
+</dl><p></p></div>
 </div>
 
+</div>
 
-</div><p></p><hr><a id="method-AutoXgboost-estimate_memory"></a><div class="section">
-<h3 id="method-estimate-memory-">Method <code>estimate_memory()</code><a class="anchor" aria-label="anchor" href="#method-estimate-memory-"></a></h3>
+<p></p><hr><a id="method-AutoXgboost-estimate_memory"></a><div class="section">
+<h3 id="autoxgboost-estimate-memory-"><code>AutoXgboost$estimate_memory()</code><a class="anchor" aria-label="anchor" href="#autoxgboost-estimate-memory-"></a></h3>
 <p>Estimate the memory for the auto.</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">AutoXgboost</span><span class="op">$</span><span class="fu">estimate_memory</span><span class="op">(</span><span class="va">task</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
-<h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
+</div><p></p><div class="section">
+<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>task</code></dt>
 <dd><p>(<a href="https://mlr3.mlr-org.com/reference/Task.html" class="external-link">mlr3::Task</a>).</p></dd>
 
@@ -149,35 +150,34 @@ Default is "cpu".</p></dd>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-AutoXgboost-internal_measure"></a><div class="section">
-<h3 id="method-internal-measure-">Method <code>internal_measure()</code><a class="anchor" aria-label="anchor" href="#method-internal-measure-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-AutoXgboost-internal_measure"></a><div class="section">
+<h3 id="autoxgboost-internal-measure-"><code>AutoXgboost$internal_measure()</code><a class="anchor" aria-label="anchor" href="#autoxgboost-internal-measure-"></a></h3>
 <p>Get the internal measure for the auto.</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">AutoXgboost</span><span class="op">$</span><span class="fu">internal_measure</span><span class="op">(</span><span class="va">measure</span>, <span class="va">task</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
-<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
+</div><p></p><div class="section">
+<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>measure</code></dt>
 <dd><p>(<a href="https://mlr3.mlr-org.com/reference/Measure.html" class="external-link">mlr3::Measure</a>).</p></dd>
 
-
-<dt><code>task</code></dt>
+      <dt><code>task</code></dt>
 <dd><p>(<a href="https://mlr3.mlr-org.com/reference/Task.html" class="external-link">mlr3::Task</a>).</p></dd>
 
 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-AutoXgboost-clone"></a><div class="section">
-<h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-AutoXgboost-clone"></a><div class="section">
+<h3 id="autoxgboost-clone-"><code>AutoXgboost$clone()</code><a class="anchor" aria-label="anchor" href="#autoxgboost-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">AutoXgboost</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
-<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
+</div><p></p><div class="section">
+<h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
 
@@ -186,6 +186,7 @@ Default is "cpu".</p></dd>
 </div>
 
 </div>
+
 
     </div>
 

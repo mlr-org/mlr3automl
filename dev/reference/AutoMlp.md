@@ -4,14 +4,14 @@ Mlp auto.
 
 ## Super class
 
-[`mlr3automl::Auto`](https://mlr3automl.mlr-org.com/dev/reference/Auto.md)
--\> `AutoMlp`
+[`Auto`](https://mlr3automl.mlr-org.com/dev/reference/Auto.md) -\>
+`AutoMlp`
 
 ## Methods
 
 ### Public methods
 
-- [`AutoMlp$new()`](#method-AutoMlp-new)
+- [`AutoMlp$new()`](#method-AutoMlp-initialize)
 
 - [`AutoMlp$graph()`](#method-AutoMlp-graph)
 
@@ -21,16 +21,16 @@ Mlp auto.
 
 Inherited methods
 
-- [`mlr3automl::Auto$check()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-check)
-- [`mlr3automl::Auto$design_default()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_default)
-- [`mlr3automl::Auto$design_set()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_set)
-- [`mlr3automl::Auto$early_stopping_rounds()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-early_stopping_rounds)
-- [`mlr3automl::Auto$finalize_model()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-finalize_model)
-- [`mlr3automl::Auto$search_space()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-search_space)
+- [`Auto$check()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-check)
+- [`Auto$design_default()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_default)
+- [`Auto$design_set()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_set)
+- [`Auto$early_stopping_rounds()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-early_stopping_rounds)
+- [`Auto$finalize_model()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-finalize_model)
+- [`Auto$search_space()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-search_space)
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `AutoMlp$new()`
 
 Creates a new instance of this
 [R6](https://r6.r-lib.org/reference/R6Class.html) class.
@@ -48,7 +48,7 @@ Creates a new instance of this
 
 ------------------------------------------------------------------------
 
-### Method `graph()`
+### `AutoMlp$graph()`
 
 Create the graph for the auto.
 
@@ -82,7 +82,7 @@ Create the graph for the auto.
 
 ------------------------------------------------------------------------
 
-### Method `estimate_memory()`
+### `AutoMlp$estimate_memory()`
 
 Estimate the memory for the auto.
 
@@ -98,7 +98,7 @@ Estimate the memory for the auto.
 
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `AutoMlp$clone()`
 
 The objects of this class are cloneable with this method.
 

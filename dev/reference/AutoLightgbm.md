@@ -4,14 +4,14 @@ Lightgbm auto.
 
 ## Super class
 
-[`mlr3automl::Auto`](https://mlr3automl.mlr-org.com/dev/reference/Auto.md)
--\> `AutoLightgbm`
+[`Auto`](https://mlr3automl.mlr-org.com/dev/reference/Auto.md) -\>
+`AutoLightgbm`
 
 ## Methods
 
 ### Public methods
 
-- [`AutoLightgbm$new()`](#method-AutoLightgbm-new)
+- [`AutoLightgbm$new()`](#method-AutoLightgbm-initialize)
 
 - [`AutoLightgbm$graph()`](#method-AutoLightgbm-graph)
 
@@ -25,15 +25,15 @@ Lightgbm auto.
 
 Inherited methods
 
-- [`mlr3automl::Auto$check()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-check)
-- [`mlr3automl::Auto$design_default()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_default)
-- [`mlr3automl::Auto$design_set()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_set)
-- [`mlr3automl::Auto$early_stopping_rounds()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-early_stopping_rounds)
-- [`mlr3automl::Auto$search_space()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-search_space)
+- [`Auto$check()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-check)
+- [`Auto$design_default()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_default)
+- [`Auto$design_set()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_set)
+- [`Auto$early_stopping_rounds()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-early_stopping_rounds)
+- [`Auto$search_space()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-search_space)
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `AutoLightgbm$new()`
 
 Creates a new instance of this
 [R6](https://r6.r-lib.org/reference/R6Class.html) class.
@@ -51,7 +51,7 @@ Creates a new instance of this
 
 ------------------------------------------------------------------------
 
-### Method `graph()`
+### `AutoLightgbm$graph()`
 
 Create the graph for the auto.
 
@@ -85,7 +85,7 @@ Create the graph for the auto.
 
 ------------------------------------------------------------------------
 
-### Method `finalize_model()`
+### `AutoLightgbm$finalize_model()`
 
 Prepare the graph learner for the final model fit.
 
@@ -93,9 +93,15 @@ Prepare the graph learner for the final model fit.
 
     AutoLightgbm$finalize_model(graph_learner)
 
+#### Arguments
+
+- `graph_learner`:
+
+  ([mlr3pipelines::GraphLearner](https://mlr3pipelines.mlr-org.com/reference/mlr_learners_graph.html)).
+
 ------------------------------------------------------------------------
 
-### Method `estimate_memory()`
+### `AutoLightgbm$estimate_memory()`
 
 Estimate the memory for the auto.
 
@@ -111,7 +117,7 @@ Estimate the memory for the auto.
 
 ------------------------------------------------------------------------
 
-### Method `internal_measure()`
+### `AutoLightgbm$internal_measure()`
 
 Get the internal measure for the auto.
 
@@ -131,7 +137,7 @@ Get the internal measure for the auto.
 
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `AutoLightgbm$clone()`
 
 The objects of this class are cloneable with this method.
 

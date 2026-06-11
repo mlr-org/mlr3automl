@@ -8,8 +8,3 @@ A dictionary of
 ``` r
 mlr_auto
 ```
-
-## Format
-
-An object of class `DictionaryAuto` (inherits from `Dictionary`, `R6`)
-of length 12.

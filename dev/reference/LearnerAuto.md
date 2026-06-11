@@ -149,7 +149,7 @@ learner. Set `encapsulate_mbo = FALSE` to catch no errors in mbo.
 
 ### Public methods
 
-- [`LearnerAuto$new()`](#method-LearnerAuto-new)
+- [`LearnerAuto$new()`](#method-LearnerAuto-initialize)
 
 - [`LearnerAuto$clone()`](#method-LearnerAuto-clone)
 
@@ -169,7 +169,7 @@ Inherited methods
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `LearnerAuto$new()`
 
 Creates a new instance of this
 [R6](https://r6.r-lib.org/reference/R6Class.html) class.
@@ -219,7 +219,7 @@ Creates a new instance of this
 
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `LearnerAuto$clone()`
 
 The objects of this class are cloneable with this method.
 

@@ -5,16 +5,16 @@ Classification auto learner.
 ## Super classes
 
 [`mlr3::Learner`](https://mlr3.mlr-org.com/reference/Learner.html) -\>
-[`mlr3automl::LearnerAuto`](https://mlr3automl.mlr-org.com/dev/reference/LearnerAuto.md)
+[`LearnerAuto`](https://mlr3automl.mlr-org.com/dev/reference/LearnerAuto.md)
 -\>
-[`mlr3automl::LearnerClassifAuto`](https://mlr3automl.mlr-org.com/dev/reference/LearnerClassifAuto.md)
+[`LearnerClassifAuto`](https://mlr3automl.mlr-org.com/dev/reference/LearnerClassifAuto.md)
 -\> `LearnerClassifAutoFTTransformer`
 
 ## Methods
 
 ### Public methods
 
-- [`LearnerClassifAutoFTTransformer$new()`](#method-LearnerClassifAutoFTTransformer-new)
+- [`LearnerClassifAutoFTTransformer$new()`](#method-LearnerClassifAutoFTTransformer-initialize)
 
 - [`LearnerClassifAutoFTTransformer$clone()`](#method-LearnerClassifAutoFTTransformer-clone)
 
@@ -34,7 +34,7 @@ Inherited methods
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `LearnerClassifAutoFTTransformer$new()`
 
 Creates a new instance of this
 [R6](https://r6.r-lib.org/reference/R6Class.html) class.
@@ -60,7 +60,7 @@ Creates a new instance of this
 
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `LearnerClassifAutoFTTransformer$clone()`
 
 The objects of this class are cloneable with this method.
 

@@ -4,14 +4,14 @@ Fastai auto.
 
 ## Super class
 
-[`mlr3automl::Auto`](https://mlr3automl.mlr-org.com/dev/reference/Auto.md)
--\> `AutoFastai`
+[`Auto`](https://mlr3automl.mlr-org.com/dev/reference/Auto.md) -\>
+`AutoFastai`
 
 ## Methods
 
 ### Public methods
 
-- [`AutoFastai$new()`](#method-AutoFastai-new)
+- [`AutoFastai$new()`](#method-AutoFastai-initialize)
 
 - [`AutoFastai$check()`](#method-AutoFastai-check)
 
@@ -25,15 +25,15 @@ Fastai auto.
 
 Inherited methods
 
-- [`mlr3automl::Auto$design_default()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_default)
-- [`mlr3automl::Auto$design_set()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_set)
-- [`mlr3automl::Auto$early_stopping_rounds()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-early_stopping_rounds)
-- [`mlr3automl::Auto$finalize_model()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-finalize_model)
-- [`mlr3automl::Auto$search_space()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-search_space)
+- [`Auto$design_default()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_default)
+- [`Auto$design_set()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-design_set)
+- [`Auto$early_stopping_rounds()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-early_stopping_rounds)
+- [`Auto$finalize_model()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-finalize_model)
+- [`Auto$search_space()`](https://mlr3automl.mlr-org.com/dev/reference/Auto.html#method-search_space)
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `AutoFastai$new()`
 
 Creates a new instance of this
 [R6](https://r6.r-lib.org/reference/R6Class.html) class.
@@ -51,7 +51,7 @@ Creates a new instance of this
 
 ------------------------------------------------------------------------
 
-### Method `check()`
+### `AutoFastai$check()`
 
 Check if the auto is compatible with the task.
 
@@ -86,7 +86,7 @@ Check if the auto is compatible with the task.
 
 ------------------------------------------------------------------------
 
-### Method `graph()`
+### `AutoFastai$graph()`
 
 Create the graph for the auto.
 
@@ -120,7 +120,7 @@ Create the graph for the auto.
 
 ------------------------------------------------------------------------
 
-### Method `estimate_memory()`
+### `AutoFastai$estimate_memory()`
 
 Estimate the memory for the auto.
 
@@ -136,7 +136,7 @@ Estimate the memory for the auto.
 
 ------------------------------------------------------------------------
 
-### Method `internal_measure()`
+### `AutoFastai$internal_measure()`
 
 Get the internal measure for the auto.
 
@@ -156,7 +156,7 @@ Get the internal measure for the auto.
 
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `AutoFastai$clone()`
 
 The objects of this class are cloneable with this method.
 
