@@ -7,107 +7,109 @@
 Svm auto.
 }
 \section{Super class}{
-\code{\link[mlr3automl:Auto]{mlr3automl::Auto}} -> \code{AutoSvm}
+\code{\link[mlr3automl:Auto]{Auto}} -> \code{AutoSvm}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-AutoSvm-new}{\code{AutoSvm$new()}}
-\item \href{#method-AutoSvm-graph}{\code{AutoSvm$graph()}}
-\item \href{#method-AutoSvm-design_default}{\code{AutoSvm$design_default()}}
-\item \href{#method-AutoSvm-clone}{\code{AutoSvm$clone()}}
+  \itemize{
+    \item \href{#method-AutoSvm-initialize}{\code{AutoSvm$new()}}
+    \item \href{#method-AutoSvm-graph}{\code{AutoSvm$graph()}}
+    \item \href{#method-AutoSvm-design_default}{\code{AutoSvm$design_default()}}
+    \item \href{#method-AutoSvm-clone}{\code{AutoSvm$clone()}}
+  }
 }
-}
-\if{html}{\out{
-<details><summary>Inherited methods</summary>
+\if{html}{\out{<details><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="check"><a href='../../mlr3automl/html/Auto.html#method-Auto-check'><code>mlr3automl::Auto$check()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_set"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_set'><code>mlr3automl::Auto$design_set()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="early_stopping_rounds"><a href='../../mlr3automl/html/Auto.html#method-Auto-early_stopping_rounds'><code>mlr3automl::Auto$early_stopping_rounds()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="estimate_memory"><a href='../../mlr3automl/html/Auto.html#method-Auto-estimate_memory'><code>mlr3automl::Auto$estimate_memory()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="finalize_model"><a href='../../mlr3automl/html/Auto.html#method-Auto-finalize_model'><code>mlr3automl::Auto$finalize_model()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="search_space"><a href='../../mlr3automl/html/Auto.html#method-Auto-search_space'><code>mlr3automl::Auto$search_space()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="check"><a href='../../mlr3automl/html/Auto.html#method-Auto-check'><code>Auto$check()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_set"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_set'><code>Auto$design_set()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="early_stopping_rounds"><a href='../../mlr3automl/html/Auto.html#method-Auto-early_stopping_rounds'><code>Auto$early_stopping_rounds()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="estimate_memory"><a href='../../mlr3automl/html/Auto.html#method-Auto-estimate_memory'><code>Auto$estimate_memory()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="finalize_model"><a href='../../mlr3automl/html/Auto.html#method-Auto-finalize_model'><code>Auto$finalize_model()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="search_space"><a href='../../mlr3automl/html/Auto.html#method-Auto-search_space'><code>Auto$search_space()</code></a></span></li>
 </ul>
-</details>
-}}
+</details>}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-AutoSvm-new"></a>}}
-\if{latex}{\out{\hypertarget{method-AutoSvm-new}{}}}
-\subsection{Method \code{new()}}{
-Creates a new instance of this \link[R6:R6Class]{R6} class.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoSvm$new(id = "svm")}\if{html}{\out{</div>}}
+\if{html}{\out{<a id="method-AutoSvm-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-AutoSvm-initialize}{}}}
+\subsection{\code{AutoSvm$new()}}{
+  Creates a new instance of this \link[R6:R6Class]{R6} class.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{AutoSvm$new(id = "svm")}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{id}}{(\code{character(1)})\cr
+Identifier for the new instance.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{id}}{(\code{character(1)})\cr
-Identifier for the new instance.}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AutoSvm-graph"></a>}}
 \if{latex}{\out{\hypertarget{method-AutoSvm-graph}{}}}
-\subsection{Method \code{graph()}}{
-Create the graph for the auto.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoSvm$graph(task, measure, n_threads, timeout, devices)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-
-\item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
-
-\item{\code{n_threads}}{(\code{integer(1)}).}
-
-\item{\code{timeout}}{(\code{integer(1)}).}
-
-\item{\code{devices}}{(\code{character()})\cr
+\subsection{\code{AutoSvm$graph()}}{
+  Create the graph for the auto.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{AutoSvm$graph(task, measure, n_threads, timeout, devices)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+      \item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
+      \item{\code{n_threads}}{(\code{integer(1)}).}
+      \item{\code{timeout}}{(\code{integer(1)}).}
+      \item{\code{devices}}{(\code{character()})\cr
 Devices to use.
 Allowed values are \code{"cpu"} and \code{"cuda"}.
 Default is "cpu".}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
-\if{html}{\out{</div>}}
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AutoSvm-design_default"></a>}}
 \if{latex}{\out{\hypertarget{method-AutoSvm-design_default}{}}}
-\subsection{Method \code{design_default()}}{
-Default hyperparameters for the learner.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoSvm$design_default(task)}\if{html}{\out{</div>}}
+\subsection{\code{AutoSvm$design_default()}}{
+  Default hyperparameters for the learner.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{AutoSvm$design_default(task)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AutoSvm-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-AutoSvm-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoSvm$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{AutoSvm$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{AutoSvm$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }

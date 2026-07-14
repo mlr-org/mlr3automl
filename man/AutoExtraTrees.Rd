@@ -7,107 +7,109 @@
 Extra Trees auto.
 }
 \section{Super class}{
-\code{\link[mlr3automl:Auto]{mlr3automl::Auto}} -> \code{AutoExtraTrees}
+\code{\link[mlr3automl:Auto]{Auto}} -> \code{AutoExtraTrees}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-AutoExtraTrees-new}{\code{AutoExtraTrees$new()}}
-\item \href{#method-AutoExtraTrees-graph}{\code{AutoExtraTrees$graph()}}
-\item \href{#method-AutoExtraTrees-estimate_memory}{\code{AutoExtraTrees$estimate_memory()}}
-\item \href{#method-AutoExtraTrees-clone}{\code{AutoExtraTrees$clone()}}
+  \itemize{
+    \item \href{#method-AutoExtraTrees-initialize}{\code{AutoExtraTrees$new()}}
+    \item \href{#method-AutoExtraTrees-graph}{\code{AutoExtraTrees$graph()}}
+    \item \href{#method-AutoExtraTrees-estimate_memory}{\code{AutoExtraTrees$estimate_memory()}}
+    \item \href{#method-AutoExtraTrees-clone}{\code{AutoExtraTrees$clone()}}
+  }
 }
-}
-\if{html}{\out{
-<details><summary>Inherited methods</summary>
+\if{html}{\out{<details><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="check"><a href='../../mlr3automl/html/Auto.html#method-Auto-check'><code>mlr3automl::Auto$check()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_default"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_default'><code>mlr3automl::Auto$design_default()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_set"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_set'><code>mlr3automl::Auto$design_set()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="early_stopping_rounds"><a href='../../mlr3automl/html/Auto.html#method-Auto-early_stopping_rounds'><code>mlr3automl::Auto$early_stopping_rounds()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="finalize_model"><a href='../../mlr3automl/html/Auto.html#method-Auto-finalize_model'><code>mlr3automl::Auto$finalize_model()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="search_space"><a href='../../mlr3automl/html/Auto.html#method-Auto-search_space'><code>mlr3automl::Auto$search_space()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="check"><a href='../../mlr3automl/html/Auto.html#method-Auto-check'><code>Auto$check()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_default"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_default'><code>Auto$design_default()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_set"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_set'><code>Auto$design_set()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="early_stopping_rounds"><a href='../../mlr3automl/html/Auto.html#method-Auto-early_stopping_rounds'><code>Auto$early_stopping_rounds()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="finalize_model"><a href='../../mlr3automl/html/Auto.html#method-Auto-finalize_model'><code>Auto$finalize_model()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="search_space"><a href='../../mlr3automl/html/Auto.html#method-Auto-search_space'><code>Auto$search_space()</code></a></span></li>
 </ul>
-</details>
-}}
+</details>}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-AutoExtraTrees-new"></a>}}
-\if{latex}{\out{\hypertarget{method-AutoExtraTrees-new}{}}}
-\subsection{Method \code{new()}}{
-Creates a new instance of this \link[R6:R6Class]{R6} class.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoExtraTrees$new(id = "extra_trees")}\if{html}{\out{</div>}}
+\if{html}{\out{<a id="method-AutoExtraTrees-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-AutoExtraTrees-initialize}{}}}
+\subsection{\code{AutoExtraTrees$new()}}{
+  Creates a new instance of this \link[R6:R6Class]{R6} class.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{AutoExtraTrees$new(id = "extra_trees")}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{id}}{(\code{character(1)})\cr
+Identifier for the new instance.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{id}}{(\code{character(1)})\cr
-Identifier for the new instance.}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AutoExtraTrees-graph"></a>}}
 \if{latex}{\out{\hypertarget{method-AutoExtraTrees-graph}{}}}
-\subsection{Method \code{graph()}}{
-Create the graph for the auto.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoExtraTrees$graph(task, measure, n_threads, timeout, devices)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-
-\item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
-
-\item{\code{n_threads}}{(\code{numeric(1)}).}
-
-\item{\code{timeout}}{(\code{numeric(1)}).}
-
-\item{\code{devices}}{(\code{character()})\cr
+\subsection{\code{AutoExtraTrees$graph()}}{
+  Create the graph for the auto.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{AutoExtraTrees$graph(task, measure, n_threads, timeout, devices)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+      \item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
+      \item{\code{n_threads}}{(\code{numeric(1)}).}
+      \item{\code{timeout}}{(\code{numeric(1)}).}
+      \item{\code{devices}}{(\code{character()})\cr
 Devices to use.
 Allowed values are \code{"cpu"} and \code{"cuda"}.
 Default is "cpu".}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
-\if{html}{\out{</div>}}
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AutoExtraTrees-estimate_memory"></a>}}
 \if{latex}{\out{\hypertarget{method-AutoExtraTrees-estimate_memory}{}}}
-\subsection{Method \code{estimate_memory()}}{
-Estimate the memory for the auto.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoExtraTrees$estimate_memory(task)}\if{html}{\out{</div>}}
+\subsection{\code{AutoExtraTrees$estimate_memory()}}{
+  Estimate the memory for the auto.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{AutoExtraTrees$estimate_memory(task)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AutoExtraTrees-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-AutoExtraTrees-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoExtraTrees$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{AutoExtraTrees$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{AutoExtraTrees$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }

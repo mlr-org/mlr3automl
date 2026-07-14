@@ -7,172 +7,177 @@
 Tabpfn auto.
 }
 \section{Super class}{
-\code{\link[mlr3automl:Auto]{mlr3automl::Auto}} -> \code{AutoTabpfn}
+\code{\link[mlr3automl:Auto]{Auto}} -> \code{AutoTabpfn}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-AutoTabpfn-new}{\code{AutoTabpfn$new()}}
-\item \href{#method-AutoTabpfn-check}{\code{AutoTabpfn$check()}}
-\item \href{#method-AutoTabpfn-graph}{\code{AutoTabpfn$graph()}}
-\item \href{#method-AutoTabpfn-estimate_memory}{\code{AutoTabpfn$estimate_memory()}}
-\item \href{#method-AutoTabpfn-design_default}{\code{AutoTabpfn$design_default()}}
-\item \href{#method-AutoTabpfn-search_space}{\code{AutoTabpfn$search_space()}}
-\item \href{#method-AutoTabpfn-clone}{\code{AutoTabpfn$clone()}}
+  \itemize{
+    \item \href{#method-AutoTabpfn-initialize}{\code{AutoTabpfn$new()}}
+    \item \href{#method-AutoTabpfn-check}{\code{AutoTabpfn$check()}}
+    \item \href{#method-AutoTabpfn-graph}{\code{AutoTabpfn$graph()}}
+    \item \href{#method-AutoTabpfn-estimate_memory}{\code{AutoTabpfn$estimate_memory()}}
+    \item \href{#method-AutoTabpfn-design_default}{\code{AutoTabpfn$design_default()}}
+    \item \href{#method-AutoTabpfn-search_space}{\code{AutoTabpfn$search_space()}}
+    \item \href{#method-AutoTabpfn-clone}{\code{AutoTabpfn$clone()}}
+  }
 }
-}
-\if{html}{\out{
-<details open><summary>Inherited methods</summary>
+\if{html}{\out{<details open><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_set"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_set'><code>mlr3automl::Auto$design_set()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="early_stopping_rounds"><a href='../../mlr3automl/html/Auto.html#method-Auto-early_stopping_rounds'><code>mlr3automl::Auto$early_stopping_rounds()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="finalize_model"><a href='../../mlr3automl/html/Auto.html#method-Auto-finalize_model'><code>mlr3automl::Auto$finalize_model()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_set"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_set'><code>Auto$design_set()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="early_stopping_rounds"><a href='../../mlr3automl/html/Auto.html#method-Auto-early_stopping_rounds'><code>Auto$early_stopping_rounds()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="finalize_model"><a href='../../mlr3automl/html/Auto.html#method-Auto-finalize_model'><code>Auto$finalize_model()</code></a></span></li>
 </ul>
-</details>
-}}
+</details>}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-AutoTabpfn-new"></a>}}
-\if{latex}{\out{\hypertarget{method-AutoTabpfn-new}{}}}
-\subsection{Method \code{new()}}{
-Creates a new instance of this \link[R6:R6Class]{R6} class.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoTabpfn$new(id = "tabpfn")}\if{html}{\out{</div>}}
+\if{html}{\out{<a id="method-AutoTabpfn-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-AutoTabpfn-initialize}{}}}
+\subsection{\code{AutoTabpfn$new()}}{
+  Creates a new instance of this \link[R6:R6Class]{R6} class.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{AutoTabpfn$new(id = "tabpfn")}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{id}}{(\code{character(1)})\cr
+Identifier for the new instance.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{id}}{(\code{character(1)})\cr
-Identifier for the new instance.}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AutoTabpfn-check"></a>}}
 \if{latex}{\out{\hypertarget{method-AutoTabpfn-check}{}}}
-\subsection{Method \code{check()}}{
-Check if the auto is compatible with the task.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoTabpfn$check(
+\subsection{\code{AutoTabpfn$check()}}{
+  Check if the auto is compatible with the task.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{AutoTabpfn$check(
   task,
   memory_limit = Inf,
   large_data_set = FALSE,
   devices = "cpu"
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-
-\item{\code{memory_limit}}{(\code{integer(1)}).}
-
-\item{\code{large_data_set}}{(\code{logical(1)}).}
-
-\item{\code{devices}}{(\code{character()})\cr
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+      \item{\code{memory_limit}}{(\code{integer(1)}).}
+      \item{\code{large_data_set}}{(\code{logical(1)}).}
+      \item{\code{devices}}{(\code{character()})\cr
 Devices to use.
 Allowed values are \code{"cpu"} and \code{"cuda"}.
 Default is "cpu".}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
-\if{html}{\out{</div>}}
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AutoTabpfn-graph"></a>}}
 \if{latex}{\out{\hypertarget{method-AutoTabpfn-graph}{}}}
-\subsection{Method \code{graph()}}{
-Create the graph for the auto.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoTabpfn$graph(task, measure, n_threads, timeout, devices)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-
-\item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
-
-\item{\code{n_threads}}{(\code{integer(1)}).}
-
-\item{\code{timeout}}{(\code{integer(1)}).}
-
-\item{\code{devices}}{(\code{character()})\cr
+\subsection{\code{AutoTabpfn$graph()}}{
+  Create the graph for the auto.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{AutoTabpfn$graph(task, measure, n_threads, timeout, devices)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+      \item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
+      \item{\code{n_threads}}{(\code{integer(1)}).}
+      \item{\code{timeout}}{(\code{integer(1)}).}
+      \item{\code{devices}}{(\code{character()})\cr
 Devices to use.
 Allowed values are \code{"cpu"} and \code{"cuda"}.
 Default is "cpu".}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
-\if{html}{\out{</div>}}
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AutoTabpfn-estimate_memory"></a>}}
 \if{latex}{\out{\hypertarget{method-AutoTabpfn-estimate_memory}{}}}
-\subsection{Method \code{estimate_memory()}}{
-Estimate the memory for the auto.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoTabpfn$estimate_memory(task)}\if{html}{\out{</div>}}
+\subsection{\code{AutoTabpfn$estimate_memory()}}{
+  Estimate the memory for the auto.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{AutoTabpfn$estimate_memory(task)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AutoTabpfn-design_default"></a>}}
 \if{latex}{\out{\hypertarget{method-AutoTabpfn-design_default}{}}}
-\subsection{Method \code{design_default()}}{
-Default hyperparameters for the learner.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoTabpfn$design_default(task)}\if{html}{\out{</div>}}
+\subsection{\code{AutoTabpfn$design_default()}}{
+  Default hyperparameters for the learner.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{AutoTabpfn$design_default(task)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AutoTabpfn-search_space"></a>}}
 \if{latex}{\out{\hypertarget{method-AutoTabpfn-search_space}{}}}
-\subsection{Method \code{search_space()}}{
-Get the search space for the auto.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoTabpfn$search_space(task)}\if{html}{\out{</div>}}
+\subsection{\code{AutoTabpfn$search_space()}}{
+  Get the search space for the auto.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{AutoTabpfn$search_space(task)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AutoTabpfn-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-AutoTabpfn-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AutoTabpfn$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{AutoTabpfn$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{AutoTabpfn$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }

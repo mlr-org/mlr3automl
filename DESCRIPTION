@@ -58,7 +58,6 @@ Config/testthat/parallel: false
 Encoding: UTF-8
 NeedsCompilation: no
 Roxygen: list(markdown = TRUE, r6 = TRUE)
-RoxygenNote: 7.3.3
 Collate:
     'mlr_auto.R'
     'Auto.R'
@@ -109,3 +108,4 @@ Collate:
     'sugar.R'
     'train_auto.R'
     'zzz.R'
+Config/roxygen2/version: 8.0.0.9000

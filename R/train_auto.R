@@ -1,6 +1,10 @@
 train_auto = function(self, private, task) {
   pv = self$param_set$values
-  large_data_set = task$nrow * task$ncol > pv$large_data_size
+  if (is.null(pv$measure)) {
+    pv$measure = default_measures(task$task_type)[[1L]]
+    lg$info("No measure provided. Using default measure '%s'", pv$measure$id)
+  }
+  large_data_set = as.numeric(task$nrow) * task$ncol > pv$large_data_size
   n_workers = rush_config()$n_workers %??% 1L
   n_threads = pv$n_threads %??% 1L
   memory_limit = (pv$memory_limit %??% Inf) / n_workers
@@ -13,14 +17,17 @@ train_auto = function(self, private, task) {
 
   # set number of workers
   if (large_data_set) {
-    n_workers = max(1, floor(n_workers / 4L))
-    n_threads = n_threads * 4L
-    memory_limit = memory_limit * 4L
+    old_n_workers = n_workers
+    n_workers = max(1L, floor(n_workers / 4L))
+    scale = old_n_workers / n_workers
+
+    n_threads = as.integer(n_threads * scale)
+    memory_limit = memory_limit * scale
 
     tuner$param_set$set_values(n_workers = n_workers)
     lg$info(
       # nolint next: line_length_linter
-      "Large data set detected. Reducing number of workers to %i. Increasing number of threads to %i and memory limit to %i MB",
+      "Large data set detected. Reducing number of workers to %i. Increasing number of threads to %i and memory limit to %.0f MB",
       n_workers,
       n_threads,
       memory_limit
@@ -160,8 +167,8 @@ train_auto = function(self, private, task) {
   if (length(learners_with_validation)) {
     set_validate(graph_learner, NULL, ids = learners_with_validation)
   }
-  walk(autos, function(auto) auto$finalize_model(graph_learner))
   graph_learner$param_set$set_values(.values = self$instance$result_learner_param_vals, .insert = FALSE)
+  walk(autos, function(auto) auto$finalize_model(graph_learner))
   graph_learner$timeout = c(train = Inf, predict = Inf)
   graph_learner$train(task)
 

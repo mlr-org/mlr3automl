@@ -3,7 +3,8 @@
 #' @name mlr3automl.initial_design_runtime
 #'
 #' @description
-#' This [mlr3misc::Callback] fails the tasks of the initial design if 25% of the runtime limit is reached.
+#' This [mlr3misc::Callback] drops the remaining tasks of the initial design from the queue when a
+#' configurable fraction (`initial_design_fraction`) of the runtime limit is reached.
 #'
 #' @examples
 #' clbk("mlr3automl.initial_design_runtime")
@@ -21,7 +22,7 @@ load_callback_initial_design_runtime = function() {
         runtime_limit = context$instance$terminator$param_set$values$secs
 
         if (difftime(Sys.time(), start_time, units = "secs") > runtime_limit * callback$state$initial_design_fraction) {
-          lg = lgr::get_logger("mlr3/rush")
+          lg = lgr::get_logger("mlr3/mlr3automl")
           lg$info("Initial design runtime limit reached")
           context$instance$rush$empty_queue()
         }
