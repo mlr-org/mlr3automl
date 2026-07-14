@@ -67,8 +67,8 @@ LearnerAuto = R6Class(
         large_data_size         = p_int(lower = 1L, init = 1e6, tags = c("train", "super")),
         learner_timeout         = p_int(lower = 1L, init = 900L, tags = c("train", "super")),
         measure                 = p_uty(tags = c("train", "super")),
-        memory_limit            = p_int(lower = 1L, init = 32000L, tags = c("train", "catboost", "lightgbm", "ranger", "xgboost")),
-        n_threads               = p_int(lower = 1L, init = 1L, tags = c("train", "catboost", "lightgbm", "ranger", "xgboost")),
+        memory_limit            = p_int(lower = 1L, init = 32000L, tags = c("train", "catboost", "extra_trees", "fastai", "ft_transformer", "lightgbm", "mlp", "ranger", "resnet", "tabpfn", "xgboost")),
+        n_threads               = p_int(lower = 1L, init = 1L, tags = c("train", "catboost", "extra_trees", "fastai", "ft_transformer", "lightgbm", "mlp", "ranger", "resnet", "tabpfn", "xgboost")),
         resampling              = p_uty(init = rsmp("holdout"), tags = c("train", "super")),
         small_data_resampling   = p_uty(init = rsmp("cv", folds = 10), tags = c("train", "super")),
         small_data_size         = p_int(lower = 1L, init = 5000L, tags = c("train", "super")),
@@ -77,7 +77,8 @@ LearnerAuto = R6Class(
         terminator              = p_uty(init = trm("run_time", secs = 3600L), tags = c("train", "super"))
       )
       # nolint end
-      # subset to relevant parameters for selected learners
+      # subset to relevant parameters for selected learners: keep "super" params plus
+      # any param tagged with a selected learner id (see tag namespaces documented above)
       param_set = param_set$subset(ids = unique(param_set$ids(any_tags = c("super", learner_ids))))
 
       autos = mlr_auto$mget(learner_ids)

@@ -22,10 +22,11 @@ Set \code{encapsulate_mbo = FALSE} to catch no errors in mbo.
 Timeout for training and predicting with a single learner.}
 
 \item{n_threads}{(\code{integer(1)})\cr
-Number of threads to use for model training.}
+Number of threads used for training a single learner.}
 
 \item{memory_limit}{(\code{integer(1)})\cr
-Memory limit for model training in MB.}
+Memory limit for training a single learner in MB.
+The limit is shared across the parallel workers, i.e. divided by the number of workers.}
 
 \item{devices}{(\code{character()})\cr
 Devices to use for model training.
@@ -33,9 +34,10 @@ Possible values are \code{"cpu"} and \code{"cuda"}.
 If \code{"cuda"}, the learner will be trained on a GPU.}
 
 \item{large_data_size}{(\code{integer(1)})\cr
-Threshold value for the data set size from which special rules apply.
-Only the learners specified in \code{large_data_learner_ids} will be considered.
-These learners can use up to \code{large_data_nthread} threads.}
+Threshold for the data set size (number of rows times number of columns) above
+which large-data rules apply.
+Beyond this threshold the number of parallel workers is reduced and each remaining
+worker is given proportionally more threads and memory.}
 
 \item{small_data_size}{(\code{integer(1)})\cr
 Threshold value for the data set size from which special rules apply.}
