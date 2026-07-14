@@ -142,6 +142,36 @@ test_that("small data set switch works", {
   expect_equal(learner$model$instance$archive$benchmark_result$resamplings$resampling[[1]]$iters, 2)
 })
 
+test_that("default measure is used when none is provided", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  skip_if_not_installed("glmnet")
+  skip_if_no_redis()
+
+  rush = start_rush()
+  on.exit({
+    rush$reset()
+    mirai::daemons(0)
+  })
+
+  task = tsk("penguins")
+  learner = lrn(
+    "classif.auto",
+    rush = rush,
+    learner_ids = "glmnet",
+    small_data_size = 1,
+    resampling = rsmp("holdout"),
+    terminator = trm("evals", n_evals = 1),
+    initial_design_size = 2,
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE
+  )
+
+  expect_null(learner$param_set$values$measure)
+  expect_class(learner$train(task), "LearnerClassifAuto")
+  expect_equal(learner$model$instance$objective$measures[[1]]$id, "classif.ce")
+})
+
 test_that("large data set switch works", {
   skip_on_cran()
   skip_if_not_installed("rush")

@@ -1,5 +1,9 @@
 train_auto = function(self, private, task) {
   pv = self$param_set$values
+  if (is.null(pv$measure)) {
+    pv$measure = default_measures(task$task_type)[[1L]]
+    lg$info("No measure provided. Using default measure '%s'", pv$measure$id)
+  }
   large_data_set = as.numeric(task$nrow) * task$ncol > pv$large_data_size
   n_workers = rush_config()$n_workers %??% 1L
   n_threads = pv$n_threads %??% 1L
