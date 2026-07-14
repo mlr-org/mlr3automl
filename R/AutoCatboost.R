@@ -43,10 +43,13 @@ AutoCatboost = R6Class(
       # catboost only supports gpu via cuda
       task_type = if ("cuda" %in% devices) "GPU" else "CPU"
 
+      iterations = self$search_space(task)$upper[["catboost.iterations"]]
+      if (is.na(iterations)) iterations = 1000L
+
       learner = lrn(
         sprintf("%s.catboost", task$task_type),
         id = "catboost",
-        iterations = self$search_space(task)$upper["catboost.iterations"] %??% 1000L,
+        iterations = iterations,
         early_stopping_rounds = self$early_stopping_rounds(task),
         use_best_model = TRUE,
         eval_metric = self$internal_measure(measure, task),
