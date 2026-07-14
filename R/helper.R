@@ -51,15 +51,6 @@ check_python_packages = function(packages, python_version = NULL) {
   }
 }
 
-assert_python_packages = function(packages, python_version = NULL) {
-  reticulate::py_require(packages, python_version = python_version)
-  available = map_lgl(packages, reticulate::py_module_available)
-  if (any(!available)) {
-    stopf("Package %s not available.", as_short_string(packages[!available]))
-  }
-  invisible(packages)
-}
-
 combine_search_spaces = function(autos, task) {
   learner_ids = map_chr(autos, "id")
 
