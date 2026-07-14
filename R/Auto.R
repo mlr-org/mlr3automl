@@ -160,10 +160,25 @@ Auto = R6Class(
       data = data[measure_id, , on = "measure"]
 
       # subset to relevant parameters
-      param_ids = self$search_space(task)$ids()
-      param_internal_ids = self$search_space(task)$ids(any_tags = "internal_tuning")
+      search_space = self$search_space(task)
+      param_ids = search_space$ids()
+      param_internal_ids = search_space$ids(any_tags = "internal_tuning")
       param_ids = setdiff(param_ids, param_internal_ids)
       data = data[, param_ids, with = FALSE]
+
+      # drop warm-start points that violate the (possibly task-dependent) search space bounds
+      # e.g. kknn.k upper is log(min(100, nrow - 1)), but the stored values can go up to log(100)
+      lower = search_space$lower
+      upper = search_space$upper
+      for (param_id in param_ids) {
+        if (is.na(lower[[param_id]]) || is.na(upper[[param_id]])) next
+        in_bounds = data[[param_id]] >= lower[[param_id]] & data[[param_id]] <= upper[[param_id]]
+        if (!all(in_bounds)) {
+          lg$info("Learner '%s' drops %i initial design point(s) out of bounds for parameter '%s'",
+            self$id, sum(!in_bounds), param_id)
+          data = data[in_bounds]
+        }
+      }
 
       xdt = data[sample(nrow(data), min(size, nrow(data)))]
       set(xdt, j = "branch.selection", value = self$id)
