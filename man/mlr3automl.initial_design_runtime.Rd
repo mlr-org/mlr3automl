@@ -4,7 +4,8 @@
 \alias{mlr3automl.initial_design_runtime}
 \title{Initial Design Runtime Limit Callback}
 \description{
-This \link[mlr3misc:Callback]{mlr3misc::Callback} fails the tasks of the initial design if 25\% of the runtime limit is reached.
+This \link[mlr3misc:Callback]{mlr3misc::Callback} drops the remaining tasks of the initial design from the queue when a
+configurable fraction (\code{initial_design_fraction}) of the runtime limit is reached.
 }
 \examples{
 clbk("mlr3automl.initial_design_runtime")
