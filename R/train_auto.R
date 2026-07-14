@@ -27,7 +27,7 @@ train_auto = function(self, private, task) {
     tuner$param_set$set_values(n_workers = n_workers)
     lg$info(
       # nolint next: line_length_linter
-      "Large data set detected. Reducing number of workers to %i. Increasing number of threads to %i and memory limit to %i MB",
+      "Large data set detected. Reducing number of workers to %i. Increasing number of threads to %i and memory limit to %.0f MB",
       n_workers,
       n_threads,
       memory_limit
