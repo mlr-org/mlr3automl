@@ -77,12 +77,13 @@ Timeout for training and predicting with a single learner.</p></dd>
 
 <dt>n_threads</dt>
 <dd><p>(<code>integer(1)</code>)<br>
-Number of threads to use for model training.</p></dd>
+Number of threads used for training a single learner.</p></dd>
 
 
 <dt>memory_limit</dt>
 <dd><p>(<code>integer(1)</code>)<br>
-Memory limit for model training in MB.</p></dd>
+Memory limit for training a single learner in MB.
+The limit is shared across the parallel workers, i.e. divided by the number of workers.</p></dd>
 
 
 <dt>devices</dt>
@@ -94,9 +95,10 @@ If <code>"cuda"</code>, the learner will be trained on a GPU.</p></dd>
 
 <dt>large_data_size</dt>
 <dd><p>(<code>integer(1)</code>)<br>
-Threshold value for the data set size from which special rules apply.
-Only the learners specified in <code>large_data_learner_ids</code> will be considered.
-These learners can use up to <code>large_data_nthread</code> threads.</p></dd>
+Threshold for the data set size (number of rows times number of columns) above
+which large-data rules apply.
+Beyond this threshold the number of parallel workers is reduced and each remaining
+worker is given proportionally more threads and memory.</p></dd>
 
 
 <dt>small_data_size</dt>

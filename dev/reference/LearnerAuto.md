@@ -21,12 +21,13 @@ learner. Set `encapsulate_mbo = FALSE` to catch no errors in mbo.
 - n_threads:
 
   (`integer(1)`)  
-  Number of threads to use for model training.
+  Number of threads used for training a single learner.
 
 - memory_limit:
 
   (`integer(1)`)  
-  Memory limit for model training in MB.
+  Memory limit for training a single learner in MB. The limit is shared
+  across the parallel workers, i.e. divided by the number of workers.
 
 - devices:
 
@@ -37,9 +38,10 @@ learner. Set `encapsulate_mbo = FALSE` to catch no errors in mbo.
 - large_data_size:
 
   (`integer(1)`)  
-  Threshold value for the data set size from which special rules apply.
-  Only the learners specified in `large_data_learner_ids` will be
-  considered. These learners can use up to `large_data_nthread` threads.
+  Threshold for the data set size (number of rows times number of
+  columns) above which large-data rules apply. Beyond this threshold the
+  number of parallel workers is reduced and each remaining worker is
+  given proportionally more threads and memory.
 
 - small_data_size:
 
