@@ -1,6 +1,6 @@
 train_auto = function(self, private, task) {
   pv = self$param_set$values
-  large_data_set = task$nrow * task$ncol > pv$large_data_size
+  large_data_set = as.numeric(task$nrow) * task$ncol > pv$large_data_size
   n_workers = rush_config()$n_workers %??% 1L
   n_threads = pv$n_threads %??% 1L
   memory_limit = (pv$memory_limit %??% Inf) / n_workers
