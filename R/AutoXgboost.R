@@ -52,7 +52,7 @@ AutoXgboost = R6Class(
       set_threads(learner, n_threads)
 
       if ("cuda" %in% devices) {
-        learner$set_values(device = "cuda")
+        learner$configure(device = "cuda")
       }
 
       po("removeconstants", id = "xgboost_removeconstants") %>>%
