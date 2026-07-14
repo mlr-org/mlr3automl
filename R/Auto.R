@@ -151,7 +151,12 @@ Auto = R6Class(
 
       # subset to relevant measure
       measure_id = sub(sprintf("^%s\\.", task$task_type), "", measure$id)
-      measure_id = if (measure_id %in% data$measure) measure_id else "mcc"
+      if (measure_id %nin% data$measure) {
+        # warm-start data does not cover this measure
+        # return empty design
+        lg$info("Learner '%s' has no initial design data for measure '%s'; returning empty design", self$id, measure$id)
+        return(self$design_default(task)[0])
+      }
       data = data[measure_id, , on = "measure"]
 
       # subset to relevant parameters
