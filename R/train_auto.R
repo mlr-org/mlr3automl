@@ -17,9 +17,12 @@ train_auto = function(self, private, task) {
 
   # set number of workers
   if (large_data_set) {
-    n_workers = max(1, floor(n_workers / 4L))
-    n_threads = n_threads * 4L
-    memory_limit = memory_limit * 4L
+    old_n_workers = n_workers
+    n_workers = max(1L, floor(n_workers / 4L))
+    scale = old_n_workers / n_workers
+
+    n_threads = as.integer(n_threads * scale)
+    memory_limit = memory_limit * scale
 
     tuner$param_set$set_values(n_workers = n_workers)
     lg$info(
