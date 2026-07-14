@@ -43,7 +43,9 @@ cb_timeout_lightgbm = function(timeout) {
 
 check_python_packages = function(packages, python_version = NULL) {
   reticulate::py_require(packages, python_version = python_version)
-  available = map_lgl(packages, reticulate::py_module_available)
+  # strip version specifiers e.g. "fastcore<2.0.0" -> "fastcore"
+  modules = gsub("[<>=!~].*$", "", packages)
+  available = map_lgl(modules, reticulate::py_module_available)
   if (any(!available)) {
     sprintf("Package %s not available.", as_short_string(packages[!available]))
   } else {

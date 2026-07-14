@@ -38,7 +38,8 @@ AutoFastai = R6Class(
       if (!isTRUE(ok)) {
         return(FALSE)
       }
-      ok = check_python_packages(c("IPython", "torch", "torchvision", "fastai", "pydicom", "kornia"))
+      # fastai (<= 2.8.7) is incompatible with fastcore 2.0 but does not declare an upper bound
+      ok = check_python_packages(c("IPython", "torch", "torchvision", "fastai", "fastcore<2.0.0", "pydicom", "kornia"))
       if (!isTRUE(ok)) {
         lg$info(ok)
         lg$info("Remove fastai from search space")

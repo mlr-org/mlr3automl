@@ -22,6 +22,8 @@ install_fastai = function(envname = "mlr3automl-fastai", python_version = "3.11"
     "torchvision",
     "torchaudio",
     "fastai",
+    # fastai (<= 2.8.7) is incompatible with fastcore 2.0 but does not declare an upper bound
+    "fastcore<2.0.0",
     "IPython",
     "pydicom",
     "kornia",
@@ -36,7 +38,7 @@ install_fastai = function(envname = "mlr3automl-fastai", python_version = "3.11"
   )
 
   python = reticulate::conda_python(envname)
-  cli::cli_alert_success("Fastai environment {.val {envname}} created successfully.")
-  cli::cli_alert_info("Set {.code options(reticulate.python = \"{python}\")} or {.code Sys.setenv(RETICULATE_PYTHON = \"{python}\")} to use it.")
+  messagef("Fastai environment '%s' created successfully.", envname)
+  messagef("Set `options(reticulate.python = \"%s\")` or `Sys.setenv(RETICULATE_PYTHON = \"%s\")` to use it.", python, python)
   invisible(python)
 }

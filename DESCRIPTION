@@ -16,14 +16,14 @@ Depends:
     mlr3 (>= 1.6.0),
     mlr3tuning (>= 1.6.0),
     R (>= 3.3.0),
-    rush (>= 1.0.1)
+    rush (>= 1.2.0)
 Imports:
     bbotk (>= 1.7.1),
     checkmate,
     data.table,
     lhs,
     mlr3learners (>= 0.14.0),
-    mlr3mbo (>= 1.1.0),
+    mlr3mbo (>= 1.1.1),
     mlr3misc (>= 0.15.1),
     mlr3pipelines,
     paradox (>= 1.0.1),
@@ -47,9 +47,6 @@ Suggests:
     rpart,
     testthat (>= 3.0.0),
     xgboost (>= 3.2.1.1)
-Remotes:
-    mlr-org/mlr3mbo,
-    mlr-org/rush
 Additional_repositories:
     https://mlr-org.r-universe.dev
     https://eagerai.r-universe.dev
