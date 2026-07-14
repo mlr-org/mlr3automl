@@ -2,8 +2,9 @@
 
 This
 [mlr3misc::Callback](https://mlr3misc.mlr-org.com/reference/Callback.html)
-fails the tasks of the initial design if 25% of the runtime limit is
-reached.
+drops the remaining tasks of the initial design from the queue when a
+configurable fraction (`initial_design_fraction`) of the runtime limit
+is reached.
 
 ## Examples
 
