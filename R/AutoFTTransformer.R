@@ -80,7 +80,7 @@ AutoFTTransformer = R6Class(
         sprintf("%s.ft_transformer", task$task_type),
         id = "ft_transformer",
         measures_valid = measure,
-        patience = self$early_stopping_rounds(task),
+        patience = self$early_stopping_rounds(task, budget = self$search_space(task)$upper[["ft_transformer.epochs"]]),
         batch_size = 32L,
         attention_n_heads = 8L,
         opt.param_groups = rtdl_param_groups,

@@ -120,16 +120,21 @@ Default is "cpu".}
 \if{html}{\out{<a id="method-Auto-early_stopping_rounds"></a>}}
 \if{latex}{\out{\hypertarget{method-Auto-early_stopping_rounds}{}}}
 \subsection{\code{Auto$early_stopping_rounds()}}{
-  Estimate the number of early stopping rounds.
+  Estimate the number of early stopping rounds (the patience) for a learner.
+\code{budget} is the maximum number of training rounds (boosting iterations or epochs) the learner may use.
+The patience is capped well below the budget, otherwise early stopping and validation-based internal tuning
+can never trigger and the learner always trains for the full budget.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
-    \preformatted{Auto$early_stopping_rounds(task)}
+    \preformatted{Auto$early_stopping_rounds(task, budget = Inf)}
     \if{html}{\out{</div>}}
   }
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
       \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+      \item{\code{budget}}{(\code{integer(1)})\cr
+Maximum number of training rounds (boosting iterations or epochs) the learner may use.}
     }
     \if{html}{\out{</div>}}
   }

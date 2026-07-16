@@ -48,7 +48,7 @@ AutoMlp = R6Class(
       learner$id = "mlp"
       learner$param_set$set_values(
         measures_valid = measure,
-        patience = self$early_stopping_rounds(task),
+        patience = self$early_stopping_rounds(task, budget = self$search_space(task)$upper[["mlp.epochs"]]),
         batch_size = 32L,
         device = device
       )

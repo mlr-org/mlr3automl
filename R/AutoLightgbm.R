@@ -41,10 +41,12 @@ AutoLightgbm = R6Class(
 
       device_type = if ("cuda" %in% devices) "gpu" else "cpu"
 
+      num_iterations = self$search_space(task)$upper[["lightgbm.num_iterations"]]
+
       learner = lrn(
         sprintf("%s.lightgbm", task$task_type),
         id = "lightgbm",
-        early_stopping_rounds = self$early_stopping_rounds(task),
+        early_stopping_rounds = self$early_stopping_rounds(task, budget = num_iterations),
         callbacks = list(cb_timeout_lightgbm(timeout * 0.9)),
         eval = self$internal_measure(measure, task),
         device_type = device_type
