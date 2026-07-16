@@ -86,3 +86,43 @@ test_that("estimate memory works", {
   memory = map_dbl(autos, function(auto) auto$estimate_memory(tsk("penguins")))
   expect_numeric(memory)
 })
+
+test_that("internal measure falls back to a valid metric", {
+  catboost = mlr_auto$get("catboost")
+  expect_equal(catboost$internal_measure(msr("regr.mse"), tsk("mtcars")), "RMSE")
+  expect_equal(catboost$internal_measure(msr("regr.medse"), tsk("mtcars")), "RMSE")
+  expect_equal(catboost$internal_measure(msr("classif.fbeta"), tsk("sonar")), "Accuracy")
+  expect_equal(catboost$internal_measure(msr("classif.bacc"), tsk("iris")), "Accuracy")
+
+  xgboost = mlr_auto$get("xgboost")
+  expect_equal(xgboost$internal_measure(msr("regr.mse"), tsk("mtcars")), "rmse")
+  expect_equal(xgboost$internal_measure(msr("regr.medse"), tsk("mtcars")), "rmse")
+  expect_equal(xgboost$internal_measure(msr("classif.fbeta"), tsk("sonar")), "error")
+  expect_equal(xgboost$internal_measure(msr("classif.bacc"), tsk("iris")), "merror")
+
+  lightgbm = mlr_auto$get("lightgbm")
+  expect_equal(lightgbm$internal_measure(msr("regr.medse"), tsk("mtcars")), "rmse")
+  expect_equal(lightgbm$internal_measure(msr("classif.fbeta"), tsk("sonar")), "binary_error")
+  expect_equal(lightgbm$internal_measure(msr("classif.bacc"), tsk("iris")), "multi_error")
+})
+
+test_that("catboost accepts the fallback eval metrics", {
+  skip_on_cran()
+  skip_if_not_installed("catboost")
+  skip_if_not_installed("mlr3extralearners")
+  require_namespaces("mlr3extralearners")
+
+  auto = mlr_auto$get("catboost")
+  tasks = list(tsk("mtcars"), tsk("sonar"), tsk("iris"))
+  measures = list(msr("regr.mse"), msr("classif.fbeta"), msr("classif.bacc"))
+
+  for (i in seq_along(tasks)) {
+    learner = lrn(
+      sprintf("%s.catboost", tasks[[i]]$task_type),
+      iterations = 3,
+      eval_metric = auto$internal_measure(measures[[i]], tasks[[i]]),
+      logging_level = "Silent"
+    )
+    expect_class(learner$train(tasks[[i]]), "Learner")
+  }
+})

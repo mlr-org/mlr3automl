@@ -71,6 +71,7 @@ Regr
 renv
 resamplings
 riccardo
+rmse
 Roxygen
 rpart
 Rscript

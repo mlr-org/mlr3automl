@@ -91,16 +91,16 @@ AutoCatboost = R6Class(
     #' @description
     #' Get the internal measure for the auto.
     internal_measure = function(measure, task) {
-      if (task$task_type == "regr") {
+      metric = if (task$task_type == "regr") {
         switch(
           measure$id,
+          "regr.mse" = "RMSE",
           "regr.rmse" = "RMSE",
           "regr.mae" = "MAE",
           "regr.mape" = "MAPE",
           "regr.smape" = "SMAPE",
           "regr.medae" = "MedianAbsoluteError",
-          "regr.rsq" = "R2", # regr.rsq has id `rsq`
-          "rmse" # default
+          "regr.rsq" = "R2"
         )
       } else if ("twoclass" %in% task$properties) {
         switch(
@@ -114,8 +114,7 @@ AutoCatboost = R6Class(
           "classif.logloss" = "Logloss",
           "classif.precision" = "Precision",
           "classif.recall" = "Recall",
-          "classif.mcc" = "MCC",
-          "error" # default
+          "classif.mcc" = "MCC"
         )
       } else if ("multiclass" %in% task$properties) {
         switch(
@@ -124,10 +123,16 @@ AutoCatboost = R6Class(
           "classif.acc" = "Accuracy",
           "classif.mauc_mu" = "AUC",
           "classif.logloss" = "MultiClass",
-          "classif.mcc" = "MCC",
-          "merror" # default
+          "classif.mcc" = "MCC"
         )
       }
+
+      if (is.null(metric)) {
+        metric = if (task$task_type == "regr") "RMSE" else "Accuracy"
+        lg$info("Measure '%s' has no catboost equivalent. Using '%s' for early stopping.", measure$id, metric)
+      }
+
+      metric
     }
   ),
 

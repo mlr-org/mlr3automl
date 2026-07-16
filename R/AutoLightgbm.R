@@ -89,28 +89,38 @@ AutoLightgbm = R6Class(
     #' @description
     #' Get the internal measure for the auto.
     internal_measure = function(measure, task) {
-      if (task$task_type == "regr") {
-        # nolint next: line_length_linter
-        switch(measure$id, "regr.mse" = "mse", "regr.rmse" = "rmse", "regr.mae" = "mae", "regr.mape" = "mape", "rmse")
+      metric = if (task$task_type == "regr") {
+        switch(measure$id, "regr.mse" = "mse", "regr.rmse" = "rmse", "regr.mae" = "mae", "regr.mape" = "mape")
       } else if ("twoclass" %in% task$properties) {
         switch(
           measure$id,
           "classif.ce" = "binary_error",
           "classif.acc" = "binary_error",
           "classif.auc" = "auc",
-          "classif.logloss" = "binary_logloss",
-          "binary_error"
-        ) # default
+          "classif.logloss" = "binary_logloss"
+        )
       } else if ("multiclass" %in% task$properties) {
         switch(
           measure$id,
           "classif.ce" = "multi_error",
           "classif.acc" = "multi_error",
           "classif.mauc_mu" = "auc_mu",
-          "classif.logloss" = "multi_logloss",
-          "multi_error"
-        ) # default
+          "classif.logloss" = "multi_logloss"
+        )
       }
+
+      if (is.null(metric)) {
+        metric = if (task$task_type == "regr") {
+          "rmse"
+        } else if ("twoclass" %in% task$properties) {
+          "binary_error"
+        } else {
+          "multi_error"
+        }
+        lg$info("Measure '%s' has no lightgbm equivalent. Using '%s' for early stopping.", measure$id, metric)
+      }
+
+      metric
     }
   ),
 

@@ -99,14 +99,14 @@ AutoXgboost = R6Class(
     #' @description
     #' Get the internal measure for the auto.
     internal_measure = function(measure, task) {
-      if (task$task_type == "regr") {
+      metric = if (task$task_type == "regr") {
         switch(
           measure$id,
+          "regr.mse" = "rmse",
           "regr.rmse" = "rmse",
           "regr.rmsle" = "rmsle",
           "regr.mae" = "mae",
-          "regr.mape" = "mape",
-          "rmse" # default
+          "regr.mape" = "mape"
         )
       } else if ("twoclass" %in% task$properties) {
         switch(
@@ -115,8 +115,7 @@ AutoXgboost = R6Class(
           "classif.acc" = "error",
           "classif.auc" = "auc",
           "classif.prauc" = "aucpr",
-          "classif.logloss" = "logloss",
-          "error" # default
+          "classif.logloss" = "logloss"
         )
       } else if ("multiclass" %in% task$properties) {
         switch(
@@ -124,10 +123,16 @@ AutoXgboost = R6Class(
           "classif.ce" = "merror",
           "classif.acc" = "merror",
           "classif.mauc_aunp" = "auc",
-          "classif.logloss" = "mlogloss",
-          "merror" # default
+          "classif.logloss" = "mlogloss"
         )
       }
+
+      if (is.null(metric)) {
+        metric = if (task$task_type == "regr") "rmse" else if ("twoclass" %in% task$properties) "error" else "merror"
+        lg$info("Measure '%s' has no xgboost equivalent. Using '%s' for early stopping.", measure$id, metric)
+      }
+
+      metric
     }
   ),
 
