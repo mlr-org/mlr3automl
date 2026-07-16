@@ -5,6 +5,26 @@ Abstract base class for AutoML learners. Contains the shared logic for
 and
 [LearnerRegrAuto](https://mlr3automl.mlr-org.com/dev/reference/LearnerRegrAuto.md).
 
+The following learners are supported:
+
+|                |                   |
+|----------------|-------------------|
+| Algorithm      | Package           |
+| catboost       | mlr3extralearners |
+| extra_trees    | mlr3learners      |
+| fastai         | mlr3extralearners |
+| ft_transformer | mlr3torch         |
+| glmnet         | mlr3learners      |
+| kknn           | mlr3learners      |
+| lda            | mlr3learners      |
+| lightgbm       | mlr3extralearners |
+| mlp            | mlr3torch         |
+| ranger         | mlr3learners      |
+| resnet         | mlr3torch         |
+| svm            | mlr3learners      |
+| tabpfn         | mlr3extralearners |
+| xgboost        | mlr3learners      |
+
 ## Debugging
 
 Set `options(bbotk.debug)` to run the tuning in the in the main session.

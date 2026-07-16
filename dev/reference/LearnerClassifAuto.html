@@ -191,6 +191,22 @@ Change to <code>FALSE</code> to debug.</p></dd>
 
 </dl></div>
     <div class="section level2">
+    <h2 id="python-learners">Python learners<a class="anchor" aria-label="anchor" href="#python-learners"></a></h2>
+
+
+<p>Python learners like <code>TabPFN</code> and <code>fastai</code> run via <code>reticulate</code> and
+therefore need a Python installation with their required packages.
+There are two ways to provide it:</p><ol><li><p>Do nothing and let <code><a href="https://rstudio.github.io/reticulate/reference/py_require.html" class="external-link">reticulate::py_require()</a></code> install the required packages into an ephemeral virtual
+environment automatically.</p></li>
+<li><p>Point the <code>RETICULATE_PYTHON</code> environment variable to a Python installation that has the required packages
+installed.</p></li>
+</ol><p>We recommend option 2 when running on many workers,
+as it avoids the overhead of downloading and installing the packages on each worker.
+Use <code><a href="install_python_learners.html">install_python_learners()</a></code> to create a conda environment with the required packages and set
+<code>RETICULATE_PYTHON</code> to the returned Python binary.</p>
+<p>The <code>TabPFN</code> learner additionally requires the <code>TABPFN_TOKEN</code> environment variable to download the model weights.</p>
+    </div>
+    <div class="section level2">
     <h2 id="super-classes">Super classes<a class="anchor" aria-label="anchor" href="#super-classes"></a></h2>
     <p><code><a href="https://mlr3.mlr-org.com/reference/Learner.html" class="external-link">mlr3::Learner</a></code> -&gt; <code><a href="LearnerAuto.html">LearnerAuto</a></code> -&gt; <code>LearnerClassifAuto</code></p>
     </div>

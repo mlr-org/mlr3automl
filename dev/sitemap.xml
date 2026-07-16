@@ -31,6 +31,8 @@
 <url><loc>https://mlr3automl.mlr-org.com/dev/reference/LearnerClassifAutoSVM.html</loc></url>
 <url><loc>https://mlr3automl.mlr-org.com/dev/reference/LearnerClassifAutoTabPFN.html</loc></url>
 <url><loc>https://mlr3automl.mlr-org.com/dev/reference/LearnerClassifAutoXgboost.html</loc></url>
+<url><loc>https://mlr3automl.mlr-org.com/dev/reference/LearnerClassifFastaiIsolated.html</loc></url>
+<url><loc>https://mlr3automl.mlr-org.com/dev/reference/LearnerClassifTabPFNIsolated.html</loc></url>
 <url><loc>https://mlr3automl.mlr-org.com/dev/reference/LearnerRegrAuto.html</loc></url>
 <url><loc>https://mlr3automl.mlr-org.com/dev/reference/LearnerRegrAutoCatboost.html</loc></url>
 <url><loc>https://mlr3automl.mlr-org.com/dev/reference/LearnerRegrAutoFTTransformer.html</loc></url>
@@ -43,7 +45,9 @@
 <url><loc>https://mlr3automl.mlr-org.com/dev/reference/LearnerRegrAutoSVM.html</loc></url>
 <url><loc>https://mlr3automl.mlr-org.com/dev/reference/LearnerRegrAutoTabPFN.html</loc></url>
 <url><loc>https://mlr3automl.mlr-org.com/dev/reference/LearnerRegrAutoXgboost.html</loc></url>
+<url><loc>https://mlr3automl.mlr-org.com/dev/reference/LearnerRegrTabPFNIsolated.html</loc></url>
 <url><loc>https://mlr3automl.mlr-org.com/dev/reference/index.html</loc></url>
+<url><loc>https://mlr3automl.mlr-org.com/dev/reference/install_python_learners.html</loc></url>
 <url><loc>https://mlr3automl.mlr-org.com/dev/reference/mlr3automl-package.html</loc></url>
 <url><loc>https://mlr3automl.mlr-org.com/dev/reference/mlr3automl.initial_design_runtime.html</loc></url>
 <url><loc>https://mlr3automl.mlr-org.com/dev/reference/mlr_auto.html</loc></url>

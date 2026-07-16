@@ -59,6 +59,15 @@
 - [`LearnerRegrAutoXgboost`](https://mlr3automl.mlr-org.com/dev/reference/LearnerRegrAutoXgboost.md)
   : Regression XGBoost Auto Learner
 
+## Isolated Python Learners
+
+- [`LearnerClassifFastaiIsolated`](https://mlr3automl.mlr-org.com/dev/reference/LearnerClassifFastaiIsolated.md)
+  : Fastai Learner Isolated
+- [`LearnerClassifTabPFNIsolated`](https://mlr3automl.mlr-org.com/dev/reference/LearnerClassifTabPFNIsolated.md)
+  : TabPFN Learner Isolated
+- [`LearnerRegrTabPFNIsolated`](https://mlr3automl.mlr-org.com/dev/reference/LearnerRegrTabPFNIsolated.md)
+  : TabPFN Regressor Learner Isolated
+
 ## Auto Configuration
 
 - [`Auto`](https://mlr3automl.mlr-org.com/dev/reference/Auto.md) : Auto
@@ -92,15 +101,27 @@
 - [`AutoXgboost`](https://mlr3automl.mlr-org.com/dev/reference/AutoXgboost.md)
   : Xgboost Auto
 
+## Sugar Functions
+
+- [`mlr_auto`](https://mlr3automl.mlr-org.com/dev/reference/mlr_auto.md)
+  [`auto()`](https://mlr3automl.mlr-org.com/dev/reference/mlr_auto.md) :
+  Dictionary of Auto Objects
+
 ## Dictionary
 
 - [`mlr_auto`](https://mlr3automl.mlr-org.com/dev/reference/mlr_auto.md)
-  : Dictionary of Auto Objects
+  [`auto()`](https://mlr3automl.mlr-org.com/dev/reference/mlr_auto.md) :
+  Dictionary of Auto Objects
 
 ## Callbacks
 
 - [`mlr3automl.initial_design_runtime`](https://mlr3automl.mlr-org.com/dev/reference/mlr3automl.initial_design_runtime.md)
   : Initial Design Runtime Limit Callback
+
+## Installation
+
+- [`install_python_learners()`](https://mlr3automl.mlr-org.com/dev/reference/install_python_learners.md)
+  : Install Python Learners
 
 ## Package
 

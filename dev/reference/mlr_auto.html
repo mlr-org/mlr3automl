@@ -5,7 +5,9 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/Roboto-0.4.10/font.css" rel="stylesheet"><link href="../deps/JetBrains_Mono-0.4.10/font.css" rel="stylesheet"><link href="../deps/Roboto_Slab-0.4.10/font.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Dictionary of Auto Objects — mlr_auto"><meta name="description" content="A dictionary of Auto objects."><meta property="og:description" content="A dictionary of Auto objects."><meta property="og:image" content="https://mlr3automl.mlr-org.com/logo.png"><meta name="robots" content="noindex"></head><body>
+</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/Roboto-0.4.10/font.css" rel="stylesheet"><link href="../deps/JetBrains_Mono-0.4.10/font.css" rel="stylesheet"><link href="../deps/Roboto_Slab-0.4.10/font.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Dictionary of Auto Objects — mlr_auto"><meta name="description" content="A dictionary of Auto objects.
+Sugar function to retrieve Auto objects from mlr_auto."><meta property="og:description" content="A dictionary of Auto objects.
+Sugar function to retrieve Auto objects from mlr_auto."><meta property="og:image" content="https://mlr3automl.mlr-org.com/logo.png"><meta name="robots" content="noindex"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -43,21 +45,71 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Dictionary of Auto Objects</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mlr-org/mlr3automl/blob/main/R/mlr_auto.R" class="external-link"><code>R/mlr_auto.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mlr-org/mlr3automl/blob/main/R/mlr_auto.R" class="external-link"><code>R/mlr_auto.R</code></a>, <a href="https://github.com/mlr-org/mlr3automl/blob/main/R/sugar.R" class="external-link"><code>R/sugar.R</code></a></small>
       <div class="d-none name"><code>mlr_auto.Rd</code></div>
     </div>
 
     <div class="ref-description section level2">
     <p>A dictionary of <a href="Auto.html">Auto</a> objects.</p>
+<p>Sugar function to retrieve <a href="Auto.html">Auto</a> objects from mlr_auto.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="va">mlr_auto</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="va">mlr_auto</span></span>
+<span></span>
+<span><span class="fu">auto</span><span class="op">(</span><span class="va">.key</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
-  </main></div>
+
+<dl><dt id="arg--key">.key<a class="anchor" aria-label="anchor" href="#arg--key"></a></dt>
+<dd><p>(<code>character(1)</code>)<br>
+Key of the object to retrieve.
+If missing, the dictionary itself is returned.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>(named <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>)<br>
+Additional arguments passed to the constructor.</p></dd>
+
+</dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p><a href="Auto.html">Auto</a></p>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">auto</span><span class="op">(</span><span class="st">"catboost"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;AutoCatboost&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Inherits from: &lt;Auto&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Public:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     check: function (task, memory_limit = Inf, large_data_set = FALSE, devices) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     clone: function (deep = FALSE) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     design_default: function (task) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     design_set: function (task, measure, size) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     devices: cpu cuda</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     early_stopping_rounds: function (task) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     estimate_memory: function (task) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     finalize_model: function (graph_learner) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     graph: function (task, measure, n_threads, timeout, devices) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     id: catboost</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     initialize: function (id = "catboost") </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     internal_measure: function (measure, task) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     packages: mlr3 mlr3extralearners catboost</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     properties: internal_tuning large_data_sets</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     search_space: function (task) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     task_types: classif regr</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Private:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     .default_values: list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     .search_space: ParamSet, R6</span>
+</code></pre></div>
+    </div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
