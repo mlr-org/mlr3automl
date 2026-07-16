@@ -155,17 +155,28 @@ Create the graph for the auto.
 
 ### `Auto$early_stopping_rounds()`
 
-Estimate the number of early stopping rounds.
+Estimate the number of early stopping rounds (the patience) for a
+learner. `budget` is the maximum number of training rounds (boosting
+iterations or epochs) the learner may use. The patience is capped well
+below the budget, otherwise early stopping and validation-based internal
+tuning can never trigger and the learner always trains for the full
+budget.
 
 #### Usage
 
-    Auto$early_stopping_rounds(task)
+    Auto$early_stopping_rounds(task, budget = Inf)
 
 #### Arguments
 
 - `task`:
 
   ([mlr3::Task](https://mlr3.mlr-org.com/reference/Task.html)).
+
+- `budget`:
+
+  (`integer(1)`)  
+  Maximum number of training rounds (boosting iterations or epochs) the
+  learner may use.
 
 ------------------------------------------------------------------------
 

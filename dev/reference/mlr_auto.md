@@ -44,7 +44,7 @@ auto("catboost")
 #>     design_default: function (task) 
 #>     design_set: function (task, measure, size) 
 #>     devices: cpu cuda
-#>     early_stopping_rounds: function (task) 
+#>     early_stopping_rounds: function (task, budget = Inf) 
 #>     estimate_memory: function (task) 
 #>     finalize_model: function (graph_learner) 
 #>     graph: function (task, measure, n_threads, timeout, devices) 
