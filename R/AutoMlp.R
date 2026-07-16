@@ -42,9 +42,11 @@ AutoMlp = R6Class(
 
       device = if ("cuda" %in% devices) "cuda" else "auto"
 
-      learner = lrn(
-        sprintf("%s.mlp", task$task_type),
-        id = "mlp",
+      # construct directly instead of via lrn() because mlr3extralearners also
+      # registers the key "classif.mlp" and overwrites the mlr3torch learner
+      learner = mlr3torch::LearnerTorchMLP$new(task_type = task$task_type)
+      learner$id = "mlp"
+      learner$param_set$set_values(
         measures_valid = measure,
         patience = self$early_stopping_rounds(task),
         batch_size = 32L,

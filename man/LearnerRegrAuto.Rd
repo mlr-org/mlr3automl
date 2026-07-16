@@ -97,6 +97,24 @@ Change to \code{FALSE} to debug.}
 }
 }
 
+\section{Python learners}{
+
+Python learners like \code{TabPFN} and \code{fastai} run via \code{reticulate} and
+therefore need a Python installation with their required packages.
+There are two ways to provide it:
+\enumerate{
+\item Do nothing and let \code{reticulate::py_require()} install the required packages into an ephemeral virtual
+environment automatically.
+\item Point the \code{RETICULATE_PYTHON} environment variable to a Python installation that has the required packages
+installed.
+}
+
+We recommend option 2 when running on many workers,
+as it avoids the overhead of downloading and installing the packages on each worker.
+Use \code{\link[=install_python_learners]{install_python_learners()}} to create a conda environment with the required packages and set
+\code{RETICULATE_PYTHON} to the returned Python binary.
+}
+
 \section{Super classes}{
 \code{\link[mlr3:Learner]{mlr3::Learner}} -> \code{\link[mlr3automl:LearnerAuto]{LearnerAuto}} -> \code{LearnerRegrAuto}
 }

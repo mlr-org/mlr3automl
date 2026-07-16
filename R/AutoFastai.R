@@ -13,6 +13,7 @@
 #' @template param_memory_limit
 #' @template param_large_data_set
 #' @template param_devices
+#' @template section_python
 #'
 #' @export
 AutoFastai = R6Class(
@@ -158,6 +159,13 @@ fastai_python_packages = c("IPython", "torch", "torchvision", "fastai", "fastcor
 #   session as raw bytes. the model stays live until then, so mlr3 can extract
 #   the internal tuning values and validation scores from it.
 # * .predict() unpickles the model inside the callr session.
+
+#' @title Fastai Learner Isolated
+#'
+#' @description
+#' A subclass of [mlr3extralearners::LearnerClassifFastai] that isolates the Python environment in a callr session.
+#'
+#' @export
 LearnerClassifFastaiIsolated = R6Class(
   "LearnerClassifFastaiIsolated",
   inherit = mlr3extralearners::LearnerClassifFastai,

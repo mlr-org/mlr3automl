@@ -5,7 +5,12 @@ library(mlr3pipelines)
 library(paradox)
 library(R6)
 
-lapply(list.files(system.file("testthat", package = "mlr3"), pattern = "^helper.*\\.[rR]", full.names = TRUE), source)
+mlr3_helpers = list.files(system.file("testthat", package = "mlr3"), pattern = "^helper.*\\.[rR]", full.names = TRUE)
+# helper_debugging.R defines strict $.R6 and [[.R6 methods that error on missing slots.
+# these are incompatible with torch's R6 classes (e.g. the dataloader probes optional
+# fields expecting NULL), which the mlp, resnet and ft_transformer learners use.
+mlr3_helpers = grep("helper_debugging", mlr3_helpers, value = TRUE, invert = TRUE)
+lapply(mlr3_helpers, source)
 lapply(
   list.files(system.file("testthat", package = "mlr3tuning"), pattern = "^helper.*\\.[rR]", full.names = TRUE),
   source

@@ -32,6 +32,7 @@ Imports:
 Suggests:
     callr,
     e1071,
+    fastai,
     glmnet,
     kknn,
     lgr,
@@ -51,7 +52,6 @@ Remotes:
     mlr-org/mlr3mbo
 Additional_repositories:
     https://mlr-org.r-universe.dev
-    https://eagerai.r-universe.dev
 Config/testthat/edition: 3
 Config/testthat/parallel: false
 Encoding: UTF-8

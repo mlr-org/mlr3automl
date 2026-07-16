@@ -13,6 +13,7 @@
 #' @template param_memory_limit
 #' @template param_large_data_set
 #' @template param_devices
+#' @template section_python
 #'
 #' @export
 AutoTabpfn = R6Class(
@@ -150,6 +151,13 @@ mlr_auto$add("tabpfn", function() AutoTabpfn$new())
 #   not do itself, and wraps the model as an isolated model, so it leaves the
 #   session as raw bytes.
 # * .predict() unpickles the model inside the callr session.
+
+#' @title TabPFN Learner Isolated
+#'
+#' @description
+#' A subclass of [mlr3extralearners::LearnerClassifTabPFN] that isolates the Python environment in a callr session.
+#'
+#' @export
 LearnerClassifTabPFNIsolated = R6Class(
   "LearnerClassifTabPFNIsolated",
   inherit = mlr3extralearners::LearnerClassifTabPFN,
@@ -179,6 +187,12 @@ LearnerClassifTabPFNIsolated = R6Class(
   )
 )
 
+#' @title TabPFN Regressor Learner Isolated
+#'
+#' @description
+#' A subclass of [mlr3extralearners::LearnerRegrTabPFN] that isolates the Python environment in a callr session.
+#'
+#' @export
 LearnerRegrTabPFNIsolated = R6Class(
   "LearnerRegrTabPFNIsolated",
   inherit = mlr3extralearners::LearnerRegrTabPFN,

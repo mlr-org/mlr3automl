@@ -2,7 +2,7 @@
 # You can remove the `services.redis` section if the package does not require `rush` for the tests
 # https://github.com/mlr-org/actions
 # Modifications:
-# - Add mlr-org and eagerai R-universe repositories to the setup-r step
+# - Add mlr-org R-universe repository to the setup-r step
 # - Add catboost package from github repository to the setup-r-dependencies step
 # - Add a step to install torch
 # - Remove the --as-cran argument from the check-r-package step
@@ -62,7 +62,6 @@ jobs:
           r-version: ${{ matrix.config.r }}
           extra-repositories: |
             https://mlr-org.r-universe.dev
-            https://eagerai.r-universe.dev
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:

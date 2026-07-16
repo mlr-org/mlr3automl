@@ -45,7 +45,6 @@ jobs:
         with:
           extra-repositories: |
             https://mlr-org.r-universe.dev
-            https://eagerai.r-universe.dev
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
