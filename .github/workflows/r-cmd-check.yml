@@ -70,6 +70,7 @@ jobs:
             any::pkgload
             catboost/catboost/catboost/R-package
           needs: check
+          cache: "always"
 
       - name: Install torch
         run: |
