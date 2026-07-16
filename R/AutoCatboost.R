@@ -50,7 +50,7 @@ AutoCatboost = R6Class(
         sprintf("%s.catboost", task$task_type),
         id = "catboost",
         iterations = iterations,
-        early_stopping_rounds = self$early_stopping_rounds(task),
+        early_stopping_rounds = self$early_stopping_rounds(task, budget = iterations),
         use_best_model = TRUE,
         eval_metric = self$internal_measure(measure, task),
         task_type = task_type

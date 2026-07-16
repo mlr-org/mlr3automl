@@ -46,7 +46,7 @@ AutoResNet = R6Class(
         sprintf("%s.tab_resnet", task$task_type),
         id = "resnet",
         measures_valid = measure,
-        patience = self$early_stopping_rounds(task),
+        patience = self$early_stopping_rounds(task, budget = self$search_space(task)$upper[["resnet.epochs"]]),
         batch_size = 32L,
         device = device
       )

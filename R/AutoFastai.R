@@ -69,7 +69,7 @@ AutoFastai = R6Class(
       learner = LearnerClassifFastaiIsolated$new()
       learner$id = "fastai"
       learner$param_set$set_values(
-        patience = self$early_stopping_rounds(task),
+        patience = self$early_stopping_rounds(task, budget = self$search_space(task)$upper[["fastai.n_epoch"]]),
         layers = c(200, 100),
         eval_metric = self$internal_measure(measure, task)
       )

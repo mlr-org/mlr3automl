@@ -40,14 +40,16 @@ AutoXgboost = R6Class(
 
       require_namespaces("mlr3learners")
 
+      nrounds = self$search_space(task)$upper[["xgboost.nrounds"]]
+
       learner = lrn(
         sprintf("%s.xgboost", task$task_type),
         id = "xgboost",
         booster = "gbtree",
-        early_stopping_rounds = self$early_stopping_rounds(task),
+        early_stopping_rounds = self$early_stopping_rounds(task, budget = nrounds),
         callbacks = list(cb_timeout_xgboost(timeout * 0.9)),
         eval_metric = self$internal_measure(measure, task),
-        nrounds = 5000L
+        nrounds = nrounds
       )
       set_threads(learner, n_threads)
 

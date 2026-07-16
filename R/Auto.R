@@ -102,16 +102,24 @@ Auto = R6Class(
     },
 
     #' @description
-    #' Estimate the number of early stopping rounds.
-    early_stopping_rounds = function(task) {
+    #' Estimate the number of early stopping rounds (the patience) for a learner.
+    #' `budget` is the maximum number of training rounds (boosting iterations or epochs) the learner may use.
+    #' The patience is capped well below the budget, otherwise early stopping and validation-based internal tuning
+    #' can never trigger and the learner always trains for the full budget.
+    #'
+    #' @param budget (`integer(1)`)\cr
+    #'   Maximum number of training rounds (boosting iterations or epochs) the learner may use.
+    early_stopping_rounds = function(task, budget = Inf) {
       min_early_stopping_rounds = 20L
       max_early_stopping_rounds = 200L
 
-      if (task$nrow < 1e4) {
-        return(max_early_stopping_rounds)
+      patience = if (task$nrow < 1e4) {
+        max_early_stopping_rounds
+      } else {
+        floor(max(min_early_stopping_rounds, 1e4 / task$nrow * max_early_stopping_rounds))
       }
 
-      floor((max(min_early_stopping_rounds, 1e4 / task$nrow * max_early_stopping_rounds)))
+      min(patience, max(min_early_stopping_rounds, budget %/% 5L))
     },
 
     #' @description
