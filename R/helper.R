@@ -41,9 +41,37 @@ cb_timeout_lightgbm = function(timeout) {
   callback
 }
 
+# initializing python exports VIRTUAL_ENV, PYTHONPATH and
+# R_SESSION_INITIALIZED, which child processes inherit. reticulate in a child
+# would bind to the parent python environment instead of resolving the
+# requirements declared with py_require(). call before py_require() in the
+# callr sessions used for process isolation.
+clean_reticulate_env = function() {
+  Sys.unsetenv(c("VIRTUAL_ENV", "VIRTUAL_ENV_PROMPT", "PYTHONPATH", "R_SESSION_INITIALIZED"))
+}
+
 check_python_packages = function(packages, python_version = NULL) {
-  reticulate::py_require(packages, python_version = python_version)
-  available = map_lgl(packages, reticulate::py_module_available)
+  # py_module_available() initializes python and imports the modules into the
+  # calling session. probe in a short-lived callr session instead, so python
+  # torch is never loaded into a process that also uses the torch package
+  # (mlr3torch). the libtorch versions are incompatible and whichever stack
+  # loads second breaks.
+  available = tryCatch(
+    callr::r(
+      function(packages, python_version) {
+        Sys.unsetenv(c("VIRTUAL_ENV", "VIRTUAL_ENV_PROMPT", "PYTHONPATH", "R_SESSION_INITIALIZED"))
+        reticulate::py_require(packages, python_version = python_version)
+        # strip version specifiers e.g. "fastcore<2.0.0" -> "fastcore"
+        modules = gsub("[<>=!~].*$", "", packages)
+        vapply(modules, reticulate::py_module_available, logical(1L), USE.NAMES = FALSE)
+      },
+      args = list(packages = packages, python_version = python_version)
+    ),
+    error = function(e) sprintf("Python package check failed: %s", conditionMessage(e))
+  )
+  if (is.character(available)) {
+    return(available)
+  }
   if (any(!available)) {
     sprintf("Package %s not available.", as_short_string(packages[!available]))
   } else {

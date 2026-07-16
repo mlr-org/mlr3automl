@@ -39,3 +39,6 @@
 ^pkgdown$
 ^revdep$
 ^tests/testthat/_object_snapshots$
+
+$oml_cache$
+$.conda$

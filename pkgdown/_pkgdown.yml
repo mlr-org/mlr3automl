@@ -70,6 +70,11 @@ reference:
       - LearnerRegrAutoSVM
       - LearnerRegrAutoTabPFN
       - LearnerRegrAutoXgboost
+  - title: Isolated Python Learners
+    contents:
+      - LearnerClassifFastaiIsolated
+      - LearnerClassifTabPFNIsolated
+      - LearnerRegrTabPFNIsolated
   - title: Auto Configuration
     contents:
       - Auto
@@ -87,12 +92,18 @@ reference:
       - AutoSvm
       - AutoTabpfn
       - AutoXgboost
+  - title: Sugar Functions
+    contents:
+      - auto
   - title: Dictionary
     contents:
       - mlr_auto
   - title: Callbacks
     contents:
       - mlr3automl.initial_design_runtime
+  - title: Installation
+    contents:
+      - install_python_learners
   - title: Package
     contents:
       - mlr3automl-package

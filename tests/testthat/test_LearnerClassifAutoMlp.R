@@ -1,48 +1,32 @@
 test_that("LearnerClassifAutoMlp works", {
   skip_on_cran()
-  skip_if_not_all_installed(unlist(map(mlr_auto$mget("mlp"), "packages")))
+  skip_if_auto_not_installed("mlp")
   skip_if_not_installed("rush")
   skip_if_no_redis()
   skip_if(!torch::torch_is_installed(), "torch backend (LibTorch) not installed")
 
-  expect_true(callr::r(function() {
-    Sys.setenv(RETICULATE_PYTHON = "managed")
-    library(mlr3automl)
-    library(testthat)
-    library(checkmate)
-    lapply(
-      list.files(system.file("testthat", package = "rush"), pattern = "^helper.*\\.[rR]", full.names = TRUE),
-      source
-    )
+  rush = start_rush()
+  on.exit({
+    rush$reset()
+    mirai::daemons(0)
+  })
 
-    rush = start_rush()
-    on.exit({
-      rush$reset()
-      mirai::daemons(0)
-    })
+  task = tsk("penguins")
+  task$filter(c(1, 153, 277))
 
-    mirai::everywhere({
-      Sys.setenv(RETICULATE_PYTHON = "managed")
-    })
+  learner = lrn(
+    "classif.auto_mlp",
+    small_data_size = 1,
+    resampling = rsmp("holdout"),
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 4),
+    initial_design_type = "lhs",
+    initial_design_size = 2,
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE,
+    check_learners = FALSE,
+    rush = rush
+  )
 
-    task = tsk("penguins")
-    task$filter(c(1, 153, 277))
-
-    learner = lrn(
-      "classif.auto_mlp",
-      small_data_size = 1,
-      resampling = rsmp("holdout"),
-      measure = msr("classif.ce"),
-      terminator = trm("evals", n_evals = 4),
-      initial_design_type = "lhs",
-      initial_design_size = 2,
-      encapsulate_learner = FALSE,
-      encapsulate_mbo = FALSE,
-      check_learners = FALSE,
-      rush = rush
-    )
-
-    expect_class(learner$train(task), "LearnerClassifAutoMLP")
-    TRUE
-  }))
+  expect_class(learner$train(task), "LearnerClassifAutoMLP")
 })

@@ -1,6 +1,6 @@
 test_that("LearnerRegrAutoXgboost works", {
   skip_on_cran()
-  skip_if_not_all_installed(unlist(map(mlr_auto$mget("xgboost"), "packages")))
+  skip_if_auto_not_installed("xgboost")
   skip_if_not_installed("rush")
   skip_if_no_redis()
 

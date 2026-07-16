@@ -66,6 +66,8 @@ AutoXgboost = R6Class(
 
     #' @description
     #' Prepare the graph learner for the final model fit.
+    #'
+    #' @param graph_learner ([mlr3pipelines::GraphLearner]).
     finalize_model = function(graph_learner) {
       graph_learner$param_set$values$xgboost.callbacks = NULL
       invisible(graph_learner)

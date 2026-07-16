@@ -4,6 +4,25 @@
 #' Abstract base class for AutoML learners.
 #' Contains the shared logic for [LearnerClassifAuto] and [LearnerRegrAuto].
 #'
+#' The following learners are supported:
+#'
+#' | Algorithm | Package |
+#' | -------------- | ------------------- |
+#' | catboost | mlr3extralearners |
+#' | extra_trees | mlr3learners |
+#' | fastai | mlr3extralearners |
+#' | ft_transformer | mlr3torch |
+#' | glmnet | mlr3learners |
+#' | kknn | mlr3learners |
+#' | lda | mlr3learners |
+#' | lightgbm | mlr3extralearners |
+#' | mlp | mlr3torch |
+#' | ranger | mlr3learners |
+#' | resnet | mlr3torch |
+#' | svm | mlr3learners |
+#' | tabpfn | mlr3extralearners |
+#' | xgboost | mlr3learners |
+#'
 #' @template param_id
 #' @template param_learner_ids
 #' @template param_rush

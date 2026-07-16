@@ -6,6 +6,24 @@
 \description{
 Abstract base class for AutoML learners.
 Contains the shared logic for \link{LearnerClassifAuto} and \link{LearnerRegrAuto}.
+
+The following learners are supported:\tabular{ll}{
+   Algorithm \tab Package \cr
+   catboost \tab mlr3extralearners \cr
+   extra_trees \tab mlr3learners \cr
+   fastai \tab mlr3extralearners \cr
+   ft_transformer \tab mlr3torch \cr
+   glmnet \tab mlr3learners \cr
+   kknn \tab mlr3learners \cr
+   lda \tab mlr3learners \cr
+   lightgbm \tab mlr3extralearners \cr
+   mlp \tab mlr3torch \cr
+   ranger \tab mlr3learners \cr
+   resnet \tab mlr3torch \cr
+   svm \tab mlr3learners \cr
+   tabpfn \tab mlr3extralearners \cr
+   xgboost \tab mlr3learners \cr
+}
 }
 \section{Debugging}{
 

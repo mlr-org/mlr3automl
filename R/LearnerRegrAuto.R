@@ -10,6 +10,7 @@
 #' @template param_rush
 #' @template section_debugging
 #' @template section_parameters
+#' @template section_python
 #'
 #' @export
 #' @include LearnerAuto.R

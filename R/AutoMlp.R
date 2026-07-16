@@ -25,7 +25,7 @@ AutoMlp = R6Class(
         properties = "internal_tuning",
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3torch"),
-        devices = "cuda"
+        devices = c("cuda", "cpu")
       )
     },
 
@@ -42,9 +42,11 @@ AutoMlp = R6Class(
 
       device = if ("cuda" %in% devices) "cuda" else "auto"
 
-      learner = lrn(
-        sprintf("%s.mlp", task$task_type),
-        id = "mlp",
+      # construct directly instead of via lrn() because mlr3extralearners also
+      # registers the key "classif.mlp" and overwrites the mlr3torch learner
+      learner = mlr3torch::LearnerTorchMLP$new(task_type = task$task_type)
+      learner$id = "mlp"
+      learner$param_set$set_values(
         measures_valid = measure,
         patience = self$early_stopping_rounds(task),
         batch_size = 32L,
@@ -73,12 +75,12 @@ AutoMlp = R6Class(
   private = list(
     # nolint start: indentation_linter, line_length_linter
     .search_space = ps(
-        mlp.n_layers              = p_int(1L, 16L),
-        mlp.neurons               = p_int(1L, 1024L),
-        mlp.p                     = p_dbl(0, 0.5),
-        mlp.opt.lr                = p_dbl(1e-5, 1e-2, logscale = TRUE),
-        mlp.opt.weight_decay      = p_dbl(1e-6, 1e-3, logscale = TRUE),
-        mlp.epochs                = p_int(1L, 100L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
+      mlp.n_layers = p_int(1L, 16L),
+      mlp.neurons = p_int(1L, 1024L),
+      mlp.p = p_dbl(0, 0.5),
+      mlp.opt.lr = p_dbl(1e-5, 1e-2, logscale = TRUE),
+      mlp.opt.weight_decay = p_dbl(1e-6, 1e-3, logscale = TRUE),
+      mlp.epochs = p_int(1L, 100L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
     ),
     # nolint end
 

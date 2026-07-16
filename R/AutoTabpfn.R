@@ -13,6 +13,7 @@
 #' @template param_memory_limit
 #' @template param_large_data_set
 #' @template param_devices
+#' @template section_python
 #'
 #' @export
 AutoTabpfn = R6Class(
@@ -26,7 +27,7 @@ AutoTabpfn = R6Class(
         id = id,
         properties = character(0),
         task_types = c("classif", "regr"),
-        packages = c("mlr3", "mlr3extralearners"),
+        packages = c("mlr3", "mlr3extralearners", "callr"),
         devices = c("cpu", "cuda")
       )
     },
@@ -67,9 +68,22 @@ AutoTabpfn = R6Class(
 
       device = if ("cuda" %in% devices) "cuda" else "cpu"
 
-      learner = lrn(sprintf("%s.tabpfn", task$task_type), id = "tabpfn", device = device)
+      learner = if (task$task_type == "classif") {
+        LearnerClassifTabPFNIsolated$new()
+      } else {
+        LearnerRegrTabPFNIsolated$new()
+      }
+      learner$id = "tabpfn"
+      learner$param_set$set_values(device = device)
 
       set_threads(learner, n_threads)
+
+      # tabpfn loads python torch via reticulate which is incompatible with mlr3torch
+      # train and predict in a short-lived callr session
+      fallback = lrn(sprintf("%s.featureless", task$task_type))
+      fallback$predict_type = measure$predict_type
+      learner$predict_type = measure$predict_type
+      learner$encapsulate(method = "callr", fallback = fallback)
 
       po("removeconstants", id = "tabpfn_removeconstants") %>>%
         po("fixfactors", id = "tabpfn_fixfactors") %>>%
@@ -112,22 +126,98 @@ AutoTabpfn = R6Class(
     search_space = function(task) {
       if (task$task_type == "classif") {
         ps(
-          tabpfn.n_estimators           = p_int(1, 8),
-          tabpfn.softmax_temperature    = p_dbl(0.75, 1.0),
-          tabpfn.balance_probabilities  = p_lgl(),
+          tabpfn.n_estimators = p_int(1, 8),
+          tabpfn.softmax_temperature = p_dbl(0.75, 1.0),
+          tabpfn.balance_probabilities = p_lgl(),
           tabpfn.average_before_softmax = p_lgl()
         )
       } else if (task$task_type == "regr") {
         ps(
-          tabpfn.n_estimators           = p_int(1, 8),
+          tabpfn.n_estimators = p_int(1, 8),
           tabpfn.average_before_softmax = p_lgl()
         )
       }
     }
   ),
 
-  private = list(
-  )
+  private = list()
 )
 
 mlr_auto$add("tabpfn", function() AutoTabpfn$new())
+
+# the tabpfn learner imports python torch via reticulate.
+# these subclasses keep python strictly inside the callr sessions used for process isolation
+# * .train() registers the python requirements, which the tabpfn learner does
+#   not do itself, and wraps the model as an isolated model, so it leaves the
+#   session as raw bytes.
+# * .predict() unpickles the model inside the callr session.
+
+#' @title TabPFN Learner Isolated
+#'
+#' @description
+#' A subclass of [mlr3extralearners::LearnerClassifTabPFN] that isolates the Python environment in a callr session.
+#'
+#' @export
+LearnerClassifTabPFNIsolated = R6Class(
+  "LearnerClassifTabPFNIsolated",
+  inherit = mlr3extralearners::LearnerClassifTabPFN,
+  public = list(
+    #' @description
+    #' Creates a new instance of this [R6][R6::R6Class] class.
+    initialize = function() {
+      super$initialize()
+      # the callr session must load mlr3automl to find this class
+      self$packages = union(self$packages, "mlr3automl")
+    }
+  ),
+  private = list(
+    .train = function(task) {
+      clean_reticulate_env()
+      reticulate::py_require(c("torch", "tabpfn"))
+      new_isolated_model(super$.train(task))
+    },
+    .predict = function(task) {
+      clean_reticulate_env()
+      reticulate::py_require(c("torch", "tabpfn"))
+      if (inherits(self$model, "isolated_model_pickled")) {
+        self$model = unmarshal_model(self$model$pickled)
+      }
+      super$.predict(task)
+    }
+  )
+)
+
+#' @title TabPFN Regressor Learner Isolated
+#'
+#' @description
+#' A subclass of [mlr3extralearners::LearnerRegrTabPFN] that isolates the Python environment in a callr session.
+#'
+#' @export
+LearnerRegrTabPFNIsolated = R6Class(
+  "LearnerRegrTabPFNIsolated",
+  inherit = mlr3extralearners::LearnerRegrTabPFN,
+  public = list(
+    #' @description
+    #' Creates a new instance of this [R6][R6::R6Class] class.
+    initialize = function() {
+      super$initialize()
+      # the callr session must load mlr3automl to find this class
+      self$packages = union(self$packages, "mlr3automl")
+    }
+  ),
+  private = list(
+    .train = function(task) {
+      clean_reticulate_env()
+      reticulate::py_require(c("torch", "tabpfn"))
+      new_isolated_model(super$.train(task))
+    },
+    .predict = function(task) {
+      clean_reticulate_env()
+      reticulate::py_require(c("torch", "tabpfn"))
+      if (inherits(self$model, "isolated_model_pickled")) {
+        self$model = unmarshal_model(self$model$pickled)
+      }
+      super$.predict(task)
+    }
+  )
+)

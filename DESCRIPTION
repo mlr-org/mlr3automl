@@ -13,17 +13,17 @@ URL: https://mlr3automl.mlr-org.com,
     https://github.com/mlr-org/mlr3automl
 BugReports: https://github.com/mlr-org/mlr3automl/issues
 Depends:
-    mlr3 (>= 1.2.0.9000),
-    mlr3tuning (>= 1.4.0.9000),
-    R (>= 3.1.0),
-    rush (>= 0.4.0.9000)
+    mlr3 (>= 1.6.0),
+    mlr3tuning (>= 1.6.0),
+    R (>= 3.3.0),
+    rush (>= 1.2.0)
 Imports:
     bbotk (>= 1.7.1),
     checkmate,
     data.table,
     lhs,
-    mlr3learners (>= 0.13.0.9000),
-    mlr3mbo (>= 0.3.3.9000),
+    mlr3learners (>= 0.14.0),
+    mlr3mbo (>= 1.1.1.9000),
     mlr3misc (>= 0.15.1),
     mlr3pipelines,
     paradox (>= 1.0.1),
@@ -31,7 +31,6 @@ Imports:
     utils
 Suggests:
     callr,
-    catboost,
     e1071,
     fastai,
     glmnet,
@@ -41,7 +40,7 @@ Suggests:
     MASS,
     mirai,
     mlr3extralearners,
-    mlr3torch (>= 0.3.0.9000),
+    mlr3torch (>= 0.3.3),
     mlr3viz,
     ranger,
     redux,
@@ -50,16 +49,9 @@ Suggests:
     testthat (>= 3.0.0),
     xgboost (>= 3.2.1.1)
 Remotes:
-    catboost/catboost/catboost/R-package,
-    eagerai/fastai,
-    mlr-org/mlr3,
-    mlr-org/mlr3extralearners,
-    mlr-org/mlr3learners,
-    mlr-org/mlr3mbo@so_config_6,
-    mlr-org/mlr3torch,
-    mlr-org/mlr3tuning,
-    mlr-org/bbotk,
-    mlr-org/rush
+    mlr-org/mlr3mbo
+Additional_repositories:
+    https://mlr-org.r-universe.dev
 Config/testthat/edition: 3
 Config/testthat/parallel: false
 Encoding: UTF-8
@@ -110,7 +102,10 @@ Collate:
     'LearnerRegrAutoTabPFN.R'
     'LearnerRegrAutoXgboost.R'
     'helper.R'
+    'install_python_learners.R'
+    'isolated_model.R'
     'mlr_callbacks.R'
+    'sugar.R'
     'train_auto.R'
     'zzz.R'
 Config/roxygen2/version: 8.0.0.9000
