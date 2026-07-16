@@ -64,7 +64,12 @@ Auto = R6Class(
       assert_flag(large_data_set)
       assert_character(devices)
 
-      missing_packages = self$packages[!map_lgl(self$packages, requireNamespace, quietly = TRUE)]
+      # find.package() checks installation without loading the package.
+      missing_packages = self$packages[
+        !map_lgl(self$packages, function(package) {
+          length(find.package(package, quiet = TRUE)) > 0L
+        })
+      ]
       if (length(missing_packages)) {
         lg$info("Learner '%s' is not available. Missing packages: %s", self$id, str_collapse(missing_packages))
         return(FALSE)
@@ -177,11 +182,17 @@ Auto = R6Class(
       lower = search_space$lower
       upper = search_space$upper
       for (param_id in param_ids) {
-        if (is.na(lower[[param_id]]) || is.na(upper[[param_id]])) next
+        if (is.na(lower[[param_id]]) || is.na(upper[[param_id]])) {
+          next
+        }
         in_bounds = data[[param_id]] >= lower[[param_id]] & data[[param_id]] <= upper[[param_id]]
         if (!all(in_bounds)) {
-          lg$info("Learner '%s' drops %i initial design point(s) out of bounds for parameter '%s'",
-            self$id, sum(!in_bounds), param_id)
+          lg$info(
+            "Learner '%s' drops %i initial design point(s) out of bounds for parameter '%s'",
+            self$id,
+            sum(!in_bounds),
+            param_id
+          )
           data = data[in_bounds]
         }
       }

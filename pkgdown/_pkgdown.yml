@@ -98,7 +98,7 @@ reference:
       - mlr3automl.initial_design_runtime
   - title: Installation
     contents:
-      - install_fastai
+      - install_python_learners
   - title: Package
     contents:
       - mlr3automl-package

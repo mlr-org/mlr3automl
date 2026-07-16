@@ -42,6 +42,8 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       RUSH_TEST_USE_REDIS: true
+      # token for tabpfn model weight download (add as a repository secret)
+      TABPFN_TOKEN: ${{ secrets.TABPFN_TOKEN }}
 
     strategy:
       fail-fast: false
@@ -66,12 +68,34 @@ jobs:
         with:
           extra-packages: |
             any::rcmdcheck
+            any::pkgload
             catboost/catboost/catboost/R-package
           needs: check
 
       - name: Install torch
         run: |
           Rscript -e 'torch::install_torch()'
+
+      # Provide the Python environment for the tabpfn and fastai learners.
+      # micromamba is the conda binary reticulate needs to bind to a conda env.
+      # The environment is cached and only rebuilt when the package list changes,
+      # so torch and friends are not downloaded on every run.
+      - name: Set up micromamba
+        run: |
+          curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xj -C "$HOME" bin/micromamba
+          echo "RETICULATE_CONDA=$HOME/bin/micromamba" >> "$GITHUB_ENV"
+          echo "RETICULATE_PYTHON=$HOME/mlr3automl-pyenv/bin/python" >> "$GITHUB_ENV"
+
+      - name: Cache Python environment
+        id: cache-pyenv
+        uses: actions/cache@v4
+        with:
+          path: ~/mlr3automl-pyenv
+          key: mlr3automl-pyenv-${{ runner.os }}-${{ hashFiles('R/install_python_learners.R') }}
+
+      - name: Build Python environment
+        if: steps.cache-pyenv.outputs.cache-hit != 'true'
+        run: Rscript -e 'pkgload::load_all("."); install_python_learners(envname = path.expand("~/mlr3automl-pyenv"))'
 
       - uses: mxschmitt/action-tmate@v3
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}

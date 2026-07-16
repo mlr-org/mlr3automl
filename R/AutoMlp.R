@@ -25,7 +25,7 @@ AutoMlp = R6Class(
         properties = "internal_tuning",
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3torch"),
-        devices = "cuda"
+        devices = c("cuda", "cpu")
       )
     },
 
@@ -73,12 +73,12 @@ AutoMlp = R6Class(
   private = list(
     # nolint start: indentation_linter, line_length_linter
     .search_space = ps(
-        mlp.n_layers              = p_int(1L, 16L),
-        mlp.neurons               = p_int(1L, 1024L),
-        mlp.p                     = p_dbl(0, 0.5),
-        mlp.opt.lr                = p_dbl(1e-5, 1e-2, logscale = TRUE),
-        mlp.opt.weight_decay      = p_dbl(1e-6, 1e-3, logscale = TRUE),
-        mlp.epochs                = p_int(1L, 100L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
+      mlp.n_layers = p_int(1L, 16L),
+      mlp.neurons = p_int(1L, 1024L),
+      mlp.p = p_dbl(0, 0.5),
+      mlp.opt.lr = p_dbl(1e-5, 1e-2, logscale = TRUE),
+      mlp.opt.weight_decay = p_dbl(1e-6, 1e-3, logscale = TRUE),
+      mlp.epochs = p_int(1L, 100L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
     ),
     # nolint end
 
