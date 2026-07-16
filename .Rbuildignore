@@ -9,11 +9,13 @@
 ^README\.html$
 ^\.?air\.toml$
 ^\.Renviron$
+^\.Rprofile$
 ^\.Rproj\.user$
 ^\.agents$
 ^\.ccache$
 ^\.clangd$
 ^\.claude$
+^\.conda$
 ^\.cspell$
 ^\.cursor$
 ^\.editorconfig$
@@ -35,10 +37,8 @@
 ^inst/extdata/.+\.R$
 ^local_attic$
 ^man-roxygen$
+^oml_cache$
 ^paper$
 ^pkgdown$
 ^revdep$
 ^tests/testthat/_object_snapshots$
-
-$oml_cache$
-$.conda$
