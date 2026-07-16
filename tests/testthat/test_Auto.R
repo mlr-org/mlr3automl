@@ -87,6 +87,33 @@ test_that("estimate memory works", {
   expect_numeric(memory)
 })
 
+test_that("boosting graphs set the full training budget on the learner", {
+  skip_if_not_all_installed(c("mlr3learners", "mlr3extralearners", "xgboost", "catboost", "lightgbm"))
+
+  task = tsk("penguins")
+  measure = msr("classif.ce")
+
+  lightgbm = mlr_auto$get("lightgbm")
+  learner = lightgbm$graph(task, measure, n_threads = 1L, timeout = 3600L, devices = "cpu")
+  budget = lightgbm$search_space(task)$upper[["lightgbm.num_iterations"]]
+  expect_equal(learner$param_set$values$num_iterations, budget)
+  expect_lt(learner$param_set$values$early_stopping_rounds, budget)
+
+  xgboost = mlr_auto$get("xgboost")
+  graph = xgboost$graph(task, measure, n_threads = 1L, timeout = 3600L, devices = "cpu")
+  values = graph$pipeops$xgboost$learner$param_set$values
+  budget = xgboost$search_space(task)$upper[["xgboost.nrounds"]]
+  expect_equal(values$nrounds, budget)
+  expect_lt(values$early_stopping_rounds, budget)
+
+  catboost = mlr_auto$get("catboost")
+  graph = catboost$graph(task, measure, n_threads = 1L, timeout = 3600L, devices = "cpu")
+  values = graph$pipeops$catboost$learner$param_set$values
+  budget = catboost$search_space(task)$upper[["catboost.iterations"]]
+  expect_equal(values$iterations, budget)
+  expect_lt(values$early_stopping_rounds, budget)
+})
+
 test_that("internal measure falls back to a valid metric", {
   catboost = mlr_auto$get("catboost")
   expect_equal(catboost$internal_measure(msr("regr.mse"), tsk("mtcars")), "RMSE")
