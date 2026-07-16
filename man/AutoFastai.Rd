@@ -22,6 +22,8 @@ We recommend option 2 when running on many workers,
 as it avoids the overhead of downloading and installing the packages on each worker.
 Use \code{\link[=install_python_learners]{install_python_learners()}} to create a conda environment with the required packages and set
 \code{RETICULATE_PYTHON} to the returned Python binary.
+
+The \code{TabPFN} learner additionally requires the \code{TABPFN_TOKEN} environment variable to download the model weights.
 }
 
 \section{Super class}{

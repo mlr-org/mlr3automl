@@ -12,3 +12,5 @@
 #' as it avoids the overhead of downloading and installing the packages on each worker.
 #' Use [install_python_learners()] to create a conda environment with the required packages and set
 #' `RETICULATE_PYTHON` to the returned Python binary.
+#'
+#' The `TabPFN` learner additionally requires the `TABPFN_TOKEN` environment variable to download the model weights.
