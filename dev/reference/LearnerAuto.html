@@ -313,11 +313,10 @@ Rush instance.</p></dd>
 <p>Redirects encapsulation to the final model fit.</p>
 <p>The AutoML learner itself always trains in the main session,
 because the rush-based parallel tuning cannot run inside an encapsulated session.
-The encapsulation method and fallback learner are instead applied to the final model fit that follows the
-tuning phase.
-If the final model fit fails, the fallback learner is trained instead and a warning is raised.
+The encapsulation method and fallback learner are instead applied to the final model fit
+that follows the tuning phase.
+If the final model fit fails, the fallback learner is trained instead.
 Without encapsulation, a failed final model fit raises an error.
-The <code>$encapsulation</code> field therefore remains <code>"none"</code>.
 The tuning phase is guarded by the <code>encapsulate_learner</code> and <code>encapsulate_mbo</code> parameters instead.</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">LearnerAuto</span><span class="op">$</span><span class="fu">encapsulate</span><span class="op">(</span><span class="va">method</span>, fallback <span class="op">=</span> <span class="cn">NULL</span>, when <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
