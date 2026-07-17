@@ -73,7 +73,7 @@ LearnerAuto = R6Class(
       # nolint start: line_length_linter
       # fmt: skip
       param_set = ps(
-        callbacks               = p_uty(tags = c("train", "super")),
+        callbacks               = p_uty(tags = c("train", "super"), custom_check = crate({function(x) if (test_r6(x, "Callback")) TRUE else check_list(x, types = "Callback")})),
         check_learners          = p_lgl(init = TRUE, tags = c("train", "super")),
         devices                 = p_uty(init = "cpu", tags = c("train", "super"), custom_check = crate({function(x) check_subset(x, c("cpu", "cuda"))})),
         encapsulate_learner     = p_lgl(init = TRUE, tags = c("train", "super")),
@@ -85,15 +85,15 @@ LearnerAuto = R6Class(
         initial_design_type     = p_fct(init = "sobol", levels = c("lhs", "sobol", "random"), tags = c("train", "super")),
         large_data_size         = p_int(lower = 1L, init = 1e6, tags = c("train", "super")),
         learner_timeout         = p_int(lower = 1L, init = 900L, tags = c("train", "super")),
-        measure                 = p_uty(tags = c("train", "super")),
+        measure                 = p_uty(tags = c("train", "super"), custom_check = crate({function(x) check_r6(x, "Measure")})),
         memory_limit            = p_int(lower = 1L, init = 32000L, tags = c("train", "catboost", "extra_trees", "fastai", "ft_transformer", "lightgbm", "mlp", "ranger", "resnet", "tabpfn", "xgboost")),
         n_threads               = p_int(lower = 1L, init = 1L, tags = c("train", "catboost", "extra_trees", "fastai", "ft_transformer", "lightgbm", "mlp", "ranger", "resnet", "tabpfn", "xgboost")),
-        resampling              = p_uty(init = rsmp("holdout"), tags = c("train", "super")),
-        small_data_resampling   = p_uty(init = rsmp("cv", folds = 10), tags = c("train", "super")),
+        resampling              = p_uty(init = rsmp("holdout"), tags = c("train", "super"), custom_check = crate({function(x) check_r6(x, "Resampling")})),
+        small_data_resampling   = p_uty(init = rsmp("cv", folds = 10), tags = c("train", "super"), custom_check = crate({function(x) check_r6(x, "Resampling")})),
         small_data_size         = p_int(lower = 1L, init = 5000L, tags = c("train", "super")),
         store_benchmark_result  = p_lgl(init = FALSE, tags = c("train", "super")),
         store_models            = p_lgl(init = FALSE, tags = c("train", "super")),
-        terminator              = p_uty(init = trm("run_time", secs = 3600L), tags = c("train", "super"))
+        terminator              = p_uty(init = trm("run_time", secs = 3600L), tags = c("train", "super"), custom_check = crate({function(x) check_r6(x, "Terminator")}))
       )
       # nolint end
       # subset to relevant parameters for selected learners: keep "super" params plus
