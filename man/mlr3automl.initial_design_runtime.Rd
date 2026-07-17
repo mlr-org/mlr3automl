@@ -6,7 +6,8 @@
 \description{
 This \link[mlr3misc:Callback]{mlr3misc::Callback} drops the remaining tasks of the initial design from the queue when a
 configurable fraction (\code{initial_design_fraction}) of the runtime limit is reached.
+The \code{initial_design_fraction} is set to \code{0.25} by default.
 }
 \examples{
-clbk("mlr3automl.initial_design_runtime")
+clbk("mlr3automl.initial_design_runtime", initial_design_fraction = 0.5)
 }
