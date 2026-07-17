@@ -1,4 +1,9 @@
 test_that("LearnerClassifAuto is initialized", {
+  skip_if_not_all_installed(unlist(map(
+    mlr_auto$mget(c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees")),
+    "packages"
+  )))
+
   learner = lrn("classif.auto", measure = msr("classif.ce"), terminator = trm("evals", n_evals = 10))
 
   expect_learner(learner, task = tsk("penguins"))

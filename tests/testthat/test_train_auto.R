@@ -109,7 +109,7 @@ test_that("encapsulated auto learner falls back on a failed final model fit", {
 })
 
 test_that("encapsulate rejects a fallback learner without encapsulation", {
-  learner = lrn("classif.auto", learner_ids = "debug")
+  learner = lrn("classif.auto")
   expect_error(
     learner$encapsulate(method = "none", fallback = lrn("classif.featureless")),
     class = "Mlr3ErrorInput"

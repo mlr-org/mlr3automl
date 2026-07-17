@@ -1,4 +1,9 @@
 test_that("LearnerRegrAuto is initialized", {
+  skip_if_not_all_installed(unlist(map(
+    mlr_auto$mget(c("catboost", "glmnet", "lightgbm", "ranger", "svm", "xgboost", "extra_trees")),
+    "packages"
+  )))
+
   learner = lrn("regr.auto", measure = msr("regr.rmse"), terminator = trm("evals", n_evals = 10))
 
   expect_learner(learner, task = tsk("california_housing"))
