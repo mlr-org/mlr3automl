@@ -112,11 +112,47 @@ LearnerAuto = R6Class(
         predict_types = predict_types,
         properties = properties,
       )
+    },
+
+    #' @description
+    #' Redirects encapsulation to the final model fit.
+    #'
+    #' The AutoML learner itself always trains in the main session,
+    #' because the rush-based parallel tuning cannot run inside an encapsulated session.
+    #' The encapsulation method and fallback learner are instead applied to the final model fit
+    #' that follows the tuning phase.
+    #' If the final model fit fails, the fallback learner is trained instead.
+    #' Without encapsulation, a failed final model fit raises an error.
+    #' The tuning phase is guarded by the `encapsulate_learner` and `encapsulate_mbo` parameters instead.
+    #'
+    #' @param method (`character(1)`)\cr
+    #'   One of `"none"`, `"try"`, `"evaluate"`, `"callr"`, or `"mirai"`.
+    #' @param fallback ([mlr3::Learner])\cr
+    #'   Learner to train when the final model fit fails.
+    #' @param when (`function()`)\cr
+    #'   Optional condition handler passed to the `$encapsulate()` method of the final model.
+    #'
+    #' @return `self` (invisibly).
+    encapsulate = function(method, fallback = NULL, when = NULL) {
+      assert_choice(method, c("none", "try", "evaluate", "callr", "mirai"))
+      if (method == "none" && !is.null(fallback)) {
+        error_input("Fallback learner must be `NULL` if encapsulation is set to `none`.")
+      }
+      if (method != "none") {
+        assert_learner(fallback, task_type = self$task_type)
+      }
+      private$.encapsulation_method = method
+      private$.encapsulation_fallback = fallback
+      private$.encapsulation_when = assert_function(when, null.ok = TRUE)
+      invisible(self)
     }
   ),
 
   private = list(
     .learner_ids = NULL,
+    .encapsulation_method = NULL,
+    .encapsulation_fallback = NULL,
+    .encapsulation_when = NULL,
 
     .train = function(task) {
       train_auto(self, private, task)

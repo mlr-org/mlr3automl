@@ -169,7 +169,19 @@ train_auto = function(self, private, task) {
   }
   graph_learner$param_set$set_values(.values = self$instance$result_learner_param_vals, .insert = FALSE)
   walk(autos, function(auto) auto$finalize_model(graph_learner))
-  graph_learner$timeout = c(train = Inf, predict = Inf)
+  # encapsulation set via LearnerAuto$encapsulate() applies to the final model fit only
+  final_method = private$.encapsulation_method %??% "none"
+  if (final_method == "none") {
+    graph_learner$timeout = c(train = Inf, predict = Inf)
+    graph_learner$encapsulate(method = "none")
+  } else {
+    graph_learner$timeout = self$timeout
+    graph_learner$encapsulate(
+      method = final_method,
+      fallback = private$.encapsulation_fallback$clone(deep = TRUE),
+      when = private$.encapsulation_when
+    )
+  }
   graph_learner$train(task)
 
   list(graph_learner = graph_learner, instance = self$instance)

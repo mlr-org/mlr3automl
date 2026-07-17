@@ -134,6 +134,7 @@ Rush instance for parallel tuning.}
 \subsection{Public methods}{
   \itemize{
     \item \href{#method-LearnerAuto-initialize}{\code{LearnerAuto$new()}}
+    \item \href{#method-LearnerAuto-encapsulate}{\code{LearnerAuto$encapsulate()}}
     \item \href{#method-LearnerAuto-clone}{\code{LearnerAuto$clone()}}
   }
 }
@@ -141,7 +142,6 @@ Rush instance for parallel tuning.}
 <ul>
   <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="base_learner"><a href='../../mlr3/html/Learner.html#method-Learner-base_learner'><code>mlr3::Learner$base_learner()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="configure"><a href='../../mlr3/html/Learner.html#method-Learner-configure'><code>mlr3::Learner$configure()</code></a></span></li>
-  <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="encapsulate"><a href='../../mlr3/html/Learner.html#method-Learner-encapsulate'><code>mlr3::Learner$encapsulate()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="format"><a href='../../mlr3/html/Learner.html#method-Learner-format'><code>mlr3::Learner$format()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="help"><a href='../../mlr3/html/Learner.html#method-Learner-help'><code>mlr3::Learner$help()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="predict"><a href='../../mlr3/html/Learner.html#method-Learner-predict'><code>mlr3::Learner$predict()</code></a></span></li>
@@ -186,6 +186,42 @@ Learner properties.}
 Rush instance.}
     }
     \if{html}{\out{</div>}}
+  }
+}
+
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LearnerAuto-encapsulate"></a>}}
+\if{latex}{\out{\hypertarget{method-LearnerAuto-encapsulate}{}}}
+\subsection{\code{LearnerAuto$encapsulate()}}{
+  Redirects encapsulation to the final model fit.
+
+The AutoML learner itself always trains in the main session,
+because the rush-based parallel tuning cannot run inside an encapsulated session.
+The encapsulation method and fallback learner are instead applied to the final model fit that follows the
+tuning phase.
+If the final model fit fails, the fallback learner is trained instead and a warning is raised.
+Without encapsulation, a failed final model fit raises an error.
+The \verb{$encapsulation} field therefore remains \code{"none"}.
+The tuning phase is guarded by the \code{encapsulate_learner} and \code{encapsulate_mbo} parameters instead.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{LearnerAuto$encapsulate(method, fallback = NULL, when = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{method}}{(\code{character(1)})\cr
+One of \code{"none"}, \code{"try"}, \code{"evaluate"}, \code{"callr"}, or \code{"mirai"}.}
+      \item{\code{fallback}}{(\link[mlr3:Learner]{mlr3::Learner})\cr
+Learner to train when the final model fit fails.}
+      \item{\code{when}}{(\verb{function()})\cr
+Optional condition handler passed to the \verb{$encapsulate()} method of the final model.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    \code{self} (invisibly).
   }
 }
 
