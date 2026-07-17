@@ -173,13 +173,14 @@ learner. Set `encapsulate_mbo = FALSE` to catch no errors in mbo.
 
 - [`LearnerAuto$new()`](#method-LearnerAuto-initialize)
 
+- [`LearnerAuto$encapsulate()`](#method-LearnerAuto-encapsulate)
+
 - [`LearnerAuto$clone()`](#method-LearnerAuto-clone)
 
 Inherited methods
 
 - [`mlr3::Learner$base_learner()`](https://mlr3.mlr-org.com/reference/Learner.html#method-base_learner)
 - [`mlr3::Learner$configure()`](https://mlr3.mlr-org.com/reference/Learner.html#method-configure)
-- [`mlr3::Learner$encapsulate()`](https://mlr3.mlr-org.com/reference/Learner.html#method-encapsulate)
 - [`mlr3::Learner$format()`](https://mlr3.mlr-org.com/reference/Learner.html#method-format)
 - [`mlr3::Learner$help()`](https://mlr3.mlr-org.com/reference/Learner.html#method-help)
 - [`mlr3::Learner$predict()`](https://mlr3.mlr-org.com/reference/Learner.html#method-predict)
@@ -238,6 +239,48 @@ Creates a new instance of this
 
   [rush::Rush](https://rush.mlr-org.com/reference/Rush.html)  
   Rush instance.
+
+------------------------------------------------------------------------
+
+### `LearnerAuto$encapsulate()`
+
+Redirects encapsulation to the final model fit.
+
+The AutoML learner itself always trains in the main session, because the
+rush-based parallel tuning cannot run inside an encapsulated session.
+The encapsulation method and fallback learner are instead applied to the
+final model fit that follows the tuning phase. If the final model fit
+fails, the fallback learner is trained instead and a warning is raised.
+Without encapsulation, a failed final model fit raises an error. The
+`$encapsulation` field therefore remains `"none"`. The tuning phase is
+guarded by the `encapsulate_learner` and `encapsulate_mbo` parameters
+instead.
+
+#### Usage
+
+    LearnerAuto$encapsulate(method, fallback = NULL, when = NULL)
+
+#### Arguments
+
+- `method`:
+
+  (`character(1)`)  
+  One of `"none"`, `"try"`, `"evaluate"`, `"callr"`, or `"mirai"`.
+
+- `fallback`:
+
+  ([mlr3::Learner](https://mlr3.mlr-org.com/reference/Learner.html))  
+  Learner to train when the final model fit fails.
+
+- `when`:
+
+  (`function()`)  
+  Optional condition handler passed to the `$encapsulate()` method of
+  the final model.
+
+#### Returns
+
+`self` (invisibly).
 
 ------------------------------------------------------------------------
 
