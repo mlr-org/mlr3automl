@@ -3,10 +3,12 @@ cb_timeout_xgboost = function(timeout) {
   xgboost::xgb.Callback(
     cb_name = "cb_timeout_xgboost",
     env = cb_env,
+    # the callback environment is created once at graph construction and shared
+    # across trainings, so the clock must be reset at the start of each training
+    f_before_training = function(env, model, data, evals, begin_iteration, end_iteration) {
+      env$start_time = Sys.time()
+    },
     f_after_iter = function(env, model, data, evals, iteration, iter_feval) {
-      if (is.null(env$start_time)) {
-        env$start_time = Sys.time()
-      }
       if (difftime(Sys.time(), env$start_time, units = "secs") > timeout) {
         message("Timeout reached")
         TRUE
@@ -23,7 +25,9 @@ cb_timeout_lightgbm = function(timeout) {
   state = new.env(parent = emptyenv())
 
   callback = function(env) {
-    if (is.null(state$start_time)) {
+    # the state environment is created once at graph construction and shared
+    # across trainings, so the clock must be reset at the start of each training
+    if (env$iteration == env$begin_iteration) {
       state$start_time = Sys.time()
     }
 
