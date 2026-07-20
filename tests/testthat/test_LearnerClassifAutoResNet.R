@@ -1,4 +1,5 @@
 test_that("LearnerClassifAutoResNet works", {
+  skip_if_not_installed("torch")
   skip_if(!torch::torch_is_installed(), "torch backend (LibTorch) not installed")
 
   task = tsk("penguins")

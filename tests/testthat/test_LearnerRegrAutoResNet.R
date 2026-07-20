@@ -1,4 +1,5 @@
 test_that("LearnerRegrAutoResNet works", {
+  skip_if_not_installed("torch")
   skip_if(!torch::torch_is_installed(), "torch backend (LibTorch) not installed")
 
   result = test_regr_learner("resnet", check_learners = FALSE)
