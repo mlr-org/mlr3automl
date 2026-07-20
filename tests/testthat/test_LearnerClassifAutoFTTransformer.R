@@ -1,32 +1,12 @@
 test_that("LearnerClassifAutoFTTransformer works", {
-  skip_on_cran()
-  skip_if_auto_not_installed("ft_transformer")
-  skip_if_not_installed("rush")
-  skip_if_no_redis()
   skip_if(!torch::torch_is_installed(), "torch backend (LibTorch) not installed")
 
-  rush = start_rush()
-  on.exit({
-    rush$reset()
-    mirai::daemons(0)
-  })
-
   task = tsk("penguins")
-  task$filter(c(1, 153, 277))
+  task$filter(c(1:10, 153:162, 277:286))
 
-  learner = lrn(
-    "classif.auto_ft_transformer",
-    small_data_size = 1,
-    resampling = rsmp("holdout"),
-    measure = msr("classif.ce"),
-    terminator = trm("evals", n_evals = 4),
-    initial_design_type = "lhs",
-    initial_design_size = 2,
-    encapsulate_learner = FALSE,
-    encapsulate_mbo = FALSE,
-    check_learners = FALSE,
-    rush = rush
-  )
+  result = test_classif_learner("ft_transformer", task = task, check_learners = FALSE)
 
-  expect_class(learner$train(task), "LearnerClassifAutoFTTransformer")
+  archive = as.data.table(result$learner$instance$archive, unnest = "internal_tuned_values")
+  archive_finished = archive[state == "finished"]
+  expect_integer(archive_finished$internal_tuned_values_ft_transformer.epochs, lower = 1L)
 })

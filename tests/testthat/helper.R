@@ -10,12 +10,20 @@ mlr3_helpers = list.files(system.file("testthat", package = "mlr3"), pattern = "
 # these are incompatible with torch's R6 classes (e.g. the dataloader probes optional
 # fields expecting NULL), which the mlp, resnet and ft_transformer learners use.
 mlr3_helpers = grep("helper_debugging", mlr3_helpers, value = TRUE, invert = TRUE)
-lapply(mlr3_helpers, source)
+# source into this file's environment, not the global environment; helper functions defined
+# below cannot see the global environment when testthat sources this file during devtools::test()
+helper_env = environment()
+lapply(mlr3_helpers, source, local = helper_env)
 lapply(
   list.files(system.file("testthat", package = "mlr3tuning"), pattern = "^helper.*\\.[rR]", full.names = TRUE),
-  source
+  source,
+  local = helper_env
 )
-lapply(list.files(system.file("testthat", package = "rush"), pattern = "^helper.*\\.[rR]", full.names = TRUE), source)
+lapply(
+  list.files(system.file("testthat", package = "rush"), pattern = "^helper.*\\.[rR]", full.names = TRUE),
+  source,
+  local = helper_env
+)
 
 skip_if_not_all_installed = function(pkgs) {
   for (pkg in pkgs) {
@@ -50,9 +58,10 @@ test_classif_learner = function(
   })
 
   task = if (is.null(task)) tsk("penguins") else task
+  partition = partition(task, ratio = 0.6)
+
   learner = lrn(
-    "classif.auto",
-    learner_ids = learner_id,
+    sprintf("classif.auto_%s", learner_id),
     rush = rush,
     small_data_size = 1,
     resampling = rsmp("holdout"),
@@ -62,14 +71,21 @@ test_classif_learner = function(
     initial_design_size = initial_design_size,
     encapsulate_learner = FALSE,
     encapsulate_mbo = FALSE,
-    check_learners = check_learners
+    check_learners = check_learners,
+    predict_type = "prob",
+    callbacks = clbk("bbotk.async_freeze_archive")
   )
 
-  expect_class(learner$train(task), "LearnerClassifAuto")
+  expect_class(learner$train(task, row_ids = partition$train), "LearnerClassifAuto")
+  assert_data_table(learner$model$instance$archive$data, min.rows = 1L)
   expect_subset(learner$model$instance$result$branch.selection, learner_id)
   expect_set_equal(learner$model$instance$archive$data$branch.selection, learner_id)
+  pred = learner$predict(task, row_ids = partition$test)
+  # nolint next: object_usage_linter
+  expect_prediction(pred)
+  expect_matrix(pred$prob, "numeric")
 
-  learner
+  list(learner = learner, prediction = pred)
 }
 
 test_regr_learner = function(
@@ -95,9 +111,10 @@ test_regr_learner = function(
   })
 
   task = if (is.null(task)) tsk("mtcars") else task
+  partition = partition(task, ratio = 0.6)
+
   learner = lrn(
-    "regr.auto",
-    learner_ids = learner_id,
+    sprintf("regr.auto_%s", learner_id),
     rush = rush,
     small_data_size = 1,
     resampling = rsmp("holdout"),
@@ -107,14 +124,20 @@ test_regr_learner = function(
     initial_design_size = initial_design_size,
     encapsulate_learner = FALSE,
     encapsulate_mbo = FALSE,
-    check_learners = check_learners
+    check_learners = check_learners,
+    callbacks = clbk("bbotk.async_freeze_archive")
   )
 
-  expect_class(learner$train(task), "LearnerRegrAuto")
+  expect_class(learner$train(task, row_ids = partition$train), "LearnerRegrAuto")
+  assert_data_table(learner$model$instance$archive$data, min.rows = 1L)
   expect_subset(learner$model$instance$result$branch.selection, learner_id)
   expect_set_equal(learner$model$instance$archive$data$branch.selection, learner_id)
+  pred = learner$predict(task, row_ids = partition$test)
+  # nolint next: object_usage_linter
+  expect_prediction(pred)
+  expect_numeric(pred$response, any.missing = FALSE)
 
-  learner
+  list(learner = learner, prediction = pred)
 }
 
 all_packages = c("glmnet", "kknn", "ranger", "e1071", "xgboost", "catboost", "lightgbm", "fastai", "mlr3torch")
