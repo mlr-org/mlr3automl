@@ -35,9 +35,6 @@ LearnerAuto = R6Class(
   "LearnerAuto",
   inherit = Learner,
   public = list(
-    #' @field tuning_space (`list()`).
-    tuning_space = NULL,
-
     #' @field instance ([mlr3tuning::TuningInstanceAsyncSingleCrit]).
     instance = NULL,
 
