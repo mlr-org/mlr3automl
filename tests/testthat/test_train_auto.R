@@ -108,6 +108,43 @@ test_that("encapsulated auto learner falls back on a failed final model fit", {
   expect_prediction(prediction)
 })
 
+test_that("user requested predict_type is honored even when the measure only needs response", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  # the surrogate model of the mbo tuner requires ranger
+  skip_if_not_installed("ranger")
+  skip_if_no_redis()
+
+  rush = start_rush()
+  on.exit({
+    rush$reset()
+    mirai::daemons(0)
+  })
+
+  task = tsk("penguins")
+  learner = lrn(
+    "classif.auto",
+    learner_ids = "debug",
+    rush = rush,
+    small_data_size = 1,
+    resampling = rsmp("holdout"),
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 2),
+    initial_design_type = "random",
+    initial_design_size = 2,
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE,
+    predict_type = "prob"
+  )
+
+  learner$train(task)
+  expect_equal(learner$model$graph_learner$predict_type, "prob")
+
+  prediction = learner$predict(task)
+  expect_prediction(prediction)
+  expect_true("prob" %in% prediction$predict_types)
+})
+
 test_that("encapsulate rejects a fallback learner without encapsulation", {
   learner = lrn("classif.auto")
   expect_error(

@@ -108,6 +108,18 @@ combine_search_spaces = function(autos, task) {
   union_space
 }
 
+# choose the most informative predict type that satisfies every requested type.
+# a "prob" learner also produces "response", so the graph must predict "prob"
+# when either the measure or the user asks for it.
+highest_predict_type = function(task_type, predict_types) {
+  ordering = mlr_reflections$learner_predict_types[[task_type]]
+  compatible = keep(names(ordering), function(pt) all(predict_types %in% ordering[[pt]]))
+  if (!length(compatible)) {
+    stopf("No predict type satisfies %s", str_collapse(predict_types, quote = "'"))
+  }
+  compatible[which.min(lengths(ordering[compatible]))]
+}
+
 generate_initial_design = function(method, search_space, size) {
   internal_tune_ids = search_space$ids(any_tags = "internal_tuning")
 

@@ -68,11 +68,13 @@ train_auto = function(self, private, task) {
     clone = TRUE
   )
   graph_learner$id = "graph_learner"
-  graph_learner$predict_type = pv$measure$predict_type
+  # honor both the measure requirement and the user-requested predict type
+  predict_type = highest_predict_type(task$task_type, c(pv$measure$predict_type, self$predict_type))
+  graph_learner$predict_type = predict_type
 
   if (pv$encapsulate_learner) {
     fallback = lrn(sprintf("%s.featureless", task$task_type))
-    fallback$predict_type = pv$measure$predict_type
+    fallback$predict_type = predict_type
     graph_learner$encapsulate(method = "mirai", fallback = fallback)
     graph_learner$timeout = c(train = pv$learner_timeout, predict = pv$learner_timeout)
   }
