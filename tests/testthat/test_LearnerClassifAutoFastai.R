@@ -1,3 +1,23 @@
+test_that("LearnerClassifFastaiIsolated works when mlr3torch is loaded", {
+  skip_on_cran()
+  skip_if_auto_not_installed("fastai")
+  skip_if_not_installed("mlr3torch")
+
+  # mlr3 loads mlr3torch in the encapsulation callr session when it is loaded in this process
+  loadNamespace("mlr3torch")
+
+  task = tsk("penguins")
+  auto = mlr_auto$get("fastai")
+  graph = auto$graph(task, msr("classif.ce"), n_threads = 1L, timeout = 3600L, devices = "cpu")
+  learner = as_learner(graph)
+  set_validate(learner, validate = 0.3, ids = "fastai")
+  learner$train(task)
+
+  state = learner$model$fastai
+  expect_data_table(state$log, nrows = 0L)
+  expect_number(state$internal_tuned_values$n_epoch, lower = 1)
+})
+
 test_that("LearnerClassifAutoFastai works", {
   result = test_classif_learner("fastai")
 
