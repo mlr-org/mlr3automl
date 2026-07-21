@@ -54,7 +54,19 @@ clean_reticulate_env = function() {
   Sys.unsetenv(c("VIRTUAL_ENV", "VIRTUAL_ENV_PROMPT", "PYTHONPATH", "R_SESSION_INITIALIZED"))
 }
 
+# memoizes check_python_packages() results so repeated probes for the same
+# requirements in one session do not spawn a callr session each time.
+python_package_cache = new.env(parent = emptyenv())
+
 check_python_packages = function(packages, python_version = NULL) {
+  # the probe is expensive (a callr session that resolves the python environment)
+  # and the result is stable within a session, so cache it per requirement set.
+  key = calculate_hash(packages, python_version)
+  cached = python_package_cache[[key]]
+  if (!is.null(cached)) {
+    return(cached)
+  }
+
   # py_module_available() initializes python and imports the modules into the
   # calling session. probe in a short-lived callr session instead, so python
   # torch is never loaded into a process that also uses the torch package
@@ -73,14 +85,15 @@ check_python_packages = function(packages, python_version = NULL) {
     ),
     error = function(e) sprintf("Python package check failed: %s", conditionMessage(e))
   )
-  if (is.character(available)) {
-    return(available)
-  }
-  if (any(!available)) {
+  result = if (is.character(available)) {
+    available
+  } else if (any(!available)) {
     sprintf("Package %s not available.", as_short_string(packages[!available]))
   } else {
     TRUE
   }
+  python_package_cache[[key]] = result
+  result
 }
 
 combine_search_spaces = function(autos, task) {

@@ -35,10 +35,9 @@ AutoTabpfn = R6Class(
     #' @description
     #' Check if the auto is compatible with the task.
     check = function(task, memory_limit = Inf, large_data_set = FALSE, devices = "cpu") {
-      ok = check_python_packages(c("torch", "tabpfn"))
+      # run the cheap checks (R packages, task type, memory) before the expensive python probe
+      ok = super$check(task, memory_limit, large_data_set, devices)
       if (!isTRUE(ok)) {
-        lg$info(ok)
-        lg$info("Remove tabpfn from search space")
         return(FALSE)
       }
       if ("cuda" %nin% devices && task$nrow > 1e3) {
@@ -52,7 +51,13 @@ AutoTabpfn = R6Class(
         lg$info("Learner '%s' is not compatible with tasks with more than 500 features", self$id)
         return(FALSE)
       }
-      super$check(task, memory_limit, large_data_set, devices)
+      ok = check_python_packages(c("torch", "tabpfn"))
+      if (!isTRUE(ok)) {
+        lg$info(ok)
+        lg$info("Remove tabpfn from search space")
+        return(FALSE)
+      }
+      TRUE
     },
 
     #' @description
