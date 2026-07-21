@@ -3,8 +3,14 @@
 \name{AutoExtraTrees}
 \alias{AutoExtraTrees}
 \title{Extra Trees Auto}
+\value{
+Object of class \link[R6:R6Class]{R6::R6Class} and \code{AutoExtraTrees}.
+}
 \description{
 Extra Trees auto.
+}
+\examples{
+auto("extra_trees")
 }
 \section{Super class}{
 \code{\link[mlr3automl:Auto]{Auto}} -> \code{AutoExtraTrees}

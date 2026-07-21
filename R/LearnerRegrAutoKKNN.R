@@ -6,6 +6,11 @@
 #' @template param_id
 #' @template param_rush
 #'
+#' @return Object of class [R6::R6Class] and `LearnerRegrAutoKKNN`.
+#'
+#' @templateVar id regr.auto_kknn
+#' @template example_learner
+#'
 #' @export
 LearnerRegrAutoKKNN = R6Class(
   "LearnerRegrAutoKKNN",

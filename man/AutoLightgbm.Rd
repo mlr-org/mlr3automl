@@ -3,8 +3,14 @@
 \name{AutoLightgbm}
 \alias{AutoLightgbm}
 \title{Lightgbm Auto}
+\value{
+Object of class \link[R6:R6Class]{R6::R6Class} and \code{AutoLightgbm}.
+}
 \description{
 Lightgbm auto.
+}
+\examples{
+auto("lightgbm")
 }
 \section{Super class}{
 \code{\link[mlr3automl:Auto]{Auto}} -> \code{AutoLightgbm}

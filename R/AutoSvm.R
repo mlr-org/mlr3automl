@@ -12,6 +12,11 @@
 #' @template param_timeout
 #' @template param_devices
 #'
+#' @return Object of class [R6::R6Class] and `AutoSvm`.
+#'
+#' @templateVar id svm
+#' @template example_auto
+#'
 #' @export
 AutoSvm = R6Class(
   "AutoSvm",

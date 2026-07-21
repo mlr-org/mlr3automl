@@ -12,6 +12,11 @@
 #' @template param_timeout
 #' @template param_devices
 #'
+#' @return Object of class [R6::R6Class] and `AutoKknn`.
+#'
+#' @templateVar id kknn
+#' @template example_auto
+#'
 #' @export
 AutoKknn = R6Class(
   "AutoKknn",

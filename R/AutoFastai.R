@@ -15,6 +15,11 @@
 #' @template param_devices
 #' @template section_python
 #'
+#' @return Object of class [R6::R6Class] and `AutoFastai`.
+#'
+#' @templateVar id fastai
+#' @template example_auto
+#'
 #' @export
 AutoFastai = R6Class(
   "AutoFastai",
@@ -164,6 +169,8 @@ fastai_python_packages = c("IPython", "torch", "torchvision", "fastai", "fastcor
 #'
 #' @description
 #' A subclass of [mlr3extralearners::LearnerClassifFastai] that isolates the Python environment in a callr session.
+#'
+#' @return Object of class [R6::R6Class] and `LearnerClassifFastaiIsolated`.
 #'
 #' @export
 LearnerClassifFastaiIsolated = R6Class(

@@ -3,6 +3,9 @@
 \name{AutoFastai}
 \alias{AutoFastai}
 \title{Fastai Auto}
+\value{
+Object of class \link[R6:R6Class]{R6::R6Class} and \code{AutoFastai}.
+}
 \description{
 Fastai auto.
 }
@@ -26,6 +29,9 @@ Use \code{\link[=install_python_learners]{install_python_learners()}} to create 
 The \code{TabPFN} learner additionally requires the \code{TABPFN_TOKEN} environment variable to download the model weights.
 }
 
+\examples{
+auto("fastai")
+}
 \section{Super class}{
 \code{\link[mlr3automl:Auto]{Auto}} -> \code{AutoFastai}
 }

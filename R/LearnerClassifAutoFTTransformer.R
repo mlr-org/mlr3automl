@@ -6,6 +6,11 @@
 #' @template param_id
 #' @template param_rush
 #'
+#' @return Object of class [R6::R6Class] and `LearnerClassifAutoFTTransformer`.
+#'
+#' @templateVar id classif.auto_ft_transformer
+#' @template example_learner
+#'
 #' @export
 # nolint next: object_length_linter
 LearnerClassifAutoFTTransformer = R6Class(

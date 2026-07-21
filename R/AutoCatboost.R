@@ -12,6 +12,11 @@
 #' @template param_timeout
 #' @template param_devices
 #'
+#' @return Object of class [R6::R6Class] and `AutoCatboost`.
+#'
+#' @templateVar id catboost
+#' @template example_auto
+#'
 #' @export
 AutoCatboost = R6Class(
   "AutoCatboost",

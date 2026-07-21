@@ -12,6 +12,11 @@
 #' @template param_timeout
 #' @template param_devices
 #'
+#' @return Object of class [R6::R6Class] and `AutoMlp`.
+#'
+#' @templateVar id mlp
+#' @template example_auto
+#'
 #' @export
 AutoMlp = R6Class(
   "AutoMlp",

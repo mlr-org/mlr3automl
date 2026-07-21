@@ -6,6 +6,11 @@
 #' @template param_id
 #' @template param_rush
 #'
+#' @return Object of class [R6::R6Class] and `LearnerClassifAutoRanger`.
+#'
+#' @templateVar id classif.auto_ranger
+#' @template example_learner
+#'
 #' @export
 LearnerClassifAutoRanger = R6Class(
   "LearnerClassifAutoRanger",

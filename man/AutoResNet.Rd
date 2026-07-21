@@ -3,8 +3,14 @@
 \name{AutoResNet}
 \alias{AutoResNet}
 \title{ResNet Auto}
+\value{
+Object of class \link[R6:R6Class]{R6::R6Class} and \code{AutoResNet}.
+}
 \description{
 ResNet auto.
+}
+\examples{
+auto("resnet")
 }
 \section{Super class}{
 \code{\link[mlr3automl:Auto]{Auto}} -> \code{AutoResNet}

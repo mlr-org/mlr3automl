@@ -3,8 +3,14 @@
 \name{AutoKknn}
 \alias{AutoKknn}
 \title{Kknn Auto}
+\value{
+Object of class \link[R6:R6Class]{R6::R6Class} and \code{AutoKknn}.
+}
 \description{
 Kknn auto.
+}
+\examples{
+auto("kknn")
 }
 \section{Super class}{
 \code{\link[mlr3automl:Auto]{Auto}} -> \code{AutoKknn}

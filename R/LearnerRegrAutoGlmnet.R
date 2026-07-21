@@ -6,6 +6,11 @@
 #' @template param_id
 #' @template param_rush
 #'
+#' @return Object of class [R6::R6Class] and `LearnerRegrAutoGlmnet`.
+#'
+#' @templateVar id regr.auto_glmnet
+#' @template example_learner
+#'
 #' @export
 LearnerRegrAutoGlmnet = R6Class(
   "LearnerRegrAutoGlmnet",

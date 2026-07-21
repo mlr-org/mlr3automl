@@ -12,6 +12,11 @@
 #' @template param_timeout
 #' @template param_devices
 #'
+#' @return Object of class [R6::R6Class] and `AutoResNet`.
+#'
+#' @templateVar id resnet
+#' @template example_auto
+#'
 #' @export
 AutoResNet = R6Class(
   "AutoResNet",

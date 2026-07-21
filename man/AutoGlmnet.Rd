@@ -3,8 +3,14 @@
 \name{AutoGlmnet}
 \alias{AutoGlmnet}
 \title{Glmnet Auto}
+\value{
+Object of class \link[R6:R6Class]{R6::R6Class} and \code{AutoGlmnet}.
+}
 \description{
 Glmnet auto.
+}
+\examples{
+auto("glmnet")
 }
 \section{Super class}{
 \code{\link[mlr3automl:Auto]{Auto}} -> \code{AutoGlmnet}

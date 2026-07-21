@@ -121,8 +121,6 @@ Change to \code{FALSE} to debug.}
 \section{Public fields}{
   \if{html}{\out{<div class="r6-fields">}}
   \describe{
-    \item{\code{tuning_space}}{(\code{list()}).}
-
     \item{\code{instance}}{(\link[mlr3tuning:TuningInstanceAsyncSingleCrit]{mlr3tuning::TuningInstanceAsyncSingleCrit}).}
 
     \item{\code{rush}}{(\link[rush:Rush]{rush::Rush})\cr

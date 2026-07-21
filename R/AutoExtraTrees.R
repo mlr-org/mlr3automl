@@ -13,6 +13,11 @@
 #' @template param_size
 #' @template param_devices
 #'
+#' @return Object of class [R6::R6Class] and `AutoExtraTrees`.
+#'
+#' @templateVar id extra_trees
+#' @template example_auto
+#'
 #' @export
 AutoExtraTrees = R6Class(
   "AutoExtraTrees",

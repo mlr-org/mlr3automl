@@ -6,6 +6,11 @@
 #' @template param_id
 #' @template param_rush
 #'
+#' @return Object of class [R6::R6Class] and `LearnerRegrAutoCatboost`.
+#'
+#' @templateVar id regr.auto_catboost
+#' @template example_learner
+#'
 #' @export
 LearnerRegrAutoCatboost = R6Class(
   "LearnerRegrAutoCatboost",

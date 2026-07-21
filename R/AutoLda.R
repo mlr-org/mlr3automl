@@ -13,6 +13,11 @@
 #' @template param_timeout
 #' @template param_devices
 #'
+#' @return Object of class [R6::R6Class] and `AutoLda`.
+#'
+#' @templateVar id lda
+#' @template example_auto
+#'
 #' @export
 AutoLda = R6Class(
   "AutoLda",

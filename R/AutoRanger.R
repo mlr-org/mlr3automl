@@ -13,6 +13,11 @@
 #' @template param_devices
 #'
 #'
+#' @return Object of class [R6::R6Class] and `AutoRanger`.
+#'
+#' @templateVar id ranger
+#' @template example_auto
+#'
 #' @export
 AutoRanger = R6Class(
   "AutoRanger",

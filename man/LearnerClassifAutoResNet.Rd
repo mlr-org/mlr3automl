@@ -3,8 +3,15 @@
 \name{LearnerClassifAutoResNet}
 \alias{LearnerClassifAutoResNet}
 \title{Classification ResNet Auto Learner}
+\value{
+Object of class \link[R6:R6Class]{R6::R6Class} and \code{LearnerClassifAutoResNet}.
+}
 \description{
 Classification auto learner.
+}
+\examples{
+learner = lrn("classif.auto_resnet")
+learner
 }
 \section{Super classes}{
 \code{\link[mlr3:Learner]{mlr3::Learner}} -> \code{\link[mlr3automl:LearnerAuto]{LearnerAuto}} -> \code{\link[mlr3automl:LearnerClassifAuto]{LearnerClassifAuto}} -> \code{LearnerClassifAutoResNet}

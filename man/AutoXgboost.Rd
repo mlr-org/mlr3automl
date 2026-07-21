@@ -3,8 +3,14 @@
 \name{AutoXgboost}
 \alias{AutoXgboost}
 \title{Xgboost Auto}
+\value{
+Object of class \link[R6:R6Class]{R6::R6Class} and \code{AutoXgboost}.
+}
 \description{
 Xgboost auto.
+}
+\examples{
+auto("xgboost")
 }
 \section{Super class}{
 \code{\link[mlr3automl:Auto]{Auto}} -> \code{AutoXgboost}

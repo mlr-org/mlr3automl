@@ -12,6 +12,11 @@
 #' @template section_parameters
 #' @template section_python
 #'
+#' @return Object of class [R6::R6Class] and `LearnerRegrAuto`.
+#'
+#' @templateVar id regr.auto
+#' @template example_learner
+#'
 #' @export
 #' @include LearnerAuto.R
 LearnerRegrAuto = R6Class(

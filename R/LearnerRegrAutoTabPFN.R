@@ -6,6 +6,11 @@
 #' @template param_id
 #' @template param_rush
 #'
+#' @return Object of class [R6::R6Class] and `LearnerRegrAutoTabPFN`.
+#'
+#' @templateVar id regr.auto_tabpfn
+#' @template example_learner
+#'
 #' @export
 LearnerRegrAutoTabPFN = R6Class(
   "LearnerRegrAutoTabPFN",

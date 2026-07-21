@@ -15,6 +15,11 @@
 #' @template param_devices
 #' @template section_python
 #'
+#' @return Object of class [R6::R6Class] and `AutoTabpfn`.
+#'
+#' @templateVar id tabpfn
+#' @template example_auto
+#'
 #' @export
 AutoTabpfn = R6Class(
   "AutoTabpfn",
@@ -162,6 +167,8 @@ mlr_auto$add("tabpfn", function() AutoTabpfn$new())
 #' @description
 #' A subclass of [mlr3extralearners::LearnerClassifTabPFN] that isolates the Python environment in a callr session.
 #'
+#' @return Object of class [R6::R6Class] and `LearnerClassifTabPFNIsolated`.
+#'
 #' @export
 LearnerClassifTabPFNIsolated = R6Class(
   "LearnerClassifTabPFNIsolated",
@@ -196,6 +203,8 @@ LearnerClassifTabPFNIsolated = R6Class(
 #'
 #' @description
 #' A subclass of [mlr3extralearners::LearnerRegrTabPFN] that isolates the Python environment in a callr session.
+#'
+#' @return Object of class [R6::R6Class] and `LearnerRegrTabPFNIsolated`.
 #'
 #' @export
 LearnerRegrTabPFNIsolated = R6Class(

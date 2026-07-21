@@ -3,8 +3,14 @@
 \name{AutoSvm}
 \alias{AutoSvm}
 \title{Svm Auto}
+\value{
+Object of class \link[R6:R6Class]{R6::R6Class} and \code{AutoSvm}.
+}
 \description{
 Svm auto.
+}
+\examples{
+auto("svm")
 }
 \section{Super class}{
 \code{\link[mlr3automl:Auto]{Auto}} -> \code{AutoSvm}

@@ -12,6 +12,11 @@
 #' @template param_timeout
 #' @template param_devices
 #'
+#' @return Object of class [R6::R6Class] and `AutoGlmnet`.
+#'
+#' @templateVar id glmnet
+#' @template example_auto
+#'
 #' @export
 AutoGlmnet = R6Class(
   "AutoGlmnet",

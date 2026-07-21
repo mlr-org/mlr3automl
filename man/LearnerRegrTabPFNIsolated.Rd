@@ -3,6 +3,9 @@
 \name{LearnerRegrTabPFNIsolated}
 \alias{LearnerRegrTabPFNIsolated}
 \title{TabPFN Regressor Learner Isolated}
+\value{
+Object of class \link[R6:R6Class]{R6::R6Class} and \code{LearnerRegrTabPFNIsolated}.
+}
 \description{
 A subclass of \link[mlr3extralearners:LearnerRegrTabPFN]{mlr3extralearners::LearnerRegrTabPFN} that isolates the Python environment in a callr session.
 }

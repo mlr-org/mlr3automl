@@ -6,6 +6,11 @@
 #' @template param_id
 #' @template param_rush
 #'
+#' @return Object of class [R6::R6Class] and `LearnerRegrAutoLightGBM`.
+#'
+#' @templateVar id regr.auto_lightgbm
+#' @template example_learner
+#'
 #' @export
 LearnerRegrAutoLightGBM = R6Class(
   "LearnerRegrAutoLightGBM",

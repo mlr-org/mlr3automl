@@ -3,8 +3,14 @@
 \name{AutoRanger}
 \alias{AutoRanger}
 \title{Ranger Auto}
+\value{
+Object of class \link[R6:R6Class]{R6::R6Class} and \code{AutoRanger}.
+}
 \description{
 Ranger auto.
+}
+\examples{
+auto("ranger")
 }
 \section{Super class}{
 \code{\link[mlr3automl:Auto]{Auto}} -> \code{AutoRanger}

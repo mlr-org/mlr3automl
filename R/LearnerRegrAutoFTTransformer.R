@@ -6,6 +6,11 @@
 #' @template param_id
 #' @template param_rush
 #'
+#' @return Object of class [R6::R6Class] and `LearnerRegrAutoFTTransformer`.
+#'
+#' @templateVar id regr.auto_ft_transformer
+#' @template example_learner
+#'
 #' @export
 LearnerRegrAutoFTTransformer = R6Class(
   "LearnerRegrAutoFTTransformer",

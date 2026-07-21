@@ -6,6 +6,11 @@
 #' @template param_id
 #' @template param_rush
 #'
+#' @return Object of class [R6::R6Class] and `LearnerClassifAutoSVM`.
+#'
+#' @templateVar id classif.auto_svm
+#' @template example_learner
+#'
 #' @export
 LearnerClassifAutoSVM = R6Class(
   "LearnerClassifAutoSVM",

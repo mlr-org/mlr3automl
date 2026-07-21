@@ -3,8 +3,14 @@
 \name{AutoFTTransformer}
 \alias{AutoFTTransformer}
 \title{FTTransformer Auto}
+\value{
+Object of class \link[R6:R6Class]{R6::R6Class} and \code{AutoFTTransformer}.
+}
 \description{
 FTTransformer auto.
+}
+\examples{
+auto("ft_transformer")
 }
 \section{Super class}{
 \code{\link[mlr3automl:Auto]{Auto}} -> \code{AutoFTTransformer}

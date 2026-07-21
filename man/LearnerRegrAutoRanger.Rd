@@ -3,8 +3,15 @@
 \name{LearnerRegrAutoRanger}
 \alias{LearnerRegrAutoRanger}
 \title{Regression Ranger Auto Learner}
+\value{
+Object of class \link[R6:R6Class]{R6::R6Class} and \code{LearnerRegrAutoRanger}.
+}
 \description{
 Regression auto learner.
+}
+\examples{
+learner = lrn("regr.auto_ranger")
+learner
 }
 \section{Super classes}{
 \code{\link[mlr3:Learner]{mlr3::Learner}} -> \code{\link[mlr3automl:LearnerAuto]{LearnerAuto}} -> \code{\link[mlr3automl:LearnerRegrAuto]{LearnerRegrAuto}} -> \code{LearnerRegrAutoRanger}

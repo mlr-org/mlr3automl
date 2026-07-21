@@ -12,6 +12,11 @@
 #' @template param_timeout
 #' @template param_devices
 #'
+#' @return Object of class [R6::R6Class] and `AutoFTTransformer`.
+#'
+#' @templateVar id ft_transformer
+#' @template example_auto
+#'
 #' @export
 AutoFTTransformer = R6Class(
   "AutoFTTransformer",

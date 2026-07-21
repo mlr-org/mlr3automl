@@ -3,8 +3,15 @@
 \name{LearnerRegrAutoLightGBM}
 \alias{LearnerRegrAutoLightGBM}
 \title{Regression LightGBM Auto Learner}
+\value{
+Object of class \link[R6:R6Class]{R6::R6Class} and \code{LearnerRegrAutoLightGBM}.
+}
 \description{
 Regression auto learner.
+}
+\examples{
+learner = lrn("regr.auto_lightgbm")
+learner
 }
 \section{Super classes}{
 \code{\link[mlr3:Learner]{mlr3::Learner}} -> \code{\link[mlr3automl:LearnerAuto]{LearnerAuto}} -> \code{\link[mlr3automl:LearnerRegrAuto]{LearnerRegrAuto}} -> \code{LearnerRegrAutoLightGBM}

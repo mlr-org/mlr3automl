@@ -6,6 +6,11 @@
 #' @template param_id
 #' @template param_rush
 #'
+#' @return Object of class [R6::R6Class] and `LearnerClassifAutoFastai`.
+#'
+#' @templateVar id classif.auto_fastai
+#' @template example_learner
+#'
 #' @export
 LearnerClassifAutoFastai = R6Class(
   "LearnerClassifAutoFastai",

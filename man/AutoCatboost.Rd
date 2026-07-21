@@ -3,8 +3,14 @@
 \name{AutoCatboost}
 \alias{AutoCatboost}
 \title{Catboost Auto}
+\value{
+Object of class \link[R6:R6Class]{R6::R6Class} and \code{AutoCatboost}.
+}
 \description{
 Catboost auto.
+}
+\examples{
+auto("catboost")
 }
 \section{Super class}{
 \code{\link[mlr3automl:Auto]{Auto}} -> \code{AutoCatboost}

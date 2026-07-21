@@ -3,6 +3,9 @@
 \name{LearnerRegrAuto}
 \alias{LearnerRegrAuto}
 \title{Regression AutoML Learner}
+\value{
+Object of class \link[R6:R6Class]{R6::R6Class} and \code{LearnerRegrAuto}.
+}
 \description{
 The \link{LearnerRegrAuto} is an automated machine learning (AutoML) system for regression tasks.
 It combines preprocessing, a switch between multiple learners,
@@ -117,6 +120,10 @@ Use \code{\link[=install_python_learners]{install_python_learners()}} to create 
 The \code{TabPFN} learner additionally requires the \code{TABPFN_TOKEN} environment variable to download the model weights.
 }
 
+\examples{
+learner = lrn("regr.auto")
+learner
+}
 \section{Super classes}{
 \code{\link[mlr3:Learner]{mlr3::Learner}} -> \code{\link[mlr3automl:LearnerAuto]{LearnerAuto}} -> \code{LearnerRegrAuto}
 }

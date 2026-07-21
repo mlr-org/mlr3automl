@@ -3,8 +3,15 @@
 \name{LearnerClassifAutoMLP}
 \alias{LearnerClassifAutoMLP}
 \title{Classification MLP Auto Learner}
+\value{
+Object of class \link[R6:R6Class]{R6::R6Class} and \code{LearnerClassifAutoMLP}.
+}
 \description{
 Classification auto learner.
+}
+\examples{
+learner = lrn("classif.auto_mlp")
+learner
 }
 \section{Super classes}{
 \code{\link[mlr3:Learner]{mlr3::Learner}} -> \code{\link[mlr3automl:LearnerAuto]{LearnerAuto}} -> \code{\link[mlr3automl:LearnerClassifAuto]{LearnerClassifAuto}} -> \code{LearnerClassifAutoMLP}

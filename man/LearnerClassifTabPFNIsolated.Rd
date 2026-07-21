@@ -3,6 +3,9 @@
 \name{LearnerClassifTabPFNIsolated}
 \alias{LearnerClassifTabPFNIsolated}
 \title{TabPFN Learner Isolated}
+\value{
+Object of class \link[R6:R6Class]{R6::R6Class} and \code{LearnerClassifTabPFNIsolated}.
+}
 \description{
 A subclass of \link[mlr3extralearners:LearnerClassifTabPFN]{mlr3extralearners::LearnerClassifTabPFN} that isolates the Python environment in a callr session.
 }

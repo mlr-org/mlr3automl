@@ -3,6 +3,9 @@
 \name{LearnerClassifFastaiIsolated}
 \alias{LearnerClassifFastaiIsolated}
 \title{Fastai Learner Isolated}
+\value{
+Object of class \link[R6:R6Class]{R6::R6Class} and \code{LearnerClassifFastaiIsolated}.
+}
 \description{
 A subclass of \link[mlr3extralearners:LearnerClassifFastai]{mlr3extralearners::LearnerClassifFastai} that isolates the Python environment in a callr session.
 }

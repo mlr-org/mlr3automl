@@ -19,6 +19,11 @@
 #'   Pinned to `"3.12"` by default so the environment is reproducible across machines.
 #'
 #' @return Invisibly returns the path to the Python binary in the environment.
+#'
+#' @examples
+#' \dontrun{
+#' install_python_learners()
+#' }
 #' @export
 install_python_learners = function(
   learners = c("fastai", "tabpfn"),

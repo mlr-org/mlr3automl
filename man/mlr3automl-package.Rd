@@ -4,11 +4,11 @@
 \name{mlr3automl-package}
 \alias{mlr3automl}
 \alias{mlr3automl-package}
-\title{mlr3automl: AutoML extension for 'mlr3'}
+\title{mlr3automl: Automated Machine Learning for 'mlr3'}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Flexible AutoML system for the 'mlr3' ecosystem.
+Flexible automated machine learning (AutoML) system for the 'mlr3' ecosystem. Automatically selects a suitable machine learning algorithm and tunes its hyperparameters for a given task. Constructs preprocessing pipelines with multiple parallel branches using 'mlr3pipelines' and jointly optimizes them together with the learners using 'mlr3tuning'. The optimization is driven by asynchronous decentralized Bayesian optimization.
 }
 \seealso{
 Useful links:
@@ -20,11 +20,11 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Marc Becker \email{marcbecker@posteo.de} (\href{https://orcid.org/0000-0002-8115-0400}{ORCID})
+\strong{Maintainer}: Marc Becker \email{marcbecker@posteo.de} (\href{https://orcid.org/0000-0002-8115-0400}{ORCID}) [copyright holder]
 
 Authors:
 \itemize{
-  \item Marc Becker \email{marcbecker@posteo.de} (\href{https://orcid.org/0000-0002-8115-0400}{ORCID})
+  \item Marc Becker \email{marcbecker@posteo.de} (\href{https://orcid.org/0000-0002-8115-0400}{ORCID}) [copyright holder]
   \item Damir Pulatov \email{damirpolat@protonmail.com}
   \item Baisu Zhou \email{baisu.zhou@outlook.com}
 }

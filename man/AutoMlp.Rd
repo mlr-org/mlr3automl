@@ -3,8 +3,14 @@
 \name{AutoMlp}
 \alias{AutoMlp}
 \title{Mlp Auto}
+\value{
+Object of class \link[R6:R6Class]{R6::R6Class} and \code{AutoMlp}.
+}
 \description{
 Mlp auto.
+}
+\examples{
+auto("mlp")
 }
 \section{Super class}{
 \code{\link[mlr3automl:Auto]{Auto}} -> \code{AutoMlp}

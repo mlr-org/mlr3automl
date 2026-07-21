@@ -3,6 +3,9 @@
 \name{Auto}
 \alias{Auto}
 \title{Auto Class}
+\value{
+Object of class \link[R6:R6Class]{R6::R6Class} and \code{Auto}.
+}
 \description{
 This class is the base class for all autos.
 }

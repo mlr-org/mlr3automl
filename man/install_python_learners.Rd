@@ -34,3 +34,8 @@ The learners share a single environment, so one \code{RETICULATE_PYTHON} covers 
 \details{
 The environment is created in the project directory by default.
 }
+\examples{
+\dontrun{
+install_python_learners()
+}
+}

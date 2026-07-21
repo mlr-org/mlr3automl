@@ -3,8 +3,15 @@
 \name{LearnerClassifAutoCatboost}
 \alias{LearnerClassifAutoCatboost}
 \title{Classification Gradient Boosted Decision Trees Auto Learner}
+\value{
+Object of class \link[R6:R6Class]{R6::R6Class} and \code{LearnerClassifAutoCatboost}.
+}
 \description{
 Classification auto learner.
+}
+\examples{
+learner = lrn("classif.auto_catboost")
+learner
 }
 \section{Super classes}{
 \code{\link[mlr3:Learner]{mlr3::Learner}} -> \code{\link[mlr3automl:LearnerAuto]{LearnerAuto}} -> \code{\link[mlr3automl:LearnerClassifAuto]{LearnerClassifAuto}} -> \code{LearnerClassifAutoCatboost}

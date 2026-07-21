@@ -12,6 +12,11 @@
 #' @template param_timeout
 #' @template param_devices
 #'
+#' @return Object of class [R6::R6Class] and `AutoXgboost`.
+#'
+#' @templateVar id xgboost
+#' @template example_auto
+#'
 #' @export
 AutoXgboost = R6Class(
   "AutoXgboost",

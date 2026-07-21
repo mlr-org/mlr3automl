@@ -15,6 +15,8 @@
 #' @template param_size
 #' @template param_devices
 #'
+#' @return Object of class [R6::R6Class] and `Auto`.
+#'
 #' @export
 Auto = R6Class(
   "Auto",

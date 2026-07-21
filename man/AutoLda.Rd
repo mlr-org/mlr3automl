@@ -3,8 +3,14 @@
 \name{AutoLda}
 \alias{AutoLda}
 \title{Lda Auto}
+\value{
+Object of class \link[R6:R6Class]{R6::R6Class} and \code{AutoLda}.
+}
 \description{
 Lda auto.
+}
+\examples{
+auto("lda")
 }
 \section{Super class}{
 \code{\link[mlr3automl:Auto]{Auto}} -> \code{AutoLda}
