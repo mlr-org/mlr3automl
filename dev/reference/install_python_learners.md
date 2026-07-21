@@ -42,3 +42,11 @@ Invisibly returns the path to the Python binary in the environment.
 ## Details
 
 The environment is created in the project directory by default.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+install_python_learners()
+} # }
+```

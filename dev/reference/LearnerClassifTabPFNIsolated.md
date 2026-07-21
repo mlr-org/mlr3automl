@@ -4,6 +4,12 @@ A subclass of
 [mlr3extralearners::LearnerClassifTabPFN](https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.tabpfn.html)
 that isolates the Python environment in a callr session.
 
+## Value
+
+Object of class
+[R6::R6Class](https://r6.r-lib.org/reference/R6Class.html) and
+`LearnerClassifTabPFNIsolated`.
+
 ## Super classes
 
 [`mlr3::Learner`](https://mlr3.mlr-org.com/reference/Learner.html) -\>

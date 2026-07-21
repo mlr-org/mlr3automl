@@ -5,6 +5,12 @@ regression tasks. It combines preprocessing, a switch between multiple
 learners, and hyperparameter tuning to find the best model for the given
 task.
 
+## Value
+
+Object of class
+[R6::R6Class](https://r6.r-lib.org/reference/R6Class.html) and
+`LearnerRegrAuto`.
+
 ## Debugging
 
 Set `options(bbotk.debug)` to run the tuning in the in the main session.
@@ -221,3 +227,29 @@ The objects of this class are cloneable with this method.
 - `deep`:
 
   Whether to make a deep clone.
+
+## Examples
+
+``` r
+learner = lrn("regr.auto")
+learner
+#> 
+#> ── <LearnerRegrAuto> (regr.auto) ───────────────────────────────────────────────
+#> • Model: -
+#> • Parameters: check_learners=TRUE, devices=cpu, encapsulate_learner=TRUE,
+#> encapsulate_mbo=TRUE, initial_design_default=FALSE,
+#> initial_design_fraction=0.25, initial_design_set=0, initial_design_size=256,
+#> initial_design_type=sobol, large_data_size=1000000, learner_timeout=900,
+#> memory_limit=32000, n_threads=1, resampling=<ResamplingHoldout>,
+#> small_data_resampling=<ResamplingCV>, small_data_size=5000,
+#> store_benchmark_result=FALSE, store_models=FALSE,
+#> terminator=<TerminatorRunTime>
+#> • Packages: mlr3, mlr3tuning, mlr3pipelines, mlr3learners, mlr3extralearners,
+#> catboost, ranger, callr, mlr3torch, glmnet, kknn, MASS, lightgbm, e1071, and
+#> xgboost
+#> • Predict Types: [response]
+#> • Feature Types: logical, integer, numeric, character, and factor
+#> • Encapsulation: none (fallback: -)
+#> • Properties: missings and weights
+#> • Other settings: use_weights = 'use', predict_raw = 'FALSE'
+```

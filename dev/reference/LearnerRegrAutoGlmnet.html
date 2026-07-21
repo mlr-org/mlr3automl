@@ -22,6 +22,7 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html"><span class="fa fa-file-alt"></span> Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://mlr3book.mlr-org.com"><span class="fa fa-link"></span> mlr3book</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -52,6 +53,10 @@
     </div>
 
 
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>Object of class <a href="https://r6.r-lib.org/reference/R6Class.html" class="external-link">R6::R6Class</a> and <code>LearnerRegrAutoGlmnet</code>.</p>
+    </div>
     <div class="section level2">
     <h2 id="super-classes">Super classes<a class="anchor" aria-label="anchor" href="#super-classes"></a></h2>
     <p><code><a href="https://mlr3.mlr-org.com/reference/Learner.html" class="external-link">mlr3::Learner</a></code> -&gt; <code><a href="LearnerAuto.html">LearnerAuto</a></code> -&gt; <code><a href="LearnerRegrAuto.html">LearnerRegrAuto</a></code> -&gt; <code>LearnerRegrAutoGlmnet</code></p>
@@ -114,6 +119,28 @@ Rush instance.</p></dd>
 
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">learner</span> <span class="op">=</span> <span class="fu"><a href="https://mlr3.mlr-org.com/reference/mlr_sugar.html" class="external-link">lrn</a></span><span class="op">(</span><span class="st">"regr.auto_glmnet"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">learner</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="color: #0000BB; font-weight: bold;">&lt;LearnerRegrAutoGlmnet&gt;</span><span style="font-weight: bold;"> (regr.auto_glmnet)</span> <span style="color: #00BBBB;">──────────────────────────────────</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> • Model: -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> • Parameters: check_learners=TRUE, devices=cpu, encapsulate_learner=TRUE,</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> encapsulate_mbo=TRUE, initial_design_default=FALSE,</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> initial_design_fraction=0.25, initial_design_set=0, initial_design_size=256,</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> initial_design_type=sobol, large_data_size=1000000, learner_timeout=900,</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> resampling=&lt;ResamplingHoldout&gt;, small_data_resampling=&lt;ResamplingCV&gt;,</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> small_data_size=5000, store_benchmark_result=FALSE, store_models=FALSE,</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> terminator=&lt;TerminatorRunTime&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> • Packages: <span style="color: #0000BB;">mlr3</span>, <span style="color: #0000BB;">mlr3tuning</span>, <span style="color: #0000BB;">mlr3pipelines</span>, <span style="color: #0000BB;">mlr3learners</span>, and <span style="color: #0000BB;">glmnet</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> • Predict Types: [response]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> • Feature Types: logical, integer, numeric, character, and factor</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> • Encapsulation: none (fallback: -)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> • Properties: missings and weights</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> • Other settings: use_weights = 'use', predict_raw = 'FALSE'</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

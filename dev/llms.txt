@@ -17,6 +17,13 @@ efficient and scalable AutoML.
 
 ## Installation
 
+Install the last release from CRAN:
+
+``` r
+
+install.packages("mlr3automl")
+```
+
 Install the development version from GitHub:
 
 ``` r
@@ -182,5 +189,5 @@ Sys.setenv(RUSH_TEST_USE_REDIS = "true")
 
 - [`mlr3automl`](https://mlr3automl.mlr-org.com/dev/reference/mlr3automl-package.md)
   [`mlr3automl-package`](https://mlr3automl.mlr-org.com/dev/reference/mlr3automl-package.md)
-  : mlr3automl: AutoML extension for 'mlr3'
+  : mlr3automl: Automated Machine Learning for 'mlr3'
 

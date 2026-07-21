@@ -2,6 +2,12 @@
 
 Classification auto learner.
 
+## Value
+
+Object of class
+[R6::R6Class](https://r6.r-lib.org/reference/R6Class.html) and
+`LearnerClassifAutoCatboost`.
+
 ## Super classes
 
 [`mlr3::Learner`](https://mlr3.mlr-org.com/reference/Learner.html) -\>
@@ -70,3 +76,28 @@ The objects of this class are cloneable with this method.
 - `deep`:
 
   Whether to make a deep clone.
+
+## Examples
+
+``` r
+learner = lrn("classif.auto_catboost")
+learner
+#> 
+#> ── <LearnerClassifAutoCatboost> (classif.auto_catboost) ────────────────────────
+#> • Model: -
+#> • Parameters: check_learners=TRUE, devices=cpu, encapsulate_learner=TRUE,
+#> encapsulate_mbo=TRUE, initial_design_default=FALSE,
+#> initial_design_fraction=0.25, initial_design_set=0, initial_design_size=256,
+#> initial_design_type=sobol, large_data_size=1000000, learner_timeout=900,
+#> memory_limit=32000, n_threads=1, resampling=<ResamplingHoldout>,
+#> small_data_resampling=<ResamplingCV>, small_data_size=5000,
+#> store_benchmark_result=FALSE, store_models=FALSE,
+#> terminator=<TerminatorRunTime>
+#> • Packages: mlr3, mlr3tuning, mlr3pipelines, mlr3learners, mlr3extralearners,
+#> and catboost
+#> • Predict Types: [response] and prob
+#> • Feature Types: logical, integer, numeric, character, and factor
+#> • Encapsulation: none (fallback: -)
+#> • Properties: missings, multiclass, twoclass, and weights
+#> • Other settings: use_weights = 'use', predict_raw = 'FALSE'
+```

@@ -127,4 +127,4 @@
 
 - [`mlr3automl`](https://mlr3automl.mlr-org.com/dev/reference/mlr3automl-package.md)
   [`mlr3automl-package`](https://mlr3automl.mlr-org.com/dev/reference/mlr3automl-package.md)
-  : mlr3automl: AutoML extension for 'mlr3'
+  : mlr3automl: Automated Machine Learning for 'mlr3'

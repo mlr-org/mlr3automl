@@ -2,6 +2,11 @@
 
 This class is the base class for all autos.
 
+## Value
+
+Object of class
+[R6::R6Class](https://r6.r-lib.org/reference/R6Class.html) and `Auto`.
+
 ## Public fields
 
 - `id`:

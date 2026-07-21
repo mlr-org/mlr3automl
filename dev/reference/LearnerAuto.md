@@ -154,10 +154,6 @@ learner. Set `encapsulate_mbo = FALSE` to catch no errors in mbo.
 
 ## Public fields
 
-- `tuning_space`:
-
-  ([`list()`](https://rdrr.io/r/base/list.html)).
-
 - `instance`:
 
   ([mlr3tuning::TuningInstanceAsyncSingleCrit](https://mlr3tuning.mlr-org.com/reference/TuningInstanceAsyncSingleCrit.html)).

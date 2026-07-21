@@ -2,6 +2,12 @@
 
 Xgboost auto.
 
+## Value
+
+Object of class
+[R6::R6Class](https://r6.r-lib.org/reference/R6Class.html) and
+`AutoXgboost`.
+
 ## Super class
 
 [`Auto`](https://mlr3automl.mlr-org.com/dev/reference/Auto.md) -\>
@@ -150,3 +156,31 @@ The objects of this class are cloneable with this method.
 - `deep`:
 
   Whether to make a deep clone.
+
+## Examples
+
+``` r
+auto("xgboost")
+#> <AutoXgboost>
+#>   Inherits from: <Auto>
+#>   Public:
+#>     check: function (task, memory_limit = Inf, large_data_set = FALSE, devices) 
+#>     clone: function (deep = FALSE) 
+#>     design_default: function (task) 
+#>     design_set: function (task, measure, size) 
+#>     devices: cpu cuda
+#>     early_stopping_rounds: function (task, budget = Inf) 
+#>     estimate_memory: function (task) 
+#>     finalize_model: function (graph_learner) 
+#>     graph: function (task, measure, n_threads, timeout, devices) 
+#>     id: xgboost
+#>     initialize: function (id = "xgboost") 
+#>     internal_measure: function (measure, task) 
+#>     packages: mlr3 mlr3learners xgboost
+#>     properties: internal_tuning large_data_sets
+#>     search_space: function (task) 
+#>     task_types: classif regr
+#>   Private:
+#>     .default_values: list
+#>     .search_space: ParamSet, R6
+```

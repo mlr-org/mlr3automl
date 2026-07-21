@@ -2,6 +2,12 @@
 
 Glmnet auto.
 
+## Value
+
+Object of class
+[R6::R6Class](https://r6.r-lib.org/reference/R6Class.html) and
+`AutoGlmnet`.
+
 ## Super class
 
 [`Auto`](https://mlr3automl.mlr-org.com/dev/reference/Auto.md) -\>
@@ -94,3 +100,30 @@ The objects of this class are cloneable with this method.
 - `deep`:
 
   Whether to make a deep clone.
+
+## Examples
+
+``` r
+auto("glmnet")
+#> <AutoGlmnet>
+#>   Inherits from: <Auto>
+#>   Public:
+#>     check: function (task, memory_limit = Inf, large_data_set = FALSE, devices) 
+#>     clone: function (deep = FALSE) 
+#>     design_default: function (task) 
+#>     design_set: function (task, measure, size) 
+#>     devices: cpu
+#>     early_stopping_rounds: function (task, budget = Inf) 
+#>     estimate_memory: function (task) 
+#>     finalize_model: function (graph_learner) 
+#>     graph: function (task, measure, n_threads, timeout, devices) 
+#>     id: glmnet
+#>     initialize: function (id = "glmnet") 
+#>     packages: mlr3 mlr3learners glmnet
+#>     properties: 
+#>     search_space: function (task) 
+#>     task_types: classif regr
+#>   Private:
+#>     .default_values: list
+#>     .search_space: ParamSet, R6
+```

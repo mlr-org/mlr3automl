@@ -17,6 +17,13 @@ efficient and scalable AutoML.
 
 ## Installation
 
+Install the last release from CRAN:
+
+``` r
+
+install.packages("mlr3automl")
+```
+
 Install the development version from GitHub:
 
 ``` r
