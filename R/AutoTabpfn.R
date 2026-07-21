@@ -88,12 +88,12 @@ AutoTabpfn = R6Class(
 
       set_threads(learner, n_threads)
 
-      # tabpfn loads python torch via reticulate which is incompatible with mlr3torch
-      # train and predict in a short-lived callr session
+      # the learner trains and predicts in an isolated callr session (see isolated_model.R),
+      # so the encapsulation only adds the fallback and log capture
       fallback = lrn(sprintf("%s.featureless", task$task_type))
       fallback$predict_type = measure$predict_type
       learner$predict_type = measure$predict_type
-      learner$encapsulate(method = "callr", fallback = fallback)
+      learner$encapsulate(method = "evaluate", fallback = fallback)
 
       po("removeconstants", id = "tabpfn_removeconstants") %>>%
         po("fixfactors", id = "tabpfn_fixfactors") %>>%
@@ -156,11 +156,14 @@ AutoTabpfn = R6Class(
 mlr_auto$add("tabpfn", function() AutoTabpfn$new())
 
 # the tabpfn learner imports python torch via reticulate.
-# these subclasses keep python strictly inside the callr sessions used for process isolation
-# * .train() registers the python requirements, which the tabpfn learner does
-#   not do itself, and wraps the model as an isolated model, so it leaves the
+# these subclasses keep python strictly inside the isolated callr sessions
+# started with isolated_session() (see isolated_model.R)
+# * .train() and .predict() run .session_train() and .session_predict() in an
+#   isolated session and never touch python themselves.
+# * .session_train() registers the python requirements, which the tabpfn
+#   learner does not do itself, and pickles the model, so it leaves the
 #   session as raw bytes.
-# * .predict() unpickles the model inside the callr session.
+# * .session_predict() unpickles the model inside the session.
 
 #' @title TabPFN Learner Isolated
 #'
@@ -178,17 +181,27 @@ LearnerClassifTabPFNIsolated = R6Class(
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function() {
       super$initialize()
-      # the callr session must load mlr3automl to find this class
+      # the isolated session must load mlr3automl to find this class
       self$packages = union(self$packages, "mlr3automl")
     }
   ),
   private = list(
     .train = function(task) {
-      clean_reticulate_env()
-      reticulate::py_require(c("torch", "tabpfn"))
-      new_isolated_model(super$.train(task))
+      result = isolated_session(self, task, ".session_train")
+      structure(list(pickled = result$marshaled), class = "isolated_model_pickled")
     },
     .predict = function(task) {
+      isolated_session(self, task, ".session_predict")
+    },
+    # runs in the isolated session
+    .session_train = function(task) {
+      clean_reticulate_env()
+      reticulate::py_require(c("torch", "tabpfn"))
+      model = super$.train(task)
+      list(marshaled = marshal_model(model, inplace = TRUE))
+    },
+    # runs in the isolated session
+    .session_predict = function(task) {
       clean_reticulate_env()
       reticulate::py_require(c("torch", "tabpfn"))
       if (inherits(self$model, "isolated_model_pickled")) {
@@ -215,17 +228,27 @@ LearnerRegrTabPFNIsolated = R6Class(
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function() {
       super$initialize()
-      # the callr session must load mlr3automl to find this class
+      # the isolated session must load mlr3automl to find this class
       self$packages = union(self$packages, "mlr3automl")
     }
   ),
   private = list(
     .train = function(task) {
-      clean_reticulate_env()
-      reticulate::py_require(c("torch", "tabpfn"))
-      new_isolated_model(super$.train(task))
+      result = isolated_session(self, task, ".session_train")
+      structure(list(pickled = result$marshaled), class = "isolated_model_pickled")
     },
     .predict = function(task) {
+      isolated_session(self, task, ".session_predict")
+    },
+    # runs in the isolated session
+    .session_train = function(task) {
+      clean_reticulate_env()
+      reticulate::py_require(c("torch", "tabpfn"))
+      model = super$.train(task)
+      list(marshaled = marshal_model(model, inplace = TRUE))
+    },
+    # runs in the isolated session
+    .session_predict = function(task) {
       clean_reticulate_env()
       reticulate::py_require(c("torch", "tabpfn"))
       if (inherits(self$model, "isolated_model_pickled")) {
