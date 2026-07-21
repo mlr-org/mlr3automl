@@ -9,6 +9,13 @@ test_that("LearnerClassifAuto is initialized", {
   expect_learner(learner, task = tsk("penguins"))
 })
 
+test_that("empty learner_ids is rejected", {
+  expect_error(
+    lrn("classif.auto", learner_ids = character(0)),
+    "learner_ids"
+  )
+})
+
 test_that("only lda fails", {
   skip_on_cran()
   skip_if_not_installed("rush")

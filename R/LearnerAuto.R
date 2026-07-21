@@ -63,7 +63,7 @@ LearnerAuto = R6Class(
       if (missing(learner_ids)) {
         learner_ids = all_learner_ids
       }
-      assert_subset(learner_ids, all_learner_ids)
+      assert_subset(learner_ids, all_learner_ids, empty.ok = FALSE)
       private$.learner_ids = learner_ids
       self$rush = assert_r6(rush, "Rush", null.ok = TRUE)
 
