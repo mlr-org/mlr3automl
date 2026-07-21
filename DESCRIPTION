@@ -1,13 +1,19 @@
 Package: mlr3automl
-Title: AutoML extension for 'mlr3'
+Title: Automated Machine Learning for 'mlr3'
 Version: 0.0.1.9000
 Authors@R: c(
     person("Damir", "Pulatov", , "damirpolat@protonmail.com", role = "aut"),
-    person("Marc", "Becker", , "marcbecker@posteo.de", role = c("cre", "aut"),
+    person("Marc", "Becker", , "marcbecker@posteo.de", role = c("cre", "aut", "cph"),
            comment = c(ORCID = "0000-0002-8115-0400")),
     person("Baisu", "Zhou", , "baisu.zhou@outlook.com", role = "aut")
   )
-Description: Flexible AutoML system for the 'mlr3' ecosystem.
+Description: Flexible automated machine learning (AutoML) system for the
+    'mlr3' ecosystem. Automatically selects a suitable machine learning
+    algorithm and tunes its hyperparameters for a given task. Constructs
+    preprocessing pipelines with multiple parallel branches using
+    'mlr3pipelines' and jointly optimizes them together with the learners
+    using 'mlr3tuning'. The optimization is driven by asynchronous
+    decentralized Bayesian optimization.
 License: LGPL-3
 URL: https://mlr3automl.mlr-org.com,
     https://github.com/mlr-org/mlr3automl
