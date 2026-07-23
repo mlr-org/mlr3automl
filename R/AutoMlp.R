@@ -74,14 +74,15 @@ AutoMlp = R6Class(
       nrow = task$nrow
       n_layers = private$.search_space$upper[["mlp.n_layers"]]
       neurons = private$.search_space$upper[["mlp.neurons"]]
-      
+
+      # coefficients of the gamma model fitted in memory_experiments/Mlp
       baseline = 6.43
       b_nrow = 2e-07
-      b_n_layers =  0.0053
-      b_neurons =  0.003
-      
-      memory_size = exp(baseline + (nrow * b_nrow) + (n_layers * b_n_layers) + (neurons * b_neurons)) # gamma model
-      memory_size = memory_size * 1.3  # scale by 30% to over-predict memory size in most cases
+      b_n_layers = 0.0053
+      b_neurons = 0.0003
+
+      memory_size = exp(baseline + b_nrow * nrow + b_n_layers * n_layers + b_neurons * neurons)
+      memory_size = memory_size * 1.3 # scale by 30% to overestimate in most cases
       lg$info("Mlp memory size: %s MB", round(memory_size))
       ceiling(memory_size)
     }

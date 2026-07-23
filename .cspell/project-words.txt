@@ -1,5 +1,5 @@
-# Project-specific words — commit and share with the team.
 # Add words here (or via "Add to project dictionary" in VS Code / Cursor).
+# Project-specific words — commit and share with the team.
 ADBO
 analcatdata
 automl
@@ -50,6 +50,7 @@ mnist
 msrs
 mtry
 mxschmitt
+nfeatures
 nocov
 nolint
 nomao
@@ -58,6 +59,7 @@ nthread
 numerai
 optdigits
 ORCID
+overpredict
 pandoc
 paramtest
 pendigits
@@ -87,6 +89,7 @@ Tabpfn
 testthat
 tgen
 tgens
+trafo
 tsks
 tuningspaces
 volkert

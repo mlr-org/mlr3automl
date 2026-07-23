@@ -47,7 +47,7 @@ Correlates with memory usage:
 Formula to estimate memory: 
 
 $$
-\text{memory} = \exp\!\left(6.43 + 2 \times 10^{-7} \cdot \text{nrow} + 0.0053 \cdot \text{n\_layers} + 0.0030 \cdot \text{neurons}\right)
+\text{memory} = \exp\!\left(6.43 + 2 \times 10^{-7} \cdot \text{nrow} + 0.0053 \cdot \text{n\_layers} + 0.0003 \cdot \text{neurons}\right)
 $$
 
 The result is then scaled by 130% to overpredict in most cases:

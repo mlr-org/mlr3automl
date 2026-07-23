@@ -112,22 +112,24 @@ AutoFTTransformer = R6Class(
     estimate_memory = function(task) {
       nrow = task$nrow
       nfeatures = task$n_features
-      d_token = private$.search_space$upper[["ft_transformer.d_token"]]
-      ffn_d_hidden_multiplier = private$.search_space$upper[["ft_transformer.ffn_d_hidden_multiplier"]]
-      
+      # apply the trafo so d_token is on the scale passed to the learner
+      upper = private$.search_space$trafo(as.list(private$.search_space$upper))
+      d_token = upper[["ft_transformer.d_token"]]
+      ffn_d_hidden_multiplier = upper[["ft_transformer.ffn_d_hidden_multiplier"]]
+
+      # coefficients of the gamma model fitted in memory_experiments/FTTransformer
       baseline = 6.54
       b_nrow = 1.41e-06
-      b_nfeatures =  0.0004
+      b_nfeatures = 0.0004
       b_d_token = 0.0013
       b_ffn_d_hidden_multiplier = 0.11
-      
+
       memory_size = exp(baseline +
-                     b_nrow * nrow +
-                     b_nfeatures * nfeatures +
-                     b_d_token * d_token +
-                     b_ffn_d_hidden_multiplier * ffn_d_hidden_multiplier)
-      
-      memory_size = memory_size * 1.3
+          b_nrow * nrow +
+          b_nfeatures * nfeatures +
+          b_d_token * d_token +
+          b_ffn_d_hidden_multiplier * ffn_d_hidden_multiplier)
+      memory_size = memory_size * 1.3 # scale by 30% to overestimate in most cases
       lg$info("FTTransformer memory size: %s MB", round(memory_size))
       ceiling(memory_size)
     }

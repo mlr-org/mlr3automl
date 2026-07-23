@@ -180,7 +180,7 @@ estimate_memory = function(nrow, n_layers, neurons) {
   baseline = 6.43  # (glm_gamma$coefficients[[1]])
   b_nrow = 2e-07  # (glm_gamma$coefficients[[2]])
   b_n_layers =  0.0053  # (glm_gamma$coefficients[[3]])
-  b_neurons =  0.0030  # (glm_gamma$coefficients[[4]])
+  b_neurons =  0.0003  # (glm_gamma$coefficients[[4]])
   
   memory = exp(baseline + (nrow * b_nrow) + (n_layers * b_n_layers) + (neurons * b_neurons)) # gamma model
   ceiling(memory * 1.3)  # scale by 30% to be save

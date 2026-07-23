@@ -87,6 +87,17 @@ test_that("estimate memory works", {
   expect_numeric(memory)
 })
 
+test_that("estimate memory uses the fitted memory models", {
+  skip_if_not_all_installed(all_packages)
+
+  autos = mlr_auto$mget(c("mlp", "resnet", "ft_transformer"))
+  memory = map_dbl(autos, function(auto) auto$estimate_memory(tsk("penguins")))
+
+  expect_numeric(memory, lower = 500, upper = 4000)
+  # d_token enters on the transformed scale (512), not the search space upper (64)
+  expect_gt(memory[["ft_transformer"]], 2000)
+})
+
 test_that("boosting graphs set the full training budget on the learner", {
   skip_if_not_all_installed(c("mlr3learners", "mlr3extralearners", "xgboost", "catboost", "lightgbm"))
 
