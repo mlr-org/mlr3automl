@@ -2,10 +2,11 @@ Package: mlr3automl
 Title: Automated Machine Learning for 'mlr3'
 Version: 0.0.1.9000
 Authors@R: c(
-    person("Damir", "Pulatov", , "damirpolat@protonmail.com", role = "aut"),
     person("Marc", "Becker", , "marcbecker@posteo.de", role = c("cre", "aut", "cph"),
            comment = c(ORCID = "0000-0002-8115-0400")),
-    person("Baisu", "Zhou", , "baisu.zhou@outlook.com", role = "aut")
+    person("Damir", "Pulatov", , "damirpolat@protonmail.com", role = "aut"),
+    person("Baisu", "Zhou", , "baisu.zhou@outlook.com", role = "aut"),
+    person("Lona", "Koers", , "lona.koers@gmail.com", role = "aut")
   )
 Description: Flexible automated machine learning (AutoML) system for the
     'mlr3' ecosystem. Automatically selects a suitable machine learning
@@ -15,8 +16,7 @@ Description: Flexible automated machine learning (AutoML) system for the
     using 'mlr3tuning'. The optimization is driven by asynchronous
     decentralized Bayesian optimization.
 License: LGPL-3
-URL: https://mlr3automl.mlr-org.com,
-    https://github.com/mlr-org/mlr3automl
+URL: https://mlr3automl.mlr-org.com, https://github.com/mlr-org/mlr3automl
 BugReports: https://github.com/mlr-org/mlr3automl/issues
 Depends:
     mlr3 (>= 1.6.0),
@@ -29,7 +29,7 @@ Imports:
     data.table,
     lhs,
     mlr3learners (>= 0.14.0),
-    mlr3mbo (>= 1.1.1.9000),
+    mlr3mbo (>= 1.2.0),
     mlr3misc (>= 0.15.1),
     mlr3pipelines,
     paradox (>= 1.0.1),
@@ -54,10 +54,8 @@ Suggests:
     rpart,
     testthat (>= 3.0.0),
     xgboost (>= 3.2.1.1)
-Remotes:
-    mlr-org/mlr3mbo
-Additional_repositories:
-    https://mlr-org.r-universe.dev
+Additional_repositories: https://mlr-org.r-universe.dev
+Config/roxygen2/version: 8.0.0.9000
 Config/testthat/edition: 3
 Config/testthat/parallel: false
 Encoding: UTF-8
@@ -114,4 +112,3 @@ Collate:
     'sugar.R'
     'train_auto.R'
     'zzz.R'
-Config/roxygen2/version: 8.0.0.9000
