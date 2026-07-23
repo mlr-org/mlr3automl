@@ -129,7 +129,7 @@ auto("resnet")
 #>     clone: function (deep = FALSE) 
 #>     design_default: function (task) 
 #>     design_set: function (task, measure, size) 
-#>     devices: cuda
+#>     devices: cuda cpu
 #>     early_stopping_rounds: function (task, budget = Inf) 
 #>     estimate_memory: function (task) 
 #>     finalize_model: function (graph_learner) 
