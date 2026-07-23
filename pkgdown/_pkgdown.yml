@@ -100,6 +100,7 @@ reference:
       - mlr_auto
   - title: Callbacks
     contents:
+      - mlr3automl.encapsulation_daemon
       - mlr3automl.initial_design_runtime
   - title: Installation
     contents:

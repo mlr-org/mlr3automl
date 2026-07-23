@@ -27,6 +27,7 @@ Authors:
   \item Marc Becker \email{marcbecker@posteo.de} (\href{https://orcid.org/0000-0002-8115-0400}{ORCID}) [copyright holder]
   \item Damir Pulatov \email{damirpolat@protonmail.com}
   \item Baisu Zhou \email{baisu.zhou@outlook.com}
+  \item Lona Koers \email{lona.koers@gmail.com}
 }
 
 }

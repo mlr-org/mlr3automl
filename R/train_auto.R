@@ -96,7 +96,9 @@ train_auto = function(self, private, task) {
   callbacks = c(
     pv$callbacks,
     clbk("mlr3tuning.async_save_logs"),
-    clbk("mlr3automl.initial_design_runtime", initial_design_fraction = pv$initial_design_fraction)
+    clbk("mlr3automl.initial_design_runtime", initial_design_fraction = pv$initial_design_fraction),
+    # reuse a persistent mirai daemon per worker for the "mirai" encapsulation of the learners
+    if (pv$encapsulate_learner) clbk("mlr3automl.encapsulation_daemon")
   )
 
   # tuning instance
