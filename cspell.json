@@ -12,6 +12,7 @@
     "*.lock", // lockfiles
     "attic/", // scrap code, not part of the package
     "man/",   // generated man pages
+    "memory_experiments/*/", // one-off experiment scripts; the top-level md is still checked
     "renv/"   // renv library
   ],
   // use cspell R-dictionary + project-specific word list

@@ -20,6 +20,7 @@ Classif
 clbk
 cnae
 colsample
+covariates
 CRAN
 cuda
 Damir

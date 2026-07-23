@@ -101,3 +101,25 @@ $$
 The result is then scaled by 120% to overpredict in most cases:
 
 ![](ResNet/prds_vs_real.png)
+
+### `Ranger`
+
+Setup only, measurements pending.
+
+Unlike the torch learners, the experiment uses synthetic data (standard normal features with signal on the first 5) instead of resampling `tsk("spam")`.
+Sampling task features with `replace = TRUE` silently deduplicates, which caps `nfeatures` at the 57 unique spam features, and `nfeatures` matters for ranger through `mtry.ratio`.
+
+Candidate predictors (forest memory should be roughly `num_trees * nrow * sample_fraction`, so `param_analysis_ranger.R` also fits the gamma GLM with logged covariates):
+
+- `nrow`: number of rows of the data set
+- `nfeatures`: number of features used to train the learner
+- `num_trees`: number of trees
+- `sample_fraction`: fraction of rows sampled per tree
+- probes for `replace` and `mtry_ratio` in `parameters_ranger_no_influence.csv`
+
+Grids:
+
+- `parameters_ranger_test.csv`: one small config to test the pipeline.
+- `parameters_ranger_no_influence.csv`: probes for `replace` and `mtry_ratio`.
+- `parameters_ranger_grid.csv`: main grid (99 configs), `nrow` up to 100000, `nfeatures` up to 1000, capped at `nrow * nfeatures <= 5e7`.
+- `parameters_ranger_large.csv`: 6 configs with default hyperparameters and up to 1000000 rows, because ranger runs on large data sets; run after the main grid.
