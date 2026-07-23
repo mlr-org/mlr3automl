@@ -115,6 +115,8 @@
 
 ## Callbacks
 
+- [`mlr3automl.encapsulation_daemon`](https://mlr3automl.mlr-org.com/dev/reference/mlr3automl.encapsulation_daemon.md)
+  : Encapsulation Daemon Callback
 - [`mlr3automl.initial_design_runtime`](https://mlr3automl.mlr-org.com/dev/reference/mlr3automl.initial_design_runtime.md)
   : Initial Design Runtime Limit Callback
 

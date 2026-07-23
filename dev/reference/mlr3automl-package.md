@@ -31,3 +31,5 @@ Authors:
 - Damir Pulatov <damirpolat@protonmail.com>
 
 - Baisu Zhou <baisu.zhou@outlook.com>
+
+- Lona Koers <lona.koers@gmail.com>
