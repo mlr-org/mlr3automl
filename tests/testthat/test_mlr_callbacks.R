@@ -6,9 +6,9 @@ test_that("encapsulation_daemon callback is registered", {
   expect_function(callback$on_worker_end)
 })
 
-test_that("ensure_encapsulation_daemon starts and restarts the daemon", {
+test_that("encapsulation_daemon callback starts, maintains and stops the daemon", {
   skip_if_not_installed("mirai")
-  compute = mirai_encapsulation_compute()
+  compute = getOption("mlr3.mirai_encapsulation", "mlr3_encapsulation")
   on.exit(mirai::daemons(0L, .compute = compute), add = TRUE)
 
   wait_for_connections = function(n) {
@@ -19,21 +19,25 @@ test_that("ensure_encapsulation_daemon starts and restarts the daemon", {
     mirai::status(.compute = compute)$connections
   }
 
-  # no daemon initially
+  callback = clbk("mlr3automl.encapsulation_daemon", n_daemons = 1L)
   mirai::daemons(0L, .compute = compute)
   expect_equal(mirai::status(.compute = compute)$connections, 0L)
 
-  # starts one daemon
-  ensure_encapsulation_daemon(1L)
+  # on_worker_begin starts one daemon
+  callback$on_worker_begin(callback, NULL)
   expect_equal(wait_for_connections(1L), 1L)
 
-  # idempotent when the daemon is still alive
-  ensure_encapsulation_daemon(1L)
+  # before an evaluation the daemon is kept alive, not duplicated
+  callback$on_optimizer_before_eval(callback, NULL)
   expect_equal(mirai::status(.compute = compute)$connections, 1L)
 
-  # restarts the daemon after it has died
+  # the daemon is restarted before an evaluation if it has died
   mirai::daemons(0L, .compute = compute)
   expect_equal(mirai::status(.compute = compute)$connections, 0L)
-  ensure_encapsulation_daemon(1L)
+  callback$on_optimizer_before_eval(callback, NULL)
   expect_equal(wait_for_connections(1L), 1L)
+
+  # on_worker_end stops the daemon
+  callback$on_worker_end(callback, NULL)
+  expect_equal(mirai::status(.compute = compute)$connections, 0L)
 })

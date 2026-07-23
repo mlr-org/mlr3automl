@@ -22,7 +22,7 @@ Depends:
     mlr3 (>= 1.6.0),
     mlr3tuning (>= 1.6.0),
     R (>= 3.3.0),
-    rush (>= 1.2.0)
+    rush (>= 1.2.0.9000)
 Imports:
     bbotk (>= 1.7.1),
     checkmate,
@@ -54,6 +54,8 @@ Suggests:
     rpart,
     testthat (>= 3.0.0),
     xgboost (>= 3.2.1.1)
+Remotes:
+    mlr-org/rush
 Additional_repositories: https://mlr-org.r-universe.dev
 Config/roxygen2/version: 8.0.0.9000
 Config/testthat/edition: 3

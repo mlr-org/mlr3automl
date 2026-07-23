@@ -57,39 +57,34 @@ NULL
 
 # nolint next: object_length_linter
 load_callback_encapsulation_daemon = function() {
+  ensure_daemon = function(n) {
+    compute = getOption("mlr3.mirai_encapsulation", "mlr3_encapsulation")
+    if (mirai::status(.compute = compute)$connections < n) {
+      lgr::get_logger("mlr3/mlr3automl")$debug(
+        "Starting %i encapsulation daemon(s) on compute profile '%s'",
+        n,
+        compute
+      )
+      # reset first to clear any stale daemon state before (re)starting
+      mirai::daemons(0L, .compute = compute)
+      mirai::daemons(n, .compute = compute)
+    }
+  }
+
   callback_async_tuning(
     "mlr3automl.encapsulation_daemon",
     label = "Encapsulation Daemon Callback",
     man = "mlr3automl::mlr3automl.encapsulation_daemon",
     on_worker_begin = function(callback, context) {
-      ensure_encapsulation_daemon(callback$state$n_daemons %??% 1L)
+      ensure_daemon(callback$state$n_daemons %??% 1L)
     },
     on_optimizer_before_eval = function(callback, context) {
-      ensure_encapsulation_daemon(callback$state$n_daemons %??% 1L)
+      ensure_daemon(callback$state$n_daemons %??% 1L)
     },
     on_worker_end = function(callback, context) {
-      mirai::daemons(0L, .compute = mirai_encapsulation_compute())
+      mirai::daemons(0L, .compute = getOption("mlr3.mirai_encapsulation", "mlr3_encapsulation"))
     }
   )
-}
-
-# Compute profile used by mlr3 for "mirai" encapsulation, see `mlr3::mlr_reflections` and `learner_train()`.
-mirai_encapsulation_compute = function() {
-  getOption("mlr3.mirai_encapsulation", "mlr3_encapsulation")
-}
-
-# Start `n` mirai daemons for the encapsulation compute profile if fewer than `n` are currently connected.
-# This starts the daemon on worker begin and restarts it if it has died since the last evaluation.
-ensure_encapsulation_daemon = function(n) {
-  require_namespaces("mirai")
-  compute = mirai_encapsulation_compute()
-  if (mirai::status(.compute = compute)$connections < n) {
-    lg = lgr::get_logger("mlr3/mlr3automl")
-    lg$debug("Starting %i encapsulation daemon(s) on compute profile '%s'", n, compute)
-    # reset first to clear any stale daemon state before (re)starting
-    mirai::daemons(0L, .compute = compute)
-    mirai::daemons(n, .compute = compute)
-  }
 }
 
 callbacks[["mlr3automl.encapsulation_daemon"]] = load_callback_encapsulation_daemon
