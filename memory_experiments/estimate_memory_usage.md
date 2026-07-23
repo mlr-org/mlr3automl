@@ -123,3 +123,6 @@ Grids:
 - `parameters_ranger_no_influence.csv`: probes for `replace` and `mtry_ratio`.
 - `parameters_ranger_grid.csv`: main grid (99 configs), `nrow` up to 100000, `nfeatures` up to 1000, capped at `nrow * nfeatures <= 5e7`.
 - `parameters_ranger_large.csv`: 6 configs with default hyperparameters and up to 1000000 rows, because ranger runs on large data sets; run after the main grid.
+
+A single-threaded reference config (50000 rows, 100 features, 500 trees, `sample.fraction = 1`) takes 13 minutes and peaks at 884 MiB.
+Scaling by `nrow * nfeatures * num_trees * sample_fraction`, expect roughly 12 hours for the main grid and 6 hours for the large grid.
