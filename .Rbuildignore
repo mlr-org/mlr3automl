@@ -38,6 +38,7 @@
 ^local_attic$
 ^man-roxygen$
 ^oml_cache$
+^memory_experiments$
 ^paper$
 ^pkgdown$
 ^revdep$
