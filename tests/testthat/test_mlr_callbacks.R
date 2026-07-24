@@ -7,6 +7,7 @@ test_that("encapsulation_daemon callback is registered", {
 })
 
 test_that("encapsulation_daemon callback starts, maintains and stops the daemon", {
+  skip_on_cran()
   skip_if_not_installed("mirai")
   compute = getOption("mlr3.mirai_encapsulation", "mlr3_encapsulation")
   on.exit(mirai::daemons(0L, .compute = compute), add = TRUE)
