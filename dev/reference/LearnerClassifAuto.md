@@ -248,7 +248,7 @@ learner
 #> catboost, ranger, callr, mlr3torch, glmnet, kknn, MASS, lightgbm, e1071, and
 #> xgboost
 #> • Predict Types: [response] and prob
-#> • Feature Types: logical, integer, numeric, character, and factor
+#> • Feature Types: logical, integer, numeric, character, factor, and ordered
 #> • Encapsulation: none (fallback: -)
 #> • Properties: missings, multiclass, twoclass, and weights
 #> • Other settings: use_weights = 'use', predict_raw = 'FALSE'

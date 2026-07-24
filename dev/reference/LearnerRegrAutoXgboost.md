@@ -95,7 +95,7 @@ learner
 #> terminator=<TerminatorRunTime>
 #> • Packages: mlr3, mlr3tuning, mlr3pipelines, mlr3learners, and xgboost
 #> • Predict Types: [response]
-#> • Feature Types: logical, integer, numeric, character, and factor
+#> • Feature Types: logical, integer, numeric, character, factor, and ordered
 #> • Encapsulation: none (fallback: -)
 #> • Properties: missings and weights
 #> • Other settings: use_weights = 'use', predict_raw = 'FALSE'

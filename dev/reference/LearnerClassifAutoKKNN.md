@@ -94,7 +94,7 @@ learner
 #> terminator=<TerminatorRunTime>
 #> • Packages: mlr3, mlr3tuning, mlr3pipelines, mlr3learners, and kknn
 #> • Predict Types: [response] and prob
-#> • Feature Types: logical, integer, numeric, character, and factor
+#> • Feature Types: logical, integer, numeric, character, factor, and ordered
 #> • Encapsulation: none (fallback: -)
 #> • Properties: missings, multiclass, twoclass, and weights
 #> • Other settings: use_weights = 'use', predict_raw = 'FALSE'
