@@ -59,8 +59,15 @@ AutoLightgbm = R6Class(
       )
       set_threads(learner, n_threads)
 
-      # no preprocessing pipeline needed; lightgbm handles NAs and categoricals natively
-      learner
+      # lightgbm handles NAs and factors natively but not character or ordered factors;
+      # convert both to unordered factors so these features are accepted
+      po(
+        "colapply",
+        id = "lightgbm_colapply",
+        applicator = function(x) factor(x, ordered = FALSE),
+        affect_columns = selector_type(c("character", "ordered"))
+      ) %>>%
+        learner
     },
 
     #' @description

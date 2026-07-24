@@ -47,7 +47,8 @@ AutoKknn = R6Class(
 
       learner = lrn(sprintf("%s.kknn", task$task_type), id = "kknn", kernel = "optimal")
 
-      po("removeconstants", id = "kknn_removeconstants") %>>%
+      po("colapply", id = "kknn_character", applicator = as.factor, affect_columns = selector_type("character")) %>>%
+        po("removeconstants", id = "kknn_removeconstants") %>>%
         po("imputehist", id = "kknn_imputehist") %>>%
         po("imputeoor", id = "kknn_imputeoor") %>>%
         po("fixfactors", id = "kknn_fixfactors") %>>%

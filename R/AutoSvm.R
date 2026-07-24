@@ -46,7 +46,8 @@ AutoSvm = R6Class(
       require_namespaces("mlr3learners")
 
       svm_type = if (task$task_type == "classif") "C-classification" else "eps-regression"
-      po("removeconstants", id = "svm_removeconstants") %>>%
+      po("colapply", id = "svm_character", applicator = as.factor, affect_columns = selector_type("character")) %>>%
+        po("removeconstants", id = "svm_removeconstants") %>>%
         po("imputehist", id = "svm_imputehist") %>>%
         po("imputeoor", id = "svm_imputeoor") %>>%
         po("fixfactors", id = "svm_fixfactors") %>>%

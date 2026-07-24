@@ -48,7 +48,8 @@ AutoLda = R6Class(
 
       learner = lrn("classif.lda", id = "lda")
 
-      po("removeconstants", id = "lda_removeconstants") %>>%
+      po("colapply", id = "lda_character", applicator = as.factor, affect_columns = selector_type("character")) %>>%
+        po("removeconstants", id = "lda_removeconstants") %>>%
         po("imputehist", id = "lda_imputehist") %>>%
         po("imputeoor", id = "lda_imputeoor") %>>%
         po("fixfactors", id = "lda_fixfactors") %>>%

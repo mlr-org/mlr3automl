@@ -47,7 +47,8 @@ AutoGlmnet = R6Class(
 
       learner = lrn(sprintf("%s.glmnet", task$task_type), id = "glmnet")
 
-      po("removeconstants", id = "glmnet_removeconstants") %>>%
+      po("colapply", id = "glmnet_character", applicator = as.factor, affect_columns = selector_type("character")) %>>%
+        po("removeconstants", id = "glmnet_removeconstants") %>>%
         po("imputehist", id = "glmnet_imputehist") %>>%
         po("imputeoor", id = "glmnet_imputeoor") %>>%
         po("fixfactors", id = "glmnet_fixfactors") %>>%

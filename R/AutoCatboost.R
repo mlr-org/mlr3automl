@@ -62,7 +62,8 @@ AutoCatboost = R6Class(
       )
       set_threads(learner, n_threads)
 
-      po("removeconstants", id = "catboost_removeconstants") %>>%
+      po("colapply", id = "catboost_character", applicator = as.factor, affect_columns = selector_type("character")) %>>%
+        po("removeconstants", id = "catboost_removeconstants") %>>%
         po(
           "colapply",
           id = "catboost_colapply",

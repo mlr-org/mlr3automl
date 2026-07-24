@@ -153,3 +153,20 @@ test_that("encapsulate rejects a fallback learner without encapsulation", {
   )
   expect_error(learner$encapsulate(method = "mirai"), "Learner")
 })
+
+test_that("character and ordered features are converted to factors by the lightgbm branch", {
+  # lightgbm supports factor but not character or ordered; its branch must convert both to factors
+  set.seed(1)
+  n = 60
+  data = data.table(
+    y = factor(sample(c("a", "b"), n, TRUE)),
+    chr = sample(letters[1:3], n, TRUE),
+    ord = ordered(sample(c("lo", "mid", "hi"), n, TRUE), c("lo", "mid", "hi")),
+    num = rnorm(n)
+  )
+  task = as_task_classif(data, target = "y")
+  expect_subset(c("character", "ordered"), task$feature_types$type)
+
+  result = test_classif_learner("lightgbm", task = task)
+  expect_prediction(result$prediction)
+})

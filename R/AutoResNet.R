@@ -57,7 +57,8 @@ AutoResNet = R6Class(
       )
       set_threads(learner, n_threads)
 
-      po("removeconstants", id = "resnet_removeconstants") %>>%
+      po("colapply", id = "resnet_character", applicator = as.factor, affect_columns = selector_type("character")) %>>%
+        po("removeconstants", id = "resnet_removeconstants") %>>%
         po("imputeoor", id = "resnet_imputeoor") %>>%
         po("fixfactors", id = "resnet_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "resnet_imputesample") %>>%

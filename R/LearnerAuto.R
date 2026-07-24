@@ -105,7 +105,7 @@ LearnerAuto = R6Class(
         task_type = task_type,
         param_set = param_set,
         packages = union(c("mlr3", "mlr3tuning", "mlr3pipelines", "mlr3learners"), packages),
-        feature_types = c("logical", "integer", "numeric", "character", "factor"),
+        feature_types = c("logical", "integer", "numeric", "character", "factor", "ordered"),
         predict_types = predict_types,
         properties = properties,
       )

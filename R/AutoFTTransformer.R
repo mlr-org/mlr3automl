@@ -93,7 +93,9 @@ AutoFTTransformer = R6Class(
       )
       set_threads(learner, n_threads)
 
-      po("removeconstants", id = "ft_transformer_removeconstants") %>>%
+      po("colapply", id = "ft_transformer_character", applicator = as.factor,
+        affect_columns = selector_type("character")) %>>%
+        po("removeconstants", id = "ft_transformer_removeconstants") %>>%
         po("imputeoor", id = "ft_transformer_imputeoor") %>>%
         po("fixfactors", id = "ft_transformer_fixfactors") %>>%
         po(

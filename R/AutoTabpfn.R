@@ -95,7 +95,8 @@ AutoTabpfn = R6Class(
       learner$predict_type = measure$predict_type
       learner$encapsulate(method = "evaluate", fallback = fallback)
 
-      po("removeconstants", id = "tabpfn_removeconstants") %>>%
+      po("colapply", id = "tabpfn_character", applicator = as.factor, affect_columns = selector_type("character")) %>>%
+        po("removeconstants", id = "tabpfn_removeconstants") %>>%
         po("fixfactors", id = "tabpfn_fixfactors") %>>%
         po("encodeimpact", id = "tabpfn_encode") %>>%
         po("removeconstants", id = "tabpfn_post_removeconstants") %>>%

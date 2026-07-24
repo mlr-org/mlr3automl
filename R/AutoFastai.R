@@ -87,7 +87,8 @@ AutoFastai = R6Class(
       learner$predict_type = measure$predict_type
       learner$encapsulate(method = "evaluate", fallback = fallback)
 
-      po("removeconstants", id = "fastai_removeconstants") %>>%
+      po("colapply", id = "fastai_character", applicator = as.factor, affect_columns = selector_type("character")) %>>%
+        po("removeconstants", id = "fastai_removeconstants") %>>%
         po("imputeoor", id = "fastai_imputeoor") %>>%
         po("fixfactors", id = "fastai_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "fastai_imputesample") %>>%

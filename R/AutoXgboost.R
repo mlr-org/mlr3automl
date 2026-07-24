@@ -62,7 +62,8 @@ AutoXgboost = R6Class(
         learner$configure(device = "cuda")
       }
 
-      po("removeconstants", id = "xgboost_removeconstants") %>>%
+      po("colapply", id = "xgboost_character", applicator = as.factor, affect_columns = selector_type("character")) %>>%
+        po("removeconstants", id = "xgboost_removeconstants") %>>%
         po("imputeoor", id = "xgboost_imputeoor") %>>%
         po("fixfactors", id = "xgboost_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "xgboost_imputesample") %>>%

@@ -59,7 +59,8 @@ AutoMlp = R6Class(
       )
       set_threads(learner, n_threads)
 
-      po("removeconstants", id = "mlp_removeconstants") %>>%
+      po("colapply", id = "mlp_character", applicator = as.factor, affect_columns = selector_type("character")) %>>%
+        po("removeconstants", id = "mlp_removeconstants") %>>%
         po("imputeoor", id = "mlp_imputeoor") %>>%
         po("fixfactors", id = "mlp_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "mlp_imputesample") %>>%
