@@ -140,12 +140,14 @@ highest_predict_type = function(task_type, predict_types) {
 generate_initial_design = function(method, search_space, size) {
   internal_tune_ids = search_space$ids(any_tags = "internal_tuning")
 
-  xdt = switch(
-    method,
-    "sobol" = generate_design_sobol(search_space, size)$data,
-    "lhs" = generate_design_lhs(search_space, size)$data,
-    "random" = generate_design_random(search_space, size)$data,
-  )
+  # internal-tuning params are dropped from the design
+  design_space = search_space$clone(deep = TRUE)$subset(setdiff(search_space$ids(), internal_tune_ids))
 
-  xdt[, setdiff(c("branch.selection", search_space$ids()), internal_tune_ids), with = FALSE]
+  switch(
+    method,
+    "sobol" = generate_design_sobol(design_space, size)$data,
+    "lhs" = generate_design_lhs(design_space, size)$data,
+    "random" = generate_design_random(design_space, size)$data,
+    stopf("Unknown initial design method '%s'", method)
+  )
 }
