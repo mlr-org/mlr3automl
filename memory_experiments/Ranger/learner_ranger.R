@@ -5,8 +5,10 @@
 args = commandArgs(trailingOnly = TRUE)
 
 if (length(args) != 6L) {
-  stop("Usage: learner_ranger.R <nrow> <nfeatures> <num.trees> <mtry.ratio> <sample.fraction> <replace>\n",
-       call. = FALSE)
+  stop(
+    "Usage: learner_ranger.R <nrow> <nfeatures> <num.trees> <mtry.ratio> <sample.fraction> <replace>\n",
+    call. = FALSE
+  )
 }
 
 args = lapply(args, as.numeric)
@@ -32,9 +34,10 @@ data = as.data.table(matrix(rnorm(n * p), nrow = n))
 data$y = factor(ifelse(rowSums(data[, seq_len(min(5L, p)), with = FALSE]) + rnorm(n) > 0, "A", "B"))
 task = as_task_classif(data, target = "y", id = "synthetic")
 
-learner = lrn("classif.ranger",
+learner = lrn(
+  "classif.ranger",
   id = "ranger",
-  num.threads = 1L,  # matches the per-worker deployment in train_auto
+  num.threads = 1L, # matches the per-worker deployment in train_auto
 
   # parameters to test out memory usage
   num.trees = as.integer(args$num.trees),

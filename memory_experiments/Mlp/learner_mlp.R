@@ -5,8 +5,10 @@
 args = commandArgs(trailingOnly = TRUE)
 
 if (length(args) != 8L) {
-  stop("Usage: learner_mlp.R <nrow> <nfeatures> <n_layers> <neurons> <p> <opt.lr> <opt.weight_decay> <epochs>\n",
-       call. = FALSE)
+  stop(
+    "Usage: learner_mlp.R <nrow> <nfeatures> <n_layers> <neurons> <p> <opt.lr> <opt.weight_decay> <epochs>\n",
+    call. = FALSE
+  )
 }
 
 args = lapply(args, as.numeric)
@@ -26,7 +28,8 @@ task = tsk("spam")
 task$filter(sample(task$row_ids, args$nrow, replace = TRUE))
 task$select(sample(task$feature_names, args$nfeatures, replace = TRUE))
 
-learner = lrn(sprintf("%s.mlp", task$task_type),
+learner = lrn(
+  sprintf("%s.mlp", task$task_type),
   id = "mlp",
   # measures_valid = measure,
   batch_size = 32L,
@@ -45,4 +48,3 @@ learner = lrn(sprintf("%s.mlp", task$task_type),
 ids = partition(task)
 learner$train(task, row_ids = ids$train)
 preds = learner$predict(task, row_ids = ids$test)
-

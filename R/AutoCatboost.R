@@ -49,7 +49,9 @@ AutoCatboost = R6Class(
       task_type = if ("cuda" %in% devices) "GPU" else "CPU"
 
       iterations = self$search_space(task)$upper[["catboost.iterations"]]
-      if (is.na(iterations)) iterations = 1000L
+      if (is.na(iterations)) {
+        iterations = 1000L
+      }
 
       learner = lrn(
         sprintf("%s.catboost", task$task_type),
@@ -62,7 +64,12 @@ AutoCatboost = R6Class(
       )
       set_threads(learner, n_threads)
 
-      po("colapply", id = "catboost_character", applicator = as.factor, affect_columns = selector_type("character")) %>>%
+      po(
+        "colapply",
+        id = "catboost_character",
+        applicator = as.factor,
+        affect_columns = selector_type("character")
+      ) %>>%
         po("removeconstants", id = "catboost_removeconstants") %>>%
         po(
           "colapply",
@@ -144,11 +151,13 @@ AutoCatboost = R6Class(
 
   private = list(
     # nolint start: line_length_linter
-    .search_space =  ps(
-      catboost.depth          = p_int(1, 12),
-      catboost.learning_rate  = p_dbl(1e-3, 1, logscale = TRUE),
-      catboost.l2_leaf_reg    = p_dbl(1e-3, 1e3),
-      catboost.iterations     = p_int(1L, 1000L, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x)))))
+    .search_space = ps(
+      catboost.depth = p_int(1, 12),
+      catboost.learning_rate = p_dbl(1e-3, 1, logscale = TRUE),
+      catboost.l2_leaf_reg = p_dbl(1e-3, 1e3),
+      catboost.iterations = p_int(1L, 1000L, tags = "internal_tuning", aggr = function(x) {
+        as.integer(ceiling(mean(unlist(x))))
+      })
     ),
     # nolint end
 
