@@ -16,7 +16,7 @@ test_that("LearnerClassifTabPFNIsolated works when mlr3torch is loaded", {
   expect_data_table(learner$model$tabpfn$log, nrows = 0L)
 })
 
-test_that("LearnerClassifAutoTabpfn works", {
+test_that("LearnerClassifAutoTabPFN works", {
   task = tsk("penguins")
   task$filter(c(1:10, 153:162, 277:286))
 

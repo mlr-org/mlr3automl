@@ -1,4 +1,4 @@
-#' @title Lightgbm Auto
+#' @title LightGBM Auto
 #'
 #' @include mlr_auto.R
 #'
@@ -11,14 +11,14 @@
 #' @template param_n_threads
 #' @template param_timeout
 #' @template param_devices
-#' @return Object of class [R6::R6Class] and `AutoLightgbm`.
+#' @return Object of class [R6::R6Class] and `AutoLightGBM`.
 #'
 #' @templateVar id lightgbm
 #' @template example_auto
 #'
 #' @export
-AutoLightgbm = R6Class(
-  "AutoLightgbm",
+AutoLightGBM = R6Class(
+  "AutoLightGBM",
   inherit = Auto,
   public = list(
     #' @description
@@ -159,4 +159,4 @@ AutoLightgbm = R6Class(
   )
 )
 
-mlr_auto$add("lightgbm", function() AutoLightgbm$new())
+mlr_auto$add("lightgbm", function() AutoLightGBM$new())

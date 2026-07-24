@@ -1,4 +1,4 @@
-#' @title Mlp Auto
+#' @title MLP Auto
 #'
 #' @include mlr_auto.R
 #'
@@ -12,14 +12,14 @@
 #' @template param_timeout
 #' @template param_devices
 #'
-#' @return Object of class [R6::R6Class] and `AutoMlp`.
+#' @return Object of class [R6::R6Class] and `AutoMLP`.
 #'
 #' @templateVar id mlp
 #' @template example_auto
 #'
 #' @export
-AutoMlp = R6Class(
-  "AutoMlp",
+AutoMLP = R6Class(
+  "AutoMLP",
   inherit = Auto,
   public = list(
     #' @description
@@ -111,4 +111,4 @@ AutoMlp = R6Class(
   )
 )
 
-mlr_auto$add("mlp", function() AutoMlp$new())
+mlr_auto$add("mlp", function() AutoMLP$new())

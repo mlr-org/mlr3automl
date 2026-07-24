@@ -83,14 +83,14 @@ reference:
       - AutoFastai
       - AutoFTTransformer
       - AutoGlmnet
-      - AutoKknn
+      - AutoKKNN
       - AutoLda
-      - AutoLightgbm
-      - AutoMlp
+      - AutoLightGBM
+      - AutoMLP
       - AutoRanger
       - AutoResNet
-      - AutoSvm
-      - AutoTabpfn
+      - AutoSVM
+      - AutoTabPFN
       - AutoXgboost
   - title: Sugar Functions
     contents:

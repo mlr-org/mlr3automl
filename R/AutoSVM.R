@@ -1,4 +1,4 @@
-#' @title Svm Auto
+#' @title SVM Auto
 #'
 #' @include mlr_auto.R
 #'
@@ -12,14 +12,14 @@
 #' @template param_timeout
 #' @template param_devices
 #'
-#' @return Object of class [R6::R6Class] and `AutoSvm`.
+#' @return Object of class [R6::R6Class] and `AutoSVM`.
 #'
 #' @templateVar id svm
 #' @template example_auto
 #'
 #' @export
-AutoSvm = R6Class(
-  "AutoSvm",
+AutoSVM = R6Class(
+  "AutoSVM",
   inherit = Auto,
   public = list(
     #' @description
@@ -80,4 +80,4 @@ AutoSvm = R6Class(
   )
 )
 
-mlr_auto$add("svm", function() AutoSvm$new())
+mlr_auto$add("svm", function() AutoSVM$new())

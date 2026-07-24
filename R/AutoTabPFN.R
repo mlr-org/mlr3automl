@@ -1,4 +1,4 @@
-#' @title Tabpfn Auto
+#' @title TabPFN Auto
 #'
 #' @include mlr_auto.R
 #'
@@ -15,14 +15,14 @@
 #' @template param_devices
 #' @template section_python
 #'
-#' @return Object of class [R6::R6Class] and `AutoTabpfn`.
+#' @return Object of class [R6::R6Class] and `AutoTabPFN`.
 #'
 #' @templateVar id tabpfn
 #' @template example_auto
 #'
 #' @export
-AutoTabpfn = R6Class(
-  "AutoTabpfn",
+AutoTabPFN = R6Class(
+  "AutoTabPFN",
   inherit = Auto,
   public = list(
     #' @description
@@ -154,7 +154,7 @@ AutoTabpfn = R6Class(
   private = list()
 )
 
-mlr_auto$add("tabpfn", function() AutoTabpfn$new())
+mlr_auto$add("tabpfn", function() AutoTabPFN$new())
 
 # the tabpfn learner imports python torch via reticulate.
 # these subclasses keep python strictly inside the isolated callr sessions

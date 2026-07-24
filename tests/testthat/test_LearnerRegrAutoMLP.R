@@ -1,4 +1,4 @@
-test_that("LearnerRegrAutoMlp works", {
+test_that("LearnerRegrAutoMLP works", {
   skip_if_not_installed("torch")
   skip_if(!torch::torch_is_installed(), "torch backend (LibTorch) not installed")
 

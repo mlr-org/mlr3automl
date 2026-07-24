@@ -1,4 +1,4 @@
-#' @title Kknn Auto
+#' @title KKNN Auto
 #'
 #' @include mlr_auto.R
 #'
@@ -12,14 +12,14 @@
 #' @template param_timeout
 #' @template param_devices
 #'
-#' @return Object of class [R6::R6Class] and `AutoKknn`.
+#' @return Object of class [R6::R6Class] and `AutoKKNN`.
 #'
 #' @templateVar id kknn
 #' @template example_auto
 #'
 #' @export
-AutoKknn = R6Class(
-  "AutoKknn",
+AutoKKNN = R6Class(
+  "AutoKKNN",
   inherit = Auto,
   public = list(
     #' @description
@@ -78,4 +78,4 @@ AutoKknn = R6Class(
   )
 )
 
-mlr_auto$add("kknn", function() AutoKknn$new())
+mlr_auto$add("kknn", function() AutoKKNN$new())
