@@ -144,22 +144,22 @@ Sys.setenv(RUSH_TEST_USE_REDIS = "true")
   : FTTransformer Auto
 - [`AutoGlmnet`](https://mlr3automl.mlr-org.com/dev/reference/AutoGlmnet.md)
   : Glmnet Auto
-- [`AutoKknn`](https://mlr3automl.mlr-org.com/dev/reference/AutoKknn.md)
-  : Kknn Auto
+- [`AutoKKNN`](https://mlr3automl.mlr-org.com/dev/reference/AutoKKNN.md)
+  : KKNN Auto
 - [`AutoLda`](https://mlr3automl.mlr-org.com/dev/reference/AutoLda.md) :
   Lda Auto
-- [`AutoLightgbm`](https://mlr3automl.mlr-org.com/dev/reference/AutoLightgbm.md)
-  : Lightgbm Auto
-- [`AutoMlp`](https://mlr3automl.mlr-org.com/dev/reference/AutoMlp.md) :
-  Mlp Auto
+- [`AutoLightGBM`](https://mlr3automl.mlr-org.com/dev/reference/AutoLightGBM.md)
+  : LightGBM Auto
+- [`AutoMLP`](https://mlr3automl.mlr-org.com/dev/reference/AutoMLP.md) :
+  MLP Auto
 - [`AutoRanger`](https://mlr3automl.mlr-org.com/dev/reference/AutoRanger.md)
   : Ranger Auto
 - [`AutoResNet`](https://mlr3automl.mlr-org.com/dev/reference/AutoResNet.md)
   : ResNet Auto
-- [`AutoSvm`](https://mlr3automl.mlr-org.com/dev/reference/AutoSvm.md) :
-  Svm Auto
-- [`AutoTabpfn`](https://mlr3automl.mlr-org.com/dev/reference/AutoTabpfn.md)
-  : Tabpfn Auto
+- [`AutoSVM`](https://mlr3automl.mlr-org.com/dev/reference/AutoSVM.md) :
+  SVM Auto
+- [`AutoTabPFN`](https://mlr3automl.mlr-org.com/dev/reference/AutoTabPFN.md)
+  : TabPFN Auto
 - [`AutoXgboost`](https://mlr3automl.mlr-org.com/dev/reference/AutoXgboost.md)
   : Xgboost Auto
 
