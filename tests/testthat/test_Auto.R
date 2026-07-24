@@ -105,10 +105,11 @@ test_that("boosting graphs set the full training budget on the learner", {
   measure = msr("classif.ce")
 
   lightgbm = mlr_auto$get("lightgbm")
-  learner = lightgbm$graph(task, measure, n_threads = 1L, timeout = 3600L, devices = "cpu")
+  graph = lightgbm$graph(task, measure, n_threads = 1L, timeout = 3600L, devices = "cpu")
+  values = graph$pipeops$lightgbm$learner$param_set$values
   budget = lightgbm$search_space(task)$upper[["lightgbm.num_iterations"]]
-  expect_equal(learner$param_set$values$num_iterations, budget)
-  expect_lt(learner$param_set$values$early_stopping_rounds, budget)
+  expect_equal(values$num_iterations, budget)
+  expect_lt(values$early_stopping_rounds, budget)
 
   xgboost = mlr_auto$get("xgboost")
   graph = xgboost$graph(task, measure, n_threads = 1L, timeout = 3600L, devices = "cpu")
