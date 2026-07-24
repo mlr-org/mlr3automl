@@ -62,7 +62,7 @@ AutoFTTransformer = R6Class(
         # nolint next: object_length_linter
         first_ffn_norm_num_in_module_list = as.integer(split_param_names[ffn_norm_idx][[1]][2])
         cls_num_in_module_list = first_ffn_norm_num_in_module_list - 1
-        nums_in_module_list = sapply(split_param_names, function(x) as.integer(x[2]))
+        nums_in_module_list = map_int(split_param_names, function(x) as.integer(x[2]))
         tokenizer_idx = nums_in_module_list < cls_num_in_module_list
 
         # the last normalization layer is unnamed, so we need to find it based on its position in the module list
