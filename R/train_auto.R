@@ -5,7 +5,9 @@ train_auto = function(self, private, task) {
     lg$info("No measure provided. Using default measure '%s'", pv$measure$id)
   }
   large_data_set = as.numeric(task$nrow) * task$ncol > pv$large_data_size
-  n_workers = rush_config()$n_workers %??% 1L
+  # the workers are either a single group or distributed over the mirai compute profiles
+  profiles = rush_config()$profiles
+  n_workers = if (!is.null(profiles)) sum(profiles) else rush_config()$n_workers %??% 1L
   n_threads = pv$n_threads %??% 1L
   memory_limit = (pv$memory_limit %??% Inf) / n_workers
   autos = mlr_auto$mget(private$.learner_ids)
@@ -22,7 +24,13 @@ train_auto = function(self, private, task) {
   # set number of workers
   if (large_data_set) {
     old_n_workers = n_workers
-    n_workers = max(1L, floor(n_workers / 4L))
+    if (!is.null(profiles)) {
+      # every compute profile keeps at least one worker so that no subspace is left without workers
+      profiles = map_int(profiles, function(n) max(1L, n %/% 4L))
+      n_workers = sum(profiles)
+    } else {
+      n_workers = max(1L, n_workers %/% 4L)
+    }
     scale = old_n_workers / n_workers
 
     n_threads = as.integer(n_threads * scale)
@@ -64,18 +72,35 @@ train_auto = function(self, private, task) {
   }
 
   # initialize mbo tuner
-  # mixed gpu requirements pin one worker to the gpu subspace, which requires a second worker for the cpu subspace
+  # mixed gpu requirements are optimized on a cpu and a gpu subspace, each running on its own compute profile
   gpu_ids = names(keep(autos, function(auto) resources$n_gpu[[auto$id]] > 0L))
   cpu_ids = setdiff(names(autos), gpu_ids)
-  use_subspaces = length(gpu_ids) && length(cpu_ids) && n_workers >= 2L
+  mixed_devices = length(gpu_ids) > 0L && length(cpu_ids) > 0L
+  subspace_profiles = pv$subspace_profiles %??% c(cpu = "cpu", gpu = "gpu")
+  # the workers are divided among the subspaces by the compute profiles, so every subspace needs its own profile
+  use_subspaces = mixed_devices && setequal(names(profiles), unname(subspace_profiles))
 
-  if (length(gpu_ids) && length(cpu_ids) && n_workers < 2L) {
-    lg$info("Only one worker available. Optimizing cpu and gpu learners in a single search space")
+  if (mixed_devices && !use_subspaces) {
+    if (is.null(profiles)) {
+      lg$info("No mirai compute profiles are set up. Optimizing cpu and gpu learners in a single search space")
+    } else {
+      lg$info(
+        # nolint next: line_length_linter
+        "Compute profiles %s do not match the profiles %s of the cpu and gpu subspace. Optimizing cpu and gpu learners in a single search space",
+        str_collapse(names(profiles), quote = "'"),
+        str_collapse(unname(subspace_profiles), quote = "'")
+      )
+    }
   }
 
   tuner = if (use_subspaces) tnr("adbo_subspaces") else tnr("async_mbo")
-  if (!use_subspaces && large_data_set) {
-    tuner$param_set$set_values(n_workers = n_workers)
+  if (large_data_set) {
+    # the reduced number of workers is passed to the tuner because the rush plan still holds the original number
+    if (!is.null(profiles)) {
+      tuner$param_set$set_values(profiles = profiles)
+    } else {
+      tuner$param_set$set_values(n_workers = n_workers)
+    }
   }
 
   branches = map(autos, function(auto) {
@@ -177,21 +202,24 @@ train_auto = function(self, private, task) {
       param = "branch.selection",
       groups = list(cpu = cpu_ids, gpu = gpu_ids)
     )
-    # one worker serves the single gpu, all remaining workers share the cpu subspace
-    n_workers_subspace = c(cpu = n_workers - 1L, gpu = 1L)
     split_design = function(ids) {
       if (nrow(initial_designs)) initial_designs[branch.selection %in% ids] else initial_designs
     }
     tuner$param_set$set_values(
       subspaces = subspaces,
-      n_workers_subspace = n_workers_subspace,
+      subspace_profiles = subspace_profiles,
       initial_design_subspace = list(cpu = split_design(cpu_ids), gpu = split_design(gpu_ids))
     )
+    subspace_ids = c("cpu", "gpu")
     lg$info(
-      "Optimizing subspace cpu (%s) with %i worker(s) and subspace gpu (%s) with 1 worker",
-      str_collapse(cpu_ids),
-      n_workers_subspace[["cpu"]],
-      str_collapse(gpu_ids)
+      "Optimizing %s",
+      str_collapse(sprintf(
+        "subspace '%s' (%s) with %i worker(s) on compute profile '%s'",
+        subspace_ids,
+        c(str_collapse(cpu_ids), str_collapse(gpu_ids)),
+        profiles[subspace_profiles[subspace_ids]],
+        subspace_profiles[subspace_ids]
+      ))
     )
   } else {
     tuner$param_set$set_values(initial_design = initial_designs)

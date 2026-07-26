@@ -189,3 +189,13 @@ test_that("n_cpu and n_gpu learner params validate the overrides", {
   learner$param_set$set_values(n_cpu = c(xgboost = 2L), n_gpu = c(xgboost = 1L))
   expect_equal(learner$param_set$values$n_gpu, c(xgboost = 1L))
 })
+
+test_that("subspace_profiles learner param validates the compute profiles", {
+  learner = lrn("classif.auto_xgboost")
+  expect_error(learner$param_set$set_values(subspace_profiles = c("cores", "cuda")), "names")
+  expect_error(learner$param_set$set_values(subspace_profiles = c(cpu = "cores")), "names")
+  expect_error(learner$param_set$set_values(subspace_profiles = c(cpu = "cores", nn = "cuda")), "names")
+  expect_error(learner$param_set$set_values(subspace_profiles = c(cpu = "cores", gpu = "cores")), "duplicated")
+  learner$param_set$set_values(subspace_profiles = c(cpu = "cores", gpu = "cuda"))
+  expect_equal(learner$param_set$values$subspace_profiles, c(cpu = "cores", gpu = "cuda"))
+})
