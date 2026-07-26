@@ -83,7 +83,7 @@ AutoLightGBM = R6Class(
 
     #' @description
     #' Estimate the memory for the auto.
-    estimate_memory = function(task) {
+    estimate_memory = function(task, devices = "cpu") {
       upper = self$search_space(task)$upper
 
       # histogram size

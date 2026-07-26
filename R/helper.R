@@ -96,6 +96,13 @@ check_python_packages = function(packages, python_version = NULL) {
   result
 }
 
+# batch size of the torch learners.
+# a batch of 32 rows keeps a gpu idle because kernel launches and host to device transfers dominate the step time,
+# so the gpu gets a larger batch. the cpu keeps 32, which is the size the memory estimates were fitted with.
+torch_batch_size = function(device) {
+  if (identical(device, "cuda")) 256L else 32L
+}
+
 # effective per-learner resource requirements: class defaults, then user overrides, then the devices gate.
 # returns list(n_cpu = named integer(), n_gpu = named integer()), named by learner id.
 effective_resources = function(autos, n_cpu = NULL, n_gpu = NULL, devices = "cpu") {

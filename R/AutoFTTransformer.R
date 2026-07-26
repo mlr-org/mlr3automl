@@ -47,7 +47,7 @@ AutoFTTransformer = R6Class(
 
       require_namespaces("mlr3torch")
 
-      device = if ("cuda" %in% devices) "cuda" else "auto"
+      device = if ("cuda" %in% devices) "cuda" else "cpu"
 
       # copied from mlr3tuningspaces
       no_wd = function(name) {
@@ -88,7 +88,7 @@ AutoFTTransformer = R6Class(
         id = "ft_transformer",
         measures_valid = measure,
         patience = self$early_stopping_rounds(task, budget = self$search_space(task)$upper[["ft_transformer.epochs"]]),
-        batch_size = 32L,
+        batch_size = torch_batch_size(device),
         attention_n_heads = 8L,
         opt.param_groups = rtdl_param_groups,
         device = device
@@ -113,7 +113,12 @@ AutoFTTransformer = R6Class(
 
     #' @description
     #' Estimate the memory for the auto.
-    estimate_memory = function(task) {
+    estimate_memory = function(task, devices = "cpu") {
+      # on the gpu the model is allocated in device memory, which the host memory limit does not cover
+      if ("cuda" %in% devices) {
+        return(-Inf)
+      }
+
       nrow = task$nrow
       nfeatures = task$n_features
       # apply the trafo so d_token is on the scale passed to the learner

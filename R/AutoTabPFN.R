@@ -107,7 +107,7 @@ AutoTabPFN = R6Class(
 
     #' @description
     #' Estimate the memory for the auto.
-    estimate_memory = function(task) {
+    estimate_memory = function(task, devices = "cpu") {
       memory_size = task$nrow * task$ncol * 8 * 10 / 1e6
       lg$info("Tabpfn memory size: %s MB", round(memory_size))
       ceiling(memory_size)

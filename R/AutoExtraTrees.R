@@ -76,7 +76,7 @@ AutoExtraTrees = R6Class(
     #' Estimate the memory for the auto.
     #'
     #' @param task ([mlr3::Task]).
-    estimate_memory = function(task) {
+    estimate_memory = function(task, devices = "cpu") {
       num_trees = 100
       tree_size_bytes = task$nrow / 60000 * 1e6
       ceiling((tree_size_bytes * num_trees) / 1e6)

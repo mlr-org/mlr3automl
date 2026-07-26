@@ -47,7 +47,7 @@ AutoMLP = R6Class(
 
       require_namespaces("mlr3torch")
 
-      device = if ("cuda" %in% devices) "cuda" else "auto"
+      device = if ("cuda" %in% devices) "cuda" else "cpu"
 
       # construct directly instead of via lrn() because mlr3extralearners also
       # registers the key "classif.mlp" and overwrites the mlr3torch learner
@@ -56,7 +56,7 @@ AutoMLP = R6Class(
       learner$param_set$set_values(
         measures_valid = measure,
         patience = self$early_stopping_rounds(task, budget = self$search_space(task)$upper[["mlp.epochs"]]),
-        batch_size = 32L,
+        batch_size = torch_batch_size(device),
         device = device
       )
       set_threads(learner, n_threads)
@@ -73,7 +73,12 @@ AutoMLP = R6Class(
 
     #' @description
     #' Estimate the memory for the auto.
-    estimate_memory = function(task) {
+    estimate_memory = function(task, devices = "cpu") {
+      # on the gpu the model is allocated in device memory, which the host memory limit does not cover
+      if ("cuda" %in% devices) {
+        return(-Inf)
+      }
+
       nrow = task$nrow
       n_layers = private$.search_space$upper[["mlp.n_layers"]]
       neurons = private$.search_space$upper[["mlp.neurons"]]

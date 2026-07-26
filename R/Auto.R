@@ -95,7 +95,7 @@ Auto = R6Class(
         lg$info("Learner '%s' is not compatible with task type '%s'", self$id, task$task_type)
         return(FALSE)
       }
-      if (self$estimate_memory(task) > memory_limit) {
+      if (self$estimate_memory(task, devices) > memory_limit) {
         lg$info("Learner '%s' violates the memory limit of %i MB", self$id, ceiling(memory_limit))
         return(FALSE)
       }
@@ -140,7 +140,8 @@ Auto = R6Class(
 
     #' @description
     #' Estimate the memory for the auto.
-    estimate_memory = function(task) {
+    #' The estimate is the host memory in MB, so learners that allocate on the gpu return `-Inf`.
+    estimate_memory = function(task, devices = "cpu") {
       # -Inf allows learners without a memory estimate to always pass memory checks
       -Inf
     },
