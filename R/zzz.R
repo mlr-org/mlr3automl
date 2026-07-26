@@ -37,6 +37,8 @@ register_mlr3 = function() {
   lg$set_filters(list(f))
 } # nocov end
 
+utils::globalVariables("branch.selection")
+
 .onUnload = function(libpaths) {
   mlr_learners = mlr3::mlr_learners
   mlr_callbacks = mlr3misc::mlr_callbacks
