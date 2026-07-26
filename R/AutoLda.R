@@ -31,7 +31,9 @@ AutoLda = R6Class(
         task_types = "classif",
         properties = "hyperparameter-free",
         packages = c("mlr3", "mlr3learners", "MASS"),
-        devices = "cpu"
+        devices = "cpu",
+        n_cpu = 1L,
+        n_gpu = 0L
       )
     },
 

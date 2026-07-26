@@ -30,7 +30,9 @@ AutoResNet = R6Class(
         properties = "internal_tuning",
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3torch"),
-        devices = c("cuda", "cpu")
+        devices = c("cuda", "cpu"),
+        n_cpu = 1L,
+        n_gpu = 1L
       )
     },
 

@@ -31,6 +31,7 @@ evals
 extralearners
 fabert
 fastai
+fastcore
 glmnet
 higgs
 Hyperparameters
@@ -38,6 +39,7 @@ ilpd
 jannis
 karhunen
 kknn
+libtorch
 lightgbm
 lightswitch
 lockfiles
@@ -67,6 +69,7 @@ pendigits
 pkgdown
 pkgdowntemplate
 Pulatov
+PYTHONPATH
 qsar
 rcmdcheck
 redocument

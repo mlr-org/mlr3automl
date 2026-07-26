@@ -171,6 +171,8 @@ AutoDebug = R6Class(
     #'   Probability to provoke a segfault during prediction in the tuning phase.
     #' @param error_final_train (`logical(1)`)\cr
     #'   Whether to fail the final model fit that is trained on the full task after tuning.
+    #' @param devices (`character()`).
+    #' @param n_gpu (`integer(1)`).
     initialize = function(
       id = "debug",
       error_train = 0,
@@ -181,7 +183,9 @@ AutoDebug = R6Class(
       message_predict = 0,
       segfault_train = 0,
       segfault_predict = 0,
-      error_final_train = FALSE
+      error_final_train = FALSE,
+      devices = "cpu",
+      n_gpu = 0L
     ) {
       private$.debug_values = list(
         error_train = assert_number(error_train, lower = 0, upper = 1),
@@ -194,12 +198,14 @@ AutoDebug = R6Class(
         segfault_predict = assert_number(segfault_predict, lower = 0, upper = 1)
       )
       private$.error_final_train = assert_flag(error_final_train)
+      private$.default_values = set_names(list(0.5), sprintf("%s.x", id))
 
       super$initialize(
         id = id,
         task_types = "classif",
         packages = "mlr3",
-        devices = "cpu"
+        devices = devices,
+        n_gpu = n_gpu
       )
     },
 
@@ -208,9 +214,9 @@ AutoDebug = R6Class(
     #'
     #' @return [mlr3pipelines::Graph].
     graph = function(task, measure, n_threads, timeout, devices) {
-      learner = lrn("classif.debug", id = "debug")
+      learner = lrn("classif.debug", id = self$id)
       learner$param_set$set_values(.values = private$.debug_values)
-      po("removeconstants", id = "debug_removeconstants") %>>% learner
+      po("removeconstants", id = sprintf("%s_removeconstants", self$id)) %>>% learner
     },
 
     #' @description
@@ -221,7 +227,7 @@ AutoDebug = R6Class(
     #' @return ([mlr3pipelines::GraphLearner]).
     finalize_model = function(graph_learner) {
       if (private$.error_final_train) {
-        graph_learner$param_set$set_values(debug.error_train = 1)
+        graph_learner$param_set$set_values(.values = set_names(list(1), sprintf("%s.error_train", self$id)))
       }
       invisible(graph_learner)
     },
@@ -231,11 +237,11 @@ AutoDebug = R6Class(
     #'
     #' @return [paradox::ParamSet].
     search_space = function(task) {
-      ps(debug.x = p_dbl(0, 1))
+      invoke(ps, .args = set_names(list(p_dbl(0, 1)), sprintf("%s.x", self$id)))
     }
   ),
   private = list(
-    .default_values = list(debug.x = 0.5),
+    .default_values = NULL,
     .debug_values = NULL,
     .error_final_train = FALSE
   )

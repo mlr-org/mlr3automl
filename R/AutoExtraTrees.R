@@ -31,7 +31,9 @@ AutoExtraTrees = R6Class(
         properties = c("large_data_sets", "hyperparameter-free"),
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3learners", "ranger"),
-        devices = "cpu"
+        devices = "cpu",
+        n_cpu = 1L,
+        n_gpu = 0L
       )
     },
 

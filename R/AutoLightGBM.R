@@ -29,7 +29,9 @@ AutoLightGBM = R6Class(
         properties = c("internal_tuning", "large_data_sets"),
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3extralearners", "lightgbm"),
-        devices = c("cpu", "cuda")
+        devices = c("cpu", "cuda"),
+        n_cpu = 1L,
+        n_gpu = 0L
       )
     },
 

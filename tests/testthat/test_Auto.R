@@ -165,3 +165,27 @@ test_that("catboost accepts the fallback eval metrics", {
     expect_class(learner$train(tasks[[i]]), "Learner")
   }
 })
+
+test_that("n_cpu and n_gpu fields are declared and validated", {
+  expect_equal(AutoXgboost$new()$n_cpu, 1L)
+  expect_equal(AutoXgboost$new()$n_gpu, 0L)
+  expect_equal(AutoLightGBM$new()$n_gpu, 0L)
+  expect_equal(AutoCatboost$new()$n_gpu, 0L)
+  expect_equal(AutoMLP$new()$n_gpu, 1L)
+  expect_equal(AutoResNet$new()$n_gpu, 1L)
+  expect_equal(AutoFTTransformer$new()$n_gpu, 1L)
+  expect_equal(AutoTabPFN$new()$n_gpu, 1L)
+  expect_equal(AutoFastai$new()$n_gpu, 1L)
+  expect_equal(AutoRanger$new()$n_gpu, 0L)
+
+  expect_error(AutoDebug$new(n_gpu = 2L), "n_gpu")
+  expect_error(Auto$new(id = "a", n_cpu = 0L), "n_cpu")
+})
+
+test_that("n_cpu and n_gpu learner params validate the overrides", {
+  learner = lrn("classif.auto_xgboost")
+  expect_error(learner$param_set$set_values(n_gpu = c(xgboost = 2L)), "<= 1")
+  expect_error(learner$param_set$set_values(n_cpu = c(xgboost = 0L)), ">= 1")
+  learner$param_set$set_values(n_cpu = c(xgboost = 2L), n_gpu = c(xgboost = 1L))
+  expect_equal(learner$param_set$values$n_gpu, c(xgboost = 1L))
+})

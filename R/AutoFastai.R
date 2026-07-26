@@ -35,7 +35,9 @@ AutoFastai = R6Class(
         properties = "internal_tuning",
         task_types = "classif",
         packages = c("mlr3", "mlr3extralearners", "callr"),
-        devices = c("cpu", "cuda")
+        devices = c("cpu", "cuda"),
+        n_cpu = 1L,
+        n_gpu = 1L
       )
     },
 

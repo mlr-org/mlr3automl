@@ -170,3 +170,174 @@ test_that("character and ordered features are converted to factors by the lightg
   result = test_classif_learner("lightgbm", task = task)
   expect_prediction(result$prediction)
 })
+
+test_that("mixed cpu and gpu requirements are tuned on subspaces", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  # the surrogate model of the mbo tuner requires ranger
+  skip_if_not_installed("ranger")
+  skip_if_no_redis()
+
+  rush = start_rush(n_workers = 2)
+  on.exit({
+    rush$reset()
+    mirai::daemons(0)
+  })
+
+  mlr_auto$add("debug_cpu", function() AutoDebug$new(id = "debug_cpu"))
+  mlr_auto$add("debug_gpu", function() AutoDebug$new(id = "debug_gpu", devices = c("cpu", "cuda"), n_gpu = 1L))
+  on.exit({
+    mlr_auto$remove("debug_cpu")
+    mlr_auto$remove("debug_gpu")
+  }, add = TRUE)
+
+  task = tsk("penguins")
+  learner = lrn(
+    "classif.auto",
+    learner_ids = c("debug_cpu", "debug_gpu"),
+    rush = rush,
+    devices = c("cpu", "cuda"),
+    small_data_size = 1,
+    resampling = rsmp("holdout"),
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 8),
+    initial_design_type = "random",
+    initial_design_size = 4,
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE
+  )
+
+  learner$train(task)
+
+  data = learner$instance$archive$data
+  expect_names(names(data), must.include = ".subspace")
+  expect_equal(data$.subspace, ifelse(data$branch.selection == "debug_gpu", "gpu", "cpu"))
+  expect_set_equal(unique(data$.subspace), c("cpu", "gpu"))
+})
+
+test_that("gpu learners fall back to the cpu without a cuda device", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  # the surrogate model of the mbo tuner requires ranger
+  skip_if_not_installed("ranger")
+  skip_if_no_redis()
+
+  rush = start_rush(n_workers = 2)
+  on.exit({
+    rush$reset()
+    mirai::daemons(0)
+  })
+
+  mlr_auto$add("debug_cpu", function() AutoDebug$new(id = "debug_cpu"))
+  mlr_auto$add("debug_gpu", function() AutoDebug$new(id = "debug_gpu", devices = c("cpu", "cuda"), n_gpu = 1L))
+  on.exit({
+    mlr_auto$remove("debug_cpu")
+    mlr_auto$remove("debug_gpu")
+  }, add = TRUE)
+
+  task = tsk("penguins")
+  learner = lrn(
+    "classif.auto",
+    learner_ids = c("debug_cpu", "debug_gpu"),
+    rush = rush,
+    small_data_size = 1,
+    resampling = rsmp("holdout"),
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 8),
+    initial_design_type = "random",
+    initial_design_size = 4,
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE
+  )
+
+  learner$train(task)
+
+  data = learner$instance$archive$data
+  expect_false(".subspace" %in% names(data))
+  expect_set_equal(unique(data$branch.selection), c("debug_cpu", "debug_gpu"))
+})
+
+test_that("homogeneous gpu requirements keep the single search space", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  # the surrogate model of the mbo tuner requires ranger
+  skip_if_not_installed("ranger")
+  skip_if_no_redis()
+
+  rush = start_rush(n_workers = 2)
+  on.exit({
+    rush$reset()
+    mirai::daemons(0)
+  })
+
+  mlr_auto$add("debug_cpu", function() AutoDebug$new(id = "debug_cpu", devices = c("cpu", "cuda")))
+  mlr_auto$add("debug_gpu", function() AutoDebug$new(id = "debug_gpu", devices = c("cpu", "cuda"), n_gpu = 1L))
+  on.exit({
+    mlr_auto$remove("debug_cpu")
+    mlr_auto$remove("debug_gpu")
+  }, add = TRUE)
+
+  task = tsk("penguins")
+  learner = lrn(
+    "classif.auto",
+    learner_ids = c("debug_cpu", "debug_gpu"),
+    rush = rush,
+    devices = c("cpu", "cuda"),
+    n_gpu = c(debug_cpu = 1L),
+    small_data_size = 1,
+    resampling = rsmp("holdout"),
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 8),
+    initial_design_type = "random",
+    initial_design_size = 4,
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE
+  )
+
+  learner$train(task)
+
+  data = learner$instance$archive$data
+  expect_false(".subspace" %in% names(data))
+})
+
+test_that("a single worker keeps the single search space with mixed requirements", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  # the surrogate model of the mbo tuner requires ranger
+  skip_if_not_installed("ranger")
+  skip_if_no_redis()
+
+  rush = start_rush(n_workers = 1)
+  on.exit({
+    rush$reset()
+    mirai::daemons(0)
+  })
+
+  mlr_auto$add("debug_cpu", function() AutoDebug$new(id = "debug_cpu"))
+  mlr_auto$add("debug_gpu", function() AutoDebug$new(id = "debug_gpu", devices = c("cpu", "cuda"), n_gpu = 1L))
+  on.exit({
+    mlr_auto$remove("debug_cpu")
+    mlr_auto$remove("debug_gpu")
+  }, add = TRUE)
+
+  task = tsk("penguins")
+  learner = lrn(
+    "classif.auto",
+    learner_ids = c("debug_cpu", "debug_gpu"),
+    rush = rush,
+    devices = c("cpu", "cuda"),
+    small_data_size = 1,
+    resampling = rsmp("holdout"),
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 6),
+    initial_design_type = "random",
+    initial_design_size = 4,
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE
+  )
+
+  learner$train(task)
+
+  data = learner$instance$archive$data
+  expect_false(".subspace" %in% names(data))
+})

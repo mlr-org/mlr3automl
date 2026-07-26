@@ -10,10 +10,14 @@ train_auto = function(self, private, task) {
   memory_limit = (pv$memory_limit %??% Inf) / n_workers
   autos = mlr_auto$mget(private$.learner_ids)
 
-  lg$info("Training '%s' on task '%s'", self$id, task$id)
+  # effective per-learner resource requirements decide which learners run on the gpu
+  resources = effective_resources(autos, n_cpu = pv$n_cpu, n_gpu = pv$n_gpu, devices = pv$devices)
+  # a learner that does not claim a gpu must neither be checked against nor configured for cuda
+  learner_devices = function(auto) {
+    if (resources$n_gpu[[auto$id]] > 0L) pv$devices else intersect(pv$devices, "cpu")
+  }
 
-  # initialize mbo tuner
-  tuner = tnr("async_mbo")
+  lg$info("Training '%s' on task '%s'", self$id, task$id)
 
   # set number of workers
   if (large_data_set) {
@@ -24,7 +28,6 @@ train_auto = function(self, private, task) {
     n_threads = as.integer(n_threads * scale)
     memory_limit = memory_limit * scale
 
-    tuner$param_set$set_values(n_workers = n_workers)
     lg$info(
       # nolint next: line_length_linter
       "Large data set detected. Reducing number of workers to %i. Increasing number of threads to %i and memory limit to %.0f MB",
@@ -48,7 +51,7 @@ train_auto = function(self, private, task) {
   # initialize graph learner
   if (pv$check_learners) {
     autos = keep(autos, function(auto) {
-      auto$check(task, memory_limit = memory_limit, large_data_set = large_data_set, devices = pv$devices)
+      auto$check(task, memory_limit = memory_limit, large_data_set = large_data_set, devices = learner_devices(auto))
     })
 
     if (!length(autos)) {
@@ -60,7 +63,24 @@ train_auto = function(self, private, task) {
     error_config("All learners have no hyperparameters to tune. Combine with other learners.")
   }
 
-  branches = map(autos, function(auto) auto$graph(task, pv$measure, n_threads, pv$learner_timeout, pv$devices))
+  # initialize mbo tuner
+  # mixed gpu requirements pin one worker to the gpu subspace, which requires a second worker for the cpu subspace
+  gpu_ids = names(keep(autos, function(auto) resources$n_gpu[[auto$id]] > 0L))
+  cpu_ids = setdiff(names(autos), gpu_ids)
+  use_subspaces = length(gpu_ids) && length(cpu_ids) && n_workers >= 2L
+
+  if (length(gpu_ids) && length(cpu_ids) && n_workers < 2L) {
+    lg$info("Only one worker available. Optimizing cpu and gpu learners in a single search space")
+  }
+
+  tuner = if (use_subspaces) tnr("adbo_subspaces") else tnr("async_mbo")
+  if (!use_subspaces && large_data_set) {
+    tuner$param_set$set_values(n_workers = n_workers)
+  }
+
+  branches = map(autos, function(auto) {
+    auto$graph(task, pv$measure, n_threads, pv$learner_timeout, learner_devices(auto))
+  })
   graph_learner = as_learner(
     po("branch", options = names(branches)) %>>%
       gunion(unname(branches)) %>>%
@@ -151,7 +171,31 @@ train_auto = function(self, private, task) {
   )
   lg$info("Initial design size: %i", nrow(initial_designs))
 
-  tuner$param_set$set_values(initial_design = initial_designs)
+  if (use_subspaces) {
+    subspaces = partition_search_space(
+      search_space,
+      param = "branch.selection",
+      groups = list(cpu = cpu_ids, gpu = gpu_ids)
+    )
+    # one worker serves the single gpu, all remaining workers share the cpu subspace
+    n_workers_subspace = c(cpu = n_workers - 1L, gpu = 1L)
+    split_design = function(ids) {
+      if (nrow(initial_designs)) initial_designs[branch.selection %in% ids] else initial_designs
+    }
+    tuner$param_set$set_values(
+      subspaces = subspaces,
+      n_workers_subspace = n_workers_subspace,
+      initial_design_subspace = list(cpu = split_design(cpu_ids), gpu = split_design(gpu_ids))
+    )
+    lg$info(
+      "Optimizing subspace cpu (%s) with %i worker(s) and subspace gpu (%s) with 1 worker",
+      str_collapse(cpu_ids),
+      n_workers_subspace[["cpu"]],
+      str_collapse(gpu_ids)
+    )
+  } else {
+    tuner$param_set$set_values(initial_design = initial_designs)
+  }
 
   # configure tuner
   tuner$surrogate = default_surrogate(self$instance)

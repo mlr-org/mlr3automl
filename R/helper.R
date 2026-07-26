@@ -96,6 +96,37 @@ check_python_packages = function(packages, python_version = NULL) {
   result
 }
 
+# effective per-learner resource requirements: class defaults, then user overrides, then the devices gate.
+# returns list(n_cpu = named integer(), n_gpu = named integer()), named by learner id.
+effective_resources = function(autos, n_cpu = NULL, n_gpu = NULL, devices = "cpu") {
+  resources = list(
+    n_cpu = map_int(autos, "n_cpu"),
+    n_gpu = map_int(autos, "n_gpu")
+  )
+
+  for (field in c("n_cpu", "n_gpu")) {
+    override = get(field)
+    if (!is.null(override)) {
+      unknown_ids = setdiff(names(override), names(autos))
+      if (length(unknown_ids)) {
+        error_config(
+          "Names of '%s' must be a subset of the selected learner ids but include %s.",
+          field,
+          str_collapse(unknown_ids, quote = "'")
+        )
+      }
+      resources[[field]][names(override)] = as.integer(override)
+    }
+  }
+
+  # without a cuda device every learner falls back to the cpu
+  if ("cuda" %nin% devices) {
+    resources$n_gpu[] = 0L
+  }
+
+  resources
+}
+
 combine_search_spaces = function(autos, task) {
   learner_ids = map_chr(autos, "id")
 
