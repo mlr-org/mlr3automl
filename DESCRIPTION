@@ -55,9 +55,9 @@ Suggests:
     testthat (>= 3.0.0),
     xgboost (>= 3.2.1.1)
 Remotes:
-    mlr-org/bbotk@worker_profile,
+    mlr-org/bbotk,
     mlr-org/mlr3mbo@adbo_subspaces,
-    mlr-org/rush@worker_profile
+    mlr-org/rush
 Additional_repositories: https://mlr-org.r-universe.dev
 Config/roxygen2/version: 8.0.0.9000
 Config/testthat/edition: 3

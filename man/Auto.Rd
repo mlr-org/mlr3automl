@@ -158,15 +158,20 @@ Maximum number of training rounds (boosting iterations or epochs) the learner ma
 \if{latex}{\out{\hypertarget{method-Auto-estimate_memory}{}}}
 \subsection{\code{Auto$estimate_memory()}}{
   Estimate the memory for the auto.
+The estimate is the host memory in MB, so learners that allocate on the gpu return \code{-Inf}.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
-    \preformatted{Auto$estimate_memory(task)}
+    \preformatted{Auto$estimate_memory(task, devices = "cpu")}
     \if{html}{\out{</div>}}
   }
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
       \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+      \item{\code{devices}}{(\code{character()})\cr
+Devices to use.
+Allowed values are \code{"cpu"} and \code{"cuda"}.
+Default is "cpu".}
     }
     \if{html}{\out{</div>}}
   }
