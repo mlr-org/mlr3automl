@@ -197,8 +197,10 @@ train_auto = function(self, private, task) {
   lg$info("Initial design size: %i", nrow(initial_designs))
 
   if (use_subspaces) {
+    # the instance moves the internal-tuning parameters into its internal search space,
+    # so the subspaces must partition the search space of the instance and not the combined one
     subspaces = partition_search_space(
-      search_space,
+      self$instance$search_space,
       param = "branch.selection",
       groups = list(cpu = cpu_ids, gpu = gpu_ids)
     )

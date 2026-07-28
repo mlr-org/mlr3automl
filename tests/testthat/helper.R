@@ -204,6 +204,7 @@ AutoDebug = R6Class(
         id = id,
         task_types = "classif",
         packages = "mlr3",
+        properties = "internal_tuning",
         devices = devices,
         n_gpu = n_gpu
       )
@@ -214,7 +215,7 @@ AutoDebug = R6Class(
     #'
     #' @return [mlr3pipelines::Graph].
     graph = function(task, measure, n_threads, timeout, devices) {
-      learner = lrn("classif.debug", id = self$id)
+      learner = lrn("classif.debug", id = self$id, early_stopping = TRUE)
       learner$param_set$set_values(.values = private$.debug_values)
       po("removeconstants", id = sprintf("%s_removeconstants", self$id)) %>>% learner
     },
@@ -237,7 +238,11 @@ AutoDebug = R6Class(
     #'
     #' @return [paradox::ParamSet].
     search_space = function(task) {
-      invoke(ps, .args = set_names(list(p_dbl(0, 1)), sprintf("%s.x", self$id)))
+      params = set_names(list(p_dbl(0, 1)), sprintf("%s.x", self$id))
+      params[[sprintf("%s.iter", self$id)]] = p_int(1, 10, tags = "internal_tuning", aggr = function(x) {
+        as.integer(ceiling(mean(unlist(x))))
+      })
+      invoke(ps, .args = params)
     }
   ),
   private = list(

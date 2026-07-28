@@ -1,5 +1,6 @@
 # mlr3automl (development version)
 
+* fix: Tuning on subspaces no longer fails when a learner has internally tuned parameters, e.g. `xgboost.nrounds` or `ft_transformer.epochs`. The subspaces are now derived from the search space of the tuning instance, which no longer holds the internally tuned parameters.
 * fix: The torch learners (mlp, resnet, and ft_transformer) now train on the CPU when `devices` does not include `"cuda"`. Previously they passed `device = "auto"` to `mlr3torch`, which selects the GPU whenever one is available, so they ignored `devices = "cpu"` and the resource accounting of the workers.
 * fix: The torch learners (mlp, resnet, and ft_transformer) now train with a batch size of 256 instead of 32 on the GPU. A batch of 32 rows leaves the GPU mostly idle because kernel launches and host to device transfers dominate the step time.
 * fix: The torch learners (mlp, resnet, and ft_transformer) are no longer removed from the search space by `memory_limit` when they train on the GPU. Their memory estimates are fitted on host memory measurements, which do not describe the memory the model allocates on the GPU.

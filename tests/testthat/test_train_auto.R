@@ -210,6 +210,10 @@ test_that("mixed cpu and gpu requirements are tuned on subspaces", {
 
   learner$train(task)
 
+  # the internally tuned parameters live in the internal search space and must not be part of the subspaces
+  expect_set_equal(learner$instance$internal_search_space$ids(), c("debug_cpu.iter", "debug_gpu.iter"))
+  expect_names(learner$instance$search_space$ids(), disjunct.from = c("debug_cpu.iter", "debug_gpu.iter"))
+
   data = learner$instance$archive$data
   expect_names(names(data), must.include = ".subspace")
   # the subspace is only written when an evaluation finishes
