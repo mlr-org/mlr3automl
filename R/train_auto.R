@@ -14,27 +14,30 @@ train_auto = function(self, private, task) {
 
   # effective per-learner resource requirements decide which learners run on the gpu
   resources = effective_resources(autos, n_cpu = pv$n_cpu, n_gpu = pv$n_gpu, devices = pv$devices)
+  uses_gpu = function(auto) resources$n_gpu[[auto$id]] > 0L
   # a learner that does not claim a gpu must neither be checked against nor configured for cuda
   learner_devices = function(auto) {
-    if (resources$n_gpu[[auto$id]] > 0L) pv$devices else intersect(pv$devices, "cpu")
+    if (uses_gpu(auto)) pv$devices else intersect(pv$devices, "cpu")
   }
 
   lg$info("Training '%s' on task '%s'", self$id, task$id)
 
+  # the gpu learners keep the resources of a regular worker as long as their compute profile is not reduced
+  n_threads_gpu = n_threads
+  memory_limit_gpu = memory_limit
+
   # set number of workers
   if (large_data_set) {
-    old_n_workers = n_workers
-    if (!is.null(profiles)) {
-      # every compute profile keeps at least one worker so that no subspace is left without workers
-      profiles = map_int(profiles, function(n) max(1L, n %/% 4L))
-      n_workers = sum(profiles)
-    } else {
-      n_workers = max(1L, n_workers %/% 4L)
-    }
-    scale = old_n_workers / n_workers
+    # the gpu profile is exempt from the large data set rules.
+    # its number of workers is fixed by the number of gpus and its worker must not claim the cpu cores and the
+    # memory that are freed on the cpu profile
+    gpu_profile_exempt = "mlr3automl_gpu" %in% names(profiles)
+    reduced = reduce_workers(profiles, n_workers)
+    profiles = reduced$profiles
+    n_workers = reduced$n_workers
 
-    n_threads = as.integer(n_threads * scale)
-    memory_limit = memory_limit * scale
+    n_threads = as.integer(n_threads * reduced$scale)
+    memory_limit = memory_limit * reduced$scale
 
     lg$info(
       # nolint next: line_length_linter
@@ -43,7 +46,24 @@ train_auto = function(self, private, task) {
       n_threads,
       memory_limit
     )
+
+    if (gpu_profile_exempt) {
+      lg$info(
+        # nolint next: line_length_linter
+        "Compute profile 'mlr3automl_gpu' is exempt. Keeping %i worker(s) with %i thread(s) and a memory limit of %.0f MB for the gpu learners",
+        profiles[["mlr3automl_gpu"]],
+        n_threads_gpu,
+        memory_limit_gpu
+      )
+    } else {
+      # without a gpu profile the gpu learners run on the reduced workers and receive their resources
+      n_threads_gpu = n_threads
+      memory_limit_gpu = memory_limit
+    }
   }
+
+  learner_n_threads = function(auto) if (uses_gpu(auto)) n_threads_gpu else n_threads
+  learner_memory_limit = function(auto) if (uses_gpu(auto)) memory_limit_gpu else memory_limit
 
   # resampling
   resampling = if (task$nrow < pv$small_data_size) {
@@ -59,7 +79,12 @@ train_auto = function(self, private, task) {
   # initialize graph learner
   if (pv$check_learners) {
     autos = keep(autos, function(auto) {
-      auto$check(task, memory_limit = memory_limit, large_data_set = large_data_set, devices = learner_devices(auto))
+      auto$check(
+        task,
+        memory_limit = learner_memory_limit(auto),
+        large_data_set = large_data_set,
+        devices = learner_devices(auto)
+      )
     })
 
     if (!length(autos)) {
@@ -73,12 +98,11 @@ train_auto = function(self, private, task) {
 
   # initialize mbo tuner
   # mixed gpu requirements are optimized on a cpu and a gpu subspace, each running on its own compute profile
-  gpu_ids = names(keep(autos, function(auto) resources$n_gpu[[auto$id]] > 0L))
+  gpu_ids = names(keep(autos, uses_gpu))
   cpu_ids = setdiff(names(autos), gpu_ids)
   mixed_devices = length(gpu_ids) > 0L && length(cpu_ids) > 0L
-  subspace_profiles = pv$subspace_profiles %??% c(cpu = "cpu", gpu = "gpu")
   # the workers are divided among the subspaces by the compute profiles, so every subspace needs its own profile
-  use_subspaces = mixed_devices && setequal(names(profiles), unname(subspace_profiles))
+  use_subspaces = mixed_devices && setequal(names(profiles), c("mlr3automl_cpu", "mlr3automl_gpu"))
 
   if (mixed_devices && !use_subspaces) {
     if (is.null(profiles)) {
@@ -86,9 +110,8 @@ train_auto = function(self, private, task) {
     } else {
       lg$info(
         # nolint next: line_length_linter
-        "Compute profiles %s do not match the profiles %s of the cpu and gpu subspace. Optimizing cpu and gpu learners in a single search space",
-        str_collapse(names(profiles), quote = "'"),
-        str_collapse(unname(subspace_profiles), quote = "'")
+        "Compute profiles %s do not match the profiles 'mlr3automl_cpu' and 'mlr3automl_gpu' of the cpu and gpu subspace. Optimizing cpu and gpu learners in a single search space",
+        str_collapse(names(profiles), quote = "'")
       )
     }
   }
@@ -104,7 +127,7 @@ train_auto = function(self, private, task) {
   }
 
   branches = map(autos, function(auto) {
-    auto$graph(task, pv$measure, n_threads, pv$learner_timeout, learner_devices(auto))
+    auto$graph(task, pv$measure, learner_n_threads(auto), pv$learner_timeout, learner_devices(auto))
   })
   graph_learner = as_learner(
     po("branch", options = names(branches)) %>>%
@@ -207,6 +230,8 @@ train_auto = function(self, private, task) {
     split_design = function(ids) {
       if (nrow(initial_designs)) initial_designs[branch.selection %in% ids] else initial_designs
     }
+    # the cpu and the gpu subspace each run on their own mirai compute profile
+    subspace_profiles = c(cpu = "mlr3automl_cpu", gpu = "mlr3automl_gpu")
     tuner$param_set$set_values(
       subspaces = subspaces,
       subspace_profiles = subspace_profiles,

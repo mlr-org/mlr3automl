@@ -39,23 +39,16 @@ Overrides the default of the learner.
 Can only be 0 or 1 for now.
 The torch learners, TabPFN, and fastai default to 1; all other learners default to 0.
 Only effective when \code{"cuda"} is part of \code{devices}; otherwise every learner is trained on the CPU.
-When the requirements are mixed, the search space is partitioned into a cpu and a gpu subspace and
-tuned with \link[mlr3mbo:TunerADBOSubspaces]{mlr3mbo::TunerADBOSubspaces}, see \code{subspace_profiles}.}
-
-\item{subspace_profiles}{(named \code{character()})\cr
-\CRANpkg{mirai} compute profile of the cpu and the gpu subspace, e.g. \code{c(cpu = "cpu", gpu = "gpu")}.
-Must have the names \code{"cpu"} and \code{"gpu"} and the two profiles must be different.
-Defaults to the profiles named \code{"cpu"} and \code{"gpu"}.
-When the learners have mixed \code{n_gpu} requirements and the daemons of both profiles are set up with
-\code{\link[rush:rush_plan]{rush::rush_plan()}}, the search space is partitioned into a cpu and a gpu subspace which are tuned
-with \link[mlr3mbo:TunerADBOSubspaces]{mlr3mbo::TunerADBOSubspaces}.
+When the requirements are mixed and the daemons of the \CRANpkg{mirai} compute profiles
+\code{"mlr3automl_cpu"} and \code{"mlr3automl_gpu"} are set up with \code{\link[rush:rush_plan]{rush::rush_plan()}}, the search space is
+partitioned into a cpu and a gpu subspace which are tuned with \link[mlr3mbo:TunerADBOSubspaces]{mlr3mbo::TunerADBOSubspaces}.
 The workers of a profile only ever propose and evaluate points of the subspace of that profile,
 so the number of workers per subspace is the number of workers of its profile.
 Otherwise the cpu and gpu learners are tuned in a single search space with \link[mlr3mbo:TunerAsyncMbo]{mlr3mbo::TunerAsyncMbo}.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{mirai::daemons(7, .compute = "cpu")
-mirai::daemons(1, .compute = "gpu")
-rush::rush_plan(profiles = c(cpu = 7, gpu = 1))
+\if{html}{\out{<div class="sourceCode">}}\preformatted{mirai::daemons(7, .compute = "mlr3automl_cpu")
+mirai::daemons(1, .compute = "mlr3automl_gpu")
+rush::rush_plan(profiles = c(mlr3automl_cpu = 7, mlr3automl_gpu = 1))
 }\if{html}{\out{</div>}}
 
 }
@@ -73,10 +66,13 @@ while the remaining learners stay on the CPU.}
 \item{large_data_size}{(\code{integer(1)})\cr
 Threshold for the data set size (number of rows times number of columns) above
 which large-data rules apply.
-Beyond this threshold the number of parallel workers is reduced and each remaining
-worker is given proportionally more threads and memory.
+Beyond this threshold the number of parallel workers is reduced to a quarter, rounded up, and each
+remaining worker is given proportionally more threads and memory.
 When the workers are distributed over \CRANpkg{mirai} compute profiles, the number of workers of every
-profile is reduced, but every profile keeps at least one worker.}
+profile is reduced, but every profile keeps at least one worker.
+The \code{"mlr3automl_gpu"} profile is exempt because its number of workers is fixed by the number of GPUs.
+It keeps its workers, threads, and memory limit so that the gpu learners do not claim the CPU cores and
+the memory that are freed on the cpu profiles.}
 
 \item{small_data_size}{(\code{integer(1)})\cr
 Threshold value for the data set size from which special rules apply.}

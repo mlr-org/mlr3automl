@@ -134,6 +134,33 @@ effective_resources = function(autos, n_cpu = NULL, n_gpu = NULL, devices = "cpu
   resources
 }
 
+# large data sets are trained by fewer but larger workers.
+# the workers are reduced to a quarter, rounded up so that they are not reduced by more than the intended factor,
+# and at least one worker is kept so that no subspace is left without workers.
+# only the cpu profile is reduced. the gpu profile is exempt because its number of workers is fixed by the number
+# of gpus.
+# returns list(profiles = named integer() or NULL, n_workers = integer(1), scale = numeric(1)) where `scale` is the
+# factor by which the threads and the memory limit of the reduced workers are increased.
+reduce_workers = function(profiles, n_workers) {
+  quarter = function(n) max(1L, as.integer(ceiling(n / 4)))
+
+  # a single group of workers without compute profiles
+  if (is.null(profiles)) {
+    reduced_n_workers = quarter(n_workers)
+    return(list(profiles = NULL, n_workers = reduced_n_workers, scale = n_workers / reduced_n_workers))
+  }
+
+  # only the gpu profile is set up, so there is nothing to reduce
+  if ("mlr3automl_cpu" %nin% names(profiles)) {
+    return(list(profiles = profiles, n_workers = sum(profiles), scale = 1))
+  }
+
+  old_n_workers = profiles[["mlr3automl_cpu"]]
+  profiles[["mlr3automl_cpu"]] = quarter(old_n_workers)
+
+  list(profiles = profiles, n_workers = sum(profiles), scale = old_n_workers / profiles[["mlr3automl_cpu"]])
+}
+
 combine_search_spaces = function(autos, task) {
   learner_ids = map_chr(autos, "id")
 

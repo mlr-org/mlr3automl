@@ -178,7 +178,7 @@ test_that("mixed cpu and gpu requirements are tuned on subspaces", {
   skip_if_not_installed("ranger")
   skip_if_no_redis()
 
-  profiles = c(cpu = 1, gpu = 1)
+  profiles = c(mlr3automl_cpu = 1, mlr3automl_gpu = 1)
   rush = start_rush_profiles(profiles)
   on.exit({
     rush$reset()
@@ -222,7 +222,7 @@ test_that("mixed cpu and gpu requirements are tuned on subspaces", {
   expect_set_equal(unique(finished$.subspace), c("cpu", "gpu"))
 })
 
-test_that("subspace_profiles maps the subspaces to differently named compute profiles", {
+test_that("mixed requirements keep the single search space when the compute profiles do not match", {
   skip_on_cran()
   skip_if_not_installed("rush")
   # the surrogate model of the mbo tuner requires ranger
@@ -249,7 +249,6 @@ test_that("subspace_profiles maps the subspaces to differently named compute pro
     learner_ids = c("debug_cpu", "debug_gpu"),
     rush = rush,
     devices = c("cpu", "cuda"),
-    subspace_profiles = c(cpu = "cores", gpu = "cuda"),
     small_data_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
@@ -263,19 +262,18 @@ test_that("subspace_profiles maps the subspaces to differently named compute pro
   learner$train(task)
 
   data = learner$instance$archive$data
-  finished = data[state == "finished"]
-  expect_equal(finished$.subspace, ifelse(finished$branch.selection == "debug_gpu", "gpu", "cpu"))
-  expect_set_equal(unique(finished$.subspace), c("cpu", "gpu"))
+  expect_false(".subspace" %in% names(data))
+  expect_set_equal(unique(data$branch.selection), c("debug_cpu", "debug_gpu"))
 })
 
-test_that("a large data set reduces the workers of every compute profile", {
+test_that("a large data set reduces the workers of the cpu compute profiles but not of the gpu profile", {
   skip_on_cran()
   skip_if_not_installed("rush")
   # the surrogate model of the mbo tuner requires ranger
   skip_if_not_installed("ranger")
   skip_if_no_redis()
 
-  profiles = c(cpu = 4, gpu = 1)
+  profiles = c(mlr3automl_cpu = 4, mlr3automl_gpu = 2)
   rush = start_rush_profiles(profiles)
   on.exit({
     rush$reset()
@@ -310,9 +308,11 @@ test_that("a large data set reduces the workers of every compute profile", {
 
   learner$train(task)
 
-  # every profile keeps at least one worker, so 4 cpu and 1 gpu daemons are served by one worker each
-  expect_set_equal(rush$worker_info$profile, c("cpu", "gpu"))
-  expect_equal(nrow(rush$worker_info), 2L)
+  # the 4 cpu daemons are served by one worker, while the gpu profile keeps both of its workers
+  worker_info = rush$worker_info
+  expect_equal(sum(worker_info$profile == "mlr3automl_cpu"), 1L)
+  expect_equal(sum(worker_info$profile == "mlr3automl_gpu"), 2L)
+  expect_equal(nrow(worker_info), 3L)
 })
 
 test_that("mixed requirements keep the single search space without compute profiles", {
@@ -365,7 +365,7 @@ test_that("gpu learners fall back to the cpu without a cuda device", {
   skip_if_not_installed("ranger")
   skip_if_no_redis()
 
-  profiles = c(cpu = 1, gpu = 1)
+  profiles = c(mlr3automl_cpu = 1, mlr3automl_gpu = 1)
   rush = start_rush_profiles(profiles)
   on.exit({
     rush$reset()
@@ -408,7 +408,7 @@ test_that("homogeneous gpu requirements keep the single search space", {
   skip_if_not_installed("ranger")
   skip_if_no_redis()
 
-  profiles = c(cpu = 1, gpu = 1)
+  profiles = c(mlr3automl_cpu = 1, mlr3automl_gpu = 1)
   rush = start_rush_profiles(profiles)
   on.exit({
     rush$reset()
@@ -452,7 +452,7 @@ test_that("mixed requirements keep the single search space without a gpu compute
   skip_if_not_installed("ranger")
   skip_if_no_redis()
 
-  profiles = c(cpu = 2)
+  profiles = c(mlr3automl_cpu = 2)
   rush = start_rush_profiles(profiles)
   on.exit({
     rush$reset()

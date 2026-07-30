@@ -92,7 +92,6 @@ LearnerAuto = R6Class(
         small_data_size         = p_int(lower = 1L, init = 5000L, tags = c("train", "super")),
         store_benchmark_result  = p_lgl(init = FALSE, tags = c("train", "super")),
         store_models            = p_lgl(init = FALSE, tags = c("train", "super")),
-        subspace_profiles       = p_uty(tags = c("train", "super"), custom_check = crate({function(x) if (is.null(x) || setequal(names(x), c("cpu", "gpu"))) check_character(x, len = 2L, any.missing = FALSE, min.chars = 1L, names = "unique", unique = TRUE, null.ok = TRUE) else "Must have the names 'cpu' and 'gpu'"})),
         terminator              = p_uty(init = trm("run_time", secs = 3600L), tags = c("train", "super"), custom_check = crate({function(x) check_r6(x, "Terminator")}))
       )
       # nolint end
