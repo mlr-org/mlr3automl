@@ -52,8 +52,19 @@ AutoTabPFN = R6Class(
         )
         return(FALSE)
       }
-      if (task$ncol > 500) {
-        lg$info("Learner '%s' is not compatible with tasks with more than 500 features", self$id)
+      # po("colapply") turns character features into factors and po("encodeimpact") replaces every
+      # categorical feature with one column per class (one column for regression), so count the
+      # features the learner actually sees.
+      # the removeconstants steps can only drop columns, so this is never an underestimate.
+      n_categorical = sum(task$feature_types$type %in% c("factor", "ordered", "character"))
+      n_columns = if (task$task_type == "classif") length(task$class_names) else 1L
+      n_features = task$n_features - n_categorical + n_categorical * n_columns
+      if (n_features > 2000) {
+        lg$info(
+          "Learner '%s' is not compatible with tasks with more than 2,000 features after encoding (%i features)",
+          self$id,
+          n_features
+        )
         return(FALSE)
       }
       ok = check_python_packages(c("torch", "tabpfn"))
