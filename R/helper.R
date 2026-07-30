@@ -77,8 +77,8 @@ check_python_packages = function(packages, python_version = NULL) {
       function(packages, python_version) {
         Sys.unsetenv(c("VIRTUAL_ENV", "VIRTUAL_ENV_PROMPT", "PYTHONPATH", "R_SESSION_INITIALIZED"))
         reticulate::py_require(packages, python_version = python_version)
-        # strip version specifiers e.g. "fastcore<2.0.0" -> "fastcore"
-        modules = gsub("[<>=!~].*$", "", packages)
+        # strip version specifiers and extras e.g. "fastcore<2.0.0" -> "fastcore", "tabfm[pytorch]" -> "tabfm"
+        modules = gsub("[<>=!~\\[].*$", "", packages)
         vapply(modules, reticulate::py_module_available, logical(1L), USE.NAMES = FALSE)
       },
       args = list(packages = packages, python_version = python_version)

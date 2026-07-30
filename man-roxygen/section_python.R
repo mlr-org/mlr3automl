@@ -1,5 +1,5 @@
 #' @section Python learners:
-#' Python learners like `TabPFN` and `fastai` run via `reticulate` and
+#' Python learners like `TabPFN`, `TabFM`, and `fastai` run via `reticulate` and
 #' therefore need a Python installation with their required packages.
 #' There are two ways to provide it:
 #'

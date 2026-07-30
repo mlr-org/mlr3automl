@@ -2,15 +2,15 @@
 #'
 #' @description
 #' Creates a conda environment and installs the packages required by the Python learners.
-#' Installs the dependencies of the fastai auto learner and the tabpfn auto learner.
-#' The learners share a single environment, so one `RETICULATE_PYTHON` covers both.
+#' Installs the dependencies of the fastai auto learner, the tabfm auto learner, and the tabpfn auto learner.
+#' The learners share a single environment, so one `RETICULATE_PYTHON` covers all of them.
 #'
 #' @details
 #' The environment is created in the project directory by default.
 #'
 #' @param learners (`character()`)\cr
 #'   Learners to install the Python dependencies for.
-#'   One or more of `"fastai"` and `"tabpfn"`.
+#'   One or more of `"fastai"`, `"tabfm"`, and `"tabpfn"`.
 #' @param envname (`character(1)`)\cr
 #'   Path to the conda environment directory.
 #'   Defaults to `.conda/mlr3automl-python` in the current working directory.
@@ -26,11 +26,11 @@
 #' }
 #' @export
 install_python_learners = function(
-  learners = c("fastai", "tabpfn"),
+  learners = c("fastai", "tabfm", "tabpfn"),
   envname = file.path(getwd(), ".conda", "mlr3automl-python"),
   python_version = "3.12"
 ) {
-  assert_subset(learners, c("fastai", "tabpfn"), empty.ok = FALSE)
+  assert_subset(learners, c("fastai", "tabfm", "tabpfn"), empty.ok = FALSE)
   assert_string(envname)
   assert_string(python_version)
   require_namespaces("reticulate")
@@ -51,6 +51,10 @@ install_python_learners = function(
       "opencv-python",
       "scikit-image"
     )
+  }
+  if ("tabfm" %in% learners) {
+    # "safetensors" is not part of the "pytorch" extra but is needed to load the weights
+    packages = c(packages, "tabfm[pytorch]", "safetensors")
   }
   if ("tabpfn" %in% learners) {
     packages = c(packages, "tabpfn")

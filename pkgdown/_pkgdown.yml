@@ -55,6 +55,7 @@ reference:
       - LearnerClassifAutoRanger
       - LearnerClassifAutoResNet
       - LearnerClassifAutoSVM
+      - LearnerClassifAutoTabFM
       - LearnerClassifAutoTabPFN
       - LearnerClassifAutoXgboost
   - title: Regression Auto Learners
@@ -68,12 +69,15 @@ reference:
       - LearnerRegrAutoRanger
       - LearnerRegrAutoResNet
       - LearnerRegrAutoSVM
+      - LearnerRegrAutoTabFM
       - LearnerRegrAutoTabPFN
       - LearnerRegrAutoXgboost
   - title: Isolated Python Learners
     contents:
       - LearnerClassifFastaiIsolated
+      - LearnerClassifTabFMIsolated
       - LearnerClassifTabPFNIsolated
+      - LearnerRegrTabFMIsolated
       - LearnerRegrTabPFNIsolated
   - title: Auto Configuration
     contents:
@@ -90,6 +94,7 @@ reference:
       - AutoRanger
       - AutoResNet
       - AutoSVM
+      - AutoTabFM
       - AutoTabPFN
       - AutoXgboost
   - title: Sugar Functions
