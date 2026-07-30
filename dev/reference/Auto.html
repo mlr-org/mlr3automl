@@ -79,6 +79,16 @@
 <dd><p>(<code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code>).</p></dd>
 
 
+    <dt><code>n_cpu</code></dt>
+<dd><p>(<code>integer(1)</code>)<br>
+Number of CPUs a single training of the learner uses.</p></dd>
+
+
+    <dt><code>n_gpu</code></dt>
+<dd><p>(<code>integer(1)</code>)<br>
+Number of GPUs a single training of the learner uses.</p></dd>
+
+
 </dl><p></p></div>
     </div>
     <div class="section level2">
@@ -105,7 +115,9 @@
 <span>  properties <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
 <span>  task_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
 <span>  packages <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
-<span>  devices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span></span>
+<span>  devices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
+<span>  n_cpu <span class="op">=</span> <span class="fl">1L</span>,</span>
+<span>  n_gpu <span class="op">=</span> <span class="fl">0L</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
 <h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
@@ -123,6 +135,12 @@
 
       <dt><code>devices</code></dt>
 <dd><p>(<code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code>).</p></dd>
+
+      <dt><code>n_cpu</code></dt>
+<dd><p>(<code>integer(1)</code>).</p></dd>
+
+      <dt><code>n_gpu</code></dt>
+<dd><p>(<code>integer(1)</code>).</p></dd>
 
 
 </dl><p></p></div>
@@ -214,13 +232,20 @@ Maximum number of training rounds (boosting iterations or epochs) the learner ma
 
 <p></p><hr><a id="method-Auto-estimate_memory"></a><div class="section">
 <h3 id="auto-estimate-memory-"><code>Auto$estimate_memory()</code><a class="anchor" aria-label="anchor" href="#auto-estimate-memory-"></a></h3>
-<p>Estimate the memory for the auto.</p><div class="section">
+<p>Estimate the memory for the auto.
+The estimate is the host memory in MB, so learners that allocate on the gpu return <code>-Inf</code>.</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Auto</span><span class="op">$</span><span class="fu">estimate_memory</span><span class="op">(</span><span class="va">task</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Auto</span><span class="op">$</span><span class="fu">estimate_memory</span><span class="op">(</span><span class="va">task</span>, devices <span class="op">=</span> <span class="st">"cpu"</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
 <h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>task</code></dt>
 <dd><p>(<a href="https://mlr3.mlr-org.com/reference/Task.html" class="external-link">mlr3::Task</a>).</p></dd>
+
+      <dt><code>devices</code></dt>
+<dd><p>(<code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code>)<br>
+Devices to use.
+Allowed values are <code>"cpu"</code> and <code>"cuda"</code>.
+Default is "cpu".</p></dd>
 
 
 </dl><p></p></div>

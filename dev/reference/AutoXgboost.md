@@ -113,13 +113,19 @@ Estimate the memory for the auto.
 
 #### Usage
 
-    AutoXgboost$estimate_memory(task)
+    AutoXgboost$estimate_memory(task, devices = "cpu")
 
 #### Arguments
 
 - `task`:
 
   ([mlr3::Task](https://mlr3.mlr-org.com/reference/Task.html)).
+
+- `devices`:
+
+  ([`character()`](https://rdrr.io/r/base/character.html))  
+  Devices to use. Allowed values are `"cpu"` and `"cuda"`. Default is
+  "cpu".
 
 ------------------------------------------------------------------------
 
@@ -170,12 +176,14 @@ auto("xgboost")
 #>     design_set: function (task, measure, size) 
 #>     devices: cpu cuda
 #>     early_stopping_rounds: function (task, budget = Inf) 
-#>     estimate_memory: function (task) 
+#>     estimate_memory: function (task, devices = "cpu") 
 #>     finalize_model: function (graph_learner) 
 #>     graph: function (task, measure, n_threads, timeout, devices) 
 #>     id: xgboost
 #>     initialize: function (id = "xgboost") 
 #>     internal_measure: function (measure, task) 
+#>     n_cpu: 1
+#>     n_gpu: 0
 #>     packages: mlr3 mlr3learners xgboost
 #>     properties: internal_tuning large_data_sets
 #>     search_space: function (task) 

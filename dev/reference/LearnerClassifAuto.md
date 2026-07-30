@@ -29,6 +29,40 @@ learner. Set `encapsulate_mbo = FALSE` to catch no errors in mbo.
   (`integer(1)`)  
   Number of threads used for training a single learner.
 
+- n_cpu:
+
+  (named [`integer()`](https://rdrr.io/r/base/integer.html))  
+  Number of CPUs a single training of a learner uses, named by learner
+  id, e.g. `c(xgboost = 1)`. Overrides the default of the learner. Must
+  be at least 1 because the worker always runs on the CPU. Currently
+  informational only; the number of threads is controlled by
+  `n_threads`.
+
+- n_gpu:
+
+  (named [`integer()`](https://rdrr.io/r/base/integer.html))  
+  Number of GPUs a single training of a learner uses, named by learner
+  id, e.g. `c(xgboost = 1)`. Overrides the default of the learner. Can
+  only be 0 or 1 for now. The torch learners, TabPFN, and fastai default
+  to 1; all other learners default to 0. Only effective when `"cuda"` is
+  part of `devices`; otherwise every learner is trained on the CPU. When
+  the requirements are mixed and the daemons of the
+  [mirai](https://CRAN.R-project.org/package=mirai) compute profiles
+  `"mlr3automl_cpu"` and `"mlr3automl_gpu"` are set up with
+  [`rush::rush_plan()`](https://rush.mlr-org.com/reference/rush_plan.html),
+  the search space is partitioned into a cpu and a gpu subspace which
+  are tuned with
+  [mlr3mbo::TunerADBOSubspaces](https://mlr3mbo.mlr-org.com/reference/mlr_tuners_adbo_subspaces.html).
+  The workers of a profile only ever propose and evaluate points of the
+  subspace of that profile, so the number of workers per subspace is the
+  number of workers of its profile. Otherwise the cpu and gpu learners
+  are tuned in a single search space with
+  [mlr3mbo::TunerAsyncMbo](https://mlr3mbo.mlr-org.com/reference/mlr_tuners_async_mbo.html).
+
+      mirai::daemons(7, .compute = "mlr3automl_cpu")
+      mirai::daemons(1, .compute = "mlr3automl_gpu")
+      rush::rush_plan(profiles = c(mlr3automl_cpu = 7, mlr3automl_gpu = 1))
+
 - memory_limit:
 
   (`integer(1)`)  
@@ -39,15 +73,23 @@ learner. Set `encapsulate_mbo = FALSE` to catch no errors in mbo.
 
   ([`character()`](https://rdrr.io/r/base/character.html))  
   Devices to use for model training. Possible values are `"cpu"` and
-  `"cuda"`. If `"cuda"`, the learner will be trained on a GPU.
+  `"cuda"`. If `"cuda"`, learners with a `n_gpu` requirement of 1 are
+  trained on a GPU, while the remaining learners stay on the CPU.
 
 - large_data_size:
 
   (`integer(1)`)  
   Threshold for the data set size (number of rows times number of
   columns) above which large-data rules apply. Beyond this threshold the
-  number of parallel workers is reduced and each remaining worker is
-  given proportionally more threads and memory.
+  number of parallel workers is reduced to a quarter, rounded up, and
+  each remaining worker is given proportionally more threads and memory.
+  When the workers are distributed over
+  [mirai](https://CRAN.R-project.org/package=mirai) compute profiles,
+  the number of workers of every profile is reduced, but every profile
+  keeps at least one worker. The `"mlr3automl_gpu"` profile is exempt
+  because its number of workers is fixed by the number of GPUs. It keeps
+  its workers, threads, and memory limit so that the gpu learners do not
+  claim the CPU cores and the memory that are freed on the cpu profiles.
 
 - small_data_size:
 
@@ -85,7 +127,10 @@ learner. Set `encapsulate_mbo = FALSE` to catch no errors in mbo.
 - initial_design_fraction:
 
   (`numeric(1)`)  
-  Fraction of the budget to use for the initial design.
+  Fraction of the budget to use for the initial design. When the search
+  space is partitioned into a cpu and a gpu subspace, the remaining
+  points of both designs are dropped, because every compute profile has
+  its own queue.
 
 - resampling:
 

@@ -131,11 +131,13 @@ auto("kknn")
 #>     design_set: function (task, measure, size) 
 #>     devices: cpu
 #>     early_stopping_rounds: function (task, budget = Inf) 
-#>     estimate_memory: function (task) 
+#>     estimate_memory: function (task, devices = "cpu") 
 #>     finalize_model: function (graph_learner) 
 #>     graph: function (task, measure, n_threads, timeout, devices) 
 #>     id: kknn
 #>     initialize: function (id = "kknn") 
+#>     n_cpu: 1
+#>     n_gpu: 0
 #>     packages: mlr3 mlr3learners kknn
 #>     properties: 
 #>     search_space: function (task) 

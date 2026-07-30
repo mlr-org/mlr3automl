@@ -171,11 +171,13 @@ Default is "cpu".</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     design_set: function (task, measure, size) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     devices: cpu</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     early_stopping_rounds: function (task, budget = Inf) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     estimate_memory: function (task) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     estimate_memory: function (task, devices = "cpu") </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     finalize_model: function (graph_learner) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     graph: function (task, measure, n_threads, timeout, devices) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     id: kknn</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     initialize: function (id = "kknn") </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     n_cpu: 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     n_gpu: 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     packages: mlr3 mlr3learners kknn</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     properties: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     search_space: function (task) </span>

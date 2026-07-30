@@ -49,7 +49,15 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="mlr3automl-development-version">mlr3automl (development version)<a class="anchor" aria-label="anchor" href="#mlr3automl-development-version"></a></h2>
-<ul><li>Initial CRAN release.</li>
+<ul><li><p>fix: Tuning on subspaces no longer fails when a learner has internally tuned parameters, e.g. <code>xgboost.nrounds</code> or <code>ft_transformer.epochs</code>. The subspaces are now derived from the search space of the tuning instance, which no longer holds the internally tuned parameters.</p></li>
+<li><p>fix: The torch learners (mlp, resnet, and ft_transformer) now train on the CPU when <code>devices</code> does not include <code>"cuda"</code>. Previously they passed <code>device = "auto"</code> to <code>mlr3torch</code>, which selects the GPU whenever one is available, so they ignored <code>devices = "cpu"</code> and the resource accounting of the workers.</p></li>
+<li><p>fix: The torch learners (mlp, resnet, and ft_transformer) now train with a batch size of 256 instead of 32 on the GPU. A batch of 32 rows leaves the GPU mostly idle because kernel launches and host to device transfers dominate the step time.</p></li>
+<li><p>fix: The torch learners (mlp, resnet, and ft_transformer) are no longer removed from the search space by <code>memory_limit</code> when they train on the GPU. Their memory estimates are fitted on host memory measurements, which do not describe the memory the model allocates on the GPU.</p></li>
+<li><p>fix: The gpu compute profile is now exempt from the large data set rules. Its number of workers is fixed by the number of GPUs, so reducing it does not free any resources, and its worker previously received the CPU cores and the memory that are freed on the cpu profiles.</p></li>
+<li><p>fix: The number of workers of a compute profile is now reduced to a quarter rounded up instead of rounded down, so a profile no longer loses more than the intended factor, e.g. 7 workers are reduced to 2 instead of 1.</p></li>
+<li><p>feat: The auto learners gained the <code>n_cpu</code> and <code>n_gpu</code> parameters that override the per-learner resource requirements. When the requirements are mixed, <code>"cuda"</code> is part of <code>devices</code>, and the workers are distributed over the <code>mirai</code> compute profiles <code>"mlr3automl_cpu"</code> and <code>"mlr3automl_gpu"</code> with <code>rush::rush_plan(profiles = c(mlr3automl_cpu = 7, mlr3automl_gpu = 1))</code>, the search space is partitioned into a cpu and a gpu subspace and tuned with <code><a href="https://mlr3mbo.mlr-org.com/reference/mlr_tuners_adbo_subspaces.html" class="external-link">mlr3mbo::TunerADBOSubspaces</a></code>. The workers of a profile only evaluate points of the subspace of that profile.</p></li>
+<li><p>BREAKING CHANGE: With <code>devices = c("cpu", "cuda")</code>, the boosting learners (xgboost, lightgbm, and catboost) now train on the CPU by default because their default <code>n_gpu</code> requirement is 0. Set e.g. <code>n_gpu = c(xgboost = 1)</code> to train them on the GPU again.</p></li>
+<li><p>Initial CRAN release.</p></li>
 </ul></div>
   </main></div>
 

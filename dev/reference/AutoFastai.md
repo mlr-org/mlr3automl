@@ -155,13 +155,19 @@ Estimate the memory for the auto.
 
 #### Usage
 
-    AutoFastai$estimate_memory(task)
+    AutoFastai$estimate_memory(task, devices = "cpu")
 
 #### Arguments
 
 - `task`:
 
   ([mlr3::Task](https://mlr3.mlr-org.com/reference/Task.html)).
+
+- `devices`:
+
+  ([`character()`](https://rdrr.io/r/base/character.html))  
+  Devices to use. Allowed values are `"cpu"` and `"cuda"`. Default is
+  "cpu".
 
 ------------------------------------------------------------------------
 
@@ -212,12 +218,14 @@ auto("fastai")
 #>     design_set: function (task, measure, size) 
 #>     devices: cpu cuda
 #>     early_stopping_rounds: function (task, budget = Inf) 
-#>     estimate_memory: function (task) 
+#>     estimate_memory: function (task, devices = "cpu") 
 #>     finalize_model: function (graph_learner) 
 #>     graph: function (task, measure, n_threads, timeout, devices) 
 #>     id: fastai
 #>     initialize: function (id = "fastai") 
 #>     internal_measure: function (measure, task) 
+#>     n_cpu: 1
+#>     n_gpu: 1
 #>     packages: mlr3 mlr3extralearners callr
 #>     properties: internal_tuning
 #>     search_space: function (task) 

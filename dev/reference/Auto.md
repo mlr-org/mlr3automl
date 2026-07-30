@@ -29,6 +29,16 @@ Object of class
 
   ([`character()`](https://rdrr.io/r/base/character.html)).
 
+- `n_cpu`:
+
+  (`integer(1)`)  
+  Number of CPUs a single training of the learner uses.
+
+- `n_gpu`:
+
+  (`integer(1)`)  
+  Number of GPUs a single training of the learner uses.
+
 ## Methods
 
 ### Public methods
@@ -67,7 +77,9 @@ Creates a new instance of this
       properties = character(0),
       task_types = character(0),
       packages = character(0),
-      devices = character(0)
+      devices = character(0),
+      n_cpu = 1L,
+      n_gpu = 0L
     )
 
 #### Arguments
@@ -91,6 +103,14 @@ Creates a new instance of this
 - `devices`:
 
   ([`character()`](https://rdrr.io/r/base/character.html)).
+
+- `n_cpu`:
+
+  (`integer(1)`).
+
+- `n_gpu`:
+
+  (`integer(1)`).
 
 ------------------------------------------------------------------------
 
@@ -187,17 +207,24 @@ budget.
 
 ### `Auto$estimate_memory()`
 
-Estimate the memory for the auto.
+Estimate the memory for the auto. The estimate is the host memory in MB,
+so learners that allocate on the gpu return `-Inf`.
 
 #### Usage
 
-    Auto$estimate_memory(task)
+    Auto$estimate_memory(task, devices = "cpu")
 
 #### Arguments
 
 - `task`:
 
   ([mlr3::Task](https://mlr3.mlr-org.com/reference/Task.html)).
+
+- `devices`:
+
+  ([`character()`](https://rdrr.io/r/base/character.html))  
+  Devices to use. Allowed values are `"cpu"` and `"cuda"`. Default is
+  "cpu".
 
 ------------------------------------------------------------------------
 

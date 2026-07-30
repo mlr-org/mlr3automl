@@ -94,13 +94,19 @@ Estimate the memory for the auto.
 
 #### Usage
 
-    AutoMLP$estimate_memory(task)
+    AutoMLP$estimate_memory(task, devices = "cpu")
 
 #### Arguments
 
 - `task`:
 
   ([mlr3::Task](https://mlr3.mlr-org.com/reference/Task.html)).
+
+- `devices`:
+
+  ([`character()`](https://rdrr.io/r/base/character.html))  
+  Devices to use. Allowed values are `"cpu"` and `"cuda"`. Default is
+  "cpu".
 
 ------------------------------------------------------------------------
 
@@ -131,11 +137,13 @@ auto("mlp")
 #>     design_set: function (task, measure, size) 
 #>     devices: cuda cpu
 #>     early_stopping_rounds: function (task, budget = Inf) 
-#>     estimate_memory: function (task) 
+#>     estimate_memory: function (task, devices = "cpu") 
 #>     finalize_model: function (graph_learner) 
 #>     graph: function (task, measure, n_threads, timeout, devices) 
 #>     id: mlp
 #>     initialize: function (id = "mlp") 
+#>     n_cpu: 1
+#>     n_gpu: 1
 #>     packages: mlr3 mlr3torch
 #>     properties: internal_tuning
 #>     search_space: function (task) 

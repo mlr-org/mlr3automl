@@ -85,6 +85,32 @@ Timeout for training and predicting with a single learner.</p></dd>
 Number of threads used for training a single learner.</p></dd>
 
 
+<dt>n_cpu</dt>
+<dd><p>(named <code><a href="https://rdrr.io/r/base/integer.html" class="external-link">integer()</a></code>)<br>
+Number of CPUs a single training of a learner uses, named by learner id, e.g. <code>c(xgboost = 1)</code>.
+Overrides the default of the learner.
+Must be at least 1 because the worker always runs on the CPU.
+Currently informational only; the number of threads is controlled by <code>n_threads</code>.</p></dd>
+
+
+<dt>n_gpu</dt>
+<dd><p>(named <code><a href="https://rdrr.io/r/base/integer.html" class="external-link">integer()</a></code>)<br>
+Number of GPUs a single training of a learner uses, named by learner id, e.g. <code>c(xgboost = 1)</code>.
+Overrides the default of the learner.
+Can only be 0 or 1 for now.
+The torch learners, TabPFN, and fastai default to 1; all other learners default to 0.
+Only effective when <code>"cuda"</code> is part of <code>devices</code>; otherwise every learner is trained on the CPU.
+When the requirements are mixed and the daemons of the <a href="https://CRAN.R-project.org/package=mirai" class="external-link"><span class="pkg">mirai</span></a> compute profiles
+<code>"mlr3automl_cpu"</code> and <code>"mlr3automl_gpu"</code> are set up with <code><a href="https://rush.mlr-org.com/reference/rush_plan.html" class="external-link">rush::rush_plan()</a></code>, the search space is
+partitioned into a cpu and a gpu subspace which are tuned with <a href="https://mlr3mbo.mlr-org.com/reference/mlr_tuners_adbo_subspaces.html" class="external-link">mlr3mbo::TunerADBOSubspaces</a>.
+The workers of a profile only ever propose and evaluate points of the subspace of that profile,
+so the number of workers per subspace is the number of workers of its profile.
+Otherwise the cpu and gpu learners are tuned in a single search space with <a href="https://mlr3mbo.mlr-org.com/reference/mlr_tuners_async_mbo.html" class="external-link">mlr3mbo::TunerAsyncMbo</a>.</p>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>mirai<span class="sc">::</span><span class="fu">daemons</span>(<span class="dv">7</span>, <span class="at">.compute =</span> <span class="st">"mlr3automl_cpu"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>mirai<span class="sc">::</span><span class="fu">daemons</span>(<span class="dv">1</span>, <span class="at">.compute =</span> <span class="st">"mlr3automl_gpu"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>rush<span class="sc">::</span><span class="fu">rush_plan</span>(<span class="at">profiles =</span> <span class="fu">c</span>(<span class="at">mlr3automl_cpu =</span> <span class="dv">7</span>, <span class="at">mlr3automl_gpu =</span> <span class="dv">1</span>))</span></code></pre><p></p></div></dd>
+
+
 <dt>memory_limit</dt>
 <dd><p>(<code>integer(1)</code>)<br>
 Memory limit for training a single learner in MB.
@@ -95,15 +121,21 @@ The limit is shared across the parallel workers, i.e. divided by the number of w
 <dd><p>(<code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code>)<br>
 Devices to use for model training.
 Possible values are <code>"cpu"</code> and <code>"cuda"</code>.
-If <code>"cuda"</code>, the learner will be trained on a GPU.</p></dd>
+If <code>"cuda"</code>, learners with a <code>n_gpu</code> requirement of 1 are trained on a GPU,
+while the remaining learners stay on the CPU.</p></dd>
 
 
 <dt>large_data_size</dt>
 <dd><p>(<code>integer(1)</code>)<br>
 Threshold for the data set size (number of rows times number of columns) above
 which large-data rules apply.
-Beyond this threshold the number of parallel workers is reduced and each remaining
-worker is given proportionally more threads and memory.</p></dd>
+Beyond this threshold the number of parallel workers is reduced to a quarter, rounded up, and each
+remaining worker is given proportionally more threads and memory.
+When the workers are distributed over <a href="https://CRAN.R-project.org/package=mirai" class="external-link"><span class="pkg">mirai</span></a> compute profiles, the number of workers of every
+profile is reduced, but every profile keeps at least one worker.
+The <code>"mlr3automl_gpu"</code> profile is exempt because its number of workers is fixed by the number of GPUs.
+It keeps its workers, threads, and memory limit so that the gpu learners do not claim the CPU cores and
+the memory that are freed on the cpu profiles.</p></dd>
 
 
 <dt>small_data_size</dt>
@@ -142,7 +174,9 @@ Possible values are <code>"lhs"</code>, <code>"sobol"</code>, <code>"random"</co
 
 <dt>initial_design_fraction</dt>
 <dd><p>(<code>numeric(1)</code>)<br>
-Fraction of the budget to use for the initial design.</p></dd>
+Fraction of the budget to use for the initial design.
+When the search space is partitioned into a cpu and a gpu subspace, the remaining points of both
+designs are dropped, because every compute profile has its own queue.</p></dd>
 
 
 <dt>resampling</dt>
