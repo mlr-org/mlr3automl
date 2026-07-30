@@ -16,6 +16,66 @@ test_that("cb_timeout_xgboost resets the clock on each training", {
   )
 })
 
+test_that("effective_resources applies defaults, overrides, and the devices gate", {
+  autos = list(
+    debug_cpu = AutoDebug$new(id = "debug_cpu"),
+    debug_gpu = AutoDebug$new(id = "debug_gpu", devices = c("cpu", "cuda"), n_gpu = 1L)
+  )
+
+  resources = effective_resources(autos, devices = c("cpu", "cuda"))
+  expect_equal(resources$n_cpu, c(debug_cpu = 1L, debug_gpu = 1L))
+  expect_equal(resources$n_gpu, c(debug_cpu = 0L, debug_gpu = 1L))
+
+  resources = effective_resources(autos, n_gpu = c(debug_cpu = 1L), devices = c("cpu", "cuda"))
+  expect_equal(resources$n_gpu, c(debug_cpu = 1L, debug_gpu = 1L))
+
+  resources = effective_resources(autos, n_cpu = c(debug_gpu = 4L), devices = "cpu")
+  expect_equal(resources$n_cpu, c(debug_cpu = 1L, debug_gpu = 4L))
+  expect_equal(resources$n_gpu, c(debug_cpu = 0L, debug_gpu = 0L))
+
+  expect_error(effective_resources(autos, n_gpu = c(nope = 1L)), "selected learner ids")
+})
+
+test_that("reduce_workers reduces a single group of workers", {
+  reduced = reduce_workers(NULL, 8L)
+  expect_null(reduced$profiles)
+  expect_equal(reduced$n_workers, 2L)
+  expect_equal(reduced$scale, 4)
+
+  # rounded up so that the workers are not reduced by more than a factor of 4
+  reduced = reduce_workers(NULL, 7L)
+  expect_equal(reduced$n_workers, 2L)
+  expect_equal(reduced$scale, 3.5)
+
+  # at least one worker is kept
+  reduced = reduce_workers(NULL, 1L)
+  expect_equal(reduced$n_workers, 1L)
+  expect_equal(reduced$scale, 1)
+})
+
+test_that("reduce_workers reduces the cpu profile but not the gpu profile", {
+  profiles = c(mlr3automl_cpu = 7L, mlr3automl_gpu = 1L)
+
+  reduced = reduce_workers(profiles, sum(profiles))
+  expect_equal(reduced$profiles, c(mlr3automl_cpu = 2L, mlr3automl_gpu = 1L))
+  expect_equal(reduced$n_workers, 3L)
+  # the scale only compensates the reduced cpu profile
+  expect_equal(reduced$scale, 3.5)
+
+  reduced = reduce_workers(profiles["mlr3automl_cpu"], 7L)
+  expect_equal(reduced$profiles, c(mlr3automl_cpu = 2L))
+  expect_equal(reduced$scale, 3.5)
+})
+
+test_that("reduce_workers keeps the workers when only the gpu profile is set up", {
+  profiles = c(mlr3automl_gpu = 2L)
+
+  reduced = reduce_workers(profiles, sum(profiles))
+  expect_equal(reduced$profiles, profiles)
+  expect_equal(reduced$n_workers, 2L)
+  expect_equal(reduced$scale, 1)
+})
+
 test_that("cb_timeout_lightgbm resets the clock on each training", {
   callback = cb_timeout_lightgbm(timeout = 100)
   state = environment(callback)$state

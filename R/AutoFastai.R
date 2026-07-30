@@ -35,7 +35,9 @@ AutoFastai = R6Class(
         properties = "internal_tuning",
         task_types = "classif",
         packages = c("mlr3", "mlr3extralearners", "callr"),
-        devices = c("cpu", "cuda")
+        devices = c("cpu", "cuda"),
+        n_cpu = 1L,
+        n_gpu = 1L
       )
     },
 
@@ -99,7 +101,7 @@ AutoFastai = R6Class(
 
     #' @description
     #' Estimate the memory for the auto.
-    estimate_memory = function(task) {
+    estimate_memory = function(task, devices = "cpu") {
       memory_size = task$nrow * task$ncol * 8 * 10 / 1e6
       lg$info("Fastai memory size: %s MB", round(memory_size))
       ceiling(memory_size)

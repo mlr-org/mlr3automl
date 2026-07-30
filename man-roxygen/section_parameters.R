@@ -6,6 +6,32 @@
 #'   \item{n_threads}{(`integer(1)`)\cr
 #'   Number of threads used for training a single learner.}
 #'
+#'   \item{n_cpu}{(named `integer()`)\cr
+#'   Number of CPUs a single training of a learner uses, named by learner id, e.g. `c(xgboost = 1)`.
+#'   Overrides the default of the learner.
+#'   Must be at least 1 because the worker always runs on the CPU.
+#'   Currently informational only; the number of threads is controlled by `n_threads`.}
+#'
+#'   \item{n_gpu}{(named `integer()`)\cr
+#'   Number of GPUs a single training of a learner uses, named by learner id, e.g. `c(xgboost = 1)`.
+#'   Overrides the default of the learner.
+#'   Can only be 0 or 1 for now.
+#'   The torch learners, TabPFN, and fastai default to 1; all other learners default to 0.
+#'   Only effective when `"cuda"` is part of `devices`; otherwise every learner is trained on the CPU.
+#'   When the requirements are mixed and the daemons of the \CRANpkg{mirai} compute profiles
+#'   `"mlr3automl_cpu"` and `"mlr3automl_gpu"` are set up with [rush::rush_plan()], the search space is
+#'   partitioned into a cpu and a gpu subspace which are tuned with [mlr3mbo::TunerADBOSubspaces].
+#'   The workers of a profile only ever propose and evaluate points of the subspace of that profile,
+#'   so the number of workers per subspace is the number of workers of its profile.
+#'   Otherwise the cpu and gpu learners are tuned in a single search space with [mlr3mbo::TunerAsyncMbo].
+#'
+#'   ```
+#'   mirai::daemons(7, .compute = "mlr3automl_cpu")
+#'   mirai::daemons(1, .compute = "mlr3automl_gpu")
+#'   rush::rush_plan(profiles = c(mlr3automl_cpu = 7, mlr3automl_gpu = 1))
+#'   ```
+#'   }
+#'
 #'   \item{memory_limit}{(`integer(1)`)\cr
 #'   Memory limit for training a single learner in MB.
 #'   The limit is shared across the parallel workers, i.e. divided by the number of workers.}
@@ -13,13 +39,19 @@
 #'   \item{devices}{(`character()`)\cr
 #'   Devices to use for model training.
 #'   Possible values are `"cpu"` and `"cuda"`.
-#'   If `"cuda"`, the learner will be trained on a GPU.}
+#'   If `"cuda"`, learners with a `n_gpu` requirement of 1 are trained on a GPU,
+#'   while the remaining learners stay on the CPU.}
 #'
 #'   \item{large_data_size}{(`integer(1)`)\cr
 #'   Threshold for the data set size (number of rows times number of columns) above
 #'   which large-data rules apply.
-#'   Beyond this threshold the number of parallel workers is reduced and each remaining
-#'   worker is given proportionally more threads and memory.}
+#'   Beyond this threshold the number of parallel workers is reduced to a quarter, rounded up, and each
+#'   remaining worker is given proportionally more threads and memory.
+#'   When the workers are distributed over \CRANpkg{mirai} compute profiles, the number of workers of every
+#'   profile is reduced, but every profile keeps at least one worker.
+#'   The `"mlr3automl_gpu"` profile is exempt because its number of workers is fixed by the number of GPUs.
+#'   It keeps its workers, threads, and memory limit so that the gpu learners do not claim the CPU cores and
+#'   the memory that are freed on the cpu profiles.}
 #'
 #'   \item{small_data_size}{(`integer(1)`)\cr
 #'   Threshold value for the data set size from which special rules apply.}
@@ -44,7 +76,9 @@
 #'   `"random"` uses a random design.}
 #'
 #'   \item{initial_design_fraction}{(`numeric(1)`)\cr
-#'   Fraction of the budget to use for the initial design.}
+#'   Fraction of the budget to use for the initial design.
+#'   When the search space is partitioned into a cpu and a gpu subspace, the remaining points of both
+#'   designs are dropped, because every compute profile has its own queue.}
 #'
 #'   \item{resampling}{([mlr3::Resampling])\cr
 #'   Resampling strategy used for tuning.}

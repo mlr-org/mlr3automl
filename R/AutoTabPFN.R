@@ -33,7 +33,9 @@ AutoTabPFN = R6Class(
         properties = character(0),
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3extralearners", "callr"),
-        devices = c("cpu", "cuda")
+        devices = c("cpu", "cuda"),
+        n_cpu = 1L,
+        n_gpu = 1L
       )
     },
 
@@ -116,7 +118,7 @@ AutoTabPFN = R6Class(
 
     #' @description
     #' Estimate the memory for the auto.
-    estimate_memory = function(task) {
+    estimate_memory = function(task, devices = "cpu") {
       memory_size = task$nrow * task$ncol * 8 * 10 / 1e6
       lg$info("Tabpfn memory size: %s MB", round(memory_size))
       ceiling(memory_size)

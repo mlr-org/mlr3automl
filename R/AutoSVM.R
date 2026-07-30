@@ -30,7 +30,9 @@ AutoSVM = R6Class(
         properties = character(0),
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3learners", "e1071"),
-        devices = "cpu"
+        devices = "cpu",
+        n_cpu = 1L,
+        n_gpu = 0L
       )
     },
 
