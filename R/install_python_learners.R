@@ -7,6 +7,8 @@
 #'
 #' @details
 #' The environment is created in the project directory by default.
+#' The function downloads and installs Python packages and must therefore be called explicitly by the user.
+#' It is never called by any other function of the package.
 #'
 #' @param learners (`character()`)\cr
 #'   Learners to install the Python dependencies for.
@@ -21,8 +23,12 @@
 #' @return Invisibly returns the path to the Python binary in the environment.
 #'
 #' @examples
+#' # The example is wrapped in \dontrun{} because it cannot be executed during checks.
+#' # It downloads and installs conda, a Python interpreter, and several Python packages,
+#' # which requires network access, several GB of disk space, and a few minutes of runtime.
 #' \dontrun{
-#' install_python_learners()
+#' python = install_python_learners()
+#' Sys.setenv(RETICULATE_PYTHON = python)
 #' }
 #' @export
 install_python_learners = function(

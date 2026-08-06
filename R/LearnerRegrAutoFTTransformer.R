@@ -9,6 +9,7 @@
 #' @return Object of class [R6::R6Class] and `LearnerRegrAutoFTTransformer`.
 #'
 #' @templateVar id regr.auto_ft_transformer
+#' @templateVar packages "mlr3torch"
 #' @template example_learner
 #'
 #' @export

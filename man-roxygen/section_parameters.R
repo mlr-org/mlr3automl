@@ -22,7 +22,7 @@
 #'   worker is given proportionally more threads and memory.}
 #'
 #'   \item{small_data_size}{(`integer(1)`)\cr
-#'   Threshold value for the data set size from which special rules apply.}
+#'   Threshold value for the data set size (rows) from which special rules apply.}
 #'
 #'   \item{small_data_resampling}{([mlr3::Resampling])\cr
 #'   Resampling strategy to use for model training on small data sets.}

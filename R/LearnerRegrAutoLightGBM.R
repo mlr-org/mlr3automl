@@ -9,6 +9,7 @@
 #' @return Object of class [R6::R6Class] and `LearnerRegrAutoLightGBM`.
 #'
 #' @templateVar id regr.auto_lightgbm
+#' @templateVar packages c("mlr3extralearners", "lightgbm")
 #' @template example_learner
 #'
 #' @export

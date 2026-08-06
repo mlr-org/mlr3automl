@@ -9,6 +9,7 @@
 #' @return Object of class [R6::R6Class] and `LearnerRegrAutoKKNN`.
 #'
 #' @templateVar id regr.auto_kknn
+#' @templateVar packages "kknn"
 #' @template example_learner
 #'
 #' @export

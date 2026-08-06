@@ -121,8 +121,15 @@ The \code{TabPFN} learner additionally requires the \code{TABPFN_TOKEN} environm
 }
 
 \examples{
-learner = lrn("regr.auto")
-learner
+packages = c(
+  "mlr3extralearners", "catboost", "ranger", "callr", "mlr3torch",
+  "glmnet", "kknn", "MASS", "lightgbm", "e1071", "xgboost"
+)
+if (mlr3misc::require_namespaces(packages, quietly = TRUE)) {
+  learner = lrn("regr.auto")
+  learner
+}
+
 }
 \section{Super classes}{
 \code{\link[mlr3:Learner]{mlr3::Learner}} -> \code{\link[mlr3automl:LearnerAuto]{LearnerAuto}} -> \code{LearnerRegrAuto}
