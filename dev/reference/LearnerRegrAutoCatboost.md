@@ -81,6 +81,7 @@ The objects of this class are cloneable with this method.
 
 ``` r
 learner = lrn("regr.auto_catboost")
+#> Warning: Package 'catboost' required but not installed for Learner 'regr.auto_catboost'
 learner
 #> 
 #> ── <LearnerRegrAutoCatboost> (regr.auto_catboost) ──────────────────────────────
