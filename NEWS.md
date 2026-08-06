@@ -1,5 +1,7 @@
 # mlr3automl (development version)
 
+* fix: The default configuration of the tabpfn learner in the initial design now matches TabPFN-3. The number of estimators changed from 4 to 8 and the softmax temperature from 1.0 to 0.9, which were the defaults of TabPFN-2.
+* fix: The tabpfn learner now sets `auto_scale_n_estimators = FALSE`. TabPFN-3 otherwise raises the number of estimators on its own when the task has more features than a single ensemble member sees, which overrides the tuned value.
 * fix: Tuning on subspaces no longer fails when a learner has internally tuned parameters, e.g. `xgboost.nrounds` or `ft_transformer.epochs`. The subspaces are now derived from the search space of the tuning instance, which no longer holds the internally tuned parameters.
 * fix: The torch learners (mlp, resnet, and ft_transformer) now train on the CPU when `devices` does not include `"cuda"`. Previously they passed `device = "auto"` to `mlr3torch`, which selects the GPU whenever one is available, so they ignored `devices = "cpu"` and the resource accounting of the workers.
 * fix: The torch learners (mlp, resnet, and ft_transformer) now train with a batch size of 256 instead of 32 on the GPU. A batch of 32 rows leaves the GPU mostly idle because kernel launches and host to device transfers dominate the step time.
