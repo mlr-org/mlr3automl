@@ -106,7 +106,6 @@ AutoTabPFN = R6Class(
       fallback = lrn(sprintf("%s.featureless", task$task_type))
       fallback$predict_type = measure$predict_type
       learner$predict_type = measure$predict_type
-      learner$encapsulate(method = "evaluate", fallback = fallback)
 
       po("colapply", id = "tabpfn_character", applicator = as.factor, affect_columns = selector_type("character")) %>>%
         po("removeconstants", id = "tabpfn_removeconstants") %>>%
@@ -150,14 +149,17 @@ AutoTabPFN = R6Class(
     search_space = function(task) {
       if (task$task_type == "classif") {
         ps(
-          tabpfn.n_estimators = p_int(1, 8),
+          # trafo forces a true integer even when the BO candidate arrives as an
+          # integer-valued double, which numpy's Generator.choice() (used by tabpfn's
+          # ensemble config sampler) rejects with a TypeError
+          tabpfn.n_estimators = p_int(1, 8, trafo = as.integer),
           tabpfn.softmax_temperature = p_dbl(0.75, 1.0),
           tabpfn.balance_probabilities = p_lgl(),
           tabpfn.average_before_softmax = p_lgl()
         )
       } else if (task$task_type == "regr") {
         ps(
-          tabpfn.n_estimators = p_int(1, 8),
+          tabpfn.n_estimators = p_int(1, 8, trafo = as.integer),
           tabpfn.average_before_softmax = p_lgl()
         )
       }
