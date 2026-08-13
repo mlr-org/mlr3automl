@@ -6,7 +6,8 @@
 \usage{
 install_python_learners(
   learners = c("fastai", "tabpfn"),
-  envname = file.path(getwd(), ".conda", "mlr3automl-python"),
+  envname = file.path(tools::R_user_dir("mlr3automl", which = "data"),
+    "mlr3automl-python"),
   python_version = "3.12"
 )
 }
@@ -17,7 +18,7 @@ One or more of \code{"fastai"} and \code{"tabpfn"}.}
 
 \item{envname}{(\code{character(1)})\cr
 Path to the conda environment directory.
-Defaults to \code{.conda/mlr3automl-python} in the current working directory.}
+Defaults to \code{mlr3automl-python} under \link[tools:R_user_dir]{tools::R_user_dir("mlr3automl", "data")}.}
 
 \item{python_version}{(\code{character(1)})\cr
 Python version to use.
@@ -32,7 +33,9 @@ Installs the dependencies of the fastai auto learner and the tabpfn auto learner
 The learners share a single environment, so one \code{RETICULATE_PYTHON} covers both.
 }
 \details{
-The environment is created in the project directory by default.
+The environment is created under \code{\link[tools:R_user_dir]{tools::R_user_dir()}} by default, not inside the
+project directory: the environment can exceed 10GB with torch/CUDA dependencies, and a
+project-local path risks getting bundled into source tarballs on \verb{R CMD build}/\code{renv::install()}.
 }
 \examples{
 \dontrun{

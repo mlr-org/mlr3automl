@@ -6,11 +6,33 @@
 # the nested session only loads the namespaces referenced by the learner,
 # so libtorch never enters the process that initializes python.
 isolated_session = function(learner, task, method) {
-  callr::r(
-    function(learner, task, method) {
-      mlr3misc::get_private(learner)[[method]](task)
-    },
-    args = list(learner = learner, task = task, method = method)
+  tryCatch(
+    callr::r(
+      function(learner, task, method) {
+        tryCatch(
+          mlr3misc::get_private(learner)[[method]](task),
+          error = function(e) {
+            py_err = tryCatch(reticulate::py_last_error(), error = function(e2) NULL)
+            if (!is.null(py_err)) {
+              cat("\n=== reticulate::py_last_error() ===\n", file = stderr())
+              cat(py_err$message, file = stderr())
+            }
+            stop(e)
+          }
+        )
+      },
+      args = list(learner = learner, task = task, method = method)
+    ),
+    error = function(e) {
+      # callr::r() captures the child's stdout/stderr in memory (stdout = stderr = NULL are
+      # the defaults) and attaches them to the error condition, so no manual temp files needed.
+      out_txt = if (is.null(e$stdout)) "" else e$stdout
+      err_txt = if (is.null(e$stderr)) "" else e$stderr
+      stop(sprintf(
+        "isolated_session(%s) failed: %s\n--- child stdout ---\n%s\n--- child stderr ---\n%s",
+        method, conditionMessage(e), out_txt, err_txt
+      ), call. = FALSE)
+    }
   )
 }
 
