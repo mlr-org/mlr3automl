@@ -97,7 +97,10 @@ AutoTabPFN = R6Class(
         LearnerRegrTabPFNIsolated$new()
       }
       learner$id = "tabpfn"
-      learner$param_set$set_values(device = device)
+      # tabpfn raises n_estimators on its own when the task has more features than a single ensemble
+      # member sees (500), which would silently override the tuned value and the memory estimate.
+      # the upper bound of the search space (8) covers the 2,000 features the check allows.
+      learner$param_set$set_values(device = device, auto_scale_n_estimators = FALSE)
 
       set_threads(learner, n_threads)
 
@@ -128,14 +131,14 @@ AutoTabPFN = R6Class(
     design_default = function(task) {
       values = if (task$task_type == "classif") {
         list(
-          tabpfn.n_estimators = 4L,
-          tabpfn.softmax_temperature = 1.0,
+          tabpfn.n_estimators = 8L,
+          tabpfn.softmax_temperature = 0.9,
           tabpfn.balance_probabilities = FALSE,
           tabpfn.average_before_softmax = FALSE
         )
       } else {
         list(
-          tabpfn.n_estimators = 4L,
+          tabpfn.n_estimators = 8L,
           tabpfn.average_before_softmax = FALSE
         )
       }
