@@ -6,14 +6,15 @@
 #' The learners share a single environment, so one `RETICULATE_PYTHON` covers both.
 #'
 #' @details
-#' The environment is created in the project directory by default.
+#' The environment is created under [tools::R_user_dir()] by default. 
+#' The environment can exceed 10GB with torch/CUDA dependencies.
 #'
 #' @param learners (`character()`)\cr
 #'   Learners to install the Python dependencies for.
 #'   One or more of `"fastai"` and `"tabpfn"`.
 #' @param envname (`character(1)`)\cr
 #'   Path to the conda environment directory.
-#'   Defaults to `.conda/mlr3automl-python` in the current working directory.
+#'   Defaults to `mlr3automl-python` under [tools::R_user_dir("mlr3automl", "data")][tools::R_user_dir()].
 #' @param python_version (`character(1)`)\cr
 #'   Python version to use.
 #'   Pinned to `"3.12"` by default so the environment is reproducible across machines.
@@ -27,7 +28,7 @@
 #' @export
 install_python_learners = function(
   learners = c("fastai", "tabpfn"),
-  envname = file.path(getwd(), ".conda", "mlr3automl-python"),
+  envname = file.path(tools::R_user_dir("mlr3automl", which = "data"), "mlr3automl-python"),
   python_version = "3.12"
 ) {
   assert_subset(learners, c("fastai", "tabpfn"), empty.ok = FALSE)
