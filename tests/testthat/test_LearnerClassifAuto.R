@@ -147,7 +147,9 @@ test_that("small data set switch works", {
     initial_design_size = 2,
     store_benchmark_result = TRUE,
     encapsulate_learner = FALSE,
-    encapsulate_mbo = FALSE
+    encapsulate_mbo = FALSE,
+    # the small data resampling only applies without bagging
+    bagging = FALSE
   )
 
   expect_class(learner$train(task), "LearnerClassifAuto")
@@ -181,7 +183,11 @@ test_that("default measure is used when none is provided", {
 
   expect_null(learner$param_set$values$measure)
   expect_class(learner$train(task), "LearnerClassifAuto")
-  expect_equal(learner$model$instance$objective$measures[[1]]$id, "classif.ce")
+  # with bagging, the tuner optimizes the internal valid score and
+  # the default measure scores the out-of-fold predictions
+  expect_equal(learner$model$instance$objective$measures[[1]]$id, "internal_valid_score")
+  state = learner$model$graph_learner$graph_model$pipeops$glmnet$state
+  expect_named(state$internal_valid_scores, "classif.ce")
 })
 
 test_that("large data set switch works", {
@@ -419,7 +425,9 @@ test_that("lightgbm time limit works", {
     terminator = trm("evals", n_evals = 10),
     initial_design_size = 1,
     encapsulate_learner = FALSE,
-    encapsulate_mbo = FALSE
+    encapsulate_mbo = FALSE,
+    # with bagging, the timeout is divided among the children and the total runtime exceeds the threshold
+    bagging = FALSE
   )
 
   learner$train(task)
@@ -450,7 +458,9 @@ test_that("xgboost time limit works", {
     terminator = trm("evals", n_evals = 10),
     initial_design_size = 1,
     encapsulate_learner = FALSE,
-    encapsulate_mbo = FALSE
+    encapsulate_mbo = FALSE,
+    # with bagging, the timeout is divided among the children and the total runtime exceeds the threshold
+    bagging = FALSE
   )
 
   learner$train(task)

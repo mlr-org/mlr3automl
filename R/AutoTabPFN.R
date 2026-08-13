@@ -30,7 +30,7 @@ AutoTabPFN = R6Class(
     initialize = function(id = "tabpfn") {
       super$initialize(
         id = id,
-        properties = character(0),
+        properties = "bagging_refit",
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3extralearners", "callr"),
         devices = c("cpu", "cuda"),

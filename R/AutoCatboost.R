@@ -66,6 +66,8 @@ AutoCatboost = R6Class(
       )
       set_threads(learner, n_threads)
 
+      # the character conversion derives the levels from the observed values,
+      # so fixfactors keeps the levels consistent between training and prediction
       po(
         "colapply",
         id = "catboost_character",
@@ -79,6 +81,7 @@ AutoCatboost = R6Class(
           applicator = as.numeric,
           affect_columns = selector_type("integer")
         ) %>>%
+        po("fixfactors", id = "catboost_fixfactors") %>>%
         po("removeconstants", id = "catboost_post_removeconstants") %>>%
         learner
     },

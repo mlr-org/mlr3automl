@@ -118,6 +118,35 @@ Auto = R6Class(
     },
 
     #' @description
+    #' Create the bagged graph for the auto.
+    #' Wraps the graph of `$graph()` in a [PipeOpLearnerBagged],
+    #' so a configuration is evaluated as `folds` cross-validated child models
+    #' and scored with their out-of-fold predictions.
+    #'
+    #' In contrast to `$graph()`, `timeout` is the timeout of the complete configuration.
+    #' It is divided among the child models.
+    #'
+    #' @param folds (`integer(1)`)\cr
+    #'   Number of cross-validation folds.
+    graph_bagged = function(task, measure, n_threads, timeout, devices, folds) {
+      assert_int(folds, lower = 2L)
+
+      # a configuration trains `folds` children, so each child receives a share of the timeout
+      fit_timeout = max(1L, timeout %/% folds)
+
+      search_space = self$search_space(task)
+      internal_ids = search_space$ids(any_tags = "internal_tuning")
+
+      PipeOpLearnerBagged$new(
+        self$graph(task, measure, n_threads, fit_timeout, devices),
+        id = self$id,
+        measure = measure,
+        internal_search_space = if (length(internal_ids)) search_space$clone(deep = TRUE)$subset(internal_ids),
+        param_vals = list(bagging.folds = folds)
+      )
+    },
+
+    #' @description
     #' Estimate the number of early stopping rounds (the patience) for a learner.
     #' `budget` is the maximum number of training rounds (boosting iterations or epochs) the learner may use.
     #' The patience is capped well below the budget, otherwise early stopping and validation-based internal tuning

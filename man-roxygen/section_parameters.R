@@ -1,7 +1,24 @@
 #' @section Parameters:
 #' \describe{
+#'   \item{bagging}{(`logical(1)`)\cr
+#'   Whether to train each configuration as a bagged ensemble.
+#'   A configuration trains `bagging_folds` child models on a cross-validation of the training data,
+#'   and the test prediction is the equally weighted average of the children.
+#'   The configuration is scored by its out-of-fold predictions,
+#'   so the tuning archive reports the scores in the `internal_valid_score` column and
+#'   the `resampling` and `small_data_resampling` parameters have no effect.
+#'   The neural network learners (mlp, resnet, ft_transformer, and fastai) and tabpfn instead fit a
+#'   single final model on the complete training data after the cross-validation.
+#'   The final model reuses the exact model of the winning configuration trained during tuning.
+#'   Default is `TRUE`.}
+#'
+#'   \item{bagging_folds}{(`integer(1)`)\cr
+#'   Number of cross-validation folds and therefore child models of a bagged configuration.
+#'   Default is `8`.}
+#'
 #'   \item{learner_timeout}{(`integer(1)`)\cr
-#'   Timeout for training and predicting with a single learner.}
+#'   Timeout for training and predicting with a single configuration.
+#'   With `bagging`, each child model receives an equal share of the timeout.}
 #'
 #'   \item{n_threads}{(`integer(1)`)\cr
 #'   Number of threads used for training a single learner.}
@@ -57,7 +74,8 @@
 #'   Threshold value for the data set size from which special rules apply.}
 #'
 #'   \item{small_data_resampling}{([mlr3::Resampling])\cr
-#'   Resampling strategy to use for model training on small data sets.}
+#'   Resampling strategy to use for model training on small data sets.
+#'   Only used when `bagging` is `FALSE`.}
 #'
 #'   \item{initial_design_default}{(`logical(1)`)\cr
 #'   Whether to use the default design of the learner.}
@@ -81,7 +99,8 @@
 #'   designs are dropped, because every compute profile has its own queue.}
 #'
 #'   \item{resampling}{([mlr3::Resampling])\cr
-#'   Resampling strategy used for tuning.}
+#'   Resampling strategy used for tuning.
+#'   Only used when `bagging` is `FALSE`.}
 #'
 #'   \item{terminator}{([bbotk::Terminator])\cr
 #'   Terminator criterion for tuning.}

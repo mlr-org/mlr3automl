@@ -110,6 +110,7 @@ Collate:
     'LearnerRegrAutoSVM.R'
     'LearnerRegrAutoTabPFN.R'
     'LearnerRegrAutoXgboost.R'
+    'PipeOpLearnerBagged.R'
     'helper.R'
     'install_python_learners.R'
     'isolated_model.R'

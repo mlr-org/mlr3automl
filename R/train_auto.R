@@ -66,7 +66,11 @@ train_auto = function(self, private, task) {
   learner_memory_limit = function(auto) if (uses_gpu(auto)) memory_limit_gpu else memory_limit
 
   # resampling
-  resampling = if (task$nrow < pv$small_data_size) {
+  # with bagging, a configuration is validated by the out-of-fold predictions of its children,
+  # so the outer resampling trains on the complete data
+  resampling = if (pv$bagging) {
+    rsmp("insample")
+  } else if (task$nrow < pv$small_data_size) {
     lg$info(
       "Small data set detected. Using small data set resampling with %i iterations",
       pv$small_data_resampling$iters
@@ -127,7 +131,19 @@ train_auto = function(self, private, task) {
   }
 
   branches = map(autos, function(auto) {
-    auto$graph(task, pv$measure, learner_n_threads(auto), pv$learner_timeout, learner_devices(auto))
+    if (pv$bagging) {
+      # the bagged graph divides `learner_timeout` among the child models itself
+      auto$graph_bagged(
+        task,
+        pv$measure,
+        learner_n_threads(auto),
+        pv$learner_timeout,
+        learner_devices(auto),
+        pv$bagging_folds
+      )
+    } else {
+      auto$graph(task, pv$measure, learner_n_threads(auto), pv$learner_timeout, learner_devices(auto))
+    }
   })
   graph_learner = as_learner(
     po("branch", options = names(branches)) %>>%
@@ -154,27 +170,52 @@ train_auto = function(self, private, task) {
     "hyperparameter-free" %in% auto$properties
   })]
 
-  if (length(learners_with_validation)) {
+  if (pv$bagging) {
+    # the validate field must be set for the worker to extract the internal valid scores,
+    # but the bagged pipeops create their validation data internally and discard the incoming validation task.
+    # set_validate() must not be used because it dispatches on the bagged pipeops
+    graph_learner$validate = "test"
+    # the out-of-fold score replaces the prediction-based score, so no predictions are needed during tuning
+    graph_learner$predict_sets = NULL
+  } else if (length(learners_with_validation)) {
     set_validate(graph_learner, "test", ids = learners_with_validation)
   }
 
   # initialize search space
   search_space = combine_search_spaces(autos, task)
 
+  # with bagging, failed configurations produce no internal valid score,
+  # so the missing scores are imputed with a penalized featureless baseline score
+  score_penalty = if (pv$bagging) {
+    featureless = lrn(sprintf("%s.featureless", task$task_type))
+    featureless$predict_type = predict_type
+    baseline = featureless$train(task)$predict(task)$score(pv$measure, task = task)
+    nudge = 0.01 * max(abs(baseline), 1)
+    unname(if (pv$measure$minimize) baseline + nudge else baseline - nudge)
+  }
+
   callbacks = c(
     pv$callbacks,
     clbk("mlr3tuning.async_save_logs"),
     clbk("mlr3automl.initial_design_runtime", initial_design_fraction = pv$initial_design_fraction),
+    if (pv$bagging) clbk("mlr3automl.impute_valid_score", penalty = score_penalty),
     # reuse a persistent mirai daemon per worker for the "mirai" encapsulation of the learners
     if (pv$encapsulate_learner) clbk("mlr3automl.encapsulation_daemon")
   )
+
+  # with bagging, the tuner optimizes the out-of-fold score reported as internal valid score
+  tuning_measure = if (pv$bagging) {
+    msr("internal_valid_score", minimize = pv$measure$minimize)
+  } else {
+    pv$measure
+  }
 
   # tuning instance
   self$instance = ti_async(
     task = task,
     learner = graph_learner,
     resampling = resampling,
-    measures = pv$measure,
+    measures = tuning_measure,
     terminator = pv$terminator,
     search_space = search_space,
     callbacks = callbacks,
@@ -267,11 +308,23 @@ train_auto = function(self, private, task) {
   # fit final model
   lg$info("Learner '%s' fits final model", self$id)
 
-  if (length(learners_with_validation)) {
+  if (pv$bagging) {
+    graph_learner$validate = NULL
+    graph_learner$predict_sets = "test"
+  } else if (length(learners_with_validation)) {
     set_validate(graph_learner, NULL, ids = learners_with_validation)
   }
   graph_learner$param_set$set_values(.values = self$instance$result_learner_param_vals, .insert = FALSE)
   walk(autos, function(auto) auto$finalize_model(graph_learner))
+
+  # learners with the `"bagging_refit"` property deploy a single model instead of the ensemble.
+  # the tuned values of the ensemble are already set, so the model only has to be trained on the complete data
+  winner = self$instance$result$branch.selection
+  if (pv$bagging && "bagging_refit" %in% autos[[winner]]$properties) {
+    lg$info("Learner '%s' fits a single final model instead of the bagged ensemble", winner)
+    graph_learner$param_set$set_values(.values = set_names(list(TRUE), sprintf("%s.bagging.refit", winner)))
+  }
+
   # encapsulation set via LearnerAuto$encapsulate() applies to the final model fit only
   final_method = private$.encapsulation_method %??% "none"
   if (final_method == "none") {

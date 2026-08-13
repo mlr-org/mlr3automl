@@ -70,6 +70,8 @@ LearnerAuto = R6Class(
       # nolint start: line_length_linter
       # fmt: skip
       param_set = ps(
+        bagging                 = p_lgl(init = TRUE, tags = c("train", "super")),
+        bagging_folds           = p_int(lower = 2L, init = 8L, tags = c("train", "super")),
         callbacks               = p_uty(tags = c("train", "super"), custom_check = crate({function(x) if (test_r6(x, "Callback")) TRUE else check_list(x, types = "Callback")})),
         check_learners          = p_lgl(init = TRUE, tags = c("train", "super")),
         devices                 = p_uty(init = "cpu", tags = c("train", "super"), custom_check = crate({function(x) check_subset(x, c("cpu", "cuda"))})),
