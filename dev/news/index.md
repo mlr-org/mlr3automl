@@ -10,7 +10,8 @@
 - fix: The tabpfn learner now sets `auto_scale_n_estimators = FALSE`.
   TabPFN-3 otherwise raises the number of estimators on its own when the
   task has more features than a single ensemble member sees, which
-  overrides the tuned value.
+  overrides the tuned value. This requires `mlr3extralearners`
+  1.6.0.9000 or later, which is now the minimum version.
 
 - fix: Tuning on subspaces no longer fails when a learner has internally
   tuned parameters, e.g. `xgboost.nrounds` or `ft_transformer.epochs`.

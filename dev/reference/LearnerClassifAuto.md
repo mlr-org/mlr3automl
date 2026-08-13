@@ -277,7 +277,6 @@ The objects of this class are cloneable with this method.
 
 ``` r
 learner = lrn("classif.auto")
-#> Warning: Package 'catboost' required but not installed for Learner 'classif.auto'
 learner
 #> 
 #> ── <LearnerClassifAuto> (classif.auto) ─────────────────────────────────────────
