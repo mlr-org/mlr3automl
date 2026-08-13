@@ -10,7 +10,8 @@ one `RETICULATE_PYTHON` covers both.
 ``` r
 install_python_learners(
   learners = c("fastai", "tabpfn"),
-  envname = file.path(getwd(), ".conda", "mlr3automl-python"),
+  envname = file.path(tools::R_user_dir("mlr3automl", which = "data"),
+    "mlr3automl-python"),
   python_version = "3.12"
 )
 ```
@@ -27,7 +28,8 @@ install_python_learners(
 
   (`character(1)`)  
   Path to the conda environment directory. Defaults to
-  `.conda/mlr3automl-python` in the current working directory.
+  `mlr3automl-python` under [tools::R_user_dir("mlr3automl",
+  "data")](https://rdrr.io/r/tools/userdir.html).
 
 - python_version:
 
@@ -41,7 +43,11 @@ Invisibly returns the path to the Python binary in the environment.
 
 ## Details
 
-The environment is created in the project directory by default.
+The environment is created under
+[`tools::R_user_dir()`](https://rdrr.io/r/tools/userdir.html) by
+default, not inside the project directory: the environment can exceed
+10GB with torch/CUDA dependencies, and a project-local path risks
+getting bundled into source tarballs on `R CMD build`/`renv::install()`.
 
 ## Examples
 
