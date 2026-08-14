@@ -104,12 +104,6 @@ AutoTabPFN = R6Class(
 
       set_threads(learner, n_threads)
 
-      # the learner trains and predicts in an isolated callr session (see isolated_model.R),
-      # so the encapsulation only adds the fallback and log capture
-      fallback = lrn(sprintf("%s.featureless", task$task_type))
-      fallback$predict_type = measure$predict_type
-      learner$predict_type = measure$predict_type
-
       po("colapply", id = "tabpfn_character", applicator = as.factor, affect_columns = selector_type("character")) %>>%
         po("removeconstants", id = "tabpfn_removeconstants") %>>%
         po("fixfactors", id = "tabpfn_fixfactors") %>>%

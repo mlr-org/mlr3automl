@@ -93,13 +93,6 @@ AutoTabFM = R6Class(
 
       set_threads(learner, n_threads)
 
-      # the learner trains and predicts in an isolated callr session (see isolated_model.R),
-      # so the encapsulation only adds the fallback and log capture
-      fallback = lrn(sprintf("%s.featureless", task$task_type))
-      fallback$predict_type = measure$predict_type
-      learner$predict_type = measure$predict_type
-      learner$encapsulate(method = "evaluate", fallback = fallback)
-
       # tabfm ordinal encodes categorical features and imputes missing values in its own preprocessing
       # pipeline, so the graph only has to keep the factor levels stable across train and predict
       po("colapply", id = "tabfm_character", applicator = as.factor, affect_columns = selector_type("character")) %>>%

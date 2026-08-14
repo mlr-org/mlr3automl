@@ -82,12 +82,6 @@ AutoFastai = R6Class(
       )
       set_threads(learner, n_threads)
 
-      # the learner trains and predicts in an isolated callr session (see isolated_model.R),
-      # so the encapsulation only adds the fallback and log capture
-      fallback = lrn("classif.featureless")
-      fallback$predict_type = measure$predict_type
-      learner$predict_type = measure$predict_type
-
       po("colapply", id = "fastai_character", applicator = as.factor, affect_columns = selector_type("character")) %>>%
         po("removeconstants", id = "fastai_removeconstants") %>>%
         po("imputeoor", id = "fastai_imputeoor") %>>%
@@ -144,7 +138,9 @@ AutoFastai = R6Class(
       # integer-valued double, which the python side (batch size / epoch count)
       # can reject with a TypeError -- see AutoTabPFN.R
       fastai.bs = p_int(50, 500, trafo = as.integer),
-      fastai.n_epoch = p_int(1, 100, trafo = as.integer, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x))))),
+      fastai.n_epoch = p_int(1, 100, trafo = as.integer, tags = "internal_tuning", aggr = function(x) {
+        as.integer(ceiling(mean(unlist(x))))
+      }),
       fastai.layers = p_fct(
         levels = list(c(200, 100), c(200, 100, 50), c(500, 200), c(500, 200, 100), c(1000, 500), c(1000, 500, 200)),
         default = "c(200, 100)"
