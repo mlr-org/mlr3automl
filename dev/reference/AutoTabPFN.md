@@ -232,7 +232,7 @@ auto("tabpfn")
 #>     early_stopping_rounds: function (task, budget = Inf) 
 #>     estimate_memory: function (task, devices = "cpu") 
 #>     finalize_model: function (graph_learner) 
-#>     graph: function (task, measure, n_threads, timeout, devices) 
+#>     graph: function (task, measure, n_threads, timeout, devices, isolate_python = TRUE) 
 #>     id: tabpfn
 #>     initialize: function (id = "tabpfn") 
 #>     n_cpu: 1

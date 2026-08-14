@@ -248,7 +248,7 @@ auto("tabfm")
 #>     early_stopping_rounds: function (task, budget = Inf) 
 #>     estimate_memory: function (task, devices = "cpu") 
 #>     finalize_model: function (graph_learner) 
-#>     graph: function (task, measure, n_threads, timeout, devices) 
+#>     graph: function (task, measure, n_threads, timeout, devices, isolate_python = TRUE) 
 #>     id: tabfm
 #>     initialize: function (id = "tabfm", devices = "cuda") 
 #>     n_cpu: 1
