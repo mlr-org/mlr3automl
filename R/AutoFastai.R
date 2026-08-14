@@ -64,17 +64,19 @@ AutoFastai = R6Class(
 
     #' @description
     #' Create the graph for the auto.
-    graph = function(task, measure, n_threads, timeout, devices) {
+    graph = function(task, measure, n_threads, timeout, devices, isolate_python = TRUE) {
       assert_task(task)
       assert_measure(measure)
       assert_count(n_threads)
       assert_count(timeout)
       assert_subset(devices, c("cpu", "cuda"))
+      assert_flag(isolate_python)
 
       require_namespaces("mlr3extralearners")
 
       learner = LearnerClassifFastaiIsolated$new()
       learner$id = "fastai"
+      learner$isolate_python = isolate_python
       learner$param_set$set_values(
         patience = self$early_stopping_rounds(task, budget = self$search_space(task)$upper[["fastai.n_epoch"]]),
         layers = c(200, 100),
@@ -181,6 +183,11 @@ LearnerClassifFastaiIsolated = R6Class(
   "LearnerClassifFastaiIsolated",
   inherit = mlr3extralearners::LearnerClassifFastai,
   public = list(
+    #' @field isolate_python (`logical(1)`)\cr
+    #' Whether to run `.train()` and `.predict()` in a fresh callr session. Set by
+    #' [AutoFastai]`$graph()`; only `FALSE` when the run's learners never load mlr3torch.
+    isolate_python = TRUE,
+
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function() {
@@ -191,7 +198,7 @@ LearnerClassifFastaiIsolated = R6Class(
   ),
   private = list(
     .train = function(task) {
-      result = isolated_session(self, task, ".session_train")
+      result = isolated_session(self, task, ".session_train", isolate = self$isolate_python)
       structure(
         list(
           pickled = result$marshaled,
@@ -202,7 +209,7 @@ LearnerClassifFastaiIsolated = R6Class(
       )
     },
     .predict = function(task) {
-      isolated_session(self, task, ".session_predict")
+      isolated_session(self, task, ".session_predict", isolate = self$isolate_python)
     },
     # runs in the isolated session
     .session_train = function(task) {

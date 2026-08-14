@@ -80,12 +80,13 @@ AutoTabPFN = R6Class(
 
     #' @description
     #' Create the graph for the auto.
-    graph = function(task, measure, n_threads, timeout, devices) {
+    graph = function(task, measure, n_threads, timeout, devices, isolate_python = TRUE) {
       assert_task(task)
       assert_measure(measure)
       assert_count(n_threads)
       assert_count(timeout)
       assert_subset(devices, c("cpu", "cuda"))
+      assert_flag(isolate_python)
 
       require_namespaces("mlr3extralearners")
 
@@ -97,6 +98,7 @@ AutoTabPFN = R6Class(
         LearnerRegrTabPFNIsolated$new()
       }
       learner$id = "tabpfn"
+      learner$isolate_python = isolate_python
       # tabpfn raises n_estimators on its own when the task has more features than a single ensemble
       # member sees (500), which would silently override the tuned value and the memory estimate.
       # the upper bound of the search space (8) covers the 2,000 features the check allows.
@@ -104,10 +106,7 @@ AutoTabPFN = R6Class(
 
       set_threads(learner, n_threads)
 
-      po("colapply", id = "tabpfn_character", applicator = as.factor, affect_columns = selector_type("character")) %>>%
-        po("removeconstants", id = "tabpfn_removeconstants") %>>%
-        po("fixfactors", id = "tabpfn_fixfactors") %>>%
-        po("encodeimpact", id = "tabpfn_encode") %>>%
+      po("fixfactors", id = "tabpfn_fixfactors") %>>%
         po("removeconstants", id = "tabpfn_post_removeconstants") %>>%
         learner
     },
@@ -190,6 +189,11 @@ LearnerClassifTabPFNIsolated = R6Class(
   "LearnerClassifTabPFNIsolated",
   inherit = mlr3extralearners::LearnerClassifTabPFN,
   public = list(
+    #' @field isolate_python (`logical(1)`)\cr
+    #' Whether to run `.train()` and `.predict()` in a fresh callr session. Set by
+    #' [AutoTabPFN]`$graph()`; only `FALSE` when the run's learners never load mlr3torch.
+    isolate_python = TRUE,
+
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function() {
@@ -200,11 +204,11 @@ LearnerClassifTabPFNIsolated = R6Class(
   ),
   private = list(
     .train = function(task) {
-      result = isolated_session(self, task, ".session_train")
+      result = isolated_session(self, task, ".session_train", isolate = self$isolate_python)
       structure(list(pickled = result$marshaled), class = "isolated_model_pickled")
     },
     .predict = function(task) {
-      isolated_session(self, task, ".session_predict")
+      isolated_session(self, task, ".session_predict", isolate = self$isolate_python)
     },
     # runs in the isolated session
     .session_train = function(task) {
@@ -237,6 +241,11 @@ LearnerRegrTabPFNIsolated = R6Class(
   "LearnerRegrTabPFNIsolated",
   inherit = mlr3extralearners::LearnerRegrTabPFN,
   public = list(
+    #' @field isolate_python (`logical(1)`)\cr
+    #' Whether to run `.train()` and `.predict()` in a fresh callr session. Set by
+    #' [AutoTabPFN]`$graph()`; only `FALSE` when the run's learners never load mlr3torch.
+    isolate_python = TRUE,
+
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function() {
@@ -247,11 +256,11 @@ LearnerRegrTabPFNIsolated = R6Class(
   ),
   private = list(
     .train = function(task) {
-      result = isolated_session(self, task, ".session_train")
+      result = isolated_session(self, task, ".session_train", isolate = self$isolate_python)
       structure(list(pickled = result$marshaled), class = "isolated_model_pickled")
     },
     .predict = function(task) {
-      isolated_session(self, task, ".session_predict")
+      isolated_session(self, task, ".session_predict", isolate = self$isolate_python)
     },
     # runs in the isolated session
     .session_train = function(task) {

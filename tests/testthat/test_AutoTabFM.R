@@ -26,6 +26,22 @@ test_that("AutoTabFM search space depends on the task type", {
   expect_subset(regr_ids, classif_ids)
 })
 
+test_that("AutoTabFM graph threads isolate_python onto the learner", {
+  skip_if_not_installed("mlr3extralearners")
+
+  task = tsk("penguins")
+  auto = AutoTabFM$new(devices = c("cpu", "cuda"))
+
+  graph = auto$graph(task, msr("classif.ce"), n_threads = 1L, timeout = 3600L, devices = "cpu")
+  expect_true(graph$pipeops$tabfm$learner$isolate_python)
+
+  graph = auto$graph(
+    task, msr("classif.ce"), n_threads = 1L, timeout = 3600L, devices = "cpu",
+    isolate_python = FALSE
+  )
+  expect_false(graph$pipeops$tabfm$learner$isolate_python)
+})
+
 test_that("AutoTabFM default design is within the search space", {
   skip_if_not_installed("mlr3extralearners")
 

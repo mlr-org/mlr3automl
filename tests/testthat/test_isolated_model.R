@@ -28,6 +28,14 @@ test_that("isolated_session runs a private method in a separate process", {
   expect_false(identical(child_pid, Sys.getpid()))
 })
 
+test_that("isolated_session(isolate = FALSE) runs the private method in the calling process", {
+  learner = IsolatedTestLearner$new()
+  expect_identical(isolated_session(learner, 21, ".double", isolate = FALSE), 42)
+
+  pid = isolated_session(learner, NULL, ".pid", isolate = FALSE)
+  expect_identical(pid, Sys.getpid())
+})
+
 test_that("isolated_session reports child stdout/stderr when the private method errors", {
   skip_if_not_installed("callr")
 

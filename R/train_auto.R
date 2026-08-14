@@ -126,8 +126,20 @@ train_auto = function(self, private, task) {
     }
   }
 
+  isolate_python = needs_python_isolation(autos)
+
   branches = map(autos, function(auto) {
-    auto$graph(task, pv$measure, learner_n_threads(auto), pv$learner_timeout, learner_devices(auto))
+    args = list(
+      task = task,
+      measure = pv$measure,
+      n_threads = learner_n_threads(auto),
+      timeout = pv$learner_timeout,
+      devices = learner_devices(auto)
+    )
+    if ("isolate_python" %in% names(formals(auto$graph))) {
+      args$isolate_python = isolate_python
+    }
+    do.call(auto$graph, args)
   })
   graph_learner = as_learner(
     po("branch", options = names(branches)) %>>%

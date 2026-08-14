@@ -56,7 +56,7 @@ Suggests:
     xgboost (>= 3.2.1.1)
 Remotes:
     mlr-org/bbotk,
-    mlr-org/mlr3extralearners,
+    mlr-org/mlr3extralearners@factor_tabpfn,
     mlr-org/mlr3mbo@adbo_subspaces,
     mlr-org/rush,
     mlr-org/mlr3tuning

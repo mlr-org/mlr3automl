@@ -28,3 +28,19 @@ test_that("check_python_packages caches results per session", {
   python_package_cache[[key]] = "cached"
   expect_equal(check_python_packages(c("package_1", "package_2")), "cached")
 })
+
+test_that("needs_python_isolation is TRUE when a selected learner declares mlr3torch", {
+  autos = list(
+    list(packages = c("mlr3", "callr")),
+    list(packages = c("mlr3", "mlr3torch"))
+  )
+  expect_true(needs_python_isolation(autos))
+})
+
+test_that("needs_python_isolation is TRUE when mlr3torch is loaded but not declared by this run", {
+  skip_if_not_installed("mlr3torch")
+  loadNamespace("mlr3torch")
+
+  autos = list(list(packages = c("mlr3", "callr")))
+  expect_true(needs_python_isolation(autos))
+})

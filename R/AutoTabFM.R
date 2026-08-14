@@ -70,12 +70,13 @@ AutoTabFM = R6Class(
 
     #' @description
     #' Create the graph for the auto.
-    graph = function(task, measure, n_threads, timeout, devices) {
+    graph = function(task, measure, n_threads, timeout, devices, isolate_python = TRUE) {
       assert_task(task)
       assert_measure(measure)
       assert_count(n_threads)
       assert_count(timeout)
       assert_subset(devices, c("cpu", "cuda"))
+      assert_flag(isolate_python)
 
       require_namespaces("mlr3extralearners")
 
@@ -87,6 +88,7 @@ AutoTabFM = R6Class(
         LearnerRegrTabFMIsolated$new()
       }
       learner$id = "tabfm"
+      learner$isolate_python = isolate_python
       # the pytorch backend is the only one that honors `device`, so the resource accounting of the workers
       # only holds for this backend
       learner$param_set$set_values(backend = "pytorch", device = device)
@@ -188,6 +190,11 @@ LearnerClassifTabFMIsolated = R6Class(
   "LearnerClassifTabFMIsolated",
   inherit = mlr3extralearners::LearnerClassifTabFM,
   public = list(
+    #' @field isolate_python (`logical(1)`)\cr
+    #' Whether to run `.train()` and `.predict()` in a fresh callr session. Set by
+    #' [AutoTabFM]`$graph()`; only `FALSE` when the run's learners never load mlr3torch.
+    isolate_python = TRUE,
+
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function() {
@@ -198,11 +205,11 @@ LearnerClassifTabFMIsolated = R6Class(
   ),
   private = list(
     .train = function(task) {
-      result = isolated_session(self, task, ".session_train")
+      result = isolated_session(self, task, ".session_train", isolate = self$isolate_python)
       structure(list(pickled = result$marshaled), class = "isolated_model_pickled")
     },
     .predict = function(task) {
-      isolated_session(self, task, ".session_predict")
+      isolated_session(self, task, ".session_predict", isolate = self$isolate_python)
     },
     # runs in the isolated session
     .session_train = function(task) {
@@ -235,6 +242,11 @@ LearnerRegrTabFMIsolated = R6Class(
   "LearnerRegrTabFMIsolated",
   inherit = mlr3extralearners::LearnerRegrTabFM,
   public = list(
+    #' @field isolate_python (`logical(1)`)\cr
+    #' Whether to run `.train()` and `.predict()` in a fresh callr session. Set by
+    #' [AutoTabFM]`$graph()`; only `FALSE` when the run's learners never load mlr3torch.
+    isolate_python = TRUE,
+
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function() {
@@ -245,11 +257,11 @@ LearnerRegrTabFMIsolated = R6Class(
   ),
   private = list(
     .train = function(task) {
-      result = isolated_session(self, task, ".session_train")
+      result = isolated_session(self, task, ".session_train", isolate = self$isolate_python)
       structure(list(pickled = result$marshaled), class = "isolated_model_pickled")
     },
     .predict = function(task) {
-      isolated_session(self, task, ".session_predict")
+      isolated_session(self, task, ".session_predict", isolate = self$isolate_python)
     },
     # runs in the isolated session
     .session_train = function(task) {
