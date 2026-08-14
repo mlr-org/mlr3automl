@@ -11,7 +11,7 @@ Tabpfn auto.
 }
 \section{Python learners}{
 
-Python learners like \code{TabPFN} and \code{fastai} run via \code{reticulate} and
+Python learners like \code{TabPFN}, \code{TabFM}, and \code{fastai} run via \code{reticulate} and
 therefore need a Python installation with their required packages.
 There are two ways to provide it:
 \enumerate{

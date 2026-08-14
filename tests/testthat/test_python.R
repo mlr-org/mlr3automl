@@ -8,6 +8,13 @@ test_that("check_python_packages works", {
   expect_true(res)
 })
 
+test_that("check_python_packages strips extras from the module names", {
+  skip_if_not_installed("reticulate")
+
+  res = check_python_packages("tabfm[pytorch]")
+  expect_true(res)
+})
+
 test_that("check_python_packages caches results per session", {
   skip_if_not_installed("reticulate")
 

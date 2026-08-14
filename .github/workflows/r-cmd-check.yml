@@ -76,7 +76,7 @@ jobs:
         run: |
           Rscript -e 'torch::install_torch()'
 
-      # Provide the Python environment for the tabpfn and fastai learners.
+      # Provide the Python environment for the tabpfn, tabfm, and fastai learners.
       # micromamba is the conda binary reticulate needs to bind to a conda env.
       # The environment is cached and only rebuilt when the package list changes,
       # so torch and friends are not downloaded on every run.
