@@ -4,6 +4,8 @@
 #'   Whether to train each configuration as a bagged ensemble.
 #'   A configuration trains `bagging_folds` child models on a cross-validation of the training data,
 #'   and the test prediction is the equally weighted average of the children.
+#'   Tasks with fewer than `bagging_small_size` rows are instead cross-validated with
+#'   `bagging_small_folds` folds repeated `bagging_small_repeats` times.
 #'   The configuration is scored by its out-of-fold predictions,
 #'   so the tuning archive reports the scores in the `internal_valid_score` column and
 #'   the `resampling` and `small_data_resampling` parameters have no effect.
@@ -15,6 +17,19 @@
 #'   \item{bagging_folds}{(`integer(1)`)\cr
 #'   Number of cross-validation folds and therefore child models of a bagged configuration.
 #'   Default is `8`.}
+#'
+#'   \item{bagging_small_folds}{(`integer(1)`)\cr
+#'   Number of cross-validation folds of a bagged configuration on a small data set.
+#'   Default is `5`.}
+#'
+#'   \item{bagging_small_repeats}{(`integer(1)`)\cr
+#'   Number of repetitions of the cross-validation of a bagged configuration on a small data set.
+#'   A bagged configuration therefore trains `bagging_small_folds * bagging_small_repeats` child models.
+#'   Default is `5`.}
+#'
+#'   \item{bagging_small_size}{(`integer(1)`)\cr
+#'   Number of rows up to which a task counts as a small data set for `bagging`.
+#'   Default is `500`.}
 #'
 #'   \item{learner_timeout}{(`integer(1)`)\cr
 #'   Timeout for training and predicting with a single configuration.

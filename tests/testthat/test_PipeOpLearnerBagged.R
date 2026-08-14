@@ -58,6 +58,18 @@ test_that("train stores the child states and the out-of-fold score", {
   expect_null(pop$state$internal_tuned_values)
 })
 
+test_that("repeats train folds * repeats child models", {
+  task = tsk("penguins")
+  learner = lrn("classif.featureless", id = "debug", predict_type = "prob")
+  pop = PipeOpLearnerBagged$new(as_graph(learner), id = "debug", measure = msr("classif.ce"),
+    param_vals = list(bagging.folds = 3L, bagging.repeats = 2L))
+
+  pop$train(list(task))
+  expect_list(pop$state$cv_model_states, len = 6L)
+  majority = names(which.max(table(task$truth())))
+  expect_equal(pop$state$internal_valid_scores$classif.ce, mean(task$truth() != majority))
+})
+
 test_that("internal tuned values are aggregated and reported without double prefix", {
   task = tsk("penguins")
   pop = bagged_debug_pipeop()

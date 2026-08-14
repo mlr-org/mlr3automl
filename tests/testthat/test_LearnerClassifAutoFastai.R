@@ -45,6 +45,7 @@ test_that("LearnerClassifAuto works with fastai and mlr3torch", {
     "classif.auto",
     learner_ids = c("fastai", "mlp"),
     small_data_size = 1,
+    bagging_small_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 4),

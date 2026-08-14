@@ -130,6 +130,19 @@ train_auto = function(self, private, task) {
     }
   }
 
+  # small data sets are bagged with a repeated cross-validation to reduce the variance of the out-of-fold score
+  small_data_set = task$nrow < pv$bagging_small_size
+  bagging_folds = if (small_data_set) pv$bagging_small_folds else pv$bagging_folds
+  bagging_repeats = if (small_data_set) pv$bagging_small_repeats else 1L
+
+  if (pv$bagging && small_data_set) {
+    lg$info(
+      "Small data set detected. Bagging with a %i times repeated %i-fold cross-validation",
+      bagging_repeats,
+      bagging_folds
+    )
+  }
+
   branches = map(autos, function(auto) {
     if (pv$bagging) {
       # the bagged graph divides `learner_timeout` among the child models itself
@@ -139,7 +152,8 @@ train_auto = function(self, private, task) {
         learner_n_threads(auto),
         pv$learner_timeout,
         learner_devices(auto),
-        pv$bagging_folds
+        bagging_folds,
+        bagging_repeats
       )
     } else {
       auto$graph(task, pv$measure, learner_n_threads(auto), pv$learner_timeout, learner_devices(auto))

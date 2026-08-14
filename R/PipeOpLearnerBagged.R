@@ -4,6 +4,8 @@
 #' Wraps a learner graph into a bagged ensemble in the style of AutoGluon and TabArena.
 #' During training, the graph is fitted on `folds` cross-validation folds of the training data,
 #' so each child model is trained on all but one fold.
+#' With `repeats` larger than `1`, the cross-validation is repeated and the ensemble holds `folds * repeats`
+#' child models.
 #' The out-of-fold predictions are scored with `measure` and the score is reported as `$internal_valid_scores`.
 #' During prediction, the child models predict on the new data and their predictions are combined with equal weights.
 #' Probabilities are averaged, responses are aggregated by majority vote, and regression responses are averaged.
@@ -22,6 +24,8 @@
 #' The parameters of the terminal learner, as well as:
 #' * `bagging.folds` :: `integer(1)`\cr
 #'   Number of cross-validation folds. Initialized to `8`.
+#' * `bagging.repeats` :: `integer(1)`\cr
+#'   Number of repetitions of the cross-validation. Initialized to `1`.
 #' * `bagging.refit` :: `logical(1)`\cr
 #'   Whether to train a single model on the complete data instead of the cross-validated ensemble.
 #'   Initialized to `FALSE`.
@@ -68,6 +72,7 @@ PipeOpLearnerBagged = R6Class(
 
       private$.bagging_param_set = ps(
         folds = p_int(lower = 2L, upper = Inf, init = 8L, tags = c("train", "required")),
+        repeats = p_int(lower = 1L, upper = Inf, init = 1L, tags = c("train", "required")),
         refit = p_lgl(init = FALSE, tags = c("train", "required"))
       )
 
@@ -195,7 +200,13 @@ PipeOpLearnerBagged = R6Class(
         on.exit(set_validate(private$.learner, NULL), add = TRUE)
       }
 
-      rr = resample(task, private$.learner, rsmp("cv", folds = pv$folds), store_models = TRUE)
+      resampling = if (pv$repeats > 1L) {
+        rsmp("repeated_cv", folds = pv$folds, repeats = pv$repeats)
+      } else {
+        rsmp("cv", folds = pv$folds)
+      }
+
+      rr = resample(task, private$.learner, resampling, store_models = TRUE)
 
       # the measure is micro-averaged, so this scores the pooled out-of-fold prediction
       score = rr$aggregate(private$.measure)

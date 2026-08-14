@@ -36,9 +36,11 @@ Set \code{encapsulate_mbo = FALSE} to catch no errors in mbo.
 
 \describe{
 \item{bagging}{(\code{logical(1)})\cr
-Whether to train each configuration as a bagged ensemble, following AutoGluon and TabArena.
+Whether to train each configuration as a bagged ensemble.
 A configuration trains \code{bagging_folds} child models on a cross-validation of the training data,
 and the test prediction is the equally weighted average of the children.
+Tasks with fewer than \code{bagging_small_size} rows are instead cross-validated with
+\code{bagging_small_folds} folds repeated \code{bagging_small_repeats} times.
 The configuration is scored by its out-of-fold predictions,
 so the tuning archive reports the scores in the \code{internal_valid_score} column and
 the \code{resampling} and \code{small_data_resampling} parameters have no effect.
@@ -50,6 +52,19 @@ Default is \code{TRUE}.}
 \item{bagging_folds}{(\code{integer(1)})\cr
 Number of cross-validation folds and therefore child models of a bagged configuration.
 Default is \code{8}.}
+
+\item{bagging_small_folds}{(\code{integer(1)})\cr
+Number of cross-validation folds of a bagged configuration on a small data set.
+Default is \code{5}.}
+
+\item{bagging_small_repeats}{(\code{integer(1)})\cr
+Number of repetitions of the cross-validation of a bagged configuration on a small data set.
+A bagged configuration therefore trains \code{bagging_small_folds * bagging_small_repeats} child models.
+Default is \code{5}.}
+
+\item{bagging_small_size}{(\code{integer(1)})\cr
+Number of rows up to which a task counts as a small data set for \code{bagging}.
+Default is \code{500}.}
 
 \item{learner_timeout}{(\code{integer(1)})\cr
 Timeout for training and predicting with a single configuration.

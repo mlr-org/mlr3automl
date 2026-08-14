@@ -30,6 +30,7 @@ test_that("all learner on cpu work", {
     rush = rush,
     learner_ids = c("catboost", "glmnet", "lightgbm", "ranger", "svm", "xgboost", "extra_trees"),
     small_data_size = 1,
+    bagging_small_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("regr.rmse"),
     terminator = trm("evals", n_evals = 30),

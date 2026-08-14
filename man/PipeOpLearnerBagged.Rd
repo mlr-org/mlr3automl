@@ -10,6 +10,8 @@ Object of class \link[R6:R6Class]{R6::R6Class} and \code{PipeOpLearnerBagged}.
 Wraps a learner graph into a bagged ensemble in the style of AutoGluon and TabArena.
 During training, the graph is fitted on \code{folds} cross-validation folds of the training data,
 so each child model is trained on all but one fold.
+With \code{repeats} larger than \code{1}, the cross-validation is repeated and the ensemble holds \code{folds * repeats}
+child models.
 The out-of-fold predictions are scored with \code{measure} and the score is reported as \verb{$internal_valid_scores}.
 During prediction, the child models predict on the new data and their predictions are combined with equal weights.
 Probabilities are averaged, responses are aggregated by majority vote, and regression responses are averaged.
@@ -30,6 +32,8 @@ The parameters of the terminal learner, as well as:
 \itemize{
 \item \code{bagging.folds} :: \code{integer(1)}\cr
 Number of cross-validation folds. Initialized to \code{8}.
+\item \code{bagging.repeats} :: \code{integer(1)}\cr
+Number of repetitions of the cross-validation. Initialized to \code{1}.
 \item \code{bagging.refit} :: \code{logical(1)}\cr
 Whether to train a single model on the complete data instead of the cross-validated ensemble.
 Initialized to \code{FALSE}.

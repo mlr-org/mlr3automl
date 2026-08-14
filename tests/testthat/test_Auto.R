@@ -241,6 +241,22 @@ test_that("graph_bagged wraps the graph and divides the timeout among the childr
   expect_error(auto$graph_bagged(task, msr("classif.ce"), 1L, 800L, "cpu", folds = 1L), "folds")
 })
 
+test_that("graph_bagged divides the timeout among the children of the repeated cross-validation", {
+  skip_if_not_all_installed(c("mlr3learners", "xgboost"))
+
+  task = tsk("penguins")
+  auto = mlr_auto$get("xgboost")
+  pop = auto$graph_bagged(task, msr("classif.ce"), 1L, 800L, "cpu", folds = 5L, repeats = 5L)
+
+  expect_equal(pop$param_set$values$bagging.folds, 5L)
+  expect_equal(pop$param_set$values$bagging.repeats, 5L)
+
+  callback = pop$learner$param_set$values$xgboost.callbacks[[1L]]
+  expect_equal(environment(callback$f_after_iter)$timeout, (800L %/% 25L) * 0.9)
+
+  expect_error(auto$graph_bagged(task, msr("classif.ce"), 1L, 800L, "cpu", folds = 5L, repeats = 0L), "repeats")
+})
+
 test_that("graph_bagged passes the internal search space of the auto", {
   skip_if_not_all_installed(c("mlr3learners", "xgboost"))
 

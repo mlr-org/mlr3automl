@@ -120,7 +120,7 @@ Auto = R6Class(
     #' @description
     #' Create the bagged graph for the auto.
     #' Wraps the graph of `$graph()` in a [PipeOpLearnerBagged],
-    #' so a configuration is evaluated as `folds` cross-validated child models
+    #' so a configuration is evaluated as `folds * repeats` cross-validated child models
     #' and scored with their out-of-fold predictions.
     #'
     #' In contrast to `$graph()`, `timeout` is the timeout of the complete configuration.
@@ -128,11 +128,14 @@ Auto = R6Class(
     #'
     #' @param folds (`integer(1)`)\cr
     #'   Number of cross-validation folds.
-    graph_bagged = function(task, measure, n_threads, timeout, devices, folds) {
+    #' @param repeats (`integer(1)`)\cr
+    #'   Number of repetitions of the cross-validation.
+    graph_bagged = function(task, measure, n_threads, timeout, devices, folds, repeats = 1L) {
       assert_int(folds, lower = 2L)
+      assert_int(repeats, lower = 1L)
 
-      # a configuration trains `folds` children, so each child receives a share of the timeout
-      fit_timeout = max(1L, timeout %/% folds)
+      # a configuration trains `folds * repeats` children, so each child receives a share of the timeout
+      fit_timeout = max(1L, timeout %/% (folds * repeats))
 
       search_space = self$search_space(task)
       internal_ids = search_space$ids(any_tags = "internal_tuning")
@@ -142,7 +145,7 @@ Auto = R6Class(
         id = self$id,
         measure = measure,
         internal_search_space = if (length(internal_ids)) search_space$clone(deep = TRUE)$subset(internal_ids),
-        param_vals = list(bagging.folds = folds)
+        param_vals = list(bagging.folds = folds, bagging.repeats = repeats)
       )
     },
 

@@ -136,14 +136,22 @@ Default is "cpu".}
 \subsection{\code{Auto$graph_bagged()}}{
   Create the bagged graph for the auto.
 Wraps the graph of \verb{$graph()} in a \link{PipeOpLearnerBagged},
-so a configuration is evaluated as \code{folds} cross-validated child models
+so a configuration is evaluated as \code{folds * repeats} cross-validated child models
 and scored with their out-of-fold predictions.
 
 In contrast to \verb{$graph()}, \code{timeout} is the timeout of the complete configuration.
 It is divided among the child models.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
-    \preformatted{Auto$graph_bagged(task, measure, n_threads, timeout, devices, folds)}
+    \preformatted{Auto$graph_bagged(
+  task,
+  measure,
+  n_threads,
+  timeout,
+  devices,
+  folds,
+  repeats = 1L
+)}
     \if{html}{\out{</div>}}
   }
   \subsection{Arguments}{
@@ -159,6 +167,8 @@ Allowed values are \code{"cpu"} and \code{"cuda"}.
 Default is "cpu".}
       \item{\code{folds}}{(\code{integer(1)})\cr
 Number of cross-validation folds.}
+      \item{\code{repeats}}{(\code{integer(1)})\cr
+Number of repetitions of the cross-validation.}
     }
     \if{html}{\out{</div>}}
   }

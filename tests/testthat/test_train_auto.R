@@ -20,6 +20,7 @@ test_that("training errors when all evaluations fail", {
     learner_ids = "debug",
     rush = rush,
     small_data_size = 1,
+    bagging_small_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 2),
@@ -52,6 +53,7 @@ test_that("bagging tunes with out-of-fold scores and deploys the ensemble", {
     learner_ids = "debug",
     rush = rush,
     small_data_size = 1,
+    bagging_small_size = 1,
     bagging_folds = 3L,
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 2),
@@ -73,6 +75,47 @@ test_that("bagging tunes with out-of-fold scores and deploys the ensemble", {
 
   prediction = learner$predict(task)
   expect_prediction(prediction)
+})
+
+test_that("small data sets are bagged with a repeated cross-validation", {
+  skip_on_cran()
+  skip_if_not_installed("rush")
+  # the surrogate model of the mbo tuner requires ranger
+  skip_if_not_installed("ranger")
+  skip_if_no_redis()
+
+  rush = start_rush()
+  on.exit({
+    rush$reset()
+    mirai::daemons(0)
+  })
+
+  mlr_auto$add("debug", function() AutoDebug$new())
+
+  task = tsk("penguins")
+  learner = lrn(
+    "classif.auto",
+    learner_ids = "debug",
+    rush = rush,
+    small_data_size = 1,
+    bagging_folds = 8L,
+    bagging_small_size = 400L,
+    bagging_small_folds = 3L,
+    bagging_small_repeats = 2L,
+    measure = msr("classif.ce"),
+    terminator = trm("evals", n_evals = 2),
+    initial_design_type = "random",
+    initial_design_size = 2,
+    encapsulate_learner = FALSE,
+    encapsulate_mbo = FALSE
+  )
+
+  learner$train(task)
+
+  # penguins has fewer rows than `bagging_small_size`, so the small data set folds and repeats apply
+  state = learner$model$graph_learner$graph_model$pipeops$debug$state
+  expect_list(state$cv_model_states, len = 6L)
+  expect_prediction(learner$predict(task))
 })
 
 test_that("learners with the bagging_refit property deploy a single final model", {
@@ -105,6 +148,7 @@ test_that("learners with the bagging_refit property deploy a single final model"
     learner_ids = "debug",
     rush = rush,
     small_data_size = 1,
+    bagging_small_size = 1,
     bagging_folds = 3L,
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 2),
@@ -150,6 +194,7 @@ test_that("missing internal valid scores are imputed with the penalty score", {
     learner_ids = c("debug", "glmnet"),
     rush = rush,
     small_data_size = 1,
+    bagging_small_size = 1,
     bagging_folds = 3L,
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 4),
@@ -188,6 +233,7 @@ test_that("bagging = FALSE keeps the prediction-based tuning", {
     learner_ids = "debug",
     rush = rush,
     small_data_size = 1,
+    bagging_small_size = 1,
     bagging = FALSE,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
@@ -229,6 +275,7 @@ test_that("failed final model fit does not silently return a featureless model",
     learner_ids = "debug",
     rush = rush,
     small_data_size = 1,
+    bagging_small_size = 1,
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 2),
     initial_design_type = "random",
@@ -265,6 +312,7 @@ test_that("encapsulated auto learner falls back on a failed final model fit", {
     learner_ids = "debug",
     rush = rush,
     small_data_size = 1,
+    bagging_small_size = 1,
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 2),
     initial_design_type = "random",
@@ -302,6 +350,7 @@ test_that("user requested predict_type is honored even when the measure only nee
     learner_ids = "debug",
     rush = rush,
     small_data_size = 1,
+    bagging_small_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 2),
@@ -374,6 +423,7 @@ test_that("mixed cpu and gpu requirements are tuned on subspaces", {
     rush = rush,
     devices = c("cpu", "cuda"),
     small_data_size = 1,
+    bagging_small_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 8),
@@ -425,6 +475,7 @@ test_that("mixed requirements keep the single search space when the compute prof
     rush = rush,
     devices = c("cpu", "cuda"),
     small_data_size = 1,
+    bagging_small_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 8),
@@ -471,6 +522,7 @@ test_that("a large data set reduces the workers of the cpu compute profiles but 
     devices = c("cpu", "cuda"),
     large_data_size = 1,
     small_data_size = 1,
+    bagging_small_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 8),
@@ -518,6 +570,7 @@ test_that("mixed requirements keep the single search space without compute profi
     rush = rush,
     devices = c("cpu", "cuda"),
     small_data_size = 1,
+    bagging_small_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 6),
@@ -562,6 +615,7 @@ test_that("gpu learners fall back to the cpu without a cuda device", {
     learner_ids = c("debug_cpu", "debug_gpu"),
     rush = rush,
     small_data_size = 1,
+    bagging_small_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 8),
@@ -608,6 +662,7 @@ test_that("homogeneous gpu requirements keep the single search space", {
     devices = c("cpu", "cuda"),
     n_gpu = c(debug_cpu = 1L),
     small_data_size = 1,
+    bagging_small_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 8),
@@ -651,6 +706,7 @@ test_that("mixed requirements keep the single search space without a gpu compute
     rush = rush,
     devices = c("cpu", "cuda"),
     small_data_size = 1,
+    bagging_small_size = 1,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 6),
