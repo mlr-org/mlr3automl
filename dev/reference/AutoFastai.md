@@ -10,9 +10,9 @@ Object of class
 
 ## Python learners
 
-Python learners like `TabPFN` and `fastai` run via `reticulate` and
-therefore need a Python installation with their required packages. There
-are two ways to provide it:
+Python learners like `TabPFN`, `TabFM`, and `fastai` run via
+`reticulate` and therefore need a Python installation with their
+required packages. There are two ways to provide it:
 
 1.  Do nothing and let
     [`reticulate::py_require()`](https://rstudio.github.io/reticulate/reference/py_require.html)

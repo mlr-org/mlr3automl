@@ -21,6 +21,7 @@ mlpmlr3torch
 rangermlr3learners
 resnetmlr3torch
 svmmlr3learners
+tabfmmlr3extralearners
 tabpfnmlr3extralearners
 xgboostmlr3learners
 
@@ -41,6 +42,7 @@ mlpmlr3torch
 rangermlr3learners
 resnetmlr3torch
 svmmlr3learners
+tabfmmlr3extralearners
 tabpfnmlr3extralearners
 xgboostmlr3learners
 
@@ -91,7 +93,7 @@ xgboostmlr3learners
     <div class="ref-description section level2">
     <p>Abstract base class for AutoML learners.
 Contains the shared logic for <a href="LearnerClassifAuto.html">LearnerClassifAuto</a> and <a href="LearnerRegrAuto.html">LearnerRegrAuto</a>.</p>
-<p>The following learners are supported:</p><table class="table table"><tr><td>Algorithm</td><td>Package</td></tr><tr><td>catboost</td><td>mlr3extralearners</td></tr><tr><td>extra_trees</td><td>mlr3learners</td></tr><tr><td>fastai</td><td>mlr3extralearners</td></tr><tr><td>ft_transformer</td><td>mlr3torch</td></tr><tr><td>glmnet</td><td>mlr3learners</td></tr><tr><td>kknn</td><td>mlr3learners</td></tr><tr><td>lda</td><td>mlr3learners</td></tr><tr><td>lightgbm</td><td>mlr3extralearners</td></tr><tr><td>mlp</td><td>mlr3torch</td></tr><tr><td>ranger</td><td>mlr3learners</td></tr><tr><td>resnet</td><td>mlr3torch</td></tr><tr><td>svm</td><td>mlr3learners</td></tr><tr><td>tabpfn</td><td>mlr3extralearners</td></tr><tr><td>xgboost</td><td>mlr3learners</td></tr></table></div>
+<p>The following learners are supported:</p><table class="table table"><tr><td>Algorithm</td><td>Package</td></tr><tr><td>catboost</td><td>mlr3extralearners</td></tr><tr><td>extra_trees</td><td>mlr3learners</td></tr><tr><td>fastai</td><td>mlr3extralearners</td></tr><tr><td>ft_transformer</td><td>mlr3torch</td></tr><tr><td>glmnet</td><td>mlr3learners</td></tr><tr><td>kknn</td><td>mlr3learners</td></tr><tr><td>lda</td><td>mlr3learners</td></tr><tr><td>lightgbm</td><td>mlr3extralearners</td></tr><tr><td>mlp</td><td>mlr3torch</td></tr><tr><td>ranger</td><td>mlr3learners</td></tr><tr><td>resnet</td><td>mlr3torch</td></tr><tr><td>svm</td><td>mlr3learners</td></tr><tr><td>tabfm</td><td>mlr3extralearners</td></tr><tr><td>tabpfn</td><td>mlr3extralearners</td></tr><tr><td>xgboost</td><td>mlr3learners</td></tr></table></div>
 
 
     <div class="section level2">
@@ -129,7 +131,7 @@ Currently informational only; the number of threads is controlled by <code>n_thr
 Number of GPUs a single training of a learner uses, named by learner id, e.g. <code>c(xgboost = 1)</code>.
 Overrides the default of the learner.
 Can only be 0 or 1 for now.
-The torch learners, TabPFN, and fastai default to 1; all other learners default to 0.
+The torch learners, TabPFN, TabFM, and fastai default to 1; all other learners default to 0.
 Only effective when <code>"cuda"</code> is part of <code>devices</code>; otherwise every learner is trained on the CPU.
 When the requirements are mixed and the daemons of the <a href="https://CRAN.R-project.org/package=mirai" class="external-link"><span class="pkg">mirai</span></a> compute profiles
 <code>"mlr3automl_cpu"</code> and <code>"mlr3automl_gpu"</code> are set up with <code><a href="https://rush.mlr-org.com/reference/rush_plan.html" class="external-link">rush::rush_plan()</a></code>, the search space is

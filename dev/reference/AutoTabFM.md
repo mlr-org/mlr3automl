@@ -1,12 +1,22 @@
-# TabPFN Auto
+# TabFM Auto
 
-Tabpfn auto.
+Tabfm auto.
+
+Tabfm predicts in context, so every prediction runs the backbone over
+the training rows once per estimator. This is too slow to be useful on
+the CPU, so the auto is registered for `"cuda"` only and
+[Auto](https://mlr3automl.mlr-org.com/dev/reference/Auto.md)`$check()`
+removes it from the search space whenever `devices` does not include
+`"cuda"`. Construct it with `AutoTabFM$new(devices = c("cpu", "cuda"))`
+and re-register it in
+[mlr_auto](https://mlr3automl.mlr-org.com/dev/reference/mlr_auto.md) to
+run it on the CPU anyway.
 
 ## Value
 
 Object of class
 [R6::R6Class](https://r6.r-lib.org/reference/R6Class.html) and
-`AutoTabPFN`.
+`AutoTabFM`.
 
 ## Python learners
 
@@ -34,25 +44,25 @@ environment variable to download the model weights.
 ## Super class
 
 [`Auto`](https://mlr3automl.mlr-org.com/dev/reference/Auto.md) -\>
-`AutoTabPFN`
+`AutoTabFM`
 
 ## Methods
 
 ### Public methods
 
-- [`AutoTabPFN$new()`](#method-AutoTabPFN-initialize)
+- [`AutoTabFM$new()`](#method-AutoTabFM-initialize)
 
-- [`AutoTabPFN$check()`](#method-AutoTabPFN-check)
+- [`AutoTabFM$check()`](#method-AutoTabFM-check)
 
-- [`AutoTabPFN$graph()`](#method-AutoTabPFN-graph)
+- [`AutoTabFM$graph()`](#method-AutoTabFM-graph)
 
-- [`AutoTabPFN$estimate_memory()`](#method-AutoTabPFN-estimate_memory)
+- [`AutoTabFM$estimate_memory()`](#method-AutoTabFM-estimate_memory)
 
-- [`AutoTabPFN$design_default()`](#method-AutoTabPFN-design_default)
+- [`AutoTabFM$design_default()`](#method-AutoTabFM-design_default)
 
-- [`AutoTabPFN$search_space()`](#method-AutoTabPFN-search_space)
+- [`AutoTabFM$search_space()`](#method-AutoTabFM-search_space)
 
-- [`AutoTabPFN$clone()`](#method-AutoTabPFN-clone)
+- [`AutoTabFM$clone()`](#method-AutoTabFM-clone)
 
 Inherited methods
 
@@ -62,14 +72,14 @@ Inherited methods
 
 ------------------------------------------------------------------------
 
-### `AutoTabPFN$new()`
+### `AutoTabFM$new()`
 
 Creates a new instance of this
 [R6](https://r6.r-lib.org/reference/R6Class.html) class.
 
 #### Usage
 
-    AutoTabPFN$new(id = "tabpfn")
+    AutoTabFM$new(id = "tabfm", devices = "cuda")
 
 #### Arguments
 
@@ -78,15 +88,21 @@ Creates a new instance of this
   (`character(1)`)  
   Identifier for the new instance.
 
+- `devices`:
+
+  ([`character()`](https://rdrr.io/r/base/character.html))  
+  Devices the auto is allowed to run on. Defaults to `"cuda"` only,
+  because tabfm is too slow to be useful on the CPU.
+
 ------------------------------------------------------------------------
 
-### `AutoTabPFN$check()`
+### `AutoTabFM$check()`
 
 Check if the auto is compatible with the task.
 
 #### Usage
 
-    AutoTabPFN$check(
+    AutoTabFM$check(
       task,
       memory_limit = Inf,
       large_data_set = FALSE,
@@ -115,13 +131,13 @@ Check if the auto is compatible with the task.
 
 ------------------------------------------------------------------------
 
-### `AutoTabPFN$graph()`
+### `AutoTabFM$graph()`
 
 Create the graph for the auto.
 
 #### Usage
 
-    AutoTabPFN$graph(task, measure, n_threads, timeout, devices)
+    AutoTabFM$graph(task, measure, n_threads, timeout, devices)
 
 #### Arguments
 
@@ -149,13 +165,13 @@ Create the graph for the auto.
 
 ------------------------------------------------------------------------
 
-### `AutoTabPFN$estimate_memory()`
+### `AutoTabFM$estimate_memory()`
 
 Estimate the memory for the auto.
 
 #### Usage
 
-    AutoTabPFN$estimate_memory(task, devices = "cpu")
+    AutoTabFM$estimate_memory(task, devices = "cpu")
 
 #### Arguments
 
@@ -171,13 +187,13 @@ Estimate the memory for the auto.
 
 ------------------------------------------------------------------------
 
-### `AutoTabPFN$design_default()`
+### `AutoTabFM$design_default()`
 
 Default hyperparameters for the learner.
 
 #### Usage
 
-    AutoTabPFN$design_default(task)
+    AutoTabFM$design_default(task)
 
 #### Arguments
 
@@ -187,13 +203,13 @@ Default hyperparameters for the learner.
 
 ------------------------------------------------------------------------
 
-### `AutoTabPFN$search_space()`
+### `AutoTabFM$search_space()`
 
 Get the search space for the auto.
 
 #### Usage
 
-    AutoTabPFN$search_space(task)
+    AutoTabFM$search_space(task)
 
 #### Arguments
 
@@ -203,13 +219,13 @@ Get the search space for the auto.
 
 ------------------------------------------------------------------------
 
-### `AutoTabPFN$clone()`
+### `AutoTabFM$clone()`
 
 The objects of this class are cloneable with this method.
 
 #### Usage
 
-    AutoTabPFN$clone(deep = FALSE)
+    AutoTabFM$clone(deep = FALSE)
 
 #### Arguments
 
@@ -220,21 +236,21 @@ The objects of this class are cloneable with this method.
 ## Examples
 
 ``` r
-auto("tabpfn")
-#> <AutoTabPFN>
+auto("tabfm")
+#> <AutoTabFM>
 #>   Inherits from: <Auto>
 #>   Public:
 #>     check: function (task, memory_limit = Inf, large_data_set = FALSE, devices = "cpu") 
 #>     clone: function (deep = FALSE) 
 #>     design_default: function (task) 
 #>     design_set: function (task, measure, size) 
-#>     devices: cpu cuda
+#>     devices: cuda
 #>     early_stopping_rounds: function (task, budget = Inf) 
 #>     estimate_memory: function (task, devices = "cpu") 
 #>     finalize_model: function (graph_learner) 
 #>     graph: function (task, measure, n_threads, timeout, devices) 
-#>     id: tabpfn
-#>     initialize: function (id = "tabpfn") 
+#>     id: tabfm
+#>     initialize: function (id = "tabfm", devices = "cuda") 
 #>     n_cpu: 1
 #>     n_gpu: 1
 #>     packages: mlr3 mlr3extralearners callr

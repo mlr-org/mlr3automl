@@ -46,6 +46,15 @@
   loses more than the intended factor, e.g. 7 workers are reduced to 2
   instead of 1.
 
+- feat: New learner id `"tabfm"` adds the TabFM tabular foundation model
+  from `mlr3extralearners` to the search space, along with the new auto
+  learners `classif.auto_tabfm` and `regr.auto_tabfm`. It runs via
+  `reticulate` and is registered for `"cuda"` only, because it predicts
+  in context and runs the backbone over the training rows once per
+  estimator, which is too slow to be useful on the CPU. Construct
+  `AutoTabFM$new(devices = c("cpu", "cuda"))` and re-register it in
+  `mlr_auto` to run it on the CPU anyway.
+
 - feat: The auto learners gained the `n_cpu` and `n_gpu` parameters that
   override the per-learner resource requirements. When the requirements
   are mixed, `"cuda"` is part of `devices`, and the workers are

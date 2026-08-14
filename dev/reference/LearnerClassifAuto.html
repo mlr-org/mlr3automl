@@ -98,7 +98,7 @@ Currently informational only; the number of threads is controlled by <code>n_thr
 Number of GPUs a single training of a learner uses, named by learner id, e.g. <code>c(xgboost = 1)</code>.
 Overrides the default of the learner.
 Can only be 0 or 1 for now.
-The torch learners, TabPFN, and fastai default to 1; all other learners default to 0.
+The torch learners, TabPFN, TabFM, and fastai default to 1; all other learners default to 0.
 Only effective when <code>"cuda"</code> is part of <code>devices</code>; otherwise every learner is trained on the CPU.
 When the requirements are mixed and the daemons of the <a href="https://CRAN.R-project.org/package=mirai" class="external-link"><span class="pkg">mirai</span></a> compute profiles
 <code>"mlr3automl_cpu"</code> and <code>"mlr3automl_gpu"</code> are set up with <code><a href="https://rush.mlr-org.com/reference/rush_plan.html" class="external-link">rush::rush_plan()</a></code>, the search space is
@@ -233,7 +233,7 @@ Change to <code>FALSE</code> to debug.</p></dd>
     <h2 id="python-learners">Python learners<a class="anchor" aria-label="anchor" href="#python-learners"></a></h2>
 
 
-<p>Python learners like <code>TabPFN</code> and <code>fastai</code> run via <code>reticulate</code> and
+<p>Python learners like <code>TabPFN</code>, <code>TabFM</code>, and <code>fastai</code> run via <code>reticulate</code> and
 therefore need a Python installation with their required packages.
 There are two ways to provide it:</p><ol><li><p>Do nothing and let <code><a href="https://rstudio.github.io/reticulate/reference/py_require.html" class="external-link">reticulate::py_require()</a></code> install the required packages into an ephemeral virtual
 environment automatically.</p></li>

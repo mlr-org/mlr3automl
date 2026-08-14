@@ -29,6 +29,8 @@
   : Classification ResNet Auto Learner
 - [`LearnerClassifAutoSVM`](https://mlr3automl.mlr-org.com/dev/reference/LearnerClassifAutoSVM.md)
   : Classification SVM Auto Learner
+- [`LearnerClassifAutoTabFM`](https://mlr3automl.mlr-org.com/dev/reference/LearnerClassifAutoTabFM.md)
+  : Classification TabFM Auto Learner
 - [`LearnerClassifAutoTabPFN`](https://mlr3automl.mlr-org.com/dev/reference/LearnerClassifAutoTabPFN.md)
   : Classification TabPFN Auto Learner
 - [`LearnerClassifAutoXgboost`](https://mlr3automl.mlr-org.com/dev/reference/LearnerClassifAutoXgboost.md)
@@ -54,6 +56,8 @@
   : Regression ResNet Auto Learner
 - [`LearnerRegrAutoSVM`](https://mlr3automl.mlr-org.com/dev/reference/LearnerRegrAutoSVM.md)
   : Regression SVM Auto Learner
+- [`LearnerRegrAutoTabFM`](https://mlr3automl.mlr-org.com/dev/reference/LearnerRegrAutoTabFM.md)
+  : Regression TabFM Auto Learner
 - [`LearnerRegrAutoTabPFN`](https://mlr3automl.mlr-org.com/dev/reference/LearnerRegrAutoTabPFN.md)
   : Regression TabPFN Auto Learner
 - [`LearnerRegrAutoXgboost`](https://mlr3automl.mlr-org.com/dev/reference/LearnerRegrAutoXgboost.md)
@@ -63,8 +67,12 @@
 
 - [`LearnerClassifFastaiIsolated`](https://mlr3automl.mlr-org.com/dev/reference/LearnerClassifFastaiIsolated.md)
   : Fastai Learner Isolated
+- [`LearnerClassifTabFMIsolated`](https://mlr3automl.mlr-org.com/dev/reference/LearnerClassifTabFMIsolated.md)
+  : TabFM Learner Isolated
 - [`LearnerClassifTabPFNIsolated`](https://mlr3automl.mlr-org.com/dev/reference/LearnerClassifTabPFNIsolated.md)
   : TabPFN Learner Isolated
+- [`LearnerRegrTabFMIsolated`](https://mlr3automl.mlr-org.com/dev/reference/LearnerRegrTabFMIsolated.md)
+  : TabFM Regressor Learner Isolated
 - [`LearnerRegrTabPFNIsolated`](https://mlr3automl.mlr-org.com/dev/reference/LearnerRegrTabPFNIsolated.md)
   : TabPFN Regressor Learner Isolated
 
@@ -96,6 +104,8 @@
   : ResNet Auto
 - [`AutoSVM`](https://mlr3automl.mlr-org.com/dev/reference/AutoSVM.md) :
   SVM Auto
+- [`AutoTabFM`](https://mlr3automl.mlr-org.com/dev/reference/AutoTabFM.md)
+  : TabFM Auto
 - [`AutoTabPFN`](https://mlr3automl.mlr-org.com/dev/reference/AutoTabPFN.md)
   : TabPFN Auto
 - [`AutoXgboost`](https://mlr3automl.mlr-org.com/dev/reference/AutoXgboost.md)

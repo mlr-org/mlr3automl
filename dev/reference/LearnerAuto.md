@@ -22,6 +22,7 @@ The following learners are supported:
 | ranger         | mlr3learners      |
 | resnet         | mlr3torch         |
 | svm            | mlr3learners      |
+| tabfm          | mlr3extralearners |
 | tabpfn         | mlr3extralearners |
 | xgboost        | mlr3learners      |
 
@@ -57,10 +58,10 @@ learner. Set `encapsulate_mbo = FALSE` to catch no errors in mbo.
   (named [`integer()`](https://rdrr.io/r/base/integer.html))  
   Number of GPUs a single training of a learner uses, named by learner
   id, e.g. `c(xgboost = 1)`. Overrides the default of the learner. Can
-  only be 0 or 1 for now. The torch learners, TabPFN, and fastai default
-  to 1; all other learners default to 0. Only effective when `"cuda"` is
-  part of `devices`; otherwise every learner is trained on the CPU. When
-  the requirements are mixed and the daemons of the
+  only be 0 or 1 for now. The torch learners, TabPFN, TabFM, and fastai
+  default to 1; all other learners default to 0. Only effective when
+  `"cuda"` is part of `devices`; otherwise every learner is trained on
+  the CPU. When the requirements are mixed and the daemons of the
   [mirai](https://CRAN.R-project.org/package=mirai) compute profiles
   `"mlr3automl_cpu"` and `"mlr3automl_gpu"` are set up with
   [`rush::rush_plan()`](https://rush.mlr-org.com/reference/rush_plan.html),

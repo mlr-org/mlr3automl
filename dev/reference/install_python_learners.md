@@ -1,15 +1,15 @@
 # Install Python Learners
 
 Creates a conda environment and installs the packages required by the
-Python learners. Installs the dependencies of the fastai auto learner
-and the tabpfn auto learner. The learners share a single environment, so
-one `RETICULATE_PYTHON` covers both.
+Python learners. Installs the dependencies of the fastai auto learner,
+the tabfm auto learner, and the tabpfn auto learner. The learners share
+a single environment, so one `RETICULATE_PYTHON` covers all of them.
 
 ## Usage
 
 ``` r
 install_python_learners(
-  learners = c("fastai", "tabpfn"),
+  learners = c("fastai", "tabfm", "tabpfn"),
   envname = file.path(tools::R_user_dir("mlr3automl", which = "data"),
     "mlr3automl-python"),
   python_version = "3.12"
@@ -22,7 +22,7 @@ install_python_learners(
 
   ([`character()`](https://rdrr.io/r/base/character.html))  
   Learners to install the Python dependencies for. One or more of
-  `"fastai"` and `"tabpfn"`.
+  `"fastai"`, `"tabfm"`, and `"tabpfn"`.
 
 - envname:
 
