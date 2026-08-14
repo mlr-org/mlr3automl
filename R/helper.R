@@ -54,6 +54,18 @@ clean_reticulate_env = function() {
   Sys.unsetenv(c("VIRTUAL_ENV", "VIRTUAL_ENV_PROMPT", "PYTHONPATH", "R_SESSION_INITIALIZED"))
 }
 
+# whether a python-torch learner (tabpfn, tabfm, fastai) must isolate its callr session from
+# mlr3torch's libtorch (see isolated_model.R). TRUE whenever this run's own learners declare
+# mlr3torch (checked before its namespace is necessarily loaded, since graph() build order across
+# autos is not guaranteed), or when mlr3torch is already loaded in the calling process -- e.g. from
+# an earlier training call in the same session or a user script that attached it directly.
+# namespaces, once loaded, stay loaded for the life of the process: once mlr3torch has entered a
+# process, every later run in that process must isolate too, even if that run's own learner_ids
+# never mention mlr3torch.
+needs_python_isolation = function(autos) {
+  isNamespaceLoaded("mlr3torch") || any(map_lgl(autos, function(auto) "mlr3torch" %in% auto$packages))
+}
+
 # memoizes check_python_packages() results so repeated probes for the same
 # requirements in one session do not spawn a callr session each time.
 python_package_cache = new.env(parent = emptyenv())
@@ -77,8 +89,8 @@ check_python_packages = function(packages, python_version = NULL) {
       function(packages, python_version) {
         Sys.unsetenv(c("VIRTUAL_ENV", "VIRTUAL_ENV_PROMPT", "PYTHONPATH", "R_SESSION_INITIALIZED"))
         reticulate::py_require(packages, python_version = python_version)
-        # strip version specifiers e.g. "fastcore<2.0.0" -> "fastcore"
-        modules = gsub("[<>=!~].*$", "", packages)
+        # strip version specifiers and extras e.g. "fastcore<2.0.0" -> "fastcore", "tabfm[pytorch]" -> "tabfm"
+        modules = gsub("[<>=!~\\[].*$", "", packages)
         vapply(modules, reticulate::py_module_available, logical(1L), USE.NAMES = FALSE)
       },
       args = list(packages = packages, python_version = python_version)

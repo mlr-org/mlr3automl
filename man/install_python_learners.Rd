@@ -5,7 +5,7 @@
 \title{Install Python Learners}
 \usage{
 install_python_learners(
-  learners = c("fastai", "tabpfn"),
+  learners = c("fastai", "tabfm", "tabpfn"),
   envname = file.path(tools::R_user_dir("mlr3automl", which = "data"),
     "mlr3automl-python"),
   python_version = "3.12"
@@ -14,7 +14,7 @@ install_python_learners(
 \arguments{
 \item{learners}{(\code{character()})\cr
 Learners to install the Python dependencies for.
-One or more of \code{"fastai"} and \code{"tabpfn"}.}
+One or more of \code{"fastai"}, \code{"tabfm"}, and \code{"tabpfn"}.}
 
 \item{envname}{(\code{character(1)})\cr
 Path to the conda environment directory.
@@ -29,8 +29,8 @@ Invisibly returns the path to the Python binary in the environment.
 }
 \description{
 Creates a conda environment and installs the packages required by the Python learners.
-Installs the dependencies of the fastai auto learner and the tabpfn auto learner.
-The learners share a single environment, so one \code{RETICULATE_PYTHON} covers both.
+Installs the dependencies of the fastai auto learner, the tabfm auto learner, and the tabpfn auto learner.
+The learners share a single environment, so one \code{RETICULATE_PYTHON} covers all of them.
 }
 \details{
 The environment is created under \code{\link[tools:R_user_dir]{tools::R_user_dir()}} by default.

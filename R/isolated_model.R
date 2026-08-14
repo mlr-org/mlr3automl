@@ -5,7 +5,15 @@
 # so those sessions are not safe for python either.
 # the nested session only loads the namespaces referenced by the learner,
 # so libtorch never enters the process that initializes python.
-isolated_session = function(learner, task, method) {
+#
+# isolate = FALSE skips the callr subprocess entirely and runs the method in the calling
+# process. only safe when nothing in the current run loads mlr3torch (see train_auto.R,
+# which decides this once per run from the run's learner set). callers set this via the
+# learner's `isolate_python` field, computed in the auto's `graph()` method.
+isolated_session = function(learner, task, method, isolate = TRUE) {
+  if (!isolate) {
+    return(mlr3misc::get_private(learner)[[method]](task))
+  }
   tryCatch(
     callr::r(
       function(learner, task, method) {

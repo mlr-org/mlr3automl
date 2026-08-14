@@ -130,6 +130,8 @@ train_auto = function(self, private, task) {
     }
   }
 
+  isolate_python = needs_python_isolation(autos)
+
   # small data sets are bagged with a repeated cross-validation to reduce the variance of the out-of-fold score
   small_data_set = task$nrow < pv$bagging_small_size
   bagging_folds = if (small_data_set) pv$bagging_small_folds else pv$bagging_folds
@@ -144,20 +146,25 @@ train_auto = function(self, private, task) {
   }
 
   branches = map(autos, function(auto) {
-    if (pv$bagging) {
+    args = list(
+      task = task,
+      measure = pv$measure,
+      n_threads = learner_n_threads(auto),
+      timeout = pv$learner_timeout,
+      devices = learner_devices(auto)
+    )
+    graph_fun = if (pv$bagging) {
       # the bagged graph divides `learner_timeout` among the child models itself
-      auto$graph_bagged(
-        task,
-        pv$measure,
-        learner_n_threads(auto),
-        pv$learner_timeout,
-        learner_devices(auto),
-        bagging_folds,
-        bagging_repeats
-      )
+      args$folds = bagging_folds
+      args$repeats = bagging_repeats
+      auto$graph_bagged
     } else {
-      auto$graph(task, pv$measure, learner_n_threads(auto), pv$learner_timeout, learner_devices(auto))
+      auto$graph
     }
+    if ("isolate_python" %in% names(formals(graph_fun))) {
+      args$isolate_python = isolate_python
+    }
+    do.call(graph_fun, args)
   })
   graph_learner = as_learner(
     po("branch", options = names(branches)) %>>%

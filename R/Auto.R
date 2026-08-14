@@ -130,9 +130,12 @@ Auto = R6Class(
     #'   Number of cross-validation folds.
     #' @param repeats (`integer(1)`)\cr
     #'   Number of repetitions of the cross-validation.
-    graph_bagged = function(task, measure, n_threads, timeout, devices, folds, repeats = 1L) {
+    #' @param isolate_python (`logical(1)`)\cr
+    #'   Forwarded to `$graph()` for autos whose `graph()` accepts it, otherwise ignored.
+    graph_bagged = function(task, measure, n_threads, timeout, devices, folds, repeats = 1L, isolate_python = TRUE) {
       assert_int(folds, lower = 2L)
       assert_int(repeats, lower = 1L)
+      assert_flag(isolate_python)
 
       # a configuration trains `folds * repeats` children, so each child receives a share of the timeout
       fit_timeout = max(1L, timeout %/% (folds * repeats))
@@ -140,8 +143,13 @@ Auto = R6Class(
       search_space = self$search_space(task)
       internal_ids = search_space$ids(any_tags = "internal_tuning")
 
+      graph_args = list(task = task, measure = measure, n_threads = n_threads, timeout = fit_timeout, devices = devices)
+      if ("isolate_python" %in% names(formals(self$graph))) {
+        graph_args$isolate_python = isolate_python
+      }
+
       PipeOpLearnerBagged$new(
-        self$graph(task, measure, n_threads, fit_timeout, devices),
+        do.call(self$graph, graph_args),
         id = self$id,
         measure = measure,
         internal_search_space = if (length(internal_ids)) search_space$clone(deep = TRUE)$subset(internal_ids),

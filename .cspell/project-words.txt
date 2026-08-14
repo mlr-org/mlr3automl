@@ -89,6 +89,7 @@ rpart
 Rscript
 rsmp
 rsmps
+safetensors
 satimage
 semeion
 sobol
@@ -97,6 +98,7 @@ spambase
 stackoverflow
 sylvine
 TabArena
+Tabfm
 Tabpfn
 testthat
 tgen
@@ -104,6 +106,7 @@ tgens
 trafo
 tsks
 tuningspaces
+unpickles
 volkert
 wdbc
 xgboost

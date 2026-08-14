@@ -21,6 +21,7 @@ The following learners are supported:\tabular{ll}{
    ranger \tab mlr3learners \cr
    resnet \tab mlr3torch \cr
    svm \tab mlr3learners \cr
+   tabfm \tab mlr3extralearners \cr
    tabpfn \tab mlr3extralearners \cr
    xgboost \tab mlr3learners \cr
 }
@@ -83,7 +84,7 @@ Currently informational only; the number of threads is controlled by \code{n_thr
 Number of GPUs a single training of a learner uses, named by learner id, e.g. \code{c(xgboost = 1)}.
 Overrides the default of the learner.
 Can only be 0 or 1 for now.
-The torch learners, TabPFN, and fastai default to 1; all other learners default to 0.
+The torch learners, TabPFN, TabFM, and fastai default to 1; all other learners default to 0.
 Only effective when \code{"cuda"} is part of \code{devices}; otherwise every learner is trained on the CPU.
 When the requirements are mixed and the daemons of the \CRANpkg{mirai} compute profiles
 \code{"mlr3automl_cpu"} and \code{"mlr3automl_gpu"} are set up with \code{\link[rush:rush_plan]{rush::rush_plan()}}, the search space is

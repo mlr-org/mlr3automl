@@ -36,3 +36,19 @@ test_that("AutoTabPFN check rejects tasks with more than 1,000 rows on cpu", {
 
   expect_false(mlr_auto$get("tabpfn")$check(task, devices = "cpu"))
 })
+
+test_that("AutoTabPFN graph threads isolate_python onto the learner", {
+  skip_if_not_installed("mlr3extralearners")
+
+  task = tsk("penguins")
+  auto = mlr_auto$get("tabpfn")
+
+  graph = auto$graph(task, msr("classif.ce"), n_threads = 1L, timeout = 3600L, devices = "cpu")
+  expect_true(graph$pipeops$tabpfn$learner$isolate_python)
+
+  graph = auto$graph(
+    task, msr("classif.ce"), n_threads = 1L, timeout = 3600L, devices = "cpu",
+    isolate_python = FALSE
+  )
+  expect_false(graph$pipeops$tabpfn$learner$isolate_python)
+})

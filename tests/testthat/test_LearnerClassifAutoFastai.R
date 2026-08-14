@@ -18,6 +18,22 @@ test_that("LearnerClassifFastaiIsolated works when mlr3torch is loaded", {
   expect_number(state$internal_tuned_values$n_epoch, lower = 1)
 })
 
+test_that("AutoFastai graph threads isolate_python onto the learner", {
+  skip_if_not_installed("mlr3extralearners")
+
+  task = tsk("penguins")
+  auto = mlr_auto$get("fastai")
+
+  graph = auto$graph(task, msr("classif.ce"), n_threads = 1L, timeout = 3600L, devices = "cpu")
+  expect_true(graph$pipeops$fastai$learner$isolate_python)
+
+  graph = auto$graph(
+    task, msr("classif.ce"), n_threads = 1L, timeout = 3600L, devices = "cpu",
+    isolate_python = FALSE
+  )
+  expect_false(graph$pipeops$fastai$learner$isolate_python)
+})
+
 test_that("LearnerClassifAutoFastai works", {
   result = test_classif_learner("fastai")
 
