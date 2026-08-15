@@ -21,6 +21,7 @@ test_that("training errors when all evaluations fail", {
     rush = rush,
     small_data_size = 1,
     bagging_small_size = 1,
+    bagging_folds = 2L,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 2),
@@ -179,7 +180,9 @@ test_that("missing internal valid scores are imputed with the penalty score", {
   skip_if_not_installed("glmnet")
   skip_if_no_redis()
 
-  rush = start_rush()
+  # a single worker evaluates the initial design in order, so the terminator cannot cancel the
+  # glmnet configuration while the much faster failing debug configurations fill up the archive
+  rush = start_rush(n_workers = 1)
   on.exit({
     rush$reset()
     mirai::daemons(0)
@@ -198,8 +201,10 @@ test_that("missing internal valid scores are imputed with the penalty score", {
     bagging_folds = 3L,
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 4),
+    # the default configuration of every learner is evaluated first, so both branches are scored
+    initial_design_default = TRUE,
     initial_design_type = "random",
-    initial_design_size = 4,
+    initial_design_size = 2,
     encapsulate_mbo = FALSE
   )
 
@@ -351,6 +356,7 @@ test_that("user requested predict_type is honored even when the measure only nee
     rush = rush,
     small_data_size = 1,
     bagging_small_size = 1,
+    bagging_folds = 2L,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 2),
@@ -424,6 +430,7 @@ test_that("mixed cpu and gpu requirements are tuned on subspaces", {
     devices = c("cpu", "cuda"),
     small_data_size = 1,
     bagging_small_size = 1,
+    bagging_folds = 2L,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 8),
@@ -476,6 +483,7 @@ test_that("mixed requirements keep the single search space when the compute prof
     devices = c("cpu", "cuda"),
     small_data_size = 1,
     bagging_small_size = 1,
+    bagging_folds = 2L,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 8),
@@ -523,6 +531,7 @@ test_that("a large data set reduces the workers of the cpu compute profiles but 
     large_data_size = 1,
     small_data_size = 1,
     bagging_small_size = 1,
+    bagging_folds = 2L,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 8),
@@ -571,6 +580,7 @@ test_that("mixed requirements keep the single search space without compute profi
     devices = c("cpu", "cuda"),
     small_data_size = 1,
     bagging_small_size = 1,
+    bagging_folds = 2L,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 6),
@@ -616,6 +626,7 @@ test_that("gpu learners fall back to the cpu without a cuda device", {
     rush = rush,
     small_data_size = 1,
     bagging_small_size = 1,
+    bagging_folds = 2L,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 8),
@@ -663,6 +674,7 @@ test_that("homogeneous gpu requirements keep the single search space", {
     n_gpu = c(debug_cpu = 1L),
     small_data_size = 1,
     bagging_small_size = 1,
+    bagging_folds = 2L,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 8),
@@ -707,6 +719,7 @@ test_that("mixed requirements keep the single search space without a gpu compute
     devices = c("cpu", "cuda"),
     small_data_size = 1,
     bagging_small_size = 1,
+    bagging_folds = 2L,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 6),
