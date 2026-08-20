@@ -33,9 +33,8 @@ Installs the dependencies of the fastai auto learner, the tabfm auto learner, an
 The learners share a single environment, so one \code{RETICULATE_PYTHON} covers all of them.
 }
 \details{
-The environment is created under \code{\link[tools:R_user_dir]{tools::R_user_dir()}} by default, not inside the
-project directory: the environment can exceed 10GB with torch/CUDA dependencies, and a
-project-local path risks getting bundled into source tarballs on \verb{R CMD build}/\code{renv::install()}.
+The environment is created under \code{\link[tools:R_user_dir]{tools::R_user_dir()}} by default.
+The environment can exceed 10GB with torch/CUDA dependencies.
 }
 \examples{
 \dontrun{
