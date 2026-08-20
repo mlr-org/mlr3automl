@@ -121,7 +121,14 @@ Create the graph for the auto.
 
 #### Usage
 
-    AutoTabPFN$graph(task, measure, n_threads, timeout, devices)
+    AutoTabPFN$graph(
+      task,
+      measure,
+      n_threads,
+      timeout,
+      devices,
+      isolate_python = TRUE
+    )
 
 #### Arguments
 

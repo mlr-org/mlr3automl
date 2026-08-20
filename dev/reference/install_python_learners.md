@@ -45,9 +45,7 @@ Invisibly returns the path to the Python binary in the environment.
 
 The environment is created under
 [`tools::R_user_dir()`](https://rdrr.io/r/tools/userdir.html) by
-default, not inside the project directory: the environment can exceed
-10GB with torch/CUDA dependencies, and a project-local path risks
-getting bundled into source tarballs on `R CMD build`/`renv::install()`.
+default. The environment can exceed 10GB with torch/CUDA dependencies.
 
 ## Examples
 

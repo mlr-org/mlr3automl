@@ -62,6 +62,16 @@
     <p><code><a href="https://mlr3.mlr-org.com/reference/Learner.html" class="external-link">mlr3::Learner</a></code> -&gt; <code><a href="https://mlr3.mlr-org.com/reference/LearnerRegr.html" class="external-link">mlr3::LearnerRegr</a></code> -&gt; <code><a href="https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.tabfm.html" class="external-link">mlr3extralearners::LearnerRegrTabFM</a></code> -&gt; <code>LearnerRegrTabFMIsolated</code></p>
     </div>
     <div class="section level2">
+    <h2 id="public-fields">Public fields<a class="anchor" aria-label="anchor" href="#public-fields"></a></h2>
+    <p></p><div class="r6-fields"><dl><dt><code>isolate_python</code></dt>
+<dd><p>(<code>logical(1)</code>)<br>
+Whether to run <code>.train()</code> and <code>.predict()</code> in a fresh callr session. Set by
+<a href="AutoTabFM.html">AutoTabFM</a><code>$graph()</code>; only <code>FALSE</code> when the run's learners never load mlr3torch.</p></dd>
+
+
+</dl><p></p></div>
+    </div>
+    <div class="section level2">
     <h2 id="methods">Methods<a class="anchor" aria-label="anchor" href="#methods"></a></h2>
 
 <div class="section">

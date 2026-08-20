@@ -121,7 +121,14 @@ Create the graph for the auto.
 
 #### Usage
 
-    AutoFastai$graph(task, measure, n_threads, timeout, devices)
+    AutoFastai$graph(
+      task,
+      measure,
+      n_threads,
+      timeout,
+      devices,
+      isolate_python = TRUE
+    )
 
 #### Arguments
 

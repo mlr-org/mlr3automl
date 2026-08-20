@@ -18,6 +18,16 @@ Object of class
 [`mlr3extralearners::LearnerRegrTabFM`](https://mlr3extralearners.mlr-org.com/reference/mlr_learners_regr.tabfm.html)
 -\> `LearnerRegrTabFMIsolated`
 
+## Public fields
+
+- `isolate_python`:
+
+  (`logical(1)`)  
+  Whether to run `.train()` and `.predict()` in a fresh callr session.
+  Set by
+  [AutoTabFM](https://mlr3automl.mlr-org.com/dev/reference/AutoTabFM.md)`$graph()`;
+  only `FALSE` when the run's learners never load mlr3torch.
+
 ## Methods
 
 ### Public methods

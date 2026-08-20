@@ -18,6 +18,16 @@ Object of class
 [`mlr3extralearners::LearnerClassifFastai`](https://mlr3extralearners.mlr-org.com/reference/mlr_learners_classif.fastai.html)
 -\> `LearnerClassifFastaiIsolated`
 
+## Public fields
+
+- `isolate_python`:
+
+  (`logical(1)`)  
+  Whether to run `.train()` and `.predict()` in a fresh callr session.
+  Set by
+  [AutoFastai](https://mlr3automl.mlr-org.com/dev/reference/AutoFastai.md)`$graph()`;
+  only `FALSE` when the run's learners never load mlr3torch.
+
 ## Methods
 
 ### Public methods

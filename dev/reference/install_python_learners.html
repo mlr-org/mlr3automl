@@ -96,9 +96,8 @@ Pinned to <code>"3.12"</code> by default so the environment is reproducible acro
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The environment is created under <code><a href="https://rdrr.io/r/tools/userdir.html" class="external-link">tools::R_user_dir()</a></code> by default, not inside the
-project directory: the environment can exceed 10GB with torch/CUDA dependencies, and a
-project-local path risks getting bundled into source tarballs on <code>R CMD build</code>/<code>renv::install()</code>.</p>
+    <p>The environment is created under <code><a href="https://rdrr.io/r/tools/userdir.html" class="external-link">tools::R_user_dir()</a></code> by default.
+The environment can exceed 10GB with torch/CUDA dependencies.</p>
     </div>
 
     <div class="section level2">

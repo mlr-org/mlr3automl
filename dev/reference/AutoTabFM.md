@@ -137,7 +137,14 @@ Create the graph for the auto.
 
 #### Usage
 
-    AutoTabFM$graph(task, measure, n_threads, timeout, devices)
+    AutoTabFM$graph(
+      task,
+      measure,
+      n_threads,
+      timeout,
+      devices,
+      isolate_python = TRUE
+    )
 
 #### Arguments
 
