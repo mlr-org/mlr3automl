@@ -2,6 +2,7 @@
 # Project-specific words — commit and share with the team.
 ADBO
 analcatdata
+AutoGluon
 automl
 autotest
 bacc
@@ -32,10 +33,12 @@ extralearners
 fabert
 fastai
 fastcore
+fixfactors
 glmnet
 higgs
 Hyperparameters
 ilpd
+insample
 jannis
 karhunen
 kknn
@@ -67,6 +70,8 @@ overpredict
 pandoc
 paramtest
 pendigits
+pipeop
+pipeops
 pkgdown
 pkgdowntemplate
 Pulatov
@@ -88,9 +93,11 @@ safetensors
 satimage
 semeion
 sobol
+softmax
 spambase
 stackoverflow
 sylvine
+TabArena
 Tabfm
 Tabpfn
 testthat

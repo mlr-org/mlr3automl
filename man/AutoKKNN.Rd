@@ -32,6 +32,7 @@ auto("kknn")
   <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="early_stopping_rounds"><a href='../../mlr3automl/html/Auto.html#method-Auto-early_stopping_rounds'><code>Auto$early_stopping_rounds()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="estimate_memory"><a href='../../mlr3automl/html/Auto.html#method-Auto-estimate_memory'><code>Auto$estimate_memory()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="finalize_model"><a href='../../mlr3automl/html/Auto.html#method-Auto-finalize_model'><code>Auto$finalize_model()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="graph_bagged"><a href='../../mlr3automl/html/Auto.html#method-Auto-graph_bagged'><code>Auto$graph_bagged()</code></a></span></li>
 </ul>
 </details>}}
 \if{html}{\out{<hr>}}

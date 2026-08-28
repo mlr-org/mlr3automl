@@ -118,6 +118,46 @@ Auto = R6Class(
     },
 
     #' @description
+    #' Create the bagged graph for the auto.
+    #' Wraps the graph of `$graph()` in a [PipeOpLearnerBagged],
+    #' so a configuration is evaluated as `folds * repeats` cross-validated child models
+    #' and scored with their out-of-fold predictions.
+    #'
+    #' In contrast to `$graph()`, `timeout` is the timeout of the complete configuration.
+    #' It is divided among the child models.
+    #'
+    #' @param folds (`integer(1)`)\cr
+    #'   Number of cross-validation folds.
+    #' @param repeats (`integer(1)`)\cr
+    #'   Number of repetitions of the cross-validation.
+    #' @param isolate_python (`logical(1)`)\cr
+    #'   Forwarded to `$graph()` for autos whose `graph()` accepts it, otherwise ignored.
+    graph_bagged = function(task, measure, n_threads, timeout, devices, folds, repeats = 1L, isolate_python = TRUE) {
+      assert_int(folds, lower = 2L)
+      assert_int(repeats, lower = 1L)
+      assert_flag(isolate_python)
+
+      # a configuration trains `folds * repeats` children, so each child receives a share of the timeout
+      fit_timeout = max(1L, timeout %/% (folds * repeats))
+
+      search_space = self$search_space(task)
+      internal_ids = search_space$ids(any_tags = "internal_tuning")
+
+      graph_args = list(task = task, measure = measure, n_threads = n_threads, timeout = fit_timeout, devices = devices)
+      if ("isolate_python" %in% names(formals(self$graph))) {
+        graph_args$isolate_python = isolate_python
+      }
+
+      PipeOpLearnerBagged$new(
+        do.call(self$graph, graph_args),
+        id = self$id,
+        measure = measure,
+        internal_search_space = if (length(internal_ids)) search_space$clone(deep = TRUE)$subset(internal_ids),
+        param_vals = list(bagging.folds = folds, bagging.repeats = repeats)
+      )
+    },
+
+    #' @description
     #' Estimate the number of early stopping rounds (the patience) for a learner.
     #' `budget` is the maximum number of training rounds (boosting iterations or epochs) the learner may use.
     #' The patience is capped well below the budget, otherwise early stopping and validation-based internal tuning

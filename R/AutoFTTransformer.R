@@ -27,7 +27,7 @@ AutoFTTransformer = R6Class(
     initialize = function(id = "ft_transformer") {
       super$initialize(
         id = id,
-        properties = "internal_tuning",
+        properties = c("internal_tuning", "bagging_refit"),
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3torch"),
         devices = c("cuda", "cpu"),

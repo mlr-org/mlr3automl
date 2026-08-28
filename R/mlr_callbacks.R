@@ -35,6 +35,48 @@ load_callback_initial_design_runtime = function() {
 
 callbacks[["mlr3automl.initial_design_runtime"]] = load_callback_initial_design_runtime
 
+#' @title Impute Validation Score Callback
+#'
+#' @name mlr3automl.impute_valid_score
+#'
+#' @description
+#' This [mlr3misc::Callback] imputes missing internal validation scores with a penalty value.
+#' When a configuration fails or times out, the fallback learner provides predictions but no internal validation score,
+#' so the archive would record `NA` and mislead the surrogate model of the tuner.
+#' The penalty is usually a slightly worsened featureless baseline score,
+#' so failed configurations stay finite but rank worse than any real configuration.
+#'
+#' @section Parameters:
+#' * `penalty` :: `numeric(1)`\cr
+#'   Score to impute for missing internal validation scores.
+#'
+#' @examples
+#' clbk("mlr3automl.impute_valid_score", penalty = 1)
+NULL
+
+# nolint next: object_length_linter
+load_callback_impute_valid_score = function() {
+  callback_async_tuning(
+    "mlr3automl.impute_valid_score",
+    label = "Impute Validation Score Callback",
+    man = "mlr3automl::mlr3automl.impute_valid_score",
+    on_eval_before_archive = function(callback, context) {
+      performance = context$aggregated_performance
+      score = performance[["internal_valid_score"]]
+      if (!is.null(score) && is.na(score)) {
+        lgr::get_logger("mlr3/mlr3automl")$info(
+          "Imputing missing internal validation score with penalty %f",
+          callback$state$penalty
+        )
+        performance[["internal_valid_score"]] = callback$state$penalty
+        context$aggregated_performance = performance
+      }
+    }
+  )
+}
+
+callbacks[["mlr3automl.impute_valid_score"]] = load_callback_impute_valid_score
+
 #' @title Encapsulation Daemon Callback
 #'
 #' @name mlr3automl.encapsulation_daemon

@@ -27,6 +27,8 @@ test_that("only lda fails", {
       "classif.auto",
       learner_ids = "lda",
       small_data_size = 1,
+      bagging_small_size = 1,
+      bagging_folds = 2L,
       resampling = rsmp("holdout"),
       measure = msr("classif.ce"),
       terminator = trm("evals", n_evals = 6)
@@ -75,6 +77,8 @@ test_that("all learner on cpu work", {
     rush = rush,
     learner_ids = c("catboost", "glmnet", "kknn", "lightgbm", "ranger", "svm", "xgboost", "lda", "extra_trees"),
     small_data_size = 1,
+    bagging_small_size = 1,
+    bagging_folds = 2L,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 20),
@@ -110,6 +114,8 @@ test_that("memory limit works", {
     learner_ids = c("ranger", "xgboost", "catboost", "kknn"),
     memory_limit = 5,
     small_data_size = 100,
+    bagging_small_size = 1,
+    bagging_folds = 2L,
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 5),
     resampling = rsmp("holdout"),
@@ -147,7 +153,9 @@ test_that("small data set switch works", {
     initial_design_size = 2,
     store_benchmark_result = TRUE,
     encapsulate_learner = FALSE,
-    encapsulate_mbo = FALSE
+    encapsulate_mbo = FALSE,
+    # the small data resampling only applies without bagging
+    bagging = FALSE
   )
 
   expect_class(learner$train(task), "LearnerClassifAuto")
@@ -172,6 +180,8 @@ test_that("default measure is used when none is provided", {
     rush = rush,
     learner_ids = "glmnet",
     small_data_size = 1,
+    bagging_small_size = 1,
+    bagging_folds = 2L,
     resampling = rsmp("holdout"),
     terminator = trm("evals", n_evals = 1),
     initial_design_size = 2,
@@ -181,7 +191,11 @@ test_that("default measure is used when none is provided", {
 
   expect_null(learner$param_set$values$measure)
   expect_class(learner$train(task), "LearnerClassifAuto")
-  expect_equal(learner$model$instance$objective$measures[[1]]$id, "classif.ce")
+  # with bagging, the tuner optimizes the internal valid score and
+  # the default measure scores the out-of-fold predictions
+  expect_equal(learner$model$instance$objective$measures[[1]]$id, "internal_valid_score")
+  state = learner$model$graph_learner$graph_model$pipeops$glmnet$state
+  expect_named(state$internal_valid_scores, "classif.ce")
 })
 
 test_that("large data set switch works", {
@@ -204,6 +218,8 @@ test_that("large data set switch works", {
     initial_design_type = "sobol",
     large_data_size = 100,
     small_data_size = 1,
+    bagging_small_size = 1,
+    bagging_folds = 2L,
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 10),
     initial_design_size = 0,
@@ -238,6 +254,8 @@ test_that("deep clone works after training", {
     rush = rush,
     learner_ids = "glmnet",
     small_data_size = 1,
+    bagging_small_size = 1,
+    bagging_folds = 2L,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 2),
@@ -273,6 +291,8 @@ test_that("resample works", {
     rush = rush,
     learner_ids = "glmnet",
     small_data_size = 1,
+    bagging_small_size = 1,
+    bagging_folds = 2L,
     resampling = rsmp("holdout"),
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 10),
@@ -304,6 +324,8 @@ test_that("best initial design works with evals terminator", {
     learner_ids = c("kknn", "glmnet"),
     initial_design_set = 1,
     small_data_size = 1,
+    bagging_small_size = 1,
+    bagging_folds = 2L,
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 10),
     encapsulate_learner = FALSE,
@@ -331,6 +353,8 @@ test_that("initial design runtime limit works", {
     rush = rush,
     learner_ids = "glmnet",
     small_data_size = 1,
+    bagging_small_size = 1,
+    bagging_folds = 2L,
     initial_design_type = "random",
     initial_design_size = 100,
     measure = msr("classif.ce"),
@@ -357,6 +381,8 @@ test_that("devices works", {
     "classif.auto",
     rush = rush,
     devices = "cpu",
+    bagging_small_size = 1,
+    bagging_folds = 2L,
     measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 10),
     initial_design_size = 1,
@@ -416,10 +442,13 @@ test_that("lightgbm time limit works", {
     learner_timeout = 1,
     measure = msr("classif.ce"),
     small_data_size = 1,
+    bagging_small_size = 1,
     terminator = trm("evals", n_evals = 10),
     initial_design_size = 1,
     encapsulate_learner = FALSE,
-    encapsulate_mbo = FALSE
+    encapsulate_mbo = FALSE,
+    # with bagging, the timeout is divided among the children and the total runtime exceeds the threshold
+    bagging = FALSE
   )
 
   learner$train(task)
@@ -447,10 +476,13 @@ test_that("xgboost time limit works", {
     learner_timeout = 1,
     measure = msr("classif.ce"),
     small_data_size = 1,
+    bagging_small_size = 1,
     terminator = trm("evals", n_evals = 10),
     initial_design_size = 1,
     encapsulate_learner = FALSE,
-    encapsulate_mbo = FALSE
+    encapsulate_mbo = FALSE,
+    # with bagging, the timeout is divided among the children and the total runtime exceeds the threshold
+    bagging = FALSE
   )
 
   learner$train(task)
@@ -476,6 +508,8 @@ test_that("adaptive design works", {
     rush = rush,
     learner_ids = c("kknn", "ranger"),
     small_data_size = 1,
+    bagging_small_size = 1,
+    bagging_folds = 2L,
     measure = msr("classif.ce"),
     terminator = trm("run_time", secs = 20),
     resampling = rsmp("holdout"),
@@ -509,6 +543,8 @@ test_that("adaptive design works with hyperparameter-free learner", {
     rush = rush,
     learner_ids = c("lda", "ranger"),
     small_data_size = 1,
+    bagging_small_size = 1,
+    bagging_folds = 2L,
     measure = msr("classif.ce"),
     terminator = trm("run_time", secs = 20),
     resampling = rsmp("holdout"),

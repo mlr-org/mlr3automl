@@ -36,6 +36,7 @@ Number of GPUs a single training of the learner uses.}
     \item \href{#method-Auto-initialize}{\code{Auto$new()}}
     \item \href{#method-Auto-check}{\code{Auto$check()}}
     \item \href{#method-Auto-graph}{\code{Auto$graph()}}
+    \item \href{#method-Auto-graph_bagged}{\code{Auto$graph_bagged()}}
     \item \href{#method-Auto-early_stopping_rounds}{\code{Auto$early_stopping_rounds()}}
     \item \href{#method-Auto-estimate_memory}{\code{Auto$estimate_memory()}}
     \item \href{#method-Auto-finalize_model}{\code{Auto$finalize_model()}}
@@ -124,6 +125,50 @@ Default is "cpu".}
 Devices to use.
 Allowed values are \code{"cpu"} and \code{"cuda"}.
 Default is "cpu".}
+    }
+    \if{html}{\out{</div>}}
+  }
+}
+
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Auto-graph_bagged"></a>}}
+\if{latex}{\out{\hypertarget{method-Auto-graph_bagged}{}}}
+\subsection{\code{Auto$graph_bagged()}}{
+  Create the bagged graph for the auto.
+Wraps the graph of \verb{$graph()} in a \link{PipeOpLearnerBagged},
+so a configuration is evaluated as \code{folds * repeats} cross-validated child models
+and scored with their out-of-fold predictions.
+
+In contrast to \verb{$graph()}, \code{timeout} is the timeout of the complete configuration.
+It is divided among the child models.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Auto$graph_bagged(
+  task,
+  measure,
+  n_threads,
+  timeout,
+  devices,
+  folds,
+  repeats = 1L
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+      \item{\code{measure}}{(\link[mlr3:Measure]{mlr3::Measure}).}
+      \item{\code{n_threads}}{(\code{integer(1)}).}
+      \item{\code{timeout}}{(\code{integer(1)}).}
+      \item{\code{devices}}{(\code{character()})\cr
+Devices to use.
+Allowed values are \code{"cpu"} and \code{"cuda"}.
+Default is "cpu".}
+      \item{\code{folds}}{(\code{integer(1)})\cr
+Number of cross-validation folds.}
+      \item{\code{repeats}}{(\code{integer(1)})\cr
+Number of repetitions of the cross-validation.}
     }
     \if{html}{\out{</div>}}
   }
