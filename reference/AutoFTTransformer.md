@@ -2,16 +2,22 @@
 
 FTTransformer auto.
 
+## Value
+
+Object of class
+[R6::R6Class](https://r6.r-lib.org/reference/R6Class.html) and
+`AutoFTTransformer`.
+
 ## Super class
 
-[`mlr3automl::Auto`](https://mlr3automl.mlr-org.com/reference/Auto.md)
--\> `AutoFTTransformer`
+[`Auto`](https://mlr3automl.mlr-org.com/reference/Auto.md) -\>
+`AutoFTTransformer`
 
 ## Methods
 
 ### Public methods
 
-- [`AutoFTTransformer$new()`](#method-AutoFTTransformer-new)
+- [`AutoFTTransformer$new()`](#method-AutoFTTransformer-initialize)
 
 - [`AutoFTTransformer$graph()`](#method-AutoFTTransformer-graph)
 
@@ -21,16 +27,16 @@ FTTransformer auto.
 
 Inherited methods
 
-- [`mlr3automl::Auto$check()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-check)
-- [`mlr3automl::Auto$design_default()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-design_default)
-- [`mlr3automl::Auto$design_set()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-design_set)
-- [`mlr3automl::Auto$early_stopping_rounds()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-early_stopping_rounds)
-- [`mlr3automl::Auto$finalize_model()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-finalize_model)
-- [`mlr3automl::Auto$search_space()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-search_space)
+- [`Auto$check()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-check)
+- [`Auto$design_default()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-design_default)
+- [`Auto$design_set()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-design_set)
+- [`Auto$early_stopping_rounds()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-early_stopping_rounds)
+- [`Auto$finalize_model()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-finalize_model)
+- [`Auto$search_space()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-search_space)
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `AutoFTTransformer$new()`
 
 Creates a new instance of this
 [R6](https://r6.r-lib.org/reference/R6Class.html) class.
@@ -48,7 +54,7 @@ Creates a new instance of this
 
 ------------------------------------------------------------------------
 
-### Method `graph()`
+### `AutoFTTransformer$graph()`
 
 Create the graph for the auto.
 
@@ -82,13 +88,13 @@ Create the graph for the auto.
 
 ------------------------------------------------------------------------
 
-### Method `estimate_memory()`
+### `AutoFTTransformer$estimate_memory()`
 
 Estimate the memory for the auto.
 
 #### Usage
 
-    AutoFTTransformer$estimate_memory(task)
+    AutoFTTransformer$estimate_memory(task, devices = "cpu")
 
 #### Arguments
 
@@ -96,9 +102,15 @@ Estimate the memory for the auto.
 
   ([mlr3::Task](https://mlr3.mlr-org.com/reference/Task.html)).
 
+- `devices`:
+
+  ([`character()`](https://rdrr.io/r/base/character.html))  
+  Devices to use. Allowed values are `"cpu"` and `"cuda"`. Default is
+  "cpu".
+
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `AutoFTTransformer$clone()`
 
 The objects of this class are cloneable with this method.
 
@@ -111,3 +123,32 @@ The objects of this class are cloneable with this method.
 - `deep`:
 
   Whether to make a deep clone.
+
+## Examples
+
+``` r
+auto("ft_transformer")
+#> <AutoFTTransformer>
+#>   Inherits from: <Auto>
+#>   Public:
+#>     check: function (task, memory_limit = Inf, large_data_set = FALSE, devices) 
+#>     clone: function (deep = FALSE) 
+#>     design_default: function (task) 
+#>     design_set: function (task, measure, size) 
+#>     devices: cuda cpu
+#>     early_stopping_rounds: function (task, budget = Inf) 
+#>     estimate_memory: function (task, devices = "cpu") 
+#>     finalize_model: function (graph_learner) 
+#>     graph: function (task, measure, n_threads, timeout, devices) 
+#>     id: ft_transformer
+#>     initialize: function (id = "ft_transformer") 
+#>     n_cpu: 1
+#>     n_gpu: 1
+#>     packages: mlr3 mlr3torch
+#>     properties: internal_tuning
+#>     search_space: function (task) 
+#>     task_types: classif regr
+#>   Private:
+#>     .default_values: list
+#>     .search_space: ParamSet, R6
+```

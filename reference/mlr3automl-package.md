@@ -1,10 +1,20 @@
-# mlr3automl: AutoML extension for 'mlr3'
+# mlr3automl: Automated Machine Learning for 'mlr3'
 
-Flexible AutoML system for the 'mlr3' ecosystem.
+Flexible automated machine learning (AutoML) system for the 'mlr3'
+ecosystem. Automatically selects a suitable machine learning algorithm
+and tunes its hyperparameters for a given task. Constructs preprocessing
+pipelines with multiple parallel branches using 'mlr3pipelines' and
+jointly optimizes them together with the learners using 'mlr3tuning'.
+The optimization is driven by asynchronous decentralized Bayesian
+optimization by Egele et al. (2023)
+[doi:10.1109/e-Science58273.2023.10254839](https://doi.org/10.1109/e-Science58273.2023.10254839)
+.
 
 ## See also
 
 Useful links:
+
+- <https://mlr3automl.mlr-org.com>
 
 - <https://github.com/mlr-org/mlr3automl>
 
@@ -12,11 +22,16 @@ Useful links:
 
 ## Author
 
-**Maintainer**: Damir Pulatov <damirpolat@protonmail.com>
+**Maintainer**: Marc Becker <marcbecker@posteo.de>
+([ORCID](https://orcid.org/0000-0002-8115-0400)) \[copyright holder\]
 
 Authors:
 
 - Marc Becker <marcbecker@posteo.de>
-  ([ORCID](https://orcid.org/0000-0002-8115-0400))
+  ([ORCID](https://orcid.org/0000-0002-8115-0400)) \[copyright holder\]
+
+- Damir Pulatov <damirpolat@protonmail.com>
 
 - Baisu Zhou <baisu.zhou@outlook.com>
+
+- Lona Koers <lona.koers@gmail.com>

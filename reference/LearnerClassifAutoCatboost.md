@@ -2,19 +2,25 @@
 
 Classification auto learner.
 
+## Value
+
+Object of class
+[R6::R6Class](https://r6.r-lib.org/reference/R6Class.html) and
+`LearnerClassifAutoCatboost`.
+
 ## Super classes
 
 [`mlr3::Learner`](https://mlr3.mlr-org.com/reference/Learner.html) -\>
-[`mlr3automl::LearnerAuto`](https://mlr3automl.mlr-org.com/reference/LearnerAuto.md)
+[`LearnerAuto`](https://mlr3automl.mlr-org.com/reference/LearnerAuto.md)
 -\>
-[`mlr3automl::LearnerClassifAuto`](https://mlr3automl.mlr-org.com/reference/LearnerClassifAuto.md)
+[`LearnerClassifAuto`](https://mlr3automl.mlr-org.com/reference/LearnerClassifAuto.md)
 -\> `LearnerClassifAutoCatboost`
 
 ## Methods
 
 ### Public methods
 
-- [`LearnerClassifAutoCatboost$new()`](#method-LearnerClassifAutoCatboost-new)
+- [`LearnerClassifAutoCatboost$new()`](#method-LearnerClassifAutoCatboost-initialize)
 
 - [`LearnerClassifAutoCatboost$clone()`](#method-LearnerClassifAutoCatboost-clone)
 
@@ -22,7 +28,6 @@ Inherited methods
 
 - [`mlr3::Learner$base_learner()`](https://mlr3.mlr-org.com/reference/Learner.html#method-base_learner)
 - [`mlr3::Learner$configure()`](https://mlr3.mlr-org.com/reference/Learner.html#method-configure)
-- [`mlr3::Learner$encapsulate()`](https://mlr3.mlr-org.com/reference/Learner.html#method-encapsulate)
 - [`mlr3::Learner$format()`](https://mlr3.mlr-org.com/reference/Learner.html#method-format)
 - [`mlr3::Learner$help()`](https://mlr3.mlr-org.com/reference/Learner.html#method-help)
 - [`mlr3::Learner$predict()`](https://mlr3.mlr-org.com/reference/Learner.html#method-predict)
@@ -31,10 +36,11 @@ Inherited methods
 - [`mlr3::Learner$reset()`](https://mlr3.mlr-org.com/reference/Learner.html#method-reset)
 - [`mlr3::Learner$selected_features()`](https://mlr3.mlr-org.com/reference/Learner.html#method-selected_features)
 - [`mlr3::Learner$train()`](https://mlr3.mlr-org.com/reference/Learner.html#method-train)
+- [`LearnerAuto$encapsulate()`](https://mlr3automl.mlr-org.com/reference/LearnerAuto.html#method-encapsulate)
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `LearnerClassifAutoCatboost$new()`
 
 Creates a new instance of this
 [R6](https://r6.r-lib.org/reference/R6Class.html) class.
@@ -57,7 +63,7 @@ Creates a new instance of this
 
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `LearnerClassifAutoCatboost$clone()`
 
 The objects of this class are cloneable with this method.
 
@@ -70,3 +76,12 @@ The objects of this class are cloneable with this method.
 - `deep`:
 
   Whether to make a deep clone.
+
+## Examples
+
+``` r
+if (mlr3misc::require_namespaces(c("mlr3extralearners", "catboost"), quietly = TRUE)) {
+  learner = lrn("classif.auto_catboost")
+  learner
+}
+```

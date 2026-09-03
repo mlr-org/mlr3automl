@@ -2,19 +2,25 @@
 
 Classification auto learner.
 
+## Value
+
+Object of class
+[R6::R6Class](https://r6.r-lib.org/reference/R6Class.html) and
+`LearnerClassifAutoXgboost`.
+
 ## Super classes
 
 [`mlr3::Learner`](https://mlr3.mlr-org.com/reference/Learner.html) -\>
-[`mlr3automl::LearnerAuto`](https://mlr3automl.mlr-org.com/reference/LearnerAuto.md)
+[`LearnerAuto`](https://mlr3automl.mlr-org.com/reference/LearnerAuto.md)
 -\>
-[`mlr3automl::LearnerClassifAuto`](https://mlr3automl.mlr-org.com/reference/LearnerClassifAuto.md)
+[`LearnerClassifAuto`](https://mlr3automl.mlr-org.com/reference/LearnerClassifAuto.md)
 -\> `LearnerClassifAutoXgboost`
 
 ## Methods
 
 ### Public methods
 
-- [`LearnerClassifAutoXgboost$new()`](#method-LearnerClassifAutoXgboost-new)
+- [`LearnerClassifAutoXgboost$new()`](#method-LearnerClassifAutoXgboost-initialize)
 
 - [`LearnerClassifAutoXgboost$clone()`](#method-LearnerClassifAutoXgboost-clone)
 
@@ -22,7 +28,6 @@ Inherited methods
 
 - [`mlr3::Learner$base_learner()`](https://mlr3.mlr-org.com/reference/Learner.html#method-base_learner)
 - [`mlr3::Learner$configure()`](https://mlr3.mlr-org.com/reference/Learner.html#method-configure)
-- [`mlr3::Learner$encapsulate()`](https://mlr3.mlr-org.com/reference/Learner.html#method-encapsulate)
 - [`mlr3::Learner$format()`](https://mlr3.mlr-org.com/reference/Learner.html#method-format)
 - [`mlr3::Learner$help()`](https://mlr3.mlr-org.com/reference/Learner.html#method-help)
 - [`mlr3::Learner$predict()`](https://mlr3.mlr-org.com/reference/Learner.html#method-predict)
@@ -31,10 +36,11 @@ Inherited methods
 - [`mlr3::Learner$reset()`](https://mlr3.mlr-org.com/reference/Learner.html#method-reset)
 - [`mlr3::Learner$selected_features()`](https://mlr3.mlr-org.com/reference/Learner.html#method-selected_features)
 - [`mlr3::Learner$train()`](https://mlr3.mlr-org.com/reference/Learner.html#method-train)
+- [`LearnerAuto$encapsulate()`](https://mlr3automl.mlr-org.com/reference/LearnerAuto.html#method-encapsulate)
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `LearnerClassifAutoXgboost$new()`
 
 Creates a new instance of this
 [R6](https://r6.r-lib.org/reference/R6Class.html) class.
@@ -57,7 +63,7 @@ Creates a new instance of this
 
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `LearnerClassifAutoXgboost$clone()`
 
 The objects of this class are cloneable with this method.
 
@@ -70,3 +76,29 @@ The objects of this class are cloneable with this method.
 - `deep`:
 
   Whether to make a deep clone.
+
+## Examples
+
+``` r
+if (mlr3misc::require_namespaces("xgboost", quietly = TRUE)) {
+  learner = lrn("classif.auto_xgboost")
+  learner
+}
+#> 
+#> ── <LearnerClassifAutoXgboost> (classif.auto_xgboost) ──────────────────────────
+#> • Model: -
+#> • Parameters: check_learners=TRUE, devices=cpu, encapsulate_learner=TRUE,
+#> encapsulate_mbo=TRUE, initial_design_default=FALSE,
+#> initial_design_fraction=0.25, initial_design_set=0, initial_design_size=256,
+#> initial_design_type=sobol, large_data_size=1000000, learner_timeout=900,
+#> memory_limit=32000, n_threads=1, resampling=<ResamplingHoldout>,
+#> small_data_resampling=<ResamplingCV>, small_data_size=5000,
+#> store_benchmark_result=FALSE, store_models=FALSE,
+#> terminator=<TerminatorRunTime>
+#> • Packages: mlr3, mlr3tuning, mlr3pipelines, mlr3learners, and xgboost
+#> • Predict Types: [response] and prob
+#> • Feature Types: logical, integer, numeric, character, factor, and ordered
+#> • Encapsulation: none (fallback: -)
+#> • Properties: missings, multiclass, twoclass, and weights
+#> • Other settings: use_weights = 'use', predict_raw = 'FALSE'
+```

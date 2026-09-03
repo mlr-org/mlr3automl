@@ -2,25 +2,28 @@
 
 ## Authors
 
-- **Damir Pulatov**. Author.
-
-- **Marc Becker**. Maintainer, author.
+- **Marc Becker**. Maintainer, author, copyright holder.
   [](https://orcid.org/0000-0002-8115-0400)
 
+- **Damir Pulatov**. Author.
+
 - **Baisu Zhou**. Author.
+
+- **Lona Koers**. Author.
 
 ## Citation
 
 Source:
 [`DESCRIPTION`](https://github.com/mlr-org/mlr3automl/blob/main/DESCRIPTION)
 
-Pulatov D, Becker M, Zhou B (2026). *mlr3automl: AutoML extension for
-'mlr3'*. R package version 0.0.1, <https://mlr3automl.mlr-org.com>.
+Becker M, Pulatov D, Zhou B, Koers L (2026). *mlr3automl: Automated
+Machine Learning for 'mlr3'*. R package version 0.1.0,
+<https://mlr3automl.mlr-org.com>.
 
     @Manual{,
-      title = {mlr3automl: AutoML extension for 'mlr3'},
-      author = {Damir Pulatov and Marc Becker and Baisu Zhou},
+      title = {mlr3automl: Automated Machine Learning for 'mlr3'},
+      author = {Marc Becker and Damir Pulatov and Baisu Zhou and Lona Koers},
       year = {2026},
-      note = {R package version 0.0.1},
+      note = {R package version 0.1.0},
       url = {https://mlr3automl.mlr-org.com},
     }

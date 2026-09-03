@@ -5,9 +5,49 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/Roboto-0.4.10/font.css" rel="stylesheet"><link href="../deps/JetBrains_Mono-0.4.10/font.css" rel="stylesheet"><link href="../deps/Roboto_Slab-0.4.10/font.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Base AutoML Learner — LearnerAuto"><meta name="description" content="Abstract base class for AutoML learners.
-Contains the shared logic for LearnerClassifAuto and LearnerRegrAuto."><meta property="og:description" content="Abstract base class for AutoML learners.
-Contains the shared logic for LearnerClassifAuto and LearnerRegrAuto."><meta property="og:image" content="https://mlr3automl.mlr-org.com/logo.png"></head><body>
+</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/Roboto-0.4.10/font.css" rel="stylesheet"><link href="../deps/JetBrains_Mono-0.4.10/font.css" rel="stylesheet"><link href="../deps/Roboto_Slab-0.4.10/font.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Base AutoML Learner — LearnerAuto"><meta name="description" content="Abstract base class for AutoML learners.
+Contains the shared logic for LearnerClassifAuto and LearnerRegrAuto.
+The following learners are supported:
+AlgorithmPackage
+catboostmlr3extralearners
+extra_treesmlr3learners
+fastaimlr3extralearners
+ft_transformermlr3torch
+glmnetmlr3learners
+kknnmlr3learners
+ldamlr3learners
+lightgbmmlr3extralearners
+mlpmlr3torch
+rangermlr3learners
+resnetmlr3torch
+svmmlr3learners
+tabfmmlr3extralearners
+tabpfnmlr3extralearners
+xgboostmlr3learners
+
+
+"><meta property="og:description" content="Abstract base class for AutoML learners.
+Contains the shared logic for LearnerClassifAuto and LearnerRegrAuto.
+The following learners are supported:
+AlgorithmPackage
+catboostmlr3extralearners
+extra_treesmlr3learners
+fastaimlr3extralearners
+ft_transformermlr3torch
+glmnetmlr3learners
+kknnmlr3learners
+ldamlr3learners
+lightgbmmlr3extralearners
+mlpmlr3torch
+rangermlr3learners
+resnetmlr3torch
+svmmlr3learners
+tabfmmlr3extralearners
+tabpfnmlr3extralearners
+xgboostmlr3learners
+
+
+"><meta property="og:image" content="https://mlr3automl.mlr-org.com/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -15,7 +55,7 @@ Contains the shared logic for LearnerClassifAuto and LearnerRegrAuto."><meta pro
 
     <a class="navbar-brand me-2" href="../index.html">mlr3automl</a>
 
-    <small class="nav-text text-default me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.1</small>
+    <small class="nav-text text-default me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -24,6 +64,7 @@ Contains the shared logic for LearnerClassifAuto and LearnerRegrAuto."><meta pro
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html"><span class="fa fa-file-alt"></span> Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://mlr3book.mlr-org.com"><span class="fa fa-link"></span> mlr3book</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -52,14 +93,14 @@ Contains the shared logic for LearnerClassifAuto and LearnerRegrAuto."><meta pro
     <div class="ref-description section level2">
     <p>Abstract base class for AutoML learners.
 Contains the shared logic for <a href="LearnerClassifAuto.html">LearnerClassifAuto</a> and <a href="LearnerRegrAuto.html">LearnerRegrAuto</a>.</p>
-    </div>
+<p>The following learners are supported:</p><table class="table table"><tr><td>Algorithm</td><td>Package</td></tr><tr><td>catboost</td><td>mlr3extralearners</td></tr><tr><td>extra_trees</td><td>mlr3learners</td></tr><tr><td>fastai</td><td>mlr3extralearners</td></tr><tr><td>ft_transformer</td><td>mlr3torch</td></tr><tr><td>glmnet</td><td>mlr3learners</td></tr><tr><td>kknn</td><td>mlr3learners</td></tr><tr><td>lda</td><td>mlr3learners</td></tr><tr><td>lightgbm</td><td>mlr3extralearners</td></tr><tr><td>mlp</td><td>mlr3torch</td></tr><tr><td>ranger</td><td>mlr3learners</td></tr><tr><td>resnet</td><td>mlr3torch</td></tr><tr><td>svm</td><td>mlr3learners</td></tr><tr><td>tabfm</td><td>mlr3extralearners</td></tr><tr><td>tabpfn</td><td>mlr3extralearners</td></tr><tr><td>xgboost</td><td>mlr3learners</td></tr></table></div>
 
 
     <div class="section level2">
     <h2 id="debugging">Debugging<a class="anchor" aria-label="anchor" href="#debugging"></a></h2>
 
 
-<p>Set <code>options(bbotk.debug)</code> to run the tuning in the in the main session.
+<p>Set <code>options(bbotk.debug = TRUE)</code> to run the tuning in the main session.
 Set <code>encapsulate_learner = FALSE</code> to remove encapsulation of the learner.
 Set <code>encapsulate_mbo = FALSE</code> to catch no errors in mbo.</p>
     </div>
@@ -74,31 +115,65 @@ Timeout for training and predicting with a single learner.</p></dd>
 
 <dt>n_threads</dt>
 <dd><p>(<code>integer(1)</code>)<br>
-Number of threads to use for model training.</p></dd>
+Number of threads used for training a single learner.</p></dd>
+
+
+<dt>n_cpu</dt>
+<dd><p>(named <code><a href="https://rdrr.io/r/base/integer.html" class="external-link">integer()</a></code>)<br>
+Number of CPUs a single training of a learner uses, named by learner id, e.g. <code>c(xgboost = 1)</code>.
+Overrides the default of the learner.
+Must be at least 1 because the worker always runs on the CPU.
+Currently informational only; the number of threads is controlled by <code>n_threads</code>.</p></dd>
+
+
+<dt>n_gpu</dt>
+<dd><p>(named <code><a href="https://rdrr.io/r/base/integer.html" class="external-link">integer()</a></code>)<br>
+Number of GPUs a single training of a learner uses, named by learner id, e.g. <code>c(xgboost = 1)</code>.
+Overrides the default of the learner.
+Can only be 0 or 1 for now.
+The torch learners, TabPFN, TabFM, and fastai default to 1; all other learners default to 0.
+Only effective when <code>"cuda"</code> is part of <code>devices</code>; otherwise every learner is trained on the CPU.
+When the requirements are mixed and the daemons of the <a href="https://CRAN.R-project.org/package=mirai" class="external-link"><span class="pkg">mirai</span></a> compute profiles
+<code>"mlr3automl_cpu"</code> and <code>"mlr3automl_gpu"</code> are set up with <code><a href="https://rush.mlr-org.com/reference/rush_plan.html" class="external-link">rush::rush_plan()</a></code>, the search space is
+partitioned into a cpu and a gpu subspace which are tuned with <a href="https://mlr3mbo.mlr-org.com/reference/mlr_tuners_adbo_subspaces.html" class="external-link">mlr3mbo::TunerADBOSubspaces</a>.
+The workers of a profile only ever propose and evaluate points of the subspace of that profile,
+so the number of workers per subspace is the number of workers of its profile.
+Otherwise the cpu and gpu learners are tuned in a single search space with <a href="https://mlr3mbo.mlr-org.com/reference/mlr_tuners_async_mbo.html" class="external-link">mlr3mbo::TunerAsyncMbo</a>.</p>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>mirai<span class="sc">::</span><span class="fu">daemons</span>(<span class="dv">7</span>, <span class="at">.compute =</span> <span class="st">"mlr3automl_cpu"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>mirai<span class="sc">::</span><span class="fu">daemons</span>(<span class="dv">1</span>, <span class="at">.compute =</span> <span class="st">"mlr3automl_gpu"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>rush<span class="sc">::</span><span class="fu">rush_plan</span>(<span class="at">profiles =</span> <span class="fu">c</span>(<span class="at">mlr3automl_cpu =</span> <span class="dv">7</span>, <span class="at">mlr3automl_gpu =</span> <span class="dv">1</span>))</span></code></pre><p></p></div></dd>
 
 
 <dt>memory_limit</dt>
 <dd><p>(<code>integer(1)</code>)<br>
-Memory limit for model training in MB.</p></dd>
+Memory limit for training a single learner in MB.
+The limit is shared across the parallel workers, i.e. divided by the number of workers.</p></dd>
 
 
 <dt>devices</dt>
 <dd><p>(<code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code>)<br>
 Devices to use for model training.
 Possible values are <code>"cpu"</code> and <code>"cuda"</code>.
-If <code>"cuda"</code>, the learner will be trained on a GPU.</p></dd>
+If <code>"cuda"</code>, learners with a <code>n_gpu</code> requirement of 1 are trained on a GPU,
+while the remaining learners stay on the CPU.</p></dd>
 
 
 <dt>large_data_size</dt>
 <dd><p>(<code>integer(1)</code>)<br>
-Threshold value for the data set size from which special rules apply.
-Only the learners specified in <code>large_data_learner_ids</code> will be considered.
-These learners can use up to <code>large_data_nthread</code> threads.</p></dd>
+Threshold for the data set size (number of rows times number of columns) above
+which large-data rules apply.
+Beyond this threshold the number of parallel workers is reduced to a quarter, rounded up, and each
+remaining worker is given proportionally more threads and memory.
+When the workers are distributed over <a href="https://CRAN.R-project.org/package=mirai" class="external-link"><span class="pkg">mirai</span></a> compute profiles, the number of workers of every
+profile is reduced, but every profile keeps at least one worker.
+The <code>"mlr3automl_gpu"</code> profile is exempt because its number of workers is fixed by the number of GPUs.
+It keeps its workers, threads, and memory limit so that the gpu learners do not claim the CPU cores and
+the memory that are freed on the cpu profiles.</p></dd>
 
 
 <dt>small_data_size</dt>
 <dd><p>(<code>integer(1)</code>)<br>
-Threshold value for the data set size from which special rules apply.</p></dd>
+Threshold value for the data set size (rows) from which special rules apply.</p></dd>
 
 
 <dt>small_data_resampling</dt>
@@ -132,7 +207,9 @@ Possible values are <code>"lhs"</code>, <code>"sobol"</code>, <code>"random"</co
 
 <dt>initial_design_fraction</dt>
 <dd><p>(<code>numeric(1)</code>)<br>
-Fraction of the budget to use for the initial design.</p></dd>
+Fraction of the budget to use for the initial design.
+When the search space is partitioned into a cpu and a gpu subspace, the remaining points of both
+designs are dropped, because every compute profile has its own queue.</p></dd>
 
 
 <dt>resampling</dt>
@@ -191,15 +268,11 @@ Change to <code>FALSE</code> to debug.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="public-fields">Public fields<a class="anchor" aria-label="anchor" href="#public-fields"></a></h2>
-    <p></p><div class="r6-fields"><dl><dt><code>tuning_space</code></dt>
-<dd><p>(<code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>).</p></dd>
-
-
-<dt><code>instance</code></dt>
+    <p></p><div class="r6-fields"><dl><dt><code>instance</code></dt>
 <dd><p>(<a href="https://mlr3tuning.mlr-org.com/reference/TuningInstanceAsyncSingleCrit.html" class="external-link">mlr3tuning::TuningInstanceAsyncSingleCrit</a>).</p></dd>
 
 
-<dt><code>rush</code></dt>
+    <dt><code>rush</code></dt>
 <dd><p>(<a href="https://rush.mlr-org.com/reference/Rush.html" class="external-link">rush::Rush</a>)<br>
 Rush instance for parallel tuning.</p></dd>
 
@@ -211,22 +284,21 @@ Rush instance for parallel tuning.</p></dd>
 
 <div class="section">
 <h3 id="public-methods">Public methods<a class="anchor" aria-label="anchor" href="#public-methods"></a></h3>
-
-<ul><li><p><a href="#method-LearnerAuto-new"><code>LearnerAuto$new()</code></a></p></li>
+<p></p><ul><li><p><a href="#method-LearnerAuto-initialize"><code>LearnerAuto$new()</code></a></p></li>
+<li><p><a href="#method-LearnerAuto-encapsulate"><code>LearnerAuto$encapsulate()</code></a></p></li>
 <li><p><a href="#method-LearnerAuto-clone"><code>LearnerAuto$clone()</code></a></p></li>
 </ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="base_learner"><a href="https://mlr3.mlr-org.com/reference/Learner.html#method-base_learner"><code>mlr3::Learner$base_learner()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="configure"><a href="https://mlr3.mlr-org.com/reference/Learner.html#method-configure"><code>mlr3::Learner$configure()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="encapsulate"><a href="https://mlr3.mlr-org.com/reference/Learner.html#method-encapsulate"><code>mlr3::Learner$encapsulate()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="format"><a href="https://mlr3.mlr-org.com/reference/Learner.html#method-format"><code>mlr3::Learner$format()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="help"><a href="https://mlr3.mlr-org.com/reference/Learner.html#method-help"><code>mlr3::Learner$help()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="predict"><a href="https://mlr3.mlr-org.com/reference/Learner.html#method-predict"><code>mlr3::Learner$predict()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="predict_newdata"><a href="https://mlr3.mlr-org.com/reference/Learner.html#method-predict_newdata"><code>mlr3::Learner$predict_newdata()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="print"><a href="https://mlr3.mlr-org.com/reference/Learner.html#method-print"><code>mlr3::Learner$print()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="reset"><a href="https://mlr3.mlr-org.com/reference/Learner.html#method-reset"><code>mlr3::Learner$reset()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="selected_features"><a href="https://mlr3.mlr-org.com/reference/Learner.html#method-selected_features"><code>mlr3::Learner$selected_features()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="train"><a href="https://mlr3.mlr-org.com/reference/Learner.html#method-train"><code>mlr3::Learner$train()</code></a></span></li>
-</ul></details></p><hr><a id="method-LearnerAuto-new"></a><div class="section">
-<h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
+  <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="configure"><a href="https://mlr3.mlr-org.com/reference/Learner.html#method-configure"><code>mlr3::Learner$configure()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="format"><a href="https://mlr3.mlr-org.com/reference/Learner.html#method-format"><code>mlr3::Learner$format()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="help"><a href="https://mlr3.mlr-org.com/reference/Learner.html#method-help"><code>mlr3::Learner$help()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="predict"><a href="https://mlr3.mlr-org.com/reference/Learner.html#method-predict"><code>mlr3::Learner$predict()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="predict_newdata"><a href="https://mlr3.mlr-org.com/reference/Learner.html#method-predict_newdata"><code>mlr3::Learner$predict_newdata()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="print"><a href="https://mlr3.mlr-org.com/reference/Learner.html#method-print"><code>mlr3::Learner$print()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="reset"><a href="https://mlr3.mlr-org.com/reference/Learner.html#method-reset"><code>mlr3::Learner$reset()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="selected_features"><a href="https://mlr3.mlr-org.com/reference/Learner.html#method-selected_features"><code>mlr3::Learner$selected_features()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3" data-topic="Learner" data-id="train"><a href="https://mlr3.mlr-org.com/reference/Learner.html#method-train"><code>mlr3::Learner$train()</code></a></span></li>
+</ul></details></p><hr><a id="method-LearnerAuto-initialize"></a><div class="section">
+<h3 id="learnerauto-new-"><code>LearnerAuto$new()</code><a class="anchor" aria-label="anchor" href="#learnerauto-new-"></a></h3>
 <p>Creates a new instance of this <a href="https://r6.r-lib.org/reference/R6Class.html" class="external-link">R6</a> class.</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/LearnerAuto.html">LearnerAuto</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
@@ -237,36 +309,29 @@ Rush instance for parallel tuning.</p></dd>
 <span>  <span class="va">properties</span>,</span>
 <span>  rush <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>id</code></dt>
 <dd><p>(<code>character(1)</code>)<br>
 Identifier for the new instance.</p></dd>
 
-
-<dt><code>learner_ids</code></dt>
+      <dt><code>learner_ids</code></dt>
 <dd><p>(<code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code>)<br>
 Learner that should be used.</p></dd>
 
-
-<dt><code>task_type</code></dt>
+      <dt><code>task_type</code></dt>
 <dd><p>(<code>character(1)</code>)<br>
 The task type, either <code>"classif"</code> or <code>"regr"</code>.</p></dd>
 
-
-<dt><code>predict_types</code></dt>
+      <dt><code>predict_types</code></dt>
 <dd><p>(<code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code>)<br>
 Supported predict types.</p></dd>
 
-
-<dt><code>properties</code></dt>
+      <dt><code>properties</code></dt>
 <dd><p>(<code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code>)<br>
 Learner properties.</p></dd>
 
-
-<dt><code>rush</code></dt>
+      <dt><code>rush</code></dt>
 <dd><p><a href="https://rush.mlr-org.com/reference/Rush.html" class="external-link">rush::Rush</a><br>
 Rush instance.</p></dd>
 
@@ -274,15 +339,50 @@ Rush instance.</p></dd>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-LearnerAuto-clone"></a><div class="section">
-<h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
-<p>The objects of this class are cloneable with this method.</p><div class="section">
-<h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">LearnerAuto</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
-<div class="section">
+<p></p><hr><a id="method-LearnerAuto-encapsulate"></a><div class="section">
+<h3 id="learnerauto-encapsulate-"><code>LearnerAuto$encapsulate()</code><a class="anchor" aria-label="anchor" href="#learnerauto-encapsulate-"></a></h3>
+<p>Redirects encapsulation to the final model fit.</p>
+<p>The AutoML learner itself always trains in the main session,
+because the rush-based parallel tuning cannot run inside an encapsulated session.
+The encapsulation method and fallback learner are instead applied to the final model fit
+that follows the tuning phase.
+If the final model fit fails, the fallback learner is trained instead.
+Without encapsulation, a failed final model fit raises an error.
+The tuning phase is guarded by the <code>encapsulate_learner</code> and <code>encapsulate_mbo</code> parameters instead.</p><div class="section">
+<h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">LearnerAuto</span><span class="op">$</span><span class="fu">encapsulate</span><span class="op">(</span><span class="va">method</span>, fallback <span class="op">=</span> <span class="cn">NULL</span>, when <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div><p></p><div class="section">
 <h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>method</code></dt>
+<dd><p>(<code>character(1)</code>)<br>
+One of <code>"none"</code>, <code>"try"</code>, <code>"evaluate"</code>, <code>"callr"</code>, or <code>"mirai"</code>.</p></dd>
+
+      <dt><code>fallback</code></dt>
+<dd><p>(<a href="https://mlr3.mlr-org.com/reference/Learner.html" class="external-link">mlr3::Learner</a>)<br>
+Learner to train when the final model fit fails.</p></dd>
+
+      <dt><code>when</code></dt>
+<dd><p>(<code>function()</code>)<br>
+Optional condition handler passed to the <code>$encapsulate()</code> method of the final model.</p></dd>
+
+
+</dl><p></p></div>
+</div><p></p><div class="section">
+<h4 id="returns">Returns<a class="anchor" aria-label="anchor" href="#returns"></a></h4>
+<p><code>self</code> (invisibly).</p>
+</div>
+
+</div>
+
+<p></p><hr><a id="method-LearnerAuto-clone"></a><div class="section">
+<h3 id="learnerauto-clone-"><code>LearnerAuto$clone()</code><a class="anchor" aria-label="anchor" href="#learnerauto-clone-"></a></h3>
+<p>The objects of this class are cloneable with this method.</p><div class="section">
+<h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">LearnerAuto</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div><p></p><div class="section">
+<h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
 
@@ -292,6 +392,7 @@ Rush instance.</p></dd>
 
 </div>
 
+
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -299,11 +400,11 @@ Rush instance.</p></dd>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Damir Pulatov, Marc Becker, Baisu Zhou.</p>
+  <p>Developed by Marc Becker, Damir Pulatov, Baisu Zhou, Lona Koers.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

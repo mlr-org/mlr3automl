@@ -2,16 +2,22 @@
 
 Ranger auto.
 
+## Value
+
+Object of class
+[R6::R6Class](https://r6.r-lib.org/reference/R6Class.html) and
+`AutoRanger`.
+
 ## Super class
 
-[`mlr3automl::Auto`](https://mlr3automl.mlr-org.com/reference/Auto.md)
--\> `AutoRanger`
+[`Auto`](https://mlr3automl.mlr-org.com/reference/Auto.md) -\>
+`AutoRanger`
 
 ## Methods
 
 ### Public methods
 
-- [`AutoRanger$new()`](#method-AutoRanger-new)
+- [`AutoRanger$new()`](#method-AutoRanger-initialize)
 
 - [`AutoRanger$graph()`](#method-AutoRanger-graph)
 
@@ -21,16 +27,16 @@ Ranger auto.
 
 Inherited methods
 
-- [`mlr3automl::Auto$check()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-check)
-- [`mlr3automl::Auto$design_default()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-design_default)
-- [`mlr3automl::Auto$design_set()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-design_set)
-- [`mlr3automl::Auto$early_stopping_rounds()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-early_stopping_rounds)
-- [`mlr3automl::Auto$finalize_model()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-finalize_model)
-- [`mlr3automl::Auto$search_space()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-search_space)
+- [`Auto$check()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-check)
+- [`Auto$design_default()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-design_default)
+- [`Auto$design_set()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-design_set)
+- [`Auto$early_stopping_rounds()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-early_stopping_rounds)
+- [`Auto$finalize_model()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-finalize_model)
+- [`Auto$search_space()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-search_space)
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `AutoRanger$new()`
 
 Creates a new instance of this
 [R6](https://r6.r-lib.org/reference/R6Class.html) class.
@@ -48,7 +54,7 @@ Creates a new instance of this
 
 ------------------------------------------------------------------------
 
-### Method `graph()`
+### `AutoRanger$graph()`
 
 Create the graph for the auto.
 
@@ -82,13 +88,13 @@ Create the graph for the auto.
 
 ------------------------------------------------------------------------
 
-### Method `estimate_memory()`
+### `AutoRanger$estimate_memory()`
 
 Estimate the memory for the auto.
 
 #### Usage
 
-    AutoRanger$estimate_memory(task)
+    AutoRanger$estimate_memory(task, devices = "cpu")
 
 #### Arguments
 
@@ -96,9 +102,15 @@ Estimate the memory for the auto.
 
   ([mlr3::Task](https://mlr3.mlr-org.com/reference/Task.html)).
 
+- `devices`:
+
+  ([`character()`](https://rdrr.io/r/base/character.html))  
+  Devices to use. Allowed values are `"cpu"` and `"cuda"`. Default is
+  "cpu".
+
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `AutoRanger$clone()`
 
 The objects of this class are cloneable with this method.
 
@@ -111,3 +123,32 @@ The objects of this class are cloneable with this method.
 - `deep`:
 
   Whether to make a deep clone.
+
+## Examples
+
+``` r
+auto("ranger")
+#> <AutoRanger>
+#>   Inherits from: <Auto>
+#>   Public:
+#>     check: function (task, memory_limit = Inf, large_data_set = FALSE, devices) 
+#>     clone: function (deep = FALSE) 
+#>     design_default: function (task) 
+#>     design_set: function (task, measure, size) 
+#>     devices: cpu
+#>     early_stopping_rounds: function (task, budget = Inf) 
+#>     estimate_memory: function (task, devices = "cpu") 
+#>     finalize_model: function (graph_learner) 
+#>     graph: function (task, measure, n_threads, timeout, devices) 
+#>     id: ranger
+#>     initialize: function (id = "ranger") 
+#>     n_cpu: 1
+#>     n_gpu: 0
+#>     packages: mlr3 mlr3learners ranger
+#>     properties: large_data_sets
+#>     search_space: function (task) 
+#>     task_types: classif regr
+#>   Private:
+#>     .default_values: list
+#>     .search_space: ParamSet, R6
+```

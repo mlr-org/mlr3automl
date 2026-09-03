@@ -3,13 +3,61 @@
 A dictionary of [Auto](https://mlr3automl.mlr-org.com/reference/Auto.md)
 objects.
 
+Sugar function to retrieve
+[Auto](https://mlr3automl.mlr-org.com/reference/Auto.md) objects from
+mlr_auto.
+
 ## Usage
 
 ``` r
 mlr_auto
+
+auto(.key, ...)
 ```
 
-## Format
+## Arguments
 
-An object of class `DictionaryAuto` (inherits from `Dictionary`, `R6`)
-of length 12.
+- .key:
+
+  (`character(1)`)  
+  Key of the object to retrieve. If missing, the dictionary itself is
+  returned.
+
+- ...:
+
+  (named [`list()`](https://rdrr.io/r/base/list.html))  
+  Additional arguments passed to the constructor.
+
+## Value
+
+[Auto](https://mlr3automl.mlr-org.com/reference/Auto.md)
+
+## Examples
+
+``` r
+auto("catboost")
+#> <AutoCatboost>
+#>   Inherits from: <Auto>
+#>   Public:
+#>     check: function (task, memory_limit = Inf, large_data_set = FALSE, devices) 
+#>     clone: function (deep = FALSE) 
+#>     design_default: function (task) 
+#>     design_set: function (task, measure, size) 
+#>     devices: cpu cuda
+#>     early_stopping_rounds: function (task, budget = Inf) 
+#>     estimate_memory: function (task, devices = "cpu") 
+#>     finalize_model: function (graph_learner) 
+#>     graph: function (task, measure, n_threads, timeout, devices) 
+#>     id: catboost
+#>     initialize: function (id = "catboost") 
+#>     internal_measure: function (measure, task) 
+#>     n_cpu: 1
+#>     n_gpu: 0
+#>     packages: mlr3 mlr3extralearners catboost
+#>     properties: internal_tuning large_data_sets
+#>     search_space: function (task) 
+#>     task_types: classif regr
+#>   Private:
+#>     .default_values: list
+#>     .search_space: ParamSet, R6
+```

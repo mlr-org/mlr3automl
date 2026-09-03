@@ -29,6 +29,8 @@
   : Classification ResNet Auto Learner
 - [`LearnerClassifAutoSVM`](https://mlr3automl.mlr-org.com/reference/LearnerClassifAutoSVM.md)
   : Classification SVM Auto Learner
+- [`LearnerClassifAutoTabFM`](https://mlr3automl.mlr-org.com/reference/LearnerClassifAutoTabFM.md)
+  : Classification TabFM Auto Learner
 - [`LearnerClassifAutoTabPFN`](https://mlr3automl.mlr-org.com/reference/LearnerClassifAutoTabPFN.md)
   : Classification TabPFN Auto Learner
 - [`LearnerClassifAutoXgboost`](https://mlr3automl.mlr-org.com/reference/LearnerClassifAutoXgboost.md)
@@ -54,10 +56,25 @@
   : Regression ResNet Auto Learner
 - [`LearnerRegrAutoSVM`](https://mlr3automl.mlr-org.com/reference/LearnerRegrAutoSVM.md)
   : Regression SVM Auto Learner
+- [`LearnerRegrAutoTabFM`](https://mlr3automl.mlr-org.com/reference/LearnerRegrAutoTabFM.md)
+  : Regression TabFM Auto Learner
 - [`LearnerRegrAutoTabPFN`](https://mlr3automl.mlr-org.com/reference/LearnerRegrAutoTabPFN.md)
   : Regression TabPFN Auto Learner
 - [`LearnerRegrAutoXgboost`](https://mlr3automl.mlr-org.com/reference/LearnerRegrAutoXgboost.md)
   : Regression XGBoost Auto Learner
+
+## Isolated Python Learners
+
+- [`LearnerClassifFastaiIsolated`](https://mlr3automl.mlr-org.com/reference/LearnerClassifFastaiIsolated.md)
+  : Fastai Learner Isolated
+- [`LearnerClassifTabFMIsolated`](https://mlr3automl.mlr-org.com/reference/LearnerClassifTabFMIsolated.md)
+  : TabFM Learner Isolated
+- [`LearnerClassifTabPFNIsolated`](https://mlr3automl.mlr-org.com/reference/LearnerClassifTabPFNIsolated.md)
+  : TabPFN Learner Isolated
+- [`LearnerRegrTabFMIsolated`](https://mlr3automl.mlr-org.com/reference/LearnerRegrTabFMIsolated.md)
+  : TabFM Regressor Learner Isolated
+- [`LearnerRegrTabPFNIsolated`](https://mlr3automl.mlr-org.com/reference/LearnerRegrTabPFNIsolated.md)
+  : TabPFN Regressor Learner Isolated
 
 ## Auto Configuration
 
@@ -73,37 +90,53 @@
   : FTTransformer Auto
 - [`AutoGlmnet`](https://mlr3automl.mlr-org.com/reference/AutoGlmnet.md)
   : Glmnet Auto
-- [`AutoKknn`](https://mlr3automl.mlr-org.com/reference/AutoKknn.md) :
-  Kknn Auto
+- [`AutoKKNN`](https://mlr3automl.mlr-org.com/reference/AutoKKNN.md) :
+  KKNN Auto
 - [`AutoLda`](https://mlr3automl.mlr-org.com/reference/AutoLda.md) : Lda
   Auto
-- [`AutoLightgbm`](https://mlr3automl.mlr-org.com/reference/AutoLightgbm.md)
-  : Lightgbm Auto
-- [`AutoMlp`](https://mlr3automl.mlr-org.com/reference/AutoMlp.md) : Mlp
+- [`AutoLightGBM`](https://mlr3automl.mlr-org.com/reference/AutoLightGBM.md)
+  : LightGBM Auto
+- [`AutoMLP`](https://mlr3automl.mlr-org.com/reference/AutoMLP.md) : MLP
   Auto
 - [`AutoRanger`](https://mlr3automl.mlr-org.com/reference/AutoRanger.md)
   : Ranger Auto
 - [`AutoResNet`](https://mlr3automl.mlr-org.com/reference/AutoResNet.md)
   : ResNet Auto
-- [`AutoSvm`](https://mlr3automl.mlr-org.com/reference/AutoSvm.md) : Svm
+- [`AutoSVM`](https://mlr3automl.mlr-org.com/reference/AutoSVM.md) : SVM
   Auto
-- [`AutoTabpfn`](https://mlr3automl.mlr-org.com/reference/AutoTabpfn.md)
-  : Tabpfn Auto
+- [`AutoTabFM`](https://mlr3automl.mlr-org.com/reference/AutoTabFM.md) :
+  TabFM Auto
+- [`AutoTabPFN`](https://mlr3automl.mlr-org.com/reference/AutoTabPFN.md)
+  : TabPFN Auto
 - [`AutoXgboost`](https://mlr3automl.mlr-org.com/reference/AutoXgboost.md)
   : Xgboost Auto
 
+## Sugar Functions
+
+- [`mlr_auto`](https://mlr3automl.mlr-org.com/reference/mlr_auto.md)
+  [`auto()`](https://mlr3automl.mlr-org.com/reference/mlr_auto.md) :
+  Dictionary of Auto Objects
+
 ## Dictionary
 
-- [`mlr_auto`](https://mlr3automl.mlr-org.com/reference/mlr_auto.md) :
+- [`mlr_auto`](https://mlr3automl.mlr-org.com/reference/mlr_auto.md)
+  [`auto()`](https://mlr3automl.mlr-org.com/reference/mlr_auto.md) :
   Dictionary of Auto Objects
 
 ## Callbacks
 
+- [`mlr3automl.encapsulation_daemon`](https://mlr3automl.mlr-org.com/reference/mlr3automl.encapsulation_daemon.md)
+  : Encapsulation Daemon Callback
 - [`mlr3automl.initial_design_runtime`](https://mlr3automl.mlr-org.com/reference/mlr3automl.initial_design_runtime.md)
   : Initial Design Runtime Limit Callback
+
+## Installation
+
+- [`install_python_learners()`](https://mlr3automl.mlr-org.com/reference/install_python_learners.md)
+  : Install Python Learners
 
 ## Package
 
 - [`mlr3automl`](https://mlr3automl.mlr-org.com/reference/mlr3automl-package.md)
   [`mlr3automl-package`](https://mlr3automl.mlr-org.com/reference/mlr3automl-package.md)
-  : mlr3automl: AutoML extension for 'mlr3'
+  : mlr3automl: Automated Machine Learning for 'mlr3'

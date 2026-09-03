@@ -2,6 +2,11 @@
 
 This class is the base class for all autos.
 
+## Value
+
+Object of class
+[R6::R6Class](https://r6.r-lib.org/reference/R6Class.html) and `Auto`.
+
 ## Public fields
 
 - `id`:
@@ -24,11 +29,21 @@ This class is the base class for all autos.
 
   ([`character()`](https://rdrr.io/r/base/character.html)).
 
+- `n_cpu`:
+
+  (`integer(1)`)  
+  Number of CPUs a single training of the learner uses.
+
+- `n_gpu`:
+
+  (`integer(1)`)  
+  Number of GPUs a single training of the learner uses.
+
 ## Methods
 
 ### Public methods
 
-- [`Auto$new()`](#method-Auto-new)
+- [`Auto$new()`](#method-Auto-initialize)
 
 - [`Auto$check()`](#method-Auto-check)
 
@@ -50,7 +65,7 @@ This class is the base class for all autos.
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `Auto$new()`
 
 Creates a new instance of this
 [R6](https://r6.r-lib.org/reference/R6Class.html) class.
@@ -62,7 +77,9 @@ Creates a new instance of this
       properties = character(0),
       task_types = character(0),
       packages = character(0),
-      devices = character(0)
+      devices = character(0),
+      n_cpu = 1L,
+      n_gpu = 0L
     )
 
 #### Arguments
@@ -87,9 +104,17 @@ Creates a new instance of this
 
   ([`character()`](https://rdrr.io/r/base/character.html)).
 
+- `n_cpu`:
+
+  (`integer(1)`).
+
+- `n_gpu`:
+
+  (`integer(1)`).
+
 ------------------------------------------------------------------------
 
-### Method `check()`
+### `Auto$check()`
 
 Check if the auto is compatible with the task.
 
@@ -119,7 +144,7 @@ Check if the auto is compatible with the task.
 
 ------------------------------------------------------------------------
 
-### Method `graph()`
+### `Auto$graph()`
 
 Create the graph for the auto.
 
@@ -153,13 +178,18 @@ Create the graph for the auto.
 
 ------------------------------------------------------------------------
 
-### Method `early_stopping_rounds()`
+### `Auto$early_stopping_rounds()`
 
-Estimate the number of early stopping rounds.
+Estimate the number of early stopping rounds (the patience) for a
+learner. `budget` is the maximum number of training rounds (boosting
+iterations or epochs) the learner may use. The patience is capped well
+below the budget, otherwise early stopping and validation-based internal
+tuning can never trigger and the learner always trains for the full
+budget.
 
 #### Usage
 
-    Auto$early_stopping_rounds(task)
+    Auto$early_stopping_rounds(task, budget = Inf)
 
 #### Arguments
 
@@ -167,15 +197,22 @@ Estimate the number of early stopping rounds.
 
   ([mlr3::Task](https://mlr3.mlr-org.com/reference/Task.html)).
 
+- `budget`:
+
+  (`integer(1)`)  
+  Maximum number of training rounds (boosting iterations or epochs) the
+  learner may use.
+
 ------------------------------------------------------------------------
 
-### Method `estimate_memory()`
+### `Auto$estimate_memory()`
 
-Estimate the memory for the auto.
+Estimate the memory for the auto. The estimate is the host memory in MB,
+so learners that allocate on the gpu return `-Inf`.
 
 #### Usage
 
-    Auto$estimate_memory(task)
+    Auto$estimate_memory(task, devices = "cpu")
 
 #### Arguments
 
@@ -183,9 +220,15 @@ Estimate the memory for the auto.
 
   ([mlr3::Task](https://mlr3.mlr-org.com/reference/Task.html)).
 
+- `devices`:
+
+  ([`character()`](https://rdrr.io/r/base/character.html))  
+  Devices to use. Allowed values are `"cpu"` and `"cuda"`. Default is
+  "cpu".
+
 ------------------------------------------------------------------------
 
-### Method `finalize_model()`
+### `Auto$finalize_model()`
 
 Prepare the graph learner for the final model fit. Called after tuning
 to undo tuning-only setup (e.g., timeout callbacks).
@@ -198,11 +241,11 @@ to undo tuning-only setup (e.g., timeout callbacks).
 
 - `graph_learner`:
 
-  ([mlr3pipelines::GraphLearner](https://mlr3pipelines.mlr-org.com/reference/mlr_learners_graph.html)).
+  ([mlr3pipelines::GraphLearner](https://rdrr.io/pkg/mlr3pipelines/man/mlr_learners_graph.html)).
 
 ------------------------------------------------------------------------
 
-### Method `design_default()`
+### `Auto$design_default()`
 
 Default hyperparameters for the learner.
 
@@ -218,7 +261,7 @@ Default hyperparameters for the learner.
 
 ------------------------------------------------------------------------
 
-### Method `design_set()`
+### `Auto$design_set()`
 
 Get the initial hyperparameter set for the learner.
 
@@ -242,7 +285,7 @@ Get the initial hyperparameter set for the learner.
 
 ------------------------------------------------------------------------
 
-### Method `search_space()`
+### `Auto$search_space()`
 
 Get the search space for the learner.
 
@@ -258,7 +301,7 @@ Get the search space for the learner.
 
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `Auto$clone()`
 
 The objects of this class are cloneable with this method.
 

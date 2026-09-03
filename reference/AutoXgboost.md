@@ -2,16 +2,22 @@
 
 Xgboost auto.
 
+## Value
+
+Object of class
+[R6::R6Class](https://r6.r-lib.org/reference/R6Class.html) and
+`AutoXgboost`.
+
 ## Super class
 
-[`mlr3automl::Auto`](https://mlr3automl.mlr-org.com/reference/Auto.md)
--\> `AutoXgboost`
+[`Auto`](https://mlr3automl.mlr-org.com/reference/Auto.md) -\>
+`AutoXgboost`
 
 ## Methods
 
 ### Public methods
 
-- [`AutoXgboost$new()`](#method-AutoXgboost-new)
+- [`AutoXgboost$new()`](#method-AutoXgboost-initialize)
 
 - [`AutoXgboost$graph()`](#method-AutoXgboost-graph)
 
@@ -25,15 +31,15 @@ Xgboost auto.
 
 Inherited methods
 
-- [`mlr3automl::Auto$check()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-check)
-- [`mlr3automl::Auto$design_default()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-design_default)
-- [`mlr3automl::Auto$design_set()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-design_set)
-- [`mlr3automl::Auto$early_stopping_rounds()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-early_stopping_rounds)
-- [`mlr3automl::Auto$search_space()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-search_space)
+- [`Auto$check()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-check)
+- [`Auto$design_default()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-design_default)
+- [`Auto$design_set()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-design_set)
+- [`Auto$early_stopping_rounds()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-early_stopping_rounds)
+- [`Auto$search_space()`](https://mlr3automl.mlr-org.com/reference/Auto.html#method-search_space)
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `AutoXgboost$new()`
 
 Creates a new instance of this
 [R6](https://r6.r-lib.org/reference/R6Class.html) class.
@@ -51,7 +57,7 @@ Creates a new instance of this
 
 ------------------------------------------------------------------------
 
-### Method `graph()`
+### `AutoXgboost$graph()`
 
 Create the graph for the auto.
 
@@ -85,7 +91,7 @@ Create the graph for the auto.
 
 ------------------------------------------------------------------------
 
-### Method `finalize_model()`
+### `AutoXgboost$finalize_model()`
 
 Prepare the graph learner for the final model fit.
 
@@ -93,15 +99,21 @@ Prepare the graph learner for the final model fit.
 
     AutoXgboost$finalize_model(graph_learner)
 
+#### Arguments
+
+- `graph_learner`:
+
+  ([mlr3pipelines::GraphLearner](https://rdrr.io/pkg/mlr3pipelines/man/mlr_learners_graph.html)).
+
 ------------------------------------------------------------------------
 
-### Method `estimate_memory()`
+### `AutoXgboost$estimate_memory()`
 
 Estimate the memory for the auto.
 
 #### Usage
 
-    AutoXgboost$estimate_memory(task)
+    AutoXgboost$estimate_memory(task, devices = "cpu")
 
 #### Arguments
 
@@ -109,9 +121,15 @@ Estimate the memory for the auto.
 
   ([mlr3::Task](https://mlr3.mlr-org.com/reference/Task.html)).
 
+- `devices`:
+
+  ([`character()`](https://rdrr.io/r/base/character.html))  
+  Devices to use. Allowed values are `"cpu"` and `"cuda"`. Default is
+  "cpu".
+
 ------------------------------------------------------------------------
 
-### Method `internal_measure()`
+### `AutoXgboost$internal_measure()`
 
 Get the internal measure for the auto.
 
@@ -131,7 +149,7 @@ Get the internal measure for the auto.
 
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `AutoXgboost$clone()`
 
 The objects of this class are cloneable with this method.
 
@@ -144,3 +162,33 @@ The objects of this class are cloneable with this method.
 - `deep`:
 
   Whether to make a deep clone.
+
+## Examples
+
+``` r
+auto("xgboost")
+#> <AutoXgboost>
+#>   Inherits from: <Auto>
+#>   Public:
+#>     check: function (task, memory_limit = Inf, large_data_set = FALSE, devices) 
+#>     clone: function (deep = FALSE) 
+#>     design_default: function (task) 
+#>     design_set: function (task, measure, size) 
+#>     devices: cpu cuda
+#>     early_stopping_rounds: function (task, budget = Inf) 
+#>     estimate_memory: function (task, devices = "cpu") 
+#>     finalize_model: function (graph_learner) 
+#>     graph: function (task, measure, n_threads, timeout, devices) 
+#>     id: xgboost
+#>     initialize: function (id = "xgboost") 
+#>     internal_measure: function (measure, task) 
+#>     n_cpu: 1
+#>     n_gpu: 0
+#>     packages: mlr3 mlr3learners xgboost
+#>     properties: internal_tuning large_data_sets
+#>     search_space: function (task) 
+#>     task_types: classif regr
+#>   Private:
+#>     .default_values: list
+#>     .search_space: ParamSet, R6
+```
