@@ -80,8 +80,10 @@ The objects of this class are cloneable with this method.
 ## Examples
 
 ``` r
-learner = lrn("regr.auto_xgboost")
-learner
+if (mlr3misc::require_namespaces("xgboost", quietly = TRUE)) {
+  learner = lrn("regr.auto_xgboost")
+  learner
+}
 #> 
 #> ── <LearnerRegrAutoXgboost> (regr.auto_xgboost) ────────────────────────────────
 #> • Model: -

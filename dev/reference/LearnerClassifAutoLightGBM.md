@@ -80,8 +80,10 @@ The objects of this class are cloneable with this method.
 ## Examples
 
 ``` r
-learner = lrn("classif.auto_lightgbm")
-learner
+if (mlr3misc::require_namespaces(c("mlr3extralearners", "lightgbm"), quietly = TRUE)) {
+  learner = lrn("classif.auto_lightgbm")
+  learner
+}
 #> 
 #> ── <LearnerClassifAutoLightGBM> (classif.auto_lightgbm) ────────────────────────
 #> • Model: -

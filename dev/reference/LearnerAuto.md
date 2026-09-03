@@ -109,7 +109,8 @@ learner. Set `encapsulate_mbo = FALSE` to catch no errors in mbo.
 - small_data_size:
 
   (`integer(1)`)  
-  Threshold value for the data set size from which special rules apply.
+  Threshold value for the data set size (rows) from which special rules
+  apply.
 
 - small_data_resampling:
 

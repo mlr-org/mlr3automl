@@ -94,7 +94,8 @@ learner. Set `encapsulate_mbo = FALSE` to catch no errors in mbo.
 - small_data_size:
 
   (`integer(1)`)  
-  Threshold value for the data set size from which special rules apply.
+  Threshold value for the data set size (rows) from which special rules
+  apply.
 
 - small_data_resampling:
 
@@ -276,8 +277,14 @@ The objects of this class are cloneable with this method.
 ## Examples
 
 ``` r
-learner = lrn("regr.auto")
-learner
+packages = c(
+  "mlr3extralearners", "catboost", "ranger", "callr", "mlr3torch",
+  "glmnet", "kknn", "MASS", "lightgbm", "e1071", "xgboost"
+)
+if (mlr3misc::require_namespaces(packages, quietly = TRUE)) {
+  learner = lrn("regr.auto")
+  learner
+}
 #> 
 #> ── <LearnerRegrAuto> (regr.auto) ───────────────────────────────────────────────
 #> • Model: -

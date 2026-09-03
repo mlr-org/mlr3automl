@@ -80,8 +80,10 @@ The objects of this class are cloneable with this method.
 ## Examples
 
 ``` r
-learner = lrn("regr.auto_svm")
-learner
+if (mlr3misc::require_namespaces("e1071", quietly = TRUE)) {
+  learner = lrn("regr.auto_svm")
+  learner
+}
 #> 
 #> ── <LearnerRegrAutoSVM> (regr.auto_svm) ────────────────────────────────────────
 #> • Model: -

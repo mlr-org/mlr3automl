@@ -80,8 +80,10 @@ The objects of this class are cloneable with this method.
 ## Examples
 
 ``` r
-learner = lrn("regr.auto_glmnet")
-learner
+if (mlr3misc::require_namespaces("glmnet", quietly = TRUE)) {
+  learner = lrn("regr.auto_glmnet")
+  learner
+}
 #> 
 #> ── <LearnerRegrAutoGlmnet> (regr.auto_glmnet) ──────────────────────────────────
 #> • Model: -

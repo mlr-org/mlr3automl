@@ -80,8 +80,10 @@ The objects of this class are cloneable with this method.
 ## Examples
 
 ``` r
-learner = lrn("regr.auto_ranger")
-learner
+if (mlr3misc::require_namespaces("ranger", quietly = TRUE)) {
+  learner = lrn("regr.auto_ranger")
+  learner
+}
 #> 
 #> ── <LearnerRegrAutoRanger> (regr.auto_ranger) ──────────────────────────────────
 #> • Model: -

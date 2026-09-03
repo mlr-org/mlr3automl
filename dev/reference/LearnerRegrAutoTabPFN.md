@@ -80,8 +80,10 @@ The objects of this class are cloneable with this method.
 ## Examples
 
 ``` r
-learner = lrn("regr.auto_tabpfn")
-learner
+if (mlr3misc::require_namespaces(c("mlr3extralearners", "callr"), quietly = TRUE)) {
+  learner = lrn("regr.auto_tabpfn")
+  learner
+}
 #> 
 #> ── <LearnerRegrAutoTabPFN> (regr.auto_tabpfn) ──────────────────────────────────
 #> • Model: -

@@ -80,8 +80,10 @@ The objects of this class are cloneable with this method.
 ## Examples
 
 ``` r
-learner = lrn("classif.auto_mlp")
-learner
+if (mlr3misc::require_namespaces("mlr3torch", quietly = TRUE)) {
+  learner = lrn("classif.auto_mlp")
+  learner
+}
 #> 
 #> ── <LearnerClassifAutoMLP> (classif.auto_mlp) ──────────────────────────────────
 #> • Model: -

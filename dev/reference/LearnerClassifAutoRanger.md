@@ -80,8 +80,10 @@ The objects of this class are cloneable with this method.
 ## Examples
 
 ``` r
-learner = lrn("classif.auto_ranger")
-learner
+if (mlr3misc::require_namespaces("ranger", quietly = TRUE)) {
+  learner = lrn("classif.auto_ranger")
+  learner
+}
 #> 
 #> ── <LearnerClassifAutoRanger> (classif.auto_ranger) ────────────────────────────
 #> • Model: -

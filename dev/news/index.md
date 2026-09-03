@@ -70,6 +70,7 @@
 - BREAKING CHANGE: With `devices = c("cpu", "cuda")`, the boosting
   learners (xgboost, lightgbm, and catboost) now train on the CPU by
   default because their default `n_gpu` requirement is 0. Set
-  e.g. `n_gpu = c(xgboost = 1)` to train them on the GPU again.
+  e.g. `n_gpu = c(xgboost = 1)` to train them on the GPU again. \#
+  mlr3automl 0.1.0
 
 - Initial CRAN release.

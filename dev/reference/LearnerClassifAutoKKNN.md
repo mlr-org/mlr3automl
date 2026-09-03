@@ -80,8 +80,10 @@ The objects of this class are cloneable with this method.
 ## Examples
 
 ``` r
-learner = lrn("classif.auto_kknn")
-learner
+if (mlr3misc::require_namespaces("kknn", quietly = TRUE)) {
+  learner = lrn("classif.auto_kknn")
+  learner
+}
 #> 
 #> ── <LearnerClassifAutoKKNN> (classif.auto_kknn) ────────────────────────────────
 #> • Model: -

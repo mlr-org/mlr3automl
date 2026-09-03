@@ -80,8 +80,10 @@ The objects of this class are cloneable with this method.
 ## Examples
 
 ``` r
-learner = lrn("classif.auto_catboost")
-learner
+if (mlr3misc::require_namespaces(c("mlr3extralearners", "catboost"), quietly = TRUE)) {
+  learner = lrn("classif.auto_catboost")
+  learner
+}
 #> 
 #> ── <LearnerClassifAutoCatboost> (classif.auto_catboost) ────────────────────────
 #> • Model: -

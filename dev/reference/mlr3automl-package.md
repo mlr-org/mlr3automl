@@ -6,7 +6,9 @@ and tunes its hyperparameters for a given task. Constructs preprocessing
 pipelines with multiple parallel branches using 'mlr3pipelines' and
 jointly optimizes them together with the learners using 'mlr3tuning'.
 The optimization is driven by asynchronous decentralized Bayesian
-optimization.
+optimization by Egele et al. (2023)
+[doi:10.1109/e-Science58273.2023.10254839](https://doi.org/10.1109/e-Science58273.2023.10254839)
+.
 
 ## See also
 

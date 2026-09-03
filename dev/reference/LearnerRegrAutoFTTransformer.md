@@ -80,8 +80,10 @@ The objects of this class are cloneable with this method.
 ## Examples
 
 ``` r
-learner = lrn("regr.auto_ft_transformer")
-learner
+if (mlr3misc::require_namespaces("mlr3torch", quietly = TRUE)) {
+  learner = lrn("regr.auto_ft_transformer")
+  learner
+}
 #> 
 #> ── <LearnerRegrAutoFTTransformer> (regr.auto_ft_transformer) ───────────────────
 #> • Model: -

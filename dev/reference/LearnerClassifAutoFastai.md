@@ -80,8 +80,10 @@ The objects of this class are cloneable with this method.
 ## Examples
 
 ``` r
-learner = lrn("classif.auto_fastai")
-learner
+if (mlr3misc::require_namespaces(c("mlr3extralearners", "callr"), quietly = TRUE)) {
+  learner = lrn("classif.auto_fastai")
+  learner
+}
 #> 
 #> ── <LearnerClassifAutoFastai> (classif.auto_fastai) ────────────────────────────
 #> • Model: -
