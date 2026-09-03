@@ -9,6 +9,7 @@
 #' @return Object of class [R6::R6Class] and `LearnerRegrAutoMLP`.
 #'
 #' @templateVar id regr.auto_mlp
+#' @templateVar packages "mlr3torch"
 #' @template example_learner
 #'
 #' @export

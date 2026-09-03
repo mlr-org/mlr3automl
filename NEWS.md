@@ -11,5 +11,6 @@
 * feat: New learner id `"tabfm"` adds the TabFM tabular foundation model from `mlr3extralearners` to the search space, along with the new auto learners `classif.auto_tabfm` and `regr.auto_tabfm`. It runs via `reticulate` and is registered for `"cuda"` only, because it predicts in context and runs the backbone over the training rows once per estimator, which is too slow to be useful on the CPU. Construct `AutoTabFM$new(devices = c("cpu", "cuda"))` and re-register it in `mlr_auto` to run it on the CPU anyway.
 * feat: The auto learners gained the `n_cpu` and `n_gpu` parameters that override the per-learner resource requirements. When the requirements are mixed, `"cuda"` is part of `devices`, and the workers are distributed over the `mirai` compute profiles `"mlr3automl_cpu"` and `"mlr3automl_gpu"` with `rush::rush_plan(profiles = c(mlr3automl_cpu = 7, mlr3automl_gpu = 1))`, the search space is partitioned into a cpu and a gpu subspace and tuned with `mlr3mbo::TunerADBOSubspaces`. The workers of a profile only evaluate points of the subspace of that profile.
 * BREAKING CHANGE: With `devices = c("cpu", "cuda")`, the boosting learners (xgboost, lightgbm, and catboost) now train on the CPU by default because their default `n_gpu` requirement is 0. Set e.g. `n_gpu = c(xgboost = 1)` to train them on the GPU again.
+# mlr3automl 0.1.0
 
 * Initial CRAN release.

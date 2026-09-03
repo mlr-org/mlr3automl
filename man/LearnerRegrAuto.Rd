@@ -75,7 +75,7 @@ It keeps its workers, threads, and memory limit so that the gpu learners do not 
 the memory that are freed on the cpu profiles.}
 
 \item{small_data_size}{(\code{integer(1)})\cr
-Threshold value for the data set size from which special rules apply.}
+Threshold value for the data set size (rows) from which special rules apply.}
 
 \item{small_data_resampling}{(\link[mlr3:Resampling]{mlr3::Resampling})\cr
 Resampling strategy to use for model training on small data sets.}
@@ -155,8 +155,15 @@ The \code{TabPFN} learner additionally requires the \code{TABPFN_TOKEN} environm
 }
 
 \examples{
-learner = lrn("regr.auto")
-learner
+packages = c(
+  "mlr3extralearners", "catboost", "ranger", "callr", "mlr3torch",
+  "glmnet", "kknn", "MASS", "lightgbm", "e1071", "xgboost"
+)
+if (mlr3misc::require_namespaces(packages, quietly = TRUE)) {
+  learner = lrn("regr.auto")
+  learner
+}
+
 }
 \section{Super classes}{
 \code{\link[mlr3:Learner]{mlr3::Learner}} -> \code{\link[mlr3automl:LearnerAuto]{LearnerAuto}} -> \code{LearnerRegrAuto}

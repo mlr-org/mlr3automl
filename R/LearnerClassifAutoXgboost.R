@@ -9,6 +9,7 @@
 #' @return Object of class [R6::R6Class] and `LearnerClassifAutoXgboost`.
 #'
 #' @templateVar id classif.auto_xgboost
+#' @templateVar packages "xgboost"
 #' @template example_learner
 #'
 #' @export

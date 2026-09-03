@@ -9,6 +9,7 @@
 #' @return Object of class [R6::R6Class] and `LearnerClassifAutoRanger`.
 #'
 #' @templateVar id classif.auto_ranger
+#' @templateVar packages "ranger"
 #' @template example_learner
 #'
 #' @export

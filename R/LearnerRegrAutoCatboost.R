@@ -9,6 +9,7 @@
 #' @return Object of class [R6::R6Class] and `LearnerRegrAutoCatboost`.
 #'
 #' @templateVar id regr.auto_catboost
+#' @templateVar packages c("mlr3extralearners", "catboost")
 #' @template example_learner
 #'
 #' @export
