@@ -13,6 +13,7 @@
 #' @template param_memory_limit
 #' @template param_large_data_set
 #' @template param_devices
+#' @template param_isolate_python
 #' @template section_python
 #'
 #' @return Object of class [R6::R6Class] and `AutoTabPFN`.
