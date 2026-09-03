@@ -30,7 +30,9 @@ AutoCatboost = R6Class(
         properties = c("internal_tuning", "large_data_sets"),
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3extralearners", "catboost"),
-        devices = c("cpu", "cuda")
+        devices = c("cpu", "cuda"),
+        n_cpu = 1L,
+        n_gpu = 0L
       )
     },
 
@@ -83,7 +85,7 @@ AutoCatboost = R6Class(
 
     #' @description
     #' Estimate the memory for the auto.
-    estimate_memory = function(task) {
+    estimate_memory = function(task, devices = "cpu") {
       upper = self$search_space(task)$upper
 
       # histogram size

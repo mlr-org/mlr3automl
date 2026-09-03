@@ -5,26 +5,40 @@ train_auto = function(self, private, task) {
     lg$info("No measure provided. Using default measure '%s'", pv$measure$id)
   }
   large_data_set = as.numeric(task$nrow) * task$ncol > pv$large_data_size
-  n_workers = rush_config()$n_workers %??% 1L
+  # the workers are either a single group or distributed over the mirai compute profiles
+  profiles = rush_config()$profiles
+  n_workers = if (!is.null(profiles)) sum(profiles) else rush_config()$n_workers %??% 1L
   n_threads = pv$n_threads %??% 1L
   memory_limit = (pv$memory_limit %??% Inf) / n_workers
   autos = mlr_auto$mget(private$.learner_ids)
 
+  # effective per-learner resource requirements decide which learners run on the gpu
+  resources = effective_resources(autos, n_cpu = pv$n_cpu, n_gpu = pv$n_gpu, devices = pv$devices)
+  uses_gpu = function(auto) resources$n_gpu[[auto$id]] > 0L
+  # a learner that does not claim a gpu must neither be checked against nor configured for cuda
+  learner_devices = function(auto) {
+    if (uses_gpu(auto)) pv$devices else intersect(pv$devices, "cpu")
+  }
+
   lg$info("Training '%s' on task '%s'", self$id, task$id)
 
-  # initialize mbo tuner
-  tuner = tnr("async_mbo")
+  # the gpu learners keep the resources of a regular worker as long as their compute profile is not reduced
+  n_threads_gpu = n_threads
+  memory_limit_gpu = memory_limit
 
   # set number of workers
   if (large_data_set) {
-    old_n_workers = n_workers
-    n_workers = max(1L, floor(n_workers / 4L))
-    scale = old_n_workers / n_workers
+    # the gpu profile is exempt from the large data set rules.
+    # its number of workers is fixed by the number of gpus and its worker must not claim the cpu cores and the
+    # memory that are freed on the cpu profile
+    gpu_profile_exempt = "mlr3automl_gpu" %in% names(profiles)
+    reduced = reduce_workers(profiles, n_workers)
+    profiles = reduced$profiles
+    n_workers = reduced$n_workers
 
-    n_threads = as.integer(n_threads * scale)
-    memory_limit = memory_limit * scale
+    n_threads = as.integer(n_threads * reduced$scale)
+    memory_limit = memory_limit * reduced$scale
 
-    tuner$param_set$set_values(n_workers = n_workers)
     lg$info(
       # nolint next: line_length_linter
       "Large data set detected. Reducing number of workers to %i. Increasing number of threads to %i and memory limit to %.0f MB",
@@ -32,7 +46,24 @@ train_auto = function(self, private, task) {
       n_threads,
       memory_limit
     )
+
+    if (gpu_profile_exempt) {
+      lg$info(
+        # nolint next: line_length_linter
+        "Compute profile 'mlr3automl_gpu' is exempt. Keeping %i worker(s) with %i thread(s) and a memory limit of %.0f MB for the gpu learners",
+        profiles[["mlr3automl_gpu"]],
+        n_threads_gpu,
+        memory_limit_gpu
+      )
+    } else {
+      # without a gpu profile the gpu learners run on the reduced workers and receive their resources
+      n_threads_gpu = n_threads
+      memory_limit_gpu = memory_limit
+    }
   }
+
+  learner_n_threads = function(auto) if (uses_gpu(auto)) n_threads_gpu else n_threads
+  learner_memory_limit = function(auto) if (uses_gpu(auto)) memory_limit_gpu else memory_limit
 
   # resampling
   resampling = if (task$nrow < pv$small_data_size) {
@@ -48,7 +79,12 @@ train_auto = function(self, private, task) {
   # initialize graph learner
   if (pv$check_learners) {
     autos = keep(autos, function(auto) {
-      auto$check(task, memory_limit = memory_limit, large_data_set = large_data_set, devices = pv$devices)
+      auto$check(
+        task,
+        memory_limit = learner_memory_limit(auto),
+        large_data_set = large_data_set,
+        devices = learner_devices(auto)
+      )
     })
 
     if (!length(autos)) {
@@ -60,7 +96,51 @@ train_auto = function(self, private, task) {
     error_config("All learners have no hyperparameters to tune. Combine with other learners.")
   }
 
-  branches = map(autos, function(auto) auto$graph(task, pv$measure, n_threads, pv$learner_timeout, pv$devices))
+  # initialize mbo tuner
+  # mixed gpu requirements are optimized on a cpu and a gpu subspace, each running on its own compute profile
+  gpu_ids = names(keep(autos, uses_gpu))
+  cpu_ids = setdiff(names(autos), gpu_ids)
+  mixed_devices = length(gpu_ids) > 0L && length(cpu_ids) > 0L
+  # the workers are divided among the subspaces by the compute profiles, so every subspace needs its own profile
+  use_subspaces = mixed_devices && setequal(names(profiles), c("mlr3automl_cpu", "mlr3automl_gpu"))
+
+  if (mixed_devices && !use_subspaces) {
+    if (is.null(profiles)) {
+      lg$info("No mirai compute profiles are set up. Optimizing cpu and gpu learners in a single search space")
+    } else {
+      lg$info(
+        # nolint next: line_length_linter
+        "Compute profiles %s do not match the profiles 'mlr3automl_cpu' and 'mlr3automl_gpu' of the cpu and gpu subspace. Optimizing cpu and gpu learners in a single search space",
+        str_collapse(names(profiles), quote = "'")
+      )
+    }
+  }
+
+  tuner = if (use_subspaces) tnr("adbo_subspaces") else tnr("async_mbo")
+  if (large_data_set) {
+    # the reduced number of workers is passed to the tuner because the rush plan still holds the original number
+    if (!is.null(profiles)) {
+      tuner$param_set$set_values(profiles = profiles)
+    } else {
+      tuner$param_set$set_values(n_workers = n_workers)
+    }
+  }
+
+  isolate_python = needs_python_isolation(autos)
+
+  branches = map(autos, function(auto) {
+    args = list(
+      task = task,
+      measure = pv$measure,
+      n_threads = learner_n_threads(auto),
+      timeout = pv$learner_timeout,
+      devices = learner_devices(auto)
+    )
+    if ("isolate_python" %in% names(formals(auto$graph))) {
+      args$isolate_python = isolate_python
+    }
+    do.call(auto$graph, args)
+  })
   graph_learner = as_learner(
     po("branch", options = names(branches)) %>>%
       gunion(unname(branches)) %>>%
@@ -151,7 +231,38 @@ train_auto = function(self, private, task) {
   )
   lg$info("Initial design size: %i", nrow(initial_designs))
 
-  tuner$param_set$set_values(initial_design = initial_designs)
+  if (use_subspaces) {
+    # the instance moves the internal-tuning parameters into its internal search space,
+    # so the subspaces must partition the search space of the instance and not the combined one
+    subspaces = partition_search_space(
+      self$instance$search_space,
+      param = "branch.selection",
+      groups = list(cpu = cpu_ids, gpu = gpu_ids)
+    )
+    split_design = function(ids) {
+      if (nrow(initial_designs)) initial_designs[branch.selection %in% ids] else initial_designs
+    }
+    # the cpu and the gpu subspace each run on their own mirai compute profile
+    subspace_profiles = c(cpu = "mlr3automl_cpu", gpu = "mlr3automl_gpu")
+    tuner$param_set$set_values(
+      subspaces = subspaces,
+      subspace_profiles = subspace_profiles,
+      initial_design_subspace = list(cpu = split_design(cpu_ids), gpu = split_design(gpu_ids))
+    )
+    subspace_ids = c("cpu", "gpu")
+    lg$info(
+      "Optimizing %s",
+      str_collapse(sprintf(
+        "subspace '%s' (%s) with %i worker(s) on compute profile '%s'",
+        subspace_ids,
+        c(str_collapse(cpu_ids), str_collapse(gpu_ids)),
+        profiles[subspace_profiles[subspace_ids]],
+        subspace_profiles[subspace_ids]
+      ))
+    )
+  } else {
+    tuner$param_set$set_values(initial_design = initial_designs)
+  }
 
   # configure tuner
   tuner$surrogate = default_surrogate(self$instance)

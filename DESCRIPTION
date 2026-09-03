@@ -23,14 +23,14 @@ Depends:
     mlr3 (>= 1.6.0),
     mlr3tuning (>= 1.6.0),
     R (>= 3.3.0),
-    rush (>= 1.2.1)
+    rush (>= 1.2.1.9000)
 Imports:
-    bbotk (>= 1.7.1),
+    bbotk (>= 1.12.0.9000),
     checkmate,
     data.table,
     lhs,
     mlr3learners (>= 0.14.0),
-    mlr3mbo (>= 1.2.0),
+    mlr3mbo (>= 1.2.0.9000),
     mlr3misc (>= 0.15.1),
     mlr3pipelines,
     paradox (>= 1.0.1),
@@ -46,7 +46,7 @@ Suggests:
     lightgbm,
     MASS,
     mirai,
-    mlr3extralearners,
+    mlr3extralearners (>= 1.6.0.9000),
     mlr3torch (>= 0.3.3),
     mlr3viz,
     ranger,
@@ -56,8 +56,14 @@ Suggests:
     testthat (>= 3.0.0),
     torch,
     xgboost (>= 3.2.1.1)
+Remotes:
+    mlr-org/bbotk,
+    mlr-org/mlr3extralearners@factor_tabpfn,
+    mlr-org/mlr3mbo@adbo_subspaces,
+    mlr-org/rush,
+    mlr-org/mlr3tuning
 Additional_repositories: https://mlr-org.r-universe.dev
-Config/roxygen2/version: 8.0.0.9000
+Config/roxygen2/version: 8.1.0
 Config/testthat/edition: 3
 Config/testthat/parallel: false
 Encoding: UTF-8
@@ -78,6 +84,7 @@ Collate:
     'AutoRanger.R'
     'AutoResNet.R'
     'AutoSVM.R'
+    'AutoTabFM.R'
     'AutoTabPFN.R'
     'AutoXgboost.R'
     'aaa.R'
@@ -93,6 +100,7 @@ Collate:
     'LearnerClassifAutoRanger.R'
     'LearnerClassifAutoResNet.R'
     'LearnerClassifAutoSVM.R'
+    'LearnerClassifAutoTabFM.R'
     'LearnerClassifAutoTabPFN.R'
     'LearnerClassifAutoXgboost.R'
     'LearnerRegrAuto.R'
@@ -105,6 +113,7 @@ Collate:
     'LearnerRegrAutoRanger.R'
     'LearnerRegrAutoResNet.R'
     'LearnerRegrAutoSVM.R'
+    'LearnerRegrAutoTabFM.R'
     'LearnerRegrAutoTabPFN.R'
     'LearnerRegrAutoXgboost.R'
     'helper.R'

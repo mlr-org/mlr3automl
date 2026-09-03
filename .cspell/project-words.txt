@@ -31,6 +31,7 @@ evals
 extralearners
 fabert
 fastai
+fastcore
 glmnet
 higgs
 Hyperparameters
@@ -38,6 +39,7 @@ ilpd
 jannis
 karhunen
 kknn
+libtorch
 lightgbm
 lightswitch
 lockfiles
@@ -55,6 +57,7 @@ nfeatures
 nocov
 nolint
 nomao
+nrounds
 nrows
 nthread
 numerai
@@ -67,6 +70,7 @@ pendigits
 pkgdown
 pkgdowntemplate
 Pulatov
+PYTHONPATH
 qsar
 rcmdcheck
 redocument
@@ -80,12 +84,14 @@ rpart
 Rscript
 rsmp
 rsmps
+safetensors
 satimage
 semeion
 sobol
 spambase
 stackoverflow
 sylvine
+Tabfm
 Tabpfn
 testthat
 tgen
@@ -93,6 +99,7 @@ tgens
 trafo
 tsks
 tuningspaces
+unpickles
 volkert
 wdbc
 xgboost

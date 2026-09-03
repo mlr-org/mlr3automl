@@ -5,12 +5,42 @@
 # so those sessions are not safe for python either.
 # the nested session only loads the namespaces referenced by the learner,
 # so libtorch never enters the process that initializes python.
-isolated_session = function(learner, task, method) {
-  callr::r(
-    function(learner, task, method) {
-      mlr3misc::get_private(learner)[[method]](task)
-    },
-    args = list(learner = learner, task = task, method = method)
+#
+# isolate = FALSE skips the callr subprocess entirely and runs the method in the calling
+# process. only safe when nothing in the current run loads mlr3torch (see train_auto.R,
+# which decides this once per run from the run's learner set). callers set this via the
+# learner's `isolate_python` field, computed in the auto's `graph()` method.
+isolated_session = function(learner, task, method, isolate = TRUE) {
+  if (!isolate) {
+    return(mlr3misc::get_private(learner)[[method]](task))
+  }
+  tryCatch(
+    callr::r(
+      function(learner, task, method) {
+        tryCatch(
+          mlr3misc::get_private(learner)[[method]](task),
+          error = function(e) {
+            py_err = tryCatch(reticulate::py_last_error(), error = function(e2) NULL)
+            if (!is.null(py_err)) {
+              cat("\n=== reticulate::py_last_error() ===\n", file = stderr())
+              cat(py_err$message, file = stderr())
+            }
+            stop(e)
+          }
+        )
+      },
+      args = list(learner = learner, task = task, method = method)
+    ),
+    error = function(e) {
+      # callr::r() captures the child's stdout/stderr in memory (stdout = stderr = NULL are
+      # the defaults) and attaches them to the error condition, so no manual temp files needed.
+      out_txt = if (is.null(e$stdout)) "" else e$stdout
+      err_txt = if (is.null(e$stderr)) "" else e$stderr
+      stop(sprintf(
+        "isolated_session(%s) failed: %s\n--- child stdout ---\n%s\n--- child stderr ---\n%s",
+        method, conditionMessage(e), out_txt, err_txt
+      ), call. = FALSE)
+    }
   )
 }
 

@@ -11,7 +11,7 @@ Tabpfn auto.
 }
 \section{Python learners}{
 
-Python learners like \code{TabPFN} and \code{fastai} run via \code{reticulate} and
+Python learners like \code{TabPFN}, \code{TabFM}, and \code{fastai} run via \code{reticulate} and
 therefore need a Python installation with their required packages.
 There are two ways to provide it:
 \enumerate{
@@ -111,7 +111,14 @@ Default is "cpu".}
   Create the graph for the auto.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
-    \preformatted{AutoTabPFN$graph(task, measure, n_threads, timeout, devices)}
+    \preformatted{AutoTabPFN$graph(
+  task,
+  measure,
+  n_threads,
+  timeout,
+  devices,
+  isolate_python = TRUE
+)}
     \if{html}{\out{</div>}}
   }
   \subsection{Arguments}{
@@ -137,13 +144,17 @@ Default is "cpu".}
   Estimate the memory for the auto.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
-    \preformatted{AutoTabPFN$estimate_memory(task)}
+    \preformatted{AutoTabPFN$estimate_memory(task, devices = "cpu")}
     \if{html}{\out{</div>}}
   }
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
       \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+      \item{\code{devices}}{(\code{character()})\cr
+Devices to use.
+Allowed values are \code{"cpu"} and \code{"cuda"}.
+Default is "cpu".}
     }
     \if{html}{\out{</div>}}
   }

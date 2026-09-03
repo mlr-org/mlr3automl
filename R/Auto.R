@@ -36,6 +36,14 @@ Auto = R6Class(
     #' @field devices (`character()`).
     devices = NULL,
 
+    #' @field n_cpu (`integer(1)`)\cr
+    #' Number of CPUs a single training of the learner uses.
+    n_cpu = NULL,
+
+    #' @field n_gpu (`integer(1)`)\cr
+    #' Number of GPUs a single training of the learner uses.
+    n_gpu = NULL,
+
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     #'
@@ -44,18 +52,24 @@ Auto = R6Class(
     #' @param task_types (`character()`).
     #' @param packages (`character()`).
     #' @param devices (`character()`).
+    #' @param n_cpu (`integer(1)`).
+    #' @param n_gpu (`integer(1)`).
     initialize = function(
       id,
       properties = character(0),
       task_types = character(0),
       packages = character(0),
-      devices = character(0)
+      devices = character(0),
+      n_cpu = 1L,
+      n_gpu = 0L
     ) {
       self$id = assert_string(id)
       self$properties = assert_character(properties)
       self$task_types = assert_character(task_types)
       self$packages = assert_character(packages)
       self$devices = assert_character(devices)
+      self$n_cpu = assert_int(n_cpu, lower = 1L, coerce = TRUE)
+      self$n_gpu = assert_int(n_gpu, lower = 0L, upper = 1L, coerce = TRUE)
     },
 
     #' @description
@@ -81,7 +95,7 @@ Auto = R6Class(
         lg$info("Learner '%s' is not compatible with task type '%s'", self$id, task$task_type)
         return(FALSE)
       }
-      if (self$estimate_memory(task) > memory_limit) {
+      if (self$estimate_memory(task, devices) > memory_limit) {
         lg$info("Learner '%s' violates the memory limit of %i MB", self$id, ceiling(memory_limit))
         return(FALSE)
       }
@@ -126,7 +140,8 @@ Auto = R6Class(
 
     #' @description
     #' Estimate the memory for the auto.
-    estimate_memory = function(task) {
+    #' The estimate is the host memory in MB, so learners that allocate on the gpu return `-Inf`.
+    estimate_memory = function(task, devices = "cpu") {
       # -Inf allows learners without a memory estimate to always pass memory checks
       -Inf
     },

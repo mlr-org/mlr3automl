@@ -98,6 +98,39 @@ test_that("estimate memory uses the fitted memory models", {
   expect_gt(memory[["ft_transformer"]], 2000)
 })
 
+test_that("estimate memory of the torch learners is skipped on the gpu", {
+  skip_if_not_all_installed(all_packages)
+
+  autos = mlr_auto$mget(c("mlp", "resnet", "ft_transformer"))
+  memory = map_dbl(autos, function(auto) auto$estimate_memory(tsk("penguins"), devices = c("cuda", "cpu")))
+
+  expect_true(all(memory == -Inf))
+  # the memory limit never removes a torch learner from the search space on the gpu
+  expect_true(all(map_lgl(autos, function(auto) {
+    auto$check(tsk("penguins"), memory_limit = 1, devices = c("cuda", "cpu"))
+  })))
+})
+
+test_that("torch graphs use a larger batch size on the gpu", {
+  skip_if_not_installed("mlr3torch")
+
+  task = tsk("penguins")
+  measure = msr("classif.ce")
+  autos = mlr_auto$mget(c("mlp", "resnet", "ft_transformer"))
+
+  for (auto in autos) {
+    graph_cpu = auto$graph(task, measure, n_threads = 1L, timeout = 3600L, devices = "cpu")
+    values_cpu = graph_cpu$pipeops[[auto$id]]$learner$param_set$values
+    expect_equal(values_cpu$batch_size, 32L)
+    expect_equal(values_cpu$device, "cpu")
+
+    graph_gpu = auto$graph(task, measure, n_threads = 1L, timeout = 3600L, devices = c("cuda", "cpu"))
+    values_gpu = graph_gpu$pipeops[[auto$id]]$learner$param_set$values
+    expect_equal(values_gpu$batch_size, 256L)
+    expect_equal(values_gpu$device, "cuda")
+  }
+})
+
 test_that("boosting graphs set the full training budget on the learner", {
   skip_if_not_all_installed(c("mlr3learners", "mlr3extralearners", "xgboost", "catboost", "lightgbm"))
 
@@ -164,4 +197,28 @@ test_that("catboost accepts the fallback eval metrics", {
     )
     expect_class(learner$train(tasks[[i]]), "Learner")
   }
+})
+
+test_that("n_cpu and n_gpu fields are declared and validated", {
+  expect_equal(AutoXgboost$new()$n_cpu, 1L)
+  expect_equal(AutoXgboost$new()$n_gpu, 0L)
+  expect_equal(AutoLightGBM$new()$n_gpu, 0L)
+  expect_equal(AutoCatboost$new()$n_gpu, 0L)
+  expect_equal(AutoMLP$new()$n_gpu, 1L)
+  expect_equal(AutoResNet$new()$n_gpu, 1L)
+  expect_equal(AutoFTTransformer$new()$n_gpu, 1L)
+  expect_equal(AutoTabPFN$new()$n_gpu, 1L)
+  expect_equal(AutoFastai$new()$n_gpu, 1L)
+  expect_equal(AutoRanger$new()$n_gpu, 0L)
+
+  expect_error(AutoDebug$new(n_gpu = 2L), "n_gpu")
+  expect_error(Auto$new(id = "a", n_cpu = 0L), "n_cpu")
+})
+
+test_that("n_cpu and n_gpu learner params validate the overrides", {
+  learner = lrn("classif.auto_xgboost")
+  expect_error(learner$param_set$set_values(n_gpu = c(xgboost = 2L)), "<= 1")
+  expect_error(learner$param_set$set_values(n_cpu = c(xgboost = 0L)), ">= 1")
+  learner$param_set$set_values(n_cpu = c(xgboost = 2L), n_gpu = c(xgboost = 1L))
+  expect_equal(learner$param_set$values$n_gpu, c(xgboost = 1L))
 })

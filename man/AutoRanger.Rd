@@ -87,13 +87,17 @@ Default is "cpu".}
   Estimate the memory for the auto.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
-    \preformatted{AutoRanger$estimate_memory(task)}
+    \preformatted{AutoRanger$estimate_memory(task, devices = "cpu")}
     \if{html}{\out{</div>}}
   }
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
       \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+      \item{\code{devices}}{(\code{character()})\cr
+Devices to use.
+Allowed values are \code{"cpu"} and \code{"cuda"}.
+Default is "cpu".}
     }
     \if{html}{\out{</div>}}
   }

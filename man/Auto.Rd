@@ -21,6 +21,12 @@ This class is the base class for all autos.
     \item{\code{packages}}{(\code{character()}).}
 
     \item{\code{devices}}{(\code{character()}).}
+
+    \item{\code{n_cpu}}{(\code{integer(1)})\cr
+Number of CPUs a single training of the learner uses.}
+
+    \item{\code{n_gpu}}{(\code{integer(1)})\cr
+Number of GPUs a single training of the learner uses.}
   }
   \if{html}{\out{</div>}}
 }
@@ -51,7 +57,9 @@ This class is the base class for all autos.
   properties = character(0),
   task_types = character(0),
   packages = character(0),
-  devices = character(0)
+  devices = character(0),
+  n_cpu = 1L,
+  n_gpu = 0L
 )}
     \if{html}{\out{</div>}}
   }
@@ -63,6 +71,8 @@ This class is the base class for all autos.
       \item{\code{task_types}}{(\code{character()}).}
       \item{\code{packages}}{(\code{character()}).}
       \item{\code{devices}}{(\code{character()}).}
+      \item{\code{n_cpu}}{(\code{integer(1)}).}
+      \item{\code{n_gpu}}{(\code{integer(1)}).}
     }
     \if{html}{\out{</div>}}
   }
@@ -148,15 +158,20 @@ Maximum number of training rounds (boosting iterations or epochs) the learner ma
 \if{latex}{\out{\hypertarget{method-Auto-estimate_memory}{}}}
 \subsection{\code{Auto$estimate_memory()}}{
   Estimate the memory for the auto.
+The estimate is the host memory in MB, so learners that allocate on the gpu return \code{-Inf}.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
-    \preformatted{Auto$estimate_memory(task)}
+    \preformatted{Auto$estimate_memory(task, devices = "cpu")}
     \if{html}{\out{</div>}}
   }
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
       \item{\code{task}}{(\link[mlr3:Task]{mlr3::Task}).}
+      \item{\code{devices}}{(\code{character()})\cr
+Devices to use.
+Allowed values are \code{"cpu"} and \code{"cuda"}.
+Default is "cpu".}
     }
     \if{html}{\out{</div>}}
   }

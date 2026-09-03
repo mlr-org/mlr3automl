@@ -1,9 +1,15 @@
-#' @title TabPFN Auto
+#' @title TabFM Auto
 #'
 #' @include mlr_auto.R
 #'
 #' @description
-#' Tabpfn auto.
+#' Tabfm auto.
+#'
+#' Tabfm predicts in context, so every prediction runs the backbone over the training rows once per estimator.
+#' This is too slow to be useful on the CPU, so the auto is registered for `"cuda"` only and
+#' [Auto]`$check()` removes it from the search space whenever `devices` does not include `"cuda"`.
+#' Construct it with `AutoTabFM$new(devices = c("cpu", "cuda"))` and re-register it in [mlr_auto] to run it
+#' on the CPU anyway.
 #'
 #' @template param_id
 #' @template param_task
@@ -15,25 +21,29 @@
 #' @template param_devices
 #' @template section_python
 #'
-#' @return Object of class [R6::R6Class] and `AutoTabPFN`.
+#' @return Object of class [R6::R6Class] and `AutoTabFM`.
 #'
-#' @templateVar id tabpfn
+#' @templateVar id tabfm
 #' @template example_auto
 #'
 #' @export
-AutoTabPFN = R6Class(
-  "AutoTabPFN",
+AutoTabFM = R6Class(
+  "AutoTabFM",
   inherit = Auto,
   public = list(
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
-    initialize = function(id = "tabpfn") {
+    #'
+    #' @param devices (`character()`)\cr
+    #'   Devices the auto is allowed to run on.
+    #'   Defaults to `"cuda"` only, because tabfm is too slow to be useful on the CPU.
+    initialize = function(id = "tabfm", devices = "cuda") {
       super$initialize(
         id = id,
         properties = character(0),
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3extralearners", "callr"),
-        devices = c("cpu", "cuda"),
+        devices = assert_subset(devices, c("cpu", "cuda"), empty.ok = FALSE),
         n_cpu = 1L,
         n_gpu = 1L
       )
@@ -42,37 +52,17 @@ AutoTabPFN = R6Class(
     #' @description
     #' Check if the auto is compatible with the task.
     check = function(task, memory_limit = Inf, large_data_set = FALSE, devices = "cpu") {
-      # run the cheap checks (R packages, task type, memory) before the expensive python probe
+      # the device gate of super$check() removes the auto whenever `devices` and `self$devices` are disjoint,
+      # so the cuda-only registration is what keeps tabfm off the cpu.
+      # run the cheap checks (R packages, task type, memory, devices) before the expensive python probe
       ok = super$check(task, memory_limit, large_data_set, devices)
       if (!isTRUE(ok)) {
         return(FALSE)
       }
-      if ("cuda" %nin% devices && task$nrow > 1e3) {
-        lg$info(
-          "Learner '%s' is not compatible with tasks with more than 1,000 rows when using 'cpu' as device",
-          self$id
-        )
-        return(FALSE)
-      }
-      # po("colapply") turns character features into factors and po("encodeimpact") replaces every
-      # categorical feature with one column per class (one column for regression), so count the
-      # features the learner actually sees.
-      # the removeconstants steps can only drop columns, so this is never an underestimate.
-      n_categorical = sum(task$feature_types$type %in% c("factor", "ordered", "character"))
-      n_columns = if (task$task_type == "classif") length(task$class_names) else 1L
-      n_features = task$n_features - n_categorical + n_categorical * n_columns
-      if (n_features > 2000) {
-        lg$info(
-          "Learner '%s' is not compatible with tasks with more than 2,000 features after encoding (%i features)",
-          self$id,
-          n_features
-        )
-        return(FALSE)
-      }
-      ok = check_python_packages(c("torch", "tabpfn"))
+      ok = check_python_packages(tabfm_python_packages)
       if (!isTRUE(ok)) {
         lg$info(ok)
-        lg$info("Remove tabpfn from search space")
+        lg$info("Remove tabfm from search space")
         return(FALSE)
       }
       TRUE
@@ -93,21 +83,23 @@ AutoTabPFN = R6Class(
       device = if ("cuda" %in% devices) "cuda" else "cpu"
 
       learner = if (task$task_type == "classif") {
-        LearnerClassifTabPFNIsolated$new()
+        LearnerClassifTabFMIsolated$new()
       } else {
-        LearnerRegrTabPFNIsolated$new()
+        LearnerRegrTabFMIsolated$new()
       }
-      learner$id = "tabpfn"
+      learner$id = "tabfm"
       learner$isolate_python = isolate_python
-      # tabpfn raises n_estimators on its own when the task has more features than a single ensemble
-      # member sees (500), which would silently override the tuned value and the memory estimate.
-      # the upper bound of the search space (8) covers the 2,000 features the check allows.
-      learner$param_set$set_values(device = device, auto_scale_n_estimators = FALSE)
+      # the pytorch backend is the only one that honors `device`, so the resource accounting of the workers
+      # only holds for this backend
+      learner$param_set$set_values(backend = "pytorch", device = device)
 
       set_threads(learner, n_threads)
 
-      po("fixfactors", id = "tabpfn_fixfactors") %>>%
-        po("removeconstants", id = "tabpfn_post_removeconstants") %>>%
+      # tabfm ordinal encodes categorical features and imputes missing values in its own preprocessing
+      # pipeline, so the graph only has to keep the factor levels stable across train and predict
+      po("colapply", id = "tabfm_character", applicator = as.factor, affect_columns = selector_type("character")) %>>%
+        po("removeconstants", id = "tabfm_removeconstants") %>>%
+        po("fixfactors", id = "tabfm_fixfactors") %>>%
         learner
     },
 
@@ -115,24 +107,29 @@ AutoTabPFN = R6Class(
     #' Estimate the memory for the auto.
     estimate_memory = function(task, devices = "cpu") {
       memory_size = task$nrow * task$ncol * 8 * 10 / 1e6
-      lg$info("Tabpfn memory size: %s MB", round(memory_size))
+      lg$info("Tabfm memory size: %s MB", round(memory_size))
       ceiling(memory_size)
     },
 
     #' @description
     #' Default hyperparameters for the learner.
     design_default = function(task) {
-      values = if (task$task_type == "classif") {
-        list(
-          tabpfn.n_estimators = 8L,
-          tabpfn.softmax_temperature = 0.9,
-          tabpfn.balance_probabilities = FALSE,
-          tabpfn.average_before_softmax = FALSE
-        )
-      } else {
-        list(
-          tabpfn.n_estimators = 8L,
-          tabpfn.average_before_softmax = FALSE
+      values = list(
+        # the default of 32 estimators is far above the upper bound of the search space,
+        # because a single fit already runs the backbone once per estimator
+        tabfm.n_estimators = 4L,
+        tabfm.feat_shuffle_method = "random",
+        tabfm.permute_categorical = FALSE,
+        tabfm.cat_encoder_mode = "appearance"
+      )
+      if (task$task_type == "classif") {
+        values = c(
+          values,
+          list(
+            tabfm.softmax_temperature = 0.9,
+            tabfm.average_logits = TRUE,
+            tabfm.class_shift = TRUE
+          )
         )
       }
       xdt = as.data.table(values)
@@ -143,55 +140,59 @@ AutoTabPFN = R6Class(
     #' @description
     #' Get the search space for the auto.
     search_space = function(task) {
+      params = list(
+        tabfm.n_estimators = p_int(1, 8),
+        tabfm.feat_shuffle_method = p_fct(c("random", "none")),
+        tabfm.permute_categorical = p_lgl(),
+        tabfm.cat_encoder_mode = p_fct(c("appearance", "frequency"))
+      )
       if (task$task_type == "classif") {
-        ps(
-          # trafo forces a true integer even when the BO candidate arrives as an
-          # integer-valued double, which numpy's Generator.choice() (used by tabpfn's
-          # ensemble config sampler) rejects with a TypeError
-          tabpfn.n_estimators = p_int(1, 8, trafo = as.integer),
-          tabpfn.softmax_temperature = p_dbl(0.75, 1.0),
-          tabpfn.balance_probabilities = p_lgl(),
-          tabpfn.average_before_softmax = p_lgl()
-        )
-      } else if (task$task_type == "regr") {
-        ps(
-          tabpfn.n_estimators = p_int(1, 8, trafo = as.integer),
-          tabpfn.average_before_softmax = p_lgl()
+        params = c(
+          params,
+          list(
+            tabfm.softmax_temperature = p_dbl(0.75, 1.0),
+            tabfm.average_logits = p_lgl(),
+            tabfm.class_shift = p_lgl()
+          )
         )
       }
+      invoke(ps, .args = params)
     }
   ),
 
   private = list()
 )
 
-mlr_auto$add("tabpfn", function() AutoTabPFN$new())
+mlr_auto$add("tabfm", function() AutoTabFM$new())
 
-# the tabpfn learner imports python torch via reticulate.
+# the "pytorch" backend of the tabfm learner is the only one that honors the `device` parameter.
+# "safetensors" is not part of the "pytorch" extra but is needed to load the weights.
+tabfm_python_packages = c("tabfm[pytorch]", "safetensors")
+
+# the tabfm learner imports python torch via reticulate.
 # these subclasses keep python strictly inside the isolated callr sessions
 # started with isolated_session() (see isolated_model.R)
 # * .train() and .predict() run .session_train() and .session_predict() in an
 #   isolated session and never touch python themselves.
-# * .session_train() registers the python requirements, which the tabpfn
-#   learner does not do itself, and pickles the model, so it leaves the
-#   session as raw bytes.
-# * .session_predict() unpickles the model inside the session.
+# * .session_train() pickles the model, so it leaves the session as raw bytes.
+# * .session_predict() registers the python requirements, which the tabfm
+#   learner only does when training, and unpickles the model inside the session.
 
-#' @title TabPFN Learner Isolated
+#' @title TabFM Learner Isolated
 #'
 #' @description
-#' A subclass of [mlr3extralearners::LearnerClassifTabPFN] that isolates the Python environment in a callr session.
+#' A subclass of [mlr3extralearners::LearnerClassifTabFM] that isolates the Python environment in a callr session.
 #'
-#' @return Object of class [R6::R6Class] and `LearnerClassifTabPFNIsolated`.
+#' @return Object of class [R6::R6Class] and `LearnerClassifTabFMIsolated`.
 #'
 #' @export
-LearnerClassifTabPFNIsolated = R6Class(
-  "LearnerClassifTabPFNIsolated",
-  inherit = mlr3extralearners::LearnerClassifTabPFN,
+LearnerClassifTabFMIsolated = R6Class(
+  "LearnerClassifTabFMIsolated",
+  inherit = mlr3extralearners::LearnerClassifTabFM,
   public = list(
     #' @field isolate_python (`logical(1)`)\cr
     #' Whether to run `.train()` and `.predict()` in a fresh callr session. Set by
-    #' [AutoTabPFN]`$graph()`; only `FALSE` when the run's learners never load mlr3torch.
+    #' [AutoTabFM]`$graph()`; only `FALSE` when the run's learners never load mlr3torch.
     isolate_python = TRUE,
 
     #' @description
@@ -213,14 +214,14 @@ LearnerClassifTabPFNIsolated = R6Class(
     # runs in the isolated session
     .session_train = function(task) {
       clean_reticulate_env()
-      reticulate::py_require(c("torch", "tabpfn"))
+      reticulate::py_require(tabfm_python_packages)
       model = super$.train(task)
       list(marshaled = marshal_model(model, inplace = TRUE))
     },
     # runs in the isolated session
     .session_predict = function(task) {
       clean_reticulate_env()
-      reticulate::py_require(c("torch", "tabpfn"))
+      reticulate::py_require(tabfm_python_packages)
       if (inherits(self$model, "isolated_model_pickled")) {
         self$model = unmarshal_model(self$model$pickled)
       }
@@ -229,21 +230,21 @@ LearnerClassifTabPFNIsolated = R6Class(
   )
 )
 
-#' @title TabPFN Regressor Learner Isolated
+#' @title TabFM Regressor Learner Isolated
 #'
 #' @description
-#' A subclass of [mlr3extralearners::LearnerRegrTabPFN] that isolates the Python environment in a callr session.
+#' A subclass of [mlr3extralearners::LearnerRegrTabFM] that isolates the Python environment in a callr session.
 #'
-#' @return Object of class [R6::R6Class] and `LearnerRegrTabPFNIsolated`.
+#' @return Object of class [R6::R6Class] and `LearnerRegrTabFMIsolated`.
 #'
 #' @export
-LearnerRegrTabPFNIsolated = R6Class(
-  "LearnerRegrTabPFNIsolated",
-  inherit = mlr3extralearners::LearnerRegrTabPFN,
+LearnerRegrTabFMIsolated = R6Class(
+  "LearnerRegrTabFMIsolated",
+  inherit = mlr3extralearners::LearnerRegrTabFM,
   public = list(
     #' @field isolate_python (`logical(1)`)\cr
     #' Whether to run `.train()` and `.predict()` in a fresh callr session. Set by
-    #' [AutoTabPFN]`$graph()`; only `FALSE` when the run's learners never load mlr3torch.
+    #' [AutoTabFM]`$graph()`; only `FALSE` when the run's learners never load mlr3torch.
     isolate_python = TRUE,
 
     #' @description
@@ -265,14 +266,14 @@ LearnerRegrTabPFNIsolated = R6Class(
     # runs in the isolated session
     .session_train = function(task) {
       clean_reticulate_env()
-      reticulate::py_require(c("torch", "tabpfn"))
+      reticulate::py_require(tabfm_python_packages)
       model = super$.train(task)
       list(marshaled = marshal_model(model, inplace = TRUE))
     },
     # runs in the isolated session
     .session_predict = function(task) {
       clean_reticulate_env()
-      reticulate::py_require(c("torch", "tabpfn"))
+      reticulate::py_require(tabfm_python_packages)
       if (inherits(self$model, "isolated_model_pickled")) {
         self$model = unmarshal_model(self$model$pickled)
       }

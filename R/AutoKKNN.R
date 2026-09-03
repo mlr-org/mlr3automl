@@ -30,7 +30,9 @@ AutoKKNN = R6Class(
         properties = character(),
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3learners", "kknn"),
-        devices = "cpu"
+        devices = "cpu",
+        n_cpu = 1L,
+        n_gpu = 0L
       )
     },
 

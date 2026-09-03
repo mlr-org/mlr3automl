@@ -35,7 +35,9 @@ AutoFastai = R6Class(
         properties = "internal_tuning",
         task_types = "classif",
         packages = c("mlr3", "mlr3extralearners", "callr"),
-        devices = c("cpu", "cuda")
+        devices = c("cpu", "cuda"),
+        n_cpu = 1L,
+        n_gpu = 1L
       )
     },
 
@@ -62,30 +64,25 @@ AutoFastai = R6Class(
 
     #' @description
     #' Create the graph for the auto.
-    graph = function(task, measure, n_threads, timeout, devices) {
+    graph = function(task, measure, n_threads, timeout, devices, isolate_python = TRUE) {
       assert_task(task)
       assert_measure(measure)
       assert_count(n_threads)
       assert_count(timeout)
       assert_subset(devices, c("cpu", "cuda"))
+      assert_flag(isolate_python)
 
       require_namespaces("mlr3extralearners")
 
       learner = LearnerClassifFastaiIsolated$new()
       learner$id = "fastai"
+      learner$isolate_python = isolate_python
       learner$param_set$set_values(
         patience = self$early_stopping_rounds(task, budget = self$search_space(task)$upper[["fastai.n_epoch"]]),
         layers = c(200, 100),
         eval_metric = self$internal_measure(measure, task)
       )
       set_threads(learner, n_threads)
-
-      # the learner trains and predicts in an isolated callr session (see isolated_model.R),
-      # so the encapsulation only adds the fallback and log capture
-      fallback = lrn("classif.featureless")
-      fallback$predict_type = measure$predict_type
-      learner$predict_type = measure$predict_type
-      learner$encapsulate(method = "evaluate", fallback = fallback)
 
       po("colapply", id = "fastai_character", applicator = as.factor, affect_columns = selector_type("character")) %>>%
         po("removeconstants", id = "fastai_removeconstants") %>>%
@@ -99,7 +96,7 @@ AutoFastai = R6Class(
 
     #' @description
     #' Estimate the memory for the auto.
-    estimate_memory = function(task) {
+    estimate_memory = function(task, devices = "cpu") {
       memory_size = task$nrow * task$ncol * 8 * 10 / 1e6
       lg$info("Fastai memory size: %s MB", round(memory_size))
       ceiling(memory_size)
@@ -139,8 +136,13 @@ AutoFastai = R6Class(
 
     .search_space = ps(
       fastai.lr = p_dbl(1e-4, 1e-1, logscale = TRUE),
-      fastai.bs = p_int(50, 500),
-      fastai.n_epoch = p_int(1, 100, tags = "internal_tuning", aggr = function(x) as.integer(ceiling(mean(unlist(x))))),
+      # trafo forces a true integer even when the BO candidate arrives as an
+      # integer-valued double, which the python side (batch size / epoch count)
+      # can reject with a TypeError -- see AutoTabPFN.R
+      fastai.bs = p_int(50, 500, trafo = as.integer),
+      fastai.n_epoch = p_int(1, 100, trafo = as.integer, tags = "internal_tuning", aggr = function(x) {
+        as.integer(ceiling(mean(unlist(x))))
+      }),
       fastai.layers = p_fct(
         levels = list(c(200, 100), c(200, 100, 50), c(500, 200), c(500, 200, 100), c(1000, 500), c(1000, 500, 200)),
         default = "c(200, 100)"
@@ -181,6 +183,11 @@ LearnerClassifFastaiIsolated = R6Class(
   "LearnerClassifFastaiIsolated",
   inherit = mlr3extralearners::LearnerClassifFastai,
   public = list(
+    #' @field isolate_python (`logical(1)`)\cr
+    #' Whether to run `.train()` and `.predict()` in a fresh callr session. Set by
+    #' [AutoFastai]`$graph()`; only `FALSE` when the run's learners never load mlr3torch.
+    isolate_python = TRUE,
+
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     initialize = function() {
@@ -191,7 +198,7 @@ LearnerClassifFastaiIsolated = R6Class(
   ),
   private = list(
     .train = function(task) {
-      result = isolated_session(self, task, ".session_train")
+      result = isolated_session(self, task, ".session_train", isolate = self$isolate_python)
       structure(
         list(
           pickled = result$marshaled,
@@ -202,7 +209,7 @@ LearnerClassifFastaiIsolated = R6Class(
       )
     },
     .predict = function(task) {
-      isolated_session(self, task, ".session_predict")
+      isolated_session(self, task, ".session_predict", isolate = self$isolate_python)
     },
     # runs in the isolated session
     .session_train = function(task) {

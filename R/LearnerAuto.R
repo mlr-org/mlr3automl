@@ -20,6 +20,7 @@
 #' | ranger | mlr3learners |
 #' | resnet | mlr3torch |
 #' | svm | mlr3learners |
+#' | tabfm | mlr3extralearners |
 #' | tabpfn | mlr3extralearners |
 #' | xgboost | mlr3learners |
 #'
@@ -83,8 +84,10 @@ LearnerAuto = R6Class(
         large_data_size         = p_int(lower = 1L, init = 1e6, tags = c("train", "super")),
         learner_timeout         = p_int(lower = 1L, init = 900L, tags = c("train", "super")),
         measure                 = p_uty(tags = c("train", "super"), custom_check = crate({function(x) check_r6(x, "Measure")})),
-        memory_limit            = p_int(lower = 1L, init = 32000L, tags = c("train", "catboost", "extra_trees", "fastai", "ft_transformer", "lightgbm", "mlp", "ranger", "resnet", "tabpfn", "xgboost")),
-        n_threads               = p_int(lower = 1L, init = 1L, tags = c("train", "catboost", "extra_trees", "fastai", "ft_transformer", "lightgbm", "mlp", "ranger", "resnet", "tabpfn", "xgboost")),
+        memory_limit            = p_int(lower = 1L, init = 32000L, tags = c("train", "catboost", "extra_trees", "fastai", "ft_transformer", "lightgbm", "mlp", "ranger", "resnet", "tabfm", "tabpfn", "xgboost")),
+        n_cpu                   = p_uty(tags = c("train", "super"), custom_check = crate({function(x) check_integerish(x, lower = 1L, any.missing = FALSE, names = "unique", null.ok = TRUE)})),
+        n_gpu                   = p_uty(tags = c("train", "super"), custom_check = crate({function(x) check_integerish(x, lower = 0L, upper = 1L, any.missing = FALSE, names = "unique", null.ok = TRUE)})),
+        n_threads               = p_int(lower = 1L, init = 1L, tags = c("train", "catboost", "extra_trees", "fastai", "ft_transformer", "lightgbm", "mlp", "ranger", "resnet", "tabfm", "tabpfn", "xgboost")),
         resampling              = p_uty(init = rsmp("holdout"), tags = c("train", "super"), custom_check = crate({function(x) check_r6(x, "Resampling")})),
         small_data_resampling   = p_uty(init = rsmp("cv", folds = 10), tags = c("train", "super"), custom_check = crate({function(x) check_r6(x, "Resampling")})),
         small_data_size         = p_int(lower = 1L, init = 5000L, tags = c("train", "super")),

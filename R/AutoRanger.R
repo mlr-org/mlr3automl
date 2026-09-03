@@ -31,7 +31,9 @@ AutoRanger = R6Class(
         properties = "large_data_sets",
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3learners", "ranger"),
-        devices = "cpu"
+        devices = "cpu",
+        n_cpu = 1L,
+        n_gpu = 0L
       )
     },
 
@@ -60,7 +62,7 @@ AutoRanger = R6Class(
 
     #' @description
     #' Estimate the memory for the auto.
-    estimate_memory = function(task) {
+    estimate_memory = function(task, devices = "cpu") {
       upper = self$search_space(task)$upper
 
       num_trees = upper["ranger.num.trees"]

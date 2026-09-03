@@ -54,6 +54,18 @@ clean_reticulate_env = function() {
   Sys.unsetenv(c("VIRTUAL_ENV", "VIRTUAL_ENV_PROMPT", "PYTHONPATH", "R_SESSION_INITIALIZED"))
 }
 
+# whether a python-torch learner (tabpfn, tabfm, fastai) must isolate its callr session from
+# mlr3torch's libtorch (see isolated_model.R). TRUE whenever this run's own learners declare
+# mlr3torch (checked before its namespace is necessarily loaded, since graph() build order across
+# autos is not guaranteed), or when mlr3torch is already loaded in the calling process -- e.g. from
+# an earlier training call in the same session or a user script that attached it directly.
+# namespaces, once loaded, stay loaded for the life of the process: once mlr3torch has entered a
+# process, every later run in that process must isolate too, even if that run's own learner_ids
+# never mention mlr3torch.
+needs_python_isolation = function(autos) {
+  isNamespaceLoaded("mlr3torch") || any(map_lgl(autos, function(auto) "mlr3torch" %in% auto$packages))
+}
+
 # memoizes check_python_packages() results so repeated probes for the same
 # requirements in one session do not spawn a callr session each time.
 python_package_cache = new.env(parent = emptyenv())
@@ -77,8 +89,8 @@ check_python_packages = function(packages, python_version = NULL) {
       function(packages, python_version) {
         Sys.unsetenv(c("VIRTUAL_ENV", "VIRTUAL_ENV_PROMPT", "PYTHONPATH", "R_SESSION_INITIALIZED"))
         reticulate::py_require(packages, python_version = python_version)
-        # strip version specifiers e.g. "fastcore<2.0.0" -> "fastcore"
-        modules = gsub("[<>=!~].*$", "", packages)
+        # strip version specifiers and extras e.g. "fastcore<2.0.0" -> "fastcore", "tabfm[pytorch]" -> "tabfm"
+        modules = gsub("[<>=!~\\[].*$", "", packages)
         vapply(modules, reticulate::py_module_available, logical(1L), USE.NAMES = FALSE)
       },
       args = list(packages = packages, python_version = python_version)
@@ -94,6 +106,71 @@ check_python_packages = function(packages, python_version = NULL) {
   }
   python_package_cache[[key]] = result
   result
+}
+
+# batch size of the torch learners.
+# a batch of 32 rows keeps a gpu idle because kernel launches and host to device transfers dominate the step time,
+# so the gpu gets a larger batch. the cpu keeps 32, which is the size the memory estimates were fitted with.
+torch_batch_size = function(device) {
+  if (identical(device, "cuda")) 256L else 32L
+}
+
+# effective per-learner resource requirements: class defaults, then user overrides, then the devices gate.
+# returns list(n_cpu = named integer(), n_gpu = named integer()), named by learner id.
+effective_resources = function(autos, n_cpu = NULL, n_gpu = NULL, devices = "cpu") {
+  resources = list(
+    n_cpu = map_int(autos, "n_cpu"),
+    n_gpu = map_int(autos, "n_gpu")
+  )
+
+  for (field in c("n_cpu", "n_gpu")) {
+    override = get(field)
+    if (!is.null(override)) {
+      unknown_ids = setdiff(names(override), names(autos))
+      if (length(unknown_ids)) {
+        error_config(
+          "Names of '%s' must be a subset of the selected learner ids but include %s.",
+          field,
+          str_collapse(unknown_ids, quote = "'")
+        )
+      }
+      resources[[field]][names(override)] = as.integer(override)
+    }
+  }
+
+  # without a cuda device every learner falls back to the cpu
+  if ("cuda" %nin% devices) {
+    resources$n_gpu[] = 0L
+  }
+
+  resources
+}
+
+# large data sets are trained by fewer but larger workers.
+# the workers are reduced to a quarter, rounded up so that they are not reduced by more than the intended factor,
+# and at least one worker is kept so that no subspace is left without workers.
+# only the cpu profile is reduced. the gpu profile is exempt because its number of workers is fixed by the number
+# of gpus.
+# returns list(profiles = named integer() or NULL, n_workers = integer(1), scale = numeric(1)) where `scale` is the
+# factor by which the threads and the memory limit of the reduced workers are increased.
+reduce_workers = function(profiles, n_workers) {
+  quarter = function(n) max(1L, as.integer(ceiling(n / 4)))
+
+  # a single group of workers without compute profiles
+  if (is.null(profiles)) {
+    reduced_n_workers = quarter(n_workers)
+    return(list(profiles = NULL, n_workers = reduced_n_workers, scale = n_workers / reduced_n_workers))
+  }
+
+  # only the gpu profile is set up, so there is nothing to reduce
+  if ("mlr3automl_cpu" %nin% names(profiles)) {
+    return(list(profiles = profiles, n_workers = sum(profiles), scale = 1))
+  }
+
+  old_n_workers = profiles[["mlr3automl_cpu"]]
+  profiles[["mlr3automl_cpu"]] = quarter(old_n_workers)
+
+  list(profiles = profiles, n_workers = sum(profiles), scale = old_n_workers / profiles[["mlr3automl_cpu"]])
 }
 
 combine_search_spaces = function(autos, task) {
