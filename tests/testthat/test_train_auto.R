@@ -401,7 +401,7 @@ test_that("character and ordered features are converted to factors by the lightg
   expect_prediction(result$prediction)
 })
 
-test_that("mixed cpu and gpu requirements are tuned on subspaces", {
+test_that("mixed cpu and gpu requirements are tuned on the cpu and the gpu profile", {
   skip_on_cran()
   skip_if_not_installed("rush")
   # the surrogate model of the mbo tuner requires ranger
@@ -450,11 +450,18 @@ test_that("mixed cpu and gpu requirements are tuned on subspaces", {
   expect_names(names(data), must.include = ".subspace")
   # the subspace is only written when an evaluation finishes
   finished = data[state == "finished"]
-  expect_equal(finished$.subspace, ifelse(finished$branch.selection == "debug_gpu", "gpu", "cpu"))
-  expect_set_equal(unique(finished$.subspace), c("cpu", "gpu"))
+  expect_equal(finished$.subspace, finished$branch.selection)
+  expect_set_equal(unique(finished$.subspace), c("debug_cpu", "debug_gpu"))
+
+  # the gpu worker only evaluates the gpu learner and the cpu worker only the cpu learner
+  worker_info = rush$worker_info
+  expect_set_equal(worker_info$profile, c("mlr3automl_cpu", "mlr3automl_gpu"))
+  gpu_worker = worker_info[profile == "mlr3automl_gpu"]$worker_id
+  expect_equal(unique(finished[worker_id == gpu_worker]$branch.selection), "debug_gpu")
+  expect_equal(unique(finished[worker_id != gpu_worker]$branch.selection), "debug_cpu")
 })
 
-test_that("mixed requirements keep the single search space when the compute profiles do not match", {
+test_that("compute profiles other than the cpu and the gpu profile are rejected", {
   skip_on_cran()
   skip_if_not_installed("rush")
   # the surrogate model of the mbo tuner requires ranger
@@ -494,11 +501,7 @@ test_that("mixed requirements keep the single search space when the compute prof
     encapsulate_mbo = FALSE
   )
 
-  learner$train(task)
-
-  data = learner$instance$archive$data
-  expect_false(".subspace" %in% names(data))
-  expect_set_equal(unique(data$branch.selection), c("debug_cpu", "debug_gpu"))
+  expect_error(learner$train(task), "not supported", class = "Mlr3ErrorConfig")
 })
 
 test_that("a large data set reduces the workers of the cpu compute profiles but not of the gpu profile", {
@@ -552,7 +555,7 @@ test_that("a large data set reduces the workers of the cpu compute profiles but 
   expect_equal(nrow(worker_info), 3L)
 })
 
-test_that("mixed requirements keep the single search space without compute profiles", {
+test_that("mixed requirements share the workers without compute profiles", {
   skip_on_cran()
   skip_if_not_installed("rush")
   # the surrogate model of the mbo tuner requires ranger
@@ -593,9 +596,11 @@ test_that("mixed requirements keep the single search space without compute profi
 
   learner$train(task)
 
-  data = learner$instance$archive$data
-  expect_false(".subspace" %in% names(data))
-  expect_set_equal(unique(data$branch.selection), c("debug_cpu", "debug_gpu"))
+  # both workers run on the default profile of mirai and evaluate both learners
+  expect_equal(rush$worker_info$profile, c("default", "default"))
+  finished = learner$instance$archive$data[state == "finished"]
+  expect_equal(finished$.subspace, finished$branch.selection)
+  expect_set_equal(unique(finished$branch.selection), c("debug_cpu", "debug_gpu"))
 })
 
 test_that("gpu learners fall back to the cpu without a cuda device", {
@@ -639,12 +644,14 @@ test_that("gpu learners fall back to the cpu without a cuda device", {
 
   learner$train(task)
 
-  data = learner$instance$archive$data
-  expect_false(".subspace" %in% names(data))
-  expect_set_equal(unique(data$branch.selection), c("debug_cpu", "debug_gpu"))
+  # both learners run on the cpu profile and the gpu profile stays idle
+  expect_equal(rush$worker_info$profile, "mlr3automl_cpu")
+  finished = learner$instance$archive$data[state == "finished"]
+  expect_equal(finished$.subspace, finished$branch.selection)
+  expect_set_equal(unique(finished$branch.selection), c("debug_cpu", "debug_gpu"))
 })
 
-test_that("homogeneous gpu requirements keep the single search space", {
+test_that("homogeneous gpu requirements run on the gpu profile", {
   skip_on_cran()
   skip_if_not_installed("rush")
   # the surrogate model of the mbo tuner requires ranger
@@ -686,11 +693,14 @@ test_that("homogeneous gpu requirements keep the single search space", {
 
   learner$train(task)
 
-  data = learner$instance$archive$data
-  expect_false(".subspace" %in% names(data))
+  # both learners run on the gpu profile and the cpu profile stays idle
+  expect_equal(rush$worker_info$profile, "mlr3automl_gpu")
+  finished = learner$instance$archive$data[state == "finished"]
+  expect_equal(finished$.subspace, finished$branch.selection)
+  expect_set_equal(unique(finished$branch.selection), c("debug_cpu", "debug_gpu"))
 })
 
-test_that("mixed requirements keep the single search space without a gpu compute profile", {
+test_that("mixed requirements share the workers of a single compute profile", {
   skip_on_cran()
   skip_if_not_installed("rush")
   # the surrogate model of the mbo tuner requires ranger
@@ -731,6 +741,8 @@ test_that("mixed requirements keep the single search space without a gpu compute
 
   learner$train(task)
 
-  data = learner$instance$archive$data
-  expect_false(".subspace" %in% names(data))
+  expect_equal(rush$worker_info$profile, c("mlr3automl_cpu", "mlr3automl_cpu"))
+  finished = learner$instance$archive$data[state == "finished"]
+  expect_equal(finished$.subspace, finished$branch.selection)
+  expect_set_equal(unique(finished$branch.selection), c("debug_cpu", "debug_gpu"))
 })

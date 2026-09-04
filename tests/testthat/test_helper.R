@@ -76,6 +76,39 @@ test_that("reduce_workers keeps the workers when only the gpu profile is set up"
   expect_equal(reduced$scale, 1)
 })
 
+test_that("assign_learner_profiles runs all learners on the default profile without compute profiles", {
+  assignment = assign_learner_profiles(NULL, n_workers = 4L, cpu_ids = c("a", "b"), gpu_ids = "c")
+  expect_equal(assignment$subspace_profiles, c(a = "default", b = "default", c = "default"))
+  expect_equal(assignment$profiles, c(default = 4L))
+})
+
+test_that("assign_learner_profiles runs all learners on a single compute profile", {
+  assignment = assign_learner_profiles(c(mlr3automl_cpu = 2L), n_workers = 2L, cpu_ids = "a", gpu_ids = "c")
+  expect_equal(assignment$subspace_profiles, c(a = "mlr3automl_cpu", c = "mlr3automl_cpu"))
+  expect_equal(assignment$profiles, c(mlr3automl_cpu = 2L))
+})
+
+test_that("assign_learner_profiles divides the learners among the cpu and the gpu profile", {
+  profiles = c(mlr3automl_cpu = 7L, mlr3automl_gpu = 1L)
+
+  assignment = assign_learner_profiles(profiles, n_workers = 8L, cpu_ids = c("a", "b"), gpu_ids = "c")
+  expect_equal(assignment$subspace_profiles, c(a = "mlr3automl_cpu", b = "mlr3automl_cpu", c = "mlr3automl_gpu"))
+  expect_equal(assignment$profiles, profiles)
+
+  # a profile without learners is dropped
+  assignment = assign_learner_profiles(profiles, n_workers = 8L, cpu_ids = c("a", "b"), gpu_ids = character())
+  expect_equal(assignment$subspace_profiles, c(a = "mlr3automl_cpu", b = "mlr3automl_cpu"))
+  expect_equal(assignment$profiles, profiles["mlr3automl_cpu"])
+})
+
+test_that("assign_learner_profiles rejects other combinations of compute profiles", {
+  expect_error(
+    assign_learner_profiles(c(cores = 1L, cuda = 1L), n_workers = 2L, cpu_ids = "a", gpu_ids = "c"),
+    "not supported",
+    class = "Mlr3ErrorConfig"
+  )
+})
+
 test_that("cb_timeout_lightgbm resets the clock on each training", {
   callback = cb_timeout_lightgbm(timeout = 100)
   state = environment(callback)$state

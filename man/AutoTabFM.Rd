@@ -58,6 +58,7 @@ auto("tabfm")
   <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="design_set"><a href='../../mlr3automl/html/Auto.html#method-Auto-design_set'><code>Auto$design_set()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="early_stopping_rounds"><a href='../../mlr3automl/html/Auto.html#method-Auto-early_stopping_rounds'><code>Auto$early_stopping_rounds()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="finalize_model"><a href='../../mlr3automl/html/Auto.html#method-Auto-finalize_model'><code>Auto$finalize_model()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="mlr3automl" data-topic="Auto" data-id="graph_bagged"><a href='../../mlr3automl/html/Auto.html#method-Auto-graph_bagged'><code>Auto$graph_bagged()</code></a></span></li>
 </ul>
 </details>}}
 \if{html}{\out{<hr>}}
@@ -120,7 +121,14 @@ Default is "cpu".}
   Create the graph for the auto.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
-    \preformatted{AutoTabFM$graph(task, measure, n_threads, timeout, devices)}
+    \preformatted{AutoTabFM$graph(
+  task,
+  measure,
+  n_threads,
+  timeout,
+  devices,
+  isolate_python = TRUE
+)}
     \if{html}{\out{</div>}}
   }
   \subsection{Arguments}{

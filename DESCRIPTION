@@ -57,11 +57,11 @@ Suggests:
 Remotes:
     mlr-org/bbotk,
     mlr-org/mlr3extralearners@factor_tabpfn,
-    mlr-org/mlr3mbo@adbo_subspaces,
+    mlr-org/mlr3mbo@adbo_thompson,
     mlr-org/rush,
     mlr-org/mlr3tuning
 Additional_repositories: https://mlr-org.r-universe.dev
-Config/roxygen2/version: 8.0.0.9000
+Config/roxygen2/version: 8.1.0
 Config/testthat/edition: 3
 Config/testthat/parallel: false
 Encoding: UTF-8

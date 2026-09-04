@@ -101,34 +101,37 @@ train_auto = function(self, private, task) {
   }
 
   # initialize mbo tuner
-  # mixed gpu requirements are optimized on a cpu and a gpu subspace, each running on its own compute profile
+  # every learner is a subspace of the tuner and runs on the mirai compute profile of its hardware requirements.
+  # the tuner samples the learner to work on via thompson sampling among the learners of the profile of a worker
+  worker_type = rush_config()$worker_type %??% "mirai"
+  if (worker_type != "mirai" && !getOption("bbotk.debug", FALSE)) {
+    error_config(
+      # nolint next: line_length_linter
+      "The tuner distributes the workers over mirai compute profiles, which requires the worker type 'mirai' but not '%s'.",
+      worker_type
+    )
+  }
+
   gpu_ids = names(keep(autos, uses_gpu))
   cpu_ids = setdiff(names(autos), gpu_ids)
-  mixed_devices = length(gpu_ids) > 0L && length(cpu_ids) > 0L
-  # the workers are divided among the subspaces by the compute profiles, so every subspace needs its own profile
-  use_subspaces = mixed_devices && setequal(names(profiles), c("mlr3automl_cpu", "mlr3automl_gpu"))
-
-  if (mixed_devices && !use_subspaces) {
-    if (is.null(profiles)) {
-      lg$info("No mirai compute profiles are set up. Optimizing cpu and gpu learners in a single search space")
-    } else {
-      lg$info(
-        # nolint next: line_length_linter
-        "Compute profiles %s do not match the profiles 'mlr3automl_cpu' and 'mlr3automl_gpu' of the cpu and gpu subspace. Optimizing cpu and gpu learners in a single search space",
-        str_collapse(names(profiles), quote = "'")
-      )
-    }
+  assignment = assign_learner_profiles(profiles, n_workers = n_workers, cpu_ids = cpu_ids, gpu_ids = gpu_ids)
+  iwalk(split(names(assignment$subspace_profiles), assignment$subspace_profiles), function(ids, profile) {
+    lg$info(
+      "Compute profile '%s' runs %i worker(s) for learner(s) %s",
+      profile,
+      assignment$profiles[[profile]],
+      str_collapse(ids, quote = "'")
+    )
+  })
+  idle_profiles = setdiff(names(profiles), names(assignment$profiles))
+  if (length(idle_profiles)) {
+    lg$info("Compute profile(s) %s run no learner and stay idle", str_collapse(idle_profiles, quote = "'"))
   }
 
-  tuner = if (use_subspaces) tnr("adbo_subspaces") else tnr("async_mbo")
-  if (large_data_set) {
-    # the reduced number of workers is passed to the tuner because the rush plan still holds the original number
-    if (!is.null(profiles)) {
-      tuner$param_set$set_values(profiles = profiles)
-    } else {
-      tuner$param_set$set_values(n_workers = n_workers)
-    }
-  }
+  tuner = tnr("adbo_thompson")
+  # the profiles are passed to the tuner because the rush plan holds neither the default profile
+  # nor the reduced number of workers of a large data set
+  tuner$param_set$set_values(profiles = assignment$profiles)
 
   isolate_python = needs_python_isolation(autos)
 
@@ -281,38 +284,20 @@ train_auto = function(self, private, task) {
   )
   lg$info("Initial design size: %i", nrow(initial_designs))
 
-  if (use_subspaces) {
-    # the instance moves the internal-tuning parameters into its internal search space,
-    # so the subspaces must partition the search space of the instance and not the combined one
-    subspaces = partition_search_space(
-      self$instance$search_space,
-      param = "branch.selection",
-      groups = list(cpu = cpu_ids, gpu = gpu_ids)
-    )
-    split_design = function(ids) {
-      if (nrow(initial_designs)) initial_designs[branch.selection %in% ids] else initial_designs
-    }
-    # the cpu and the gpu subspace each run on their own mirai compute profile
-    subspace_profiles = c(cpu = "mlr3automl_cpu", gpu = "mlr3automl_gpu")
-    tuner$param_set$set_values(
-      subspaces = subspaces,
-      subspace_profiles = subspace_profiles,
-      initial_design_subspace = list(cpu = split_design(cpu_ids), gpu = split_design(gpu_ids))
-    )
-    subspace_ids = c("cpu", "gpu")
-    lg$info(
-      "Optimizing %s",
-      str_collapse(sprintf(
-        "subspace '%s' (%s) with %i worker(s) on compute profile '%s'",
-        subspace_ids,
-        c(str_collapse(cpu_ids), str_collapse(gpu_ids)),
-        profiles[subspace_profiles[subspace_ids]],
-        subspace_profiles[subspace_ids]
-      ))
-    )
-  } else {
-    tuner$param_set$set_values(initial_design = initial_designs)
-  }
+  # one subspace per learner.
+  # the instance moves the internal-tuning parameters into its internal search space,
+  # so the subspaces must partition the search space of the instance and not the combined one
+  subspaces = partition_search_space(self$instance$search_space, param = "branch.selection")
+  # every subspace receives the points of its learner, which is an empty design for a learner without points
+  subspace_ids = set_names(names(subspaces), names(subspaces))
+  initial_design_subspace = map(subspace_ids, function(learner_id) {
+    if (nrow(initial_designs)) initial_designs[branch.selection == learner_id] else initial_designs
+  })
+  tuner$param_set$set_values(
+    subspaces = subspaces,
+    subspace_profiles = assignment$subspace_profiles,
+    initial_design_subspace = initial_design_subspace
+  )
 
   # configure tuner
   tuner$surrogate = default_surrogate(self$instance)

@@ -112,7 +112,14 @@ Default is "cpu".}
   Create the graph for the auto.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
-    \preformatted{AutoTabPFN$graph(task, measure, n_threads, timeout, devices)}
+    \preformatted{AutoTabPFN$graph(
+  task,
+  measure,
+  n_threads,
+  timeout,
+  devices,
+  isolate_python = TRUE
+)}
     \if{html}{\out{</div>}}
   }
   \subsection{Arguments}{

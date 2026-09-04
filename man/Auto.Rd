@@ -150,7 +150,8 @@ It is divided among the child models.
   timeout,
   devices,
   folds,
-  repeats = 1L
+  repeats = 1L,
+  isolate_python = TRUE
 )}
     \if{html}{\out{</div>}}
   }
@@ -169,6 +170,8 @@ Default is "cpu".}
 Number of cross-validation folds.}
       \item{\code{repeats}}{(\code{integer(1)})\cr
 Number of repetitions of the cross-validation.}
+      \item{\code{isolate_python}}{(\code{logical(1)})\cr
+Forwarded to \verb{$graph()} for autos whose \code{graph()} accepts it, otherwise ignored.}
     }
     \if{html}{\out{</div>}}
   }
