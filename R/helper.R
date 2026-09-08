@@ -229,6 +229,19 @@ generate_initial_design = function(method, search_space, size) {
   )
 }
 
+# `design` without the duplicated configurations of `subspace`.
+# a learner whose hyperparameters are all categorical, logical, or bounded integer has finitely many configurations,
+# and the design is drawn on the search space of all learners, so such a learner receives many more points than it
+# has configurations. the tuner evaluates the supplied design as it is, so the duplicates are dropped here.
+# hyperparameters of other learners can never be active for this learner and are therefore not compared.
+unique_design_subspace = function(subspace, design) {
+  ids = intersect(subspace$ids(), names(design))
+  if (!nrow(design) || !length(ids) || !all(is.finite(subspace$nlevels))) {
+    return(design)
+  }
+  unique(design, by = ids)
+}
+
 # assigns every learner to the mirai compute profile whose workers evaluate it.
 # without compute profiles, all learners run on the default profile of mirai with `n_workers` workers.
 # with a single compute profile, all learners run on that profile.

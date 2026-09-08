@@ -282,17 +282,20 @@ train_auto = function(self, private, task) {
     use.names = TRUE,
     fill = TRUE
   )
-  lg$info("Initial design size: %i", nrow(initial_designs))
 
   # one subspace per learner.
   # the instance moves the internal-tuning parameters into its internal search space,
   # so the subspaces must partition the search space of the instance and not the combined one
   subspaces = partition_search_space(self$instance$search_space, param = "branch.selection")
-  # every subspace receives the points of its learner, which is an empty design for a learner without points
+  # every subspace receives the points of its learner, which is an empty design for a learner without points.
+  # the tuner evaluates the design as it is, so a learner with finitely many configurations is deduplicated
   subspace_ids = set_names(names(subspaces), names(subspaces))
   initial_design_subspace = map(subspace_ids, function(learner_id) {
-    if (nrow(initial_designs)) initial_designs[branch.selection == learner_id] else initial_designs
+    design = if (nrow(initial_designs)) initial_designs[branch.selection == learner_id] else initial_designs
+    unique_design_subspace(subspaces[[learner_id]], design)
   })
+  lg$info("Initial design size: %i", sum(map_int(initial_design_subspace, nrow)))
+
   tuner$param_set$set_values(
     subspaces = subspaces,
     subspace_profiles = assignment$subspace_profiles,

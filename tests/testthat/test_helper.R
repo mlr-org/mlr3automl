@@ -128,3 +128,24 @@ test_that("cb_timeout_lightgbm resets the clock on each training", {
   expect_message(callback(env), "Timeout reached")
   expect_true(env$met_early_stop)
 })
+
+test_that("unique_design_subspace drops duplicated configurations of finite subspaces", {
+  search_space = ps(
+    branch.selection = p_fct(c("a", "b")),
+    a.x = p_dbl(0, 1, depends = branch.selection == "a"),
+    b.i = p_int(1, 4, depends = branch.selection == "b"),
+    b.l = p_lgl(depends = branch.selection == "b")
+  )
+  subspaces = partition_search_space(search_space, param = "branch.selection")
+  design = generate_initial_design("sobol", search_space, 64L)
+
+  # the subspace of 'b' has only eight configurations
+  deduplicated = unique_design_subspace(subspaces$b, design[branch.selection == "b"])
+  expect_data_table(deduplicated, nrows = 8L)
+  expect_equal(uniqueN(deduplicated, by = c("branch.selection", "b.i", "b.l")), 8L)
+
+  # a subspace with numeric parameters keeps its design
+  design_a = design[branch.selection == "a"]
+  expect_equal(unique_design_subspace(subspaces$a, design_a), design_a)
+  expect_data_table(unique_design_subspace(subspaces$b, design_a[0L]), nrows = 0L)
+})
