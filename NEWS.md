@@ -1,5 +1,6 @@
 # mlr3automl (development version)
 
+* fix: The fastai learner now requires the Python `torch` package below version 2.14. Version 2.14 attaches logging handlers whose `stream` is a read-only property, which `reticulate::py_capture_output()` cannot redirect, so training failed with "property 'stream' of '_StderrHandler' object has no setter". `install_python_learners()` installs a compatible version when `"fastai"` is among the `learners`.
 * fix: The default configuration of the tabpfn learner in the initial design now matches TabPFN-3. The number of estimators changed from 4 to 8 and the softmax temperature from 1.0 to 0.9, which were the defaults of TabPFN-2.
 * fix: The tabpfn learner now sets `auto_scale_n_estimators = FALSE`. TabPFN-3 otherwise raises the number of estimators on its own when the task has more features than a single ensemble member sees, which overrides the tuned value. This requires `mlr3extralearners` 1.6.0.9000 or later, which is now the minimum version.
 * fix: Tuning on subspaces no longer fails when a learner has internally tuned parameters, e.g. `xgboost.nrounds` or `ft_transformer.epochs`. The subspaces are now derived from the search space of the tuning instance, which no longer holds the internally tuned parameters.
@@ -11,6 +12,7 @@
 * feat: New learner id `"tabfm"` adds the TabFM tabular foundation model from `mlr3extralearners` to the search space, along with the new auto learners `classif.auto_tabfm` and `regr.auto_tabfm`. It runs via `reticulate` and is registered for `"cuda"` only, because it predicts in context and runs the backbone over the training rows once per estimator, which is too slow to be useful on the CPU. Construct `AutoTabFM$new(devices = c("cpu", "cuda"))` and re-register it in `mlr_auto` to run it on the CPU anyway.
 * feat: The auto learners gained the `n_cpu` and `n_gpu` parameters that override the per-learner resource requirements. When the requirements are mixed, `"cuda"` is part of `devices`, and the workers are distributed over the `mirai` compute profiles `"mlr3automl_cpu"` and `"mlr3automl_gpu"` with `rush::rush_plan(profiles = c(mlr3automl_cpu = 7, mlr3automl_gpu = 1))`, the search space is partitioned into a cpu and a gpu subspace and tuned with `mlr3mbo::TunerADBOSubspaces`. The workers of a profile only evaluate points of the subspace of that profile.
 * BREAKING CHANGE: With `devices = c("cpu", "cuda")`, the boosting learners (xgboost, lightgbm, and catboost) now train on the CPU by default because their default `n_gpu` requirement is 0. Set e.g. `n_gpu = c(xgboost = 1)` to train them on the GPU again.
+
 # mlr3automl 0.1.0
 
 * Initial CRAN release.

@@ -42,9 +42,15 @@ install_python_learners = function(
   assert_string(python_version)
   require_namespaces("reticulate")
 
-  # torch is shared by both learners
-  packages = "torch"
-  if ("fastai" %in% learners) {
+  fastai = "fastai" %in% learners
+
+  # torch is shared by all learners.
+  # fastai pins it below 2.14 because that version attaches logging handlers whose `stream` is a
+  # read-only property, which `reticulate::py_capture_output()` cannot redirect. the fastai learner
+  # trains inside such a capture and otherwise fails with
+  # "property 'stream' of '_StderrHandler' object has no setter".
+  packages = if (fastai) "torch<2.14" else "torch"
+  if (fastai) {
     packages = c(
       packages,
       "torchvision",

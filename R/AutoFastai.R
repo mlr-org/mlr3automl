@@ -154,8 +154,13 @@ AutoFastai = R6Class(
 
 mlr_auto$add("fastai", function() AutoFastai$new())
 
-# fastai (<= 2.8.7) is incompatible with fastcore 2.0 but does not declare an upper bound
-fastai_python_packages = c("IPython", "torch", "torchvision", "fastai", "fastcore<2.0.0", "pydicom", "kornia")
+# fastai (<= 2.8.7) is incompatible with fastcore 2.0 but does not declare an upper bound.
+# torch >= 2.14 attaches logging handlers whose `stream` is a read-only property, which
+# `reticulate::py_capture_output()` cannot redirect. the fastai learner trains inside such a capture
+# and otherwise fails with "property 'stream' of '_StderrHandler' object has no setter".
+fastai_python_packages = c(
+  "IPython", "torch<2.14", "torchvision", "fastai", "fastcore<2.0.0", "pydicom", "kornia"
+)
 
 # the fastai learner imports python torch via reticulate.
 # this subclass keeps python strictly inside the isolated callr sessions
