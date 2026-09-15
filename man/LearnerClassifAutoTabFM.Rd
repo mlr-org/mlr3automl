@@ -10,8 +10,10 @@ Object of class \link[R6:R6Class]{R6::R6Class} and \code{LearnerClassifAutoTabFM
 Classification auto learner.
 }
 \examples{
-learner = lrn("classif.auto_tabfm")
-learner
+if (mlr3misc::require_namespaces(c("mlr3extralearners", "callr"), quietly = TRUE)) {
+  learner = lrn("classif.auto_tabfm")
+  learner
+}
 }
 \section{Super classes}{
 \code{\link[mlr3:Learner]{mlr3::Learner}} -> \code{\link[mlr3automl:LearnerAuto]{LearnerAuto}} -> \code{\link[mlr3automl:LearnerClassifAuto]{LearnerClassifAuto}} -> \code{LearnerClassifAutoTabFM}

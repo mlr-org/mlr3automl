@@ -9,6 +9,7 @@
 #' @return Object of class [R6::R6Class] and `LearnerRegrAutoSVM`.
 #'
 #' @templateVar id regr.auto_svm
+#' @templateVar packages "e1071"
 #' @template example_learner
 #'
 #' @export

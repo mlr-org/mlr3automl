@@ -12,6 +12,15 @@ A subclass of \link[mlr3extralearners:LearnerClassifFastai]{mlr3extralearners::L
 \section{Super classes}{
 \code{\link[mlr3:Learner]{mlr3::Learner}} -> \code{\link[mlr3:LearnerClassif]{mlr3::LearnerClassif}} -> \code{\link[mlr3extralearners:LearnerClassifFastai]{mlr3extralearners::LearnerClassifFastai}} -> \code{LearnerClassifFastaiIsolated}
 }
+\section{Public fields}{
+  \if{html}{\out{<div class="r6-fields">}}
+  \describe{
+    \item{\code{isolate_python}}{(\code{logical(1)})\cr
+Whether to run \code{.train()} and \code{.predict()} in a fresh callr session. Set by
+\link{AutoFastai}\verb{$graph()}; only \code{FALSE} when the run's learners never load mlr3torch.}
+  }
+  \if{html}{\out{</div>}}
+}
 \section{Methods}{
 \subsection{Public methods}{
   \itemize{

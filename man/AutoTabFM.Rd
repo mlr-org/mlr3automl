@@ -120,7 +120,14 @@ Default is "cpu".}
   Create the graph for the auto.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
-    \preformatted{AutoTabFM$graph(task, measure, n_threads, timeout, devices)}
+    \preformatted{AutoTabFM$graph(
+  task,
+  measure,
+  n_threads,
+  timeout,
+  devices,
+  isolate_python = TRUE
+)}
     \if{html}{\out{</div>}}
   }
   \subsection{Arguments}{
@@ -134,6 +141,11 @@ Default is "cpu".}
 Devices to use.
 Allowed values are \code{"cpu"} and \code{"cuda"}.
 Default is "cpu".}
+      \item{\code{isolate_python}}{(\code{logical(1)})\cr
+Whether to train and predict the learner in a fresh \code{callr} session.
+Isolation is required when \code{mlr3torch} is loaded in the same process,
+because the bundled libtorch versions of the R and Python torch packages are incompatible.
+Default is \code{TRUE}.}
     }
     \if{html}{\out{</div>}}
   }

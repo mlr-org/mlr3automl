@@ -1,3 +1,5 @@
 #' @examples
-#' learner = lrn("<%= id %>")
-#' learner
+#' if (mlr3misc::require_namespaces(<%= packages %>, quietly = TRUE)) {
+#'   learner = lrn("<%= id %>")
+#'   learner
+#' }

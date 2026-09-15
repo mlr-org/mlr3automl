@@ -8,7 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Flexible automated machine learning (AutoML) system for the 'mlr3' ecosystem. Automatically selects a suitable machine learning algorithm and tunes its hyperparameters for a given task. Constructs preprocessing pipelines with multiple parallel branches using 'mlr3pipelines' and jointly optimizes them together with the learners using 'mlr3tuning'. The optimization is driven by asynchronous decentralized Bayesian optimization.
+Flexible automated machine learning (AutoML) system for the 'mlr3' ecosystem. Automatically selects a suitable machine learning algorithm and tunes its hyperparameters for a given task. Constructs preprocessing pipelines with multiple parallel branches using 'mlr3pipelines' and jointly optimizes them together with the learners using 'mlr3tuning'. The optimization is driven by asynchronous decentralized Bayesian optimization by Egele et al. (2023) \doi{10.1109/e-Science58273.2023.10254839}.
 }
 \seealso{
 Useful links:

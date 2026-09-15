@@ -9,6 +9,7 @@
 #' @return Object of class [R6::R6Class] and `LearnerRegrAutoGlmnet`.
 #'
 #' @templateVar id regr.auto_glmnet
+#' @templateVar packages "glmnet"
 #' @template example_learner
 #'
 #' @export
