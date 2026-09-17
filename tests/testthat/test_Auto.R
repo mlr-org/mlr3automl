@@ -222,3 +222,52 @@ test_that("n_cpu and n_gpu learner params validate the overrides", {
   learner$param_set$set_values(n_cpu = c(xgboost = 2L), n_gpu = c(xgboost = 1L))
   expect_equal(learner$param_set$values$n_gpu, c(xgboost = 1L))
 })
+
+test_that("graph_bagged wraps the graph and divides the timeout among the children", {
+  skip_if_not_all_installed(c("mlr3learners", "xgboost"))
+
+  task = tsk("penguins")
+  auto = mlr_auto$get("xgboost")
+  pop = auto$graph_bagged(task, msr("classif.ce"), n_threads = 1L, timeout = 800L, devices = "cpu", folds = 8L)
+
+  expect_class(pop, "PipeOpLearnerBagged")
+  expect_equal(pop$id, auto$id)
+  expect_equal(pop$param_set$values$bagging.folds, 8L)
+
+  # the child timeout is a share of the configuration timeout, not the full one
+  callback = pop$learner$param_set$values$xgboost.callbacks[[1L]]
+  expect_equal(environment(callback$f_after_iter)$timeout, (800L %/% 8L) * 0.9)
+
+  expect_error(auto$graph_bagged(task, msr("classif.ce"), 1L, 800L, "cpu", folds = 1L), "folds")
+})
+
+test_that("graph_bagged divides the timeout among the children of the repeated cross-validation", {
+  skip_if_not_all_installed(c("mlr3learners", "xgboost"))
+
+  task = tsk("penguins")
+  auto = mlr_auto$get("xgboost")
+  pop = auto$graph_bagged(task, msr("classif.ce"), 1L, 800L, "cpu", folds = 5L, repeats = 5L)
+
+  expect_equal(pop$param_set$values$bagging.folds, 5L)
+  expect_equal(pop$param_set$values$bagging.repeats, 5L)
+
+  callback = pop$learner$param_set$values$xgboost.callbacks[[1L]]
+  expect_equal(environment(callback$f_after_iter)$timeout, (800L %/% 25L) * 0.9)
+
+  expect_error(auto$graph_bagged(task, msr("classif.ce"), 1L, 800L, "cpu", folds = 5L, repeats = 0L), "repeats")
+})
+
+test_that("graph_bagged passes the internal search space of the auto", {
+  skip_if_not_all_installed(c("mlr3learners", "xgboost"))
+
+  task = tsk("penguins")
+  measure = msr("classif.ce")
+
+  xgboost = mlr_auto$get("xgboost")$graph_bagged(task, measure, 1L, 800L, "cpu", folds = 3L)
+  expect_equal(get_private(xgboost)$.internal_search_space$ids(), "xgboost.nrounds")
+
+  # an auto without internally tuned parameters passes no internal search space
+  skip_if_not_installed("ranger")
+  ranger = mlr_auto$get("ranger")$graph_bagged(task, measure, 1L, 800L, "cpu", folds = 3L)
+  expect_null(get_private(ranger)$.internal_search_space)
+})

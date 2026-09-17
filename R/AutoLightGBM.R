@@ -62,13 +62,16 @@ AutoLightGBM = R6Class(
       set_threads(learner, n_threads)
 
       # lightgbm handles NAs and factors natively but not character or ordered factors;
-      # convert both to unordered factors so these features are accepted
+      # convert both to unordered factors so these features are accepted.
+      # the conversion derives the levels from the observed values,
+      # so fixfactors keeps the levels consistent between training and prediction
       po(
         "colapply",
         id = "lightgbm_colapply",
         applicator = function(x) factor(x, ordered = FALSE),
         affect_columns = selector_type(c("character", "ordered"))
       ) %>>%
+        po("fixfactors", id = "lightgbm_fixfactors") %>>%
         learner
     },
 
