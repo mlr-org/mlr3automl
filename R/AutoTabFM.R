@@ -40,7 +40,7 @@ AutoTabFM = R6Class(
     initialize = function(id = "tabfm", devices = "cuda") {
       super$initialize(
         id = id,
-        properties = character(0),
+        properties = "bagging_refit",
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3extralearners", "callr"),
         devices = assert_subset(devices, c("cpu", "cuda"), empty.ok = FALSE),
