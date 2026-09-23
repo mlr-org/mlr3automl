@@ -9,6 +9,7 @@
 #' @return Object of class [R6::R6Class] and `LearnerClassifAutoSVM`.
 #'
 #' @templateVar id classif.auto_svm
+#' @templateVar packages "e1071"
 #' @template example_learner
 #'
 #' @export

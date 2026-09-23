@@ -9,6 +9,7 @@
 #' @return Object of class [R6::R6Class] and `LearnerClassifAutoResNet`.
 #'
 #' @templateVar id classif.auto_resnet
+#' @templateVar packages "mlr3torch"
 #' @template example_learner
 #'
 #' @export

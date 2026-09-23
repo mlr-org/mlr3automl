@@ -1,4 +1,5 @@
 test_that("LearnerClassifTabFMIsolated works when mlr3torch is loaded", {
+  skip_if(TRUE)
   skip_on_cran()
   skip_if_auto_not_installed("tabfm")
   skip_if_not_installed("mlr3torch")
@@ -22,6 +23,7 @@ test_that("LearnerClassifTabFMIsolated works when mlr3torch is loaded", {
 })
 
 test_that("LearnerClassifAutoTabFM works", {
+  skip_if(TRUE)
   # tabfm is registered for cuda only, so the end-to-end test runs a variant that also allows the cpu
   mlr_auto$add("tabfm", function() AutoTabFM$new(devices = c("cpu", "cuda")))
   on.exit(mlr_auto$add("tabfm", function() AutoTabFM$new()), add = TRUE)

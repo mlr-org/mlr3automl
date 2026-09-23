@@ -9,6 +9,7 @@
 #' @return Object of class [R6::R6Class] and `LearnerClassifAutoFTTransformer`.
 #'
 #' @templateVar id classif.auto_ft_transformer
+#' @templateVar packages "mlr3torch"
 #' @template example_learner
 #'
 #' @export

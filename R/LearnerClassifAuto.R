@@ -14,8 +14,15 @@
 #'
 #' @return Object of class [R6::R6Class] and `LearnerClassifAuto`.
 #'
-#' @templateVar id classif.auto
-#' @template example_learner
+#' @examples
+#' packages = c(
+#'   "mlr3extralearners", "catboost", "ranger", "callr", "mlr3torch",
+#'   "glmnet", "kknn", "MASS", "lightgbm", "e1071", "xgboost"
+#' )
+#' if (mlr3misc::require_namespaces(packages, quietly = TRUE)) {
+#'   learner = lrn("classif.auto")
+#'   learner
+#' }
 #'
 #' @export
 #' @include LearnerAuto.R

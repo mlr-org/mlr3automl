@@ -10,8 +10,10 @@ Object of class \link[R6:R6Class]{R6::R6Class} and \code{LearnerRegrAutoXgboost}
 Regression auto learner.
 }
 \examples{
-learner = lrn("regr.auto_xgboost")
-learner
+if (mlr3misc::require_namespaces("xgboost", quietly = TRUE)) {
+  learner = lrn("regr.auto_xgboost")
+  learner
+}
 }
 \section{Super classes}{
 \code{\link[mlr3:Learner]{mlr3::Learner}} -> \code{\link[mlr3automl:LearnerAuto]{LearnerAuto}} -> \code{\link[mlr3automl:LearnerRegrAuto]{LearnerRegrAuto}} -> \code{LearnerRegrAutoXgboost}

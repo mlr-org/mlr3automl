@@ -9,6 +9,7 @@
 #' @return Object of class [R6::R6Class] and `LearnerClassifAutoTabPFN`.
 #'
 #' @templateVar id classif.auto_tabpfn
+#' @templateVar packages c("mlr3extralearners", "callr")
 #' @template example_learner
 #'
 #' @export

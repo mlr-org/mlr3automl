@@ -10,8 +10,10 @@ Object of class \link[R6:R6Class]{R6::R6Class} and \code{LearnerClassifAutoResNe
 Classification auto learner.
 }
 \examples{
-learner = lrn("classif.auto_resnet")
-learner
+if (mlr3misc::require_namespaces("mlr3torch", quietly = TRUE)) {
+  learner = lrn("classif.auto_resnet")
+  learner
+}
 }
 \section{Super classes}{
 \code{\link[mlr3:Learner]{mlr3::Learner}} -> \code{\link[mlr3automl:LearnerAuto]{LearnerAuto}} -> \code{\link[mlr3automl:LearnerClassifAuto]{LearnerClassifAuto}} -> \code{LearnerClassifAutoResNet}

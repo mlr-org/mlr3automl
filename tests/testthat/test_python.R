@@ -1,4 +1,5 @@
 test_that("check_python_packages works", {
+  skip_on_cran()
   skip_if_not_installed("reticulate")
 
   res = check_python_packages(c("package_1", "package_2"))
@@ -15,7 +16,16 @@ test_that("check_python_packages strips extras from the module names", {
   expect_true(res)
 })
 
+test_that("check_python_packages strips version bounds from the module names", {
+  skip_on_cran()
+  skip_if_not_installed("reticulate")
+
+  res = check_python_packages("torch<2.14")
+  expect_true(res)
+})
+
 test_that("check_python_packages caches results per session", {
+  skip_on_cran()
   skip_if_not_installed("reticulate")
 
   key = calculate_hash(c("package_1", "package_2"), NULL)

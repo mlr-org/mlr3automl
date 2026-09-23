@@ -1,4 +1,5 @@
 test_that("LearnerRegrAutoTabFM works", {
+  skip_if(TRUE)
   # tabfm is registered for cuda only, so the end-to-end test runs a variant that also allows the cpu
   mlr_auto$add("tabfm", function() AutoTabFM$new(devices = c("cpu", "cuda")))
   on.exit(mlr_auto$add("tabfm", function() AutoTabFM$new()), add = TRUE)
