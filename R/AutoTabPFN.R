@@ -107,7 +107,7 @@ AutoTabPFN = R6Class(
 
       set_threads(learner, n_threads)
 
-      po("fixfactors", id = "tabpfn_fixfactors") %>>%
+      PipeOpFixFactorsStable$new(id = "tabpfn_fixfactors") %>>%
         po("removeconstants", id = "tabpfn_post_removeconstants") %>>%
         learner
     },

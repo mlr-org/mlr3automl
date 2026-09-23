@@ -99,7 +99,7 @@ AutoFTTransformer = R6Class(
         affect_columns = selector_type("character")) %>>%
         po("removeconstants", id = "ft_transformer_removeconstants") %>>%
         po("imputeoor", id = "ft_transformer_imputeoor") %>>%
-        po("fixfactors", id = "ft_transformer_fixfactors") %>>%
+        PipeOpFixFactorsStable$new(id = "ft_transformer_fixfactors") %>>%
         po(
           "imputesample",
           affect_columns = selector_type(c("factor", "ordered")),

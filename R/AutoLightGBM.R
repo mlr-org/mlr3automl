@@ -71,7 +71,7 @@ AutoLightGBM = R6Class(
         applicator = function(x) factor(x, ordered = FALSE),
         affect_columns = selector_type(c("character", "ordered"))
       ) %>>%
-        po("fixfactors", id = "lightgbm_fixfactors") %>>%
+        PipeOpFixFactorsStable$new(id = "lightgbm_fixfactors") %>>%
         learner
     },
 

@@ -65,7 +65,7 @@ AutoExtraTrees = R6Class(
 
       po("removeconstants", id = "extra_trees_removeconstants") %>>%
         po("imputeoor", id = "extra_trees_imputeoor") %>>%
-        po("fixfactors", id = "extra_trees_fixfactors") %>>%
+        PipeOpFixFactorsStable$new(id = "extra_trees_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "extra_trees_imputesample") %>>%
         po("collapsefactors", target_level_count = 40, id = "extra_trees_collapse") %>>%
         po("removeconstants", id = "extra_trees_post_removeconstants") %>>%

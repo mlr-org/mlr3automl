@@ -81,7 +81,7 @@ AutoCatboost = R6Class(
           applicator = as.numeric,
           affect_columns = selector_type("integer")
         ) %>>%
-        po("fixfactors", id = "catboost_fixfactors") %>>%
+        PipeOpFixFactorsStable$new(id = "catboost_fixfactors") %>>%
         po("removeconstants", id = "catboost_post_removeconstants") %>>%
         learner
     },

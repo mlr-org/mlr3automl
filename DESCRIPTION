@@ -112,6 +112,7 @@ Collate:
     'LearnerRegrAutoTabFM.R'
     'LearnerRegrAutoTabPFN.R'
     'LearnerRegrAutoXgboost.R'
+    'PipeOpFixFactorsStable.R'
     'PipeOpLearnerBagged.R'
     'helper.R'
     'install_python_learners.R'

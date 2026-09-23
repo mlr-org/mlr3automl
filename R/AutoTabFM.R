@@ -100,7 +100,7 @@ AutoTabFM = R6Class(
       # pipeline, so the graph only has to keep the factor levels stable across train and predict
       po("colapply", id = "tabfm_character", applicator = as.factor, affect_columns = selector_type("character")) %>>%
         po("removeconstants", id = "tabfm_removeconstants") %>>%
-        po("fixfactors", id = "tabfm_fixfactors") %>>%
+        PipeOpFixFactorsStable$new(id = "tabfm_fixfactors") %>>%
         learner
     },
 
