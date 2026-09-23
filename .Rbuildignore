@@ -1,3 +1,7 @@
+^AGENTS\.d$
+^\.clang-format$
+^\.codex$
+^references\.bib$
 ^renv$
 ^renv\.lock$
 ^.*\.Rproj$
@@ -13,7 +17,6 @@
 ^\.Renviron$
 ^\.Rprofile$
 ^\.Rproj\.user$
-^\.agents$
 ^\.ccache$
 ^\.clangd$
 ^\.claude$
@@ -35,7 +38,6 @@
 ^cran-comments\.md$
 ^cspell\.json$
 ^docs$
-^extra-rules$
 ^inst/extdata/.+\.R$
 ^local_attic$
 ^man-roxygen$
@@ -45,3 +47,4 @@
 ^pkgdown$
 ^revdep$
 ^tests/testthat/_object_snapshots$
+^tools$
