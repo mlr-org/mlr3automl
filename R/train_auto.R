@@ -66,7 +66,11 @@ train_auto = function(self, private, task) {
   learner_memory_limit = function(auto) if (uses_gpu(auto)) memory_limit_gpu else memory_limit
 
   # resampling
-  resampling = if (task$nrow < pv$small_data_size) {
+  # with bagging, a configuration is validated by the out-of-fold predictions of its children,
+  # so the outer resampling trains on the complete data
+  resampling = if (pv$bagging) {
+    rsmp("insample")
+  } else if (task$nrow < pv$small_data_size) {
     lg$info(
       "Small data set detected. Using small data set resampling with %i iterations",
       pv$small_data_resampling$iters
@@ -97,36 +101,52 @@ train_auto = function(self, private, task) {
   }
 
   # initialize mbo tuner
-  # mixed gpu requirements are optimized on a cpu and a gpu subspace, each running on its own compute profile
+  # every learner is a subspace of the tuner and runs on the mirai compute profile of its hardware requirements.
+  # the tuner samples the learner to work on via thompson sampling among the learners of the profile of a worker
+  worker_type = rush_config()$worker_type %??% "mirai"
+  if (worker_type != "mirai" && !getOption("bbotk.debug", FALSE)) {
+    error_config(
+      # nolint next: line_length_linter
+      "The tuner distributes the workers over mirai compute profiles, which requires the worker type 'mirai' but not '%s'.",
+      worker_type
+    )
+  }
+
   gpu_ids = names(keep(autos, uses_gpu))
   cpu_ids = setdiff(names(autos), gpu_ids)
-  mixed_devices = length(gpu_ids) > 0L && length(cpu_ids) > 0L
-  # the workers are divided among the subspaces by the compute profiles, so every subspace needs its own profile
-  use_subspaces = mixed_devices && setequal(names(profiles), c("mlr3automl_cpu", "mlr3automl_gpu"))
-
-  if (mixed_devices && !use_subspaces) {
-    if (is.null(profiles)) {
-      lg$info("No mirai compute profiles are set up. Optimizing cpu and gpu learners in a single search space")
-    } else {
-      lg$info(
-        # nolint next: line_length_linter
-        "Compute profiles %s do not match the profiles 'mlr3automl_cpu' and 'mlr3automl_gpu' of the cpu and gpu subspace. Optimizing cpu and gpu learners in a single search space",
-        str_collapse(names(profiles), quote = "'")
-      )
-    }
+  assignment = assign_learner_profiles(profiles, n_workers = n_workers, cpu_ids = cpu_ids, gpu_ids = gpu_ids)
+  iwalk(split(names(assignment$subspace_profiles), assignment$subspace_profiles), function(ids, profile) {
+    lg$info(
+      "Compute profile '%s' runs %i worker(s) for learner(s) %s",
+      profile,
+      assignment$profiles[[profile]],
+      str_collapse(ids, quote = "'")
+    )
+  })
+  idle_profiles = setdiff(names(profiles), names(assignment$profiles))
+  if (length(idle_profiles)) {
+    lg$info("Compute profile(s) %s run no learner and stay idle", str_collapse(idle_profiles, quote = "'"))
   }
 
-  tuner = if (use_subspaces) tnr("adbo_subspaces") else tnr("async_mbo")
-  if (large_data_set) {
-    # the reduced number of workers is passed to the tuner because the rush plan still holds the original number
-    if (!is.null(profiles)) {
-      tuner$param_set$set_values(profiles = profiles)
-    } else {
-      tuner$param_set$set_values(n_workers = n_workers)
-    }
-  }
+  tuner = tnr("adbo_thompson")
+  # the profiles are passed to the tuner because the rush plan holds neither the default profile
+  # nor the reduced number of workers of a large data set
+  tuner$param_set$set_values(profiles = assignment$profiles)
 
   isolate_python = needs_python_isolation(autos)
+
+  # small data sets are bagged with a repeated cross-validation to reduce the variance of the out-of-fold score
+  small_data_set = task$nrow < pv$bagging_small_size
+  bagging_folds = if (small_data_set) pv$bagging_small_folds else pv$bagging_folds
+  bagging_repeats = if (small_data_set) pv$bagging_small_repeats else 1L
+
+  if (pv$bagging && small_data_set) {
+    lg$info(
+      "Small data set detected. Bagging with a %i times repeated %i-fold cross-validation",
+      bagging_repeats,
+      bagging_folds
+    )
+  }
 
   branches = map(autos, function(auto) {
     args = list(
@@ -136,10 +156,18 @@ train_auto = function(self, private, task) {
       timeout = pv$learner_timeout,
       devices = learner_devices(auto)
     )
-    if ("isolate_python" %in% names(formals(auto$graph))) {
+    graph_fun = if (pv$bagging) {
+      # the bagged graph divides `learner_timeout` among the child models itself
+      args$folds = bagging_folds
+      args$repeats = bagging_repeats
+      auto$graph_bagged
+    } else {
+      auto$graph
+    }
+    if ("isolate_python" %in% names(formals(graph_fun))) {
       args$isolate_python = isolate_python
     }
-    do.call(auto$graph, args)
+    do.call(graph_fun, args)
   })
   graph_learner = as_learner(
     po("branch", options = names(branches)) %>>%
@@ -166,27 +194,52 @@ train_auto = function(self, private, task) {
     "hyperparameter-free" %in% auto$properties
   })]
 
-  if (length(learners_with_validation)) {
+  if (pv$bagging) {
+    # the validate field must be set for the worker to extract the internal valid scores,
+    # but the bagged pipeops create their validation data internally and discard the incoming validation task.
+    # set_validate() must not be used because it dispatches on the bagged pipeops
+    graph_learner$validate = "test"
+    # the out-of-fold score replaces the prediction-based score, so no predictions are needed during tuning
+    graph_learner$predict_sets = NULL
+  } else if (length(learners_with_validation)) {
     set_validate(graph_learner, "test", ids = learners_with_validation)
   }
 
   # initialize search space
   search_space = combine_search_spaces(autos, task)
 
+  # with bagging, failed configurations produce no internal valid score,
+  # so the missing scores are imputed with a penalized featureless baseline score
+  score_penalty = if (pv$bagging) {
+    featureless = lrn(sprintf("%s.featureless", task$task_type))
+    featureless$predict_type = predict_type
+    baseline = featureless$train(task)$predict(task)$score(pv$measure, task = task)
+    nudge = 0.01 * max(abs(baseline), 1)
+    unname(if (pv$measure$minimize) baseline + nudge else baseline - nudge)
+  }
+
   callbacks = c(
     pv$callbacks,
     clbk("mlr3tuning.async_save_logs"),
     clbk("mlr3automl.initial_design_runtime", initial_design_fraction = pv$initial_design_fraction),
+    if (pv$bagging) clbk("mlr3automl.impute_valid_score", penalty = score_penalty),
     # reuse a persistent mirai daemon per worker for the "mirai" encapsulation of the learners
     if (pv$encapsulate_learner) clbk("mlr3automl.encapsulation_daemon")
   )
+
+  # with bagging, the tuner optimizes the out-of-fold score reported as internal valid score
+  tuning_measure = if (pv$bagging) {
+    msr("internal_valid_score", minimize = pv$measure$minimize)
+  } else {
+    pv$measure
+  }
 
   # tuning instance
   self$instance = ti_async(
     task = task,
     learner = graph_learner,
     resampling = resampling,
-    measures = pv$measure,
+    measures = tuning_measure,
     terminator = pv$terminator,
     search_space = search_space,
     callbacks = callbacks,
@@ -229,48 +282,26 @@ train_auto = function(self, private, task) {
     use.names = TRUE,
     fill = TRUE
   )
-  lg$info("Initial design size: %i", nrow(initial_designs))
 
-  if (use_subspaces) {
-    # the instance moves the internal-tuning parameters into its internal search space,
-    # so the subspaces must partition the search space of the instance and not the combined one
-    subspaces = partition_search_space(
-      self$instance$search_space,
-      param = "branch.selection",
-      groups = list(cpu = cpu_ids, gpu = gpu_ids)
-    )
-    split_design = function(ids) {
-      if (nrow(initial_designs)) initial_designs[branch.selection %in% ids] else initial_designs
-    }
-    # the cpu and the gpu subspace each run on their own mirai compute profile
-    subspace_profiles = c(cpu = "mlr3automl_cpu", gpu = "mlr3automl_gpu")
-    tuner$param_set$set_values(
-      subspaces = subspaces,
-      subspace_profiles = subspace_profiles,
-      initial_design_subspace = list(cpu = split_design(cpu_ids), gpu = split_design(gpu_ids))
-    )
-    subspace_ids = c("cpu", "gpu")
-    lg$info(
-      "Optimizing %s",
-      str_collapse(sprintf(
-        "subspace '%s' (%s) with %i worker(s) on compute profile '%s'",
-        subspace_ids,
-        c(str_collapse(cpu_ids), str_collapse(gpu_ids)),
-        profiles[subspace_profiles[subspace_ids]],
-        subspace_profiles[subspace_ids]
-      ))
-    )
-  } else {
-    tuner$param_set$set_values(initial_design = initial_designs)
-  }
+  # one subspace per learner.
+  # the instance moves the internal-tuning parameters into its internal search space,
+  # so the subspaces must partition the search space of the instance and not the combined one
+  subspaces = partition_search_space(self$instance$search_space, param = "branch.selection")
+  # every subspace receives the points of its learner, which is an empty design for a learner without points.
+  # the tuner evaluates the design as it is, so a learner with finitely many configurations is deduplicated
+  subspace_ids = set_names(names(subspaces), names(subspaces))
+  initial_design_subspace = map(subspace_ids, function(learner_id) {
+    design = if (nrow(initial_designs)) initial_designs[branch.selection == learner_id] else initial_designs
+    unique_design_subspace(subspaces[[learner_id]], design)
+  })
+  lg$info("Initial design size: %i", sum(map_int(initial_design_subspace, nrow)))
 
-  # configure tuner
-  tuner$surrogate = default_surrogate(self$instance)
-  tuner$surrogate$param_set$set_values(catch_errors = pv$encapsulate_mbo)
-
-  if (!pv$encapsulate_mbo) {
-    tuner$surrogate$learner$encapsulate(method = "none")
-  }
+  tuner$param_set$set_values(
+    subspaces = subspaces,
+    subspace_profiles = assignment$subspace_profiles,
+    initial_design_subspace = initial_design_subspace,
+    catch_errors = pv$encapsulate_mbo
+  )
 
   # tune
   lg$info("Learner '%s' starts tuning phase", self$id)
@@ -279,11 +310,23 @@ train_auto = function(self, private, task) {
   # fit final model
   lg$info("Learner '%s' fits final model", self$id)
 
-  if (length(learners_with_validation)) {
+  if (pv$bagging) {
+    graph_learner$validate = NULL
+    graph_learner$predict_sets = "test"
+  } else if (length(learners_with_validation)) {
     set_validate(graph_learner, NULL, ids = learners_with_validation)
   }
   graph_learner$param_set$set_values(.values = self$instance$result_learner_param_vals, .insert = FALSE)
   walk(autos, function(auto) auto$finalize_model(graph_learner))
+
+  # learners with the `"bagging_refit"` property deploy a single model instead of the ensemble.
+  # the tuned values of the ensemble are already set, so the model only has to be trained on the complete data
+  winner = self$instance$result$branch.selection
+  if (pv$bagging && "bagging_refit" %in% autos[[winner]]$properties) {
+    lg$info("Learner '%s' fits a single final model instead of the bagged ensemble", winner)
+    graph_learner$param_set$set_values(.values = set_names(list(TRUE), sprintf("%s.bagging.refit", winner)))
+  }
+
   # encapsulation set via LearnerAuto$encapsulate() applies to the final model fit only
   final_method = private$.encapsulation_method %??% "none"
   if (final_method == "none") {

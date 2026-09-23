@@ -53,7 +53,7 @@ AutoGlmnet = R6Class(
         po("removeconstants", id = "glmnet_removeconstants") %>>%
         po("imputehist", id = "glmnet_imputehist") %>>%
         po("imputeoor", id = "glmnet_imputeoor") %>>%
-        po("fixfactors", id = "glmnet_fixfactors") %>>%
+        PipeOpFixFactorsStable$new(id = "glmnet_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "glmnet_imputesample") %>>%
         po("collapsefactors", target_level_count = 100, id = "glmnet_collapse") %>>%
         po("encode", method = "one-hot", id = "glmnet_encode") %>>%

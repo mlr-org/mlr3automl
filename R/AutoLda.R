@@ -54,7 +54,7 @@ AutoLda = R6Class(
         po("removeconstants", id = "lda_removeconstants") %>>%
         po("imputehist", id = "lda_imputehist") %>>%
         po("imputeoor", id = "lda_imputeoor") %>>%
-        po("fixfactors", id = "lda_fixfactors") %>>%
+        PipeOpFixFactorsStable$new(id = "lda_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "lda_imputesample") %>>%
         po("collapsefactors", target_level_count = 100, id = "lda_collapse") %>>%
         po("removeconstants", id = "lda_post_removeconstants") %>>%

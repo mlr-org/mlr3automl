@@ -1,7 +1,39 @@
 #' @section Parameters:
 #' \describe{
+#'   \item{bagging}{(`logical(1)`)\cr
+#'   Whether to train each configuration as a bagged ensemble.
+#'   A configuration trains `bagging_folds` child models on a cross-validation of the training data,
+#'   and the test prediction is the equally weighted average of the children.
+#'   Tasks with fewer than `bagging_small_size` rows are instead cross-validated with
+#'   `bagging_small_folds` folds repeated `bagging_small_repeats` times.
+#'   The configuration is scored by its out-of-fold predictions,
+#'   so the tuning archive reports the scores in the `internal_valid_score` column and
+#'   the `resampling` and `small_data_resampling` parameters have no effect.
+#'   The neural network learners (mlp, resnet, ft_transformer, and fastai) and tabpfn instead fit a
+#'   single final model on the complete training data after the cross-validation.
+#'   The final model reuses the exact model of the winning configuration trained during tuning.
+#'   Default is `TRUE`.}
+#'
+#'   \item{bagging_folds}{(`integer(1)`)\cr
+#'   Number of cross-validation folds and therefore child models of a bagged configuration.
+#'   Default is `8`.}
+#'
+#'   \item{bagging_small_folds}{(`integer(1)`)\cr
+#'   Number of cross-validation folds of a bagged configuration on a small data set.
+#'   Default is `5`.}
+#'
+#'   \item{bagging_small_repeats}{(`integer(1)`)\cr
+#'   Number of repetitions of the cross-validation of a bagged configuration on a small data set.
+#'   A bagged configuration therefore trains `bagging_small_folds * bagging_small_repeats` child models.
+#'   Default is `5`.}
+#'
+#'   \item{bagging_small_size}{(`integer(1)`)\cr
+#'   Number of rows up to which a task counts as a small data set for `bagging`.
+#'   Default is `500`.}
+#'
 #'   \item{learner_timeout}{(`integer(1)`)\cr
-#'   Timeout for training and predicting with a single learner.}
+#'   Timeout for training and predicting with a single configuration.
+#'   With `bagging`, each child model receives an equal share of the timeout.}
 #'
 #'   \item{n_threads}{(`integer(1)`)\cr
 #'   Number of threads used for training a single learner.}
@@ -18,12 +50,15 @@
 #'   Can only be 0 or 1 for now.
 #'   The torch learners, TabPFN, TabFM, and fastai default to 1; all other learners default to 0.
 #'   Only effective when `"cuda"` is part of `devices`; otherwise every learner is trained on the CPU.
-#'   When the requirements are mixed and the daemons of the \CRANpkg{mirai} compute profiles
-#'   `"mlr3automl_cpu"` and `"mlr3automl_gpu"` are set up with [rush::rush_plan()], the search space is
-#'   partitioned into a cpu and a gpu subspace which are tuned with [mlr3mbo::TunerADBOSubspaces].
-#'   The workers of a profile only ever propose and evaluate points of the subspace of that profile,
-#'   so the number of workers per subspace is the number of workers of its profile.
-#'   Otherwise the cpu and gpu learners are tuned in a single search space with [mlr3mbo::TunerAsyncMbo].
+#'   Every learner is a subspace of the search space that is tuned with [mlr3mbo::TunerADBOThompson],
+#'   and every subspace runs on a \CRANpkg{mirai} compute profile.
+#'   Without compute profiles or with a single compute profile, all learners run on the same workers.
+#'   When the daemons of the compute profiles `"mlr3automl_cpu"` and `"mlr3automl_gpu"` are set up with
+#'   [rush::rush_plan()], the learners with a `n_gpu` requirement of 1 run on the gpu profile and the remaining
+#'   learners on the cpu profile.
+#'   The workers of a profile only ever propose and evaluate points of the learners of that profile,
+#'   and a profile that runs no learner stays idle.
+#'   Other combinations of compute profiles are not supported.
 #'
 #'   ```
 #'   mirai::daemons(7, .compute = "mlr3automl_cpu")
@@ -57,7 +92,8 @@
 #'   Threshold value for the data set size (rows) from which special rules apply.}
 #'
 #'   \item{small_data_resampling}{([mlr3::Resampling])\cr
-#'   Resampling strategy to use for model training on small data sets.}
+#'   Resampling strategy to use for model training on small data sets.
+#'   Only used when `bagging` is `FALSE`.}
 #'
 #'   \item{initial_design_default}{(`logical(1)`)\cr
 #'   Whether to use the default design of the learner.}
@@ -77,11 +113,12 @@
 #'
 #'   \item{initial_design_fraction}{(`numeric(1)`)\cr
 #'   Fraction of the budget to use for the initial design.
-#'   When the search space is partitioned into a cpu and a gpu subspace, the remaining points of both
-#'   designs are dropped, because every compute profile has its own queue.}
+#'   The remaining points of the designs of all learners are dropped, because every compute profile has its own
+#'   queue.}
 #'
 #'   \item{resampling}{([mlr3::Resampling])\cr
-#'   Resampling strategy used for tuning.}
+#'   Resampling strategy used for tuning.
+#'   Only used when `bagging` is `FALSE`.}
 #'
 #'   \item{terminator}{([bbotk::Terminator])\cr
 #'   Terminator criterion for tuning.}

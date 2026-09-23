@@ -33,7 +33,7 @@ AutoFastai = R6Class(
       # to avoid initializing python in the main session (see isolated_model.R)
       super$initialize(
         id = id,
-        properties = "internal_tuning",
+        properties = c("internal_tuning", "bagging_refit"),
         task_types = "classif",
         packages = c("mlr3", "mlr3extralearners", "callr"),
         devices = c("cpu", "cuda"),
@@ -88,7 +88,7 @@ AutoFastai = R6Class(
       po("colapply", id = "fastai_character", applicator = as.factor, affect_columns = selector_type("character")) %>>%
         po("removeconstants", id = "fastai_removeconstants") %>>%
         po("imputeoor", id = "fastai_imputeoor") %>>%
-        po("fixfactors", id = "fastai_fixfactors") %>>%
+        PipeOpFixFactorsStable$new(id = "fastai_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "fastai_imputesample") %>>%
         po("encodeimpact", id = "fastai_encode") %>>%
         po("removeconstants", id = "fastai_post_removeconstants") %>>%

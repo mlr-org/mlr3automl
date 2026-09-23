@@ -97,6 +97,9 @@ reference:
       - AutoTabFM
       - AutoTabPFN
       - AutoXgboost
+  - title: PipeOps
+    contents:
+      - PipeOpLearnerBagged
   - title: Sugar Functions
     contents:
       - auto
@@ -106,6 +109,7 @@ reference:
   - title: Callbacks
     contents:
       - mlr3automl.encapsulation_daemon
+      - mlr3automl.impute_valid_score
       - mlr3automl.initial_design_runtime
   - title: Installation
     contents:

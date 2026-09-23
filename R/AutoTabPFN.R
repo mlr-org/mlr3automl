@@ -31,7 +31,7 @@ AutoTabPFN = R6Class(
     initialize = function(id = "tabpfn") {
       super$initialize(
         id = id,
-        properties = character(0),
+        properties = "bagging_refit",
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3extralearners", "callr"),
         devices = c("cpu", "cuda"),
@@ -107,7 +107,7 @@ AutoTabPFN = R6Class(
 
       set_threads(learner, n_threads)
 
-      po("fixfactors", id = "tabpfn_fixfactors") %>>%
+      PipeOpFixFactorsStable$new(id = "tabpfn_fixfactors") %>>%
         po("removeconstants", id = "tabpfn_post_removeconstants") %>>%
         learner
     },

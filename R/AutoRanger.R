@@ -53,7 +53,7 @@ AutoRanger = R6Class(
 
       po("removeconstants", id = "ranger_removeconstants") %>>%
         po("imputeoor", id = "ranger_imputeoor") %>>%
-        po("fixfactors", id = "ranger_fixfactors") %>>%
+        PipeOpFixFactorsStable$new(id = "ranger_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "ranger_imputesample") %>>%
         po("collapsefactors", target_level_count = 100, id = "ranger_collapse") %>>%
         po("removeconstants", id = "ranger_post_removeconstants") %>>%

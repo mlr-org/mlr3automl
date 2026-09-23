@@ -53,7 +53,7 @@ AutoKKNN = R6Class(
         po("removeconstants", id = "kknn_removeconstants") %>>%
         po("imputehist", id = "kknn_imputehist") %>>%
         po("imputeoor", id = "kknn_imputeoor") %>>%
-        po("fixfactors", id = "kknn_fixfactors") %>>%
+        PipeOpFixFactorsStable$new(id = "kknn_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "kknn_imputesample") %>>%
         po("collapsefactors", target_level_count = 100, id = "kknn_collapse") %>>%
         po("removeconstants", id = "kknn_post_removeconstants") %>>%

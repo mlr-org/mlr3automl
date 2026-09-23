@@ -27,7 +27,7 @@ AutoResNet = R6Class(
     initialize = function(id = "resnet") {
       super$initialize(
         id = id,
-        properties = "internal_tuning",
+        properties = c("internal_tuning", "bagging_refit"),
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3torch"),
         devices = c("cuda", "cpu"),
@@ -62,7 +62,7 @@ AutoResNet = R6Class(
       po("colapply", id = "resnet_character", applicator = as.factor, affect_columns = selector_type("character")) %>>%
         po("removeconstants", id = "resnet_removeconstants") %>>%
         po("imputeoor", id = "resnet_imputeoor") %>>%
-        po("fixfactors", id = "resnet_fixfactors") %>>%
+        PipeOpFixFactorsStable$new(id = "resnet_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "resnet_imputesample") %>>%
         po("encodeimpact", id = "resnet_encode") %>>%
         po("removeconstants", id = "resnet_post_removeconstants") %>>%

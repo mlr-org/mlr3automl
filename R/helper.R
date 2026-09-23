@@ -228,3 +228,57 @@ generate_initial_design = function(method, search_space, size) {
     stopf("Unknown initial design method '%s'", method)
   )
 }
+
+# `design` without the duplicated configurations of `subspace`.
+# a learner whose hyperparameters are all categorical, logical, or bounded integer has finitely many configurations,
+# and the design is drawn on the search space of all learners, so such a learner receives many more points than it
+# has configurations. the tuner evaluates the supplied design as it is, so the duplicates are dropped here.
+# hyperparameters of other learners can never be active for this learner and are therefore not compared.
+unique_design_subspace = function(subspace, design) {
+  ids = intersect(subspace$ids(), names(design))
+  if (!nrow(design) || !length(ids) || !all(is.finite(subspace$nlevels))) {
+    return(design)
+  }
+  unique(design, by = ids)
+}
+
+# assigns every learner to the mirai compute profile whose workers evaluate it.
+# without compute profiles, all learners run on the default profile of mirai with `n_workers` workers.
+# with a single compute profile, all learners run on that profile.
+# with the profiles "mlr3automl_cpu" and "mlr3automl_gpu", the gpu learners run on the gpu profile and the cpu
+# learners on the cpu profile.
+# returns list(subspace_profiles = named character(), profiles = named integer()) where `subspace_profiles` holds
+# the profile of every learner and `profiles` the number of workers of every profile that runs at least one learner.
+assign_learner_profiles = function(profiles, n_workers, cpu_ids, gpu_ids) {
+  learner_ids = c(cpu_ids, gpu_ids)
+
+  if (is.null(profiles)) {
+    return(list(
+      subspace_profiles = set_names(rep("default", length(learner_ids)), learner_ids),
+      profiles = c(default = as.integer(n_workers))
+    ))
+  }
+
+  if (length(profiles) == 1L) {
+    return(list(
+      subspace_profiles = set_names(rep(names(profiles), length(learner_ids)), learner_ids),
+      profiles = profiles
+    ))
+  }
+
+  if (!setequal(names(profiles), c("mlr3automl_cpu", "mlr3automl_gpu"))) {
+    error_config(
+      paste(
+        "Compute profiles %s are not supported.",
+        "Set up a single compute profile or the profiles 'mlr3automl_cpu' and 'mlr3automl_gpu'."
+      ),
+      str_collapse(names(profiles), quote = "'")
+    )
+  }
+
+  subspace_profiles = c(
+    set_names(rep("mlr3automl_cpu", length(cpu_ids)), cpu_ids),
+    set_names(rep("mlr3automl_gpu", length(gpu_ids)), gpu_ids)
+  )
+  list(subspace_profiles = subspace_profiles, profiles = profiles[unique(subspace_profiles)])
+}

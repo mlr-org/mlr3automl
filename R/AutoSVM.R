@@ -52,7 +52,7 @@ AutoSVM = R6Class(
         po("removeconstants", id = "svm_removeconstants") %>>%
         po("imputehist", id = "svm_imputehist") %>>%
         po("imputeoor", id = "svm_imputeoor") %>>%
-        po("fixfactors", id = "svm_fixfactors") %>>%
+        PipeOpFixFactorsStable$new(id = "svm_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "svm_imputesample") %>>%
         po("collapsefactors", target_level_count = 100, id = "svm_collapse") %>>%
         po("encode", method = "one-hot", id = "svm_encode") %>>%

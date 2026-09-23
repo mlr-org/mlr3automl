@@ -21,8 +21,40 @@ Set \code{encapsulate_mbo = FALSE} to catch no errors in mbo.
 \section{Parameters}{
 
 \describe{
+\item{bagging}{(\code{logical(1)})\cr
+Whether to train each configuration as a bagged ensemble.
+A configuration trains \code{bagging_folds} child models on a cross-validation of the training data,
+and the test prediction is the equally weighted average of the children.
+Tasks with fewer than \code{bagging_small_size} rows are instead cross-validated with
+\code{bagging_small_folds} folds repeated \code{bagging_small_repeats} times.
+The configuration is scored by its out-of-fold predictions,
+so the tuning archive reports the scores in the \code{internal_valid_score} column and
+the \code{resampling} and \code{small_data_resampling} parameters have no effect.
+The neural network learners (mlp, resnet, ft_transformer, and fastai) and tabpfn instead fit a
+single final model on the complete training data after the cross-validation.
+The final model reuses the exact model of the winning configuration trained during tuning.
+Default is \code{TRUE}.}
+
+\item{bagging_folds}{(\code{integer(1)})\cr
+Number of cross-validation folds and therefore child models of a bagged configuration.
+Default is \code{8}.}
+
+\item{bagging_small_folds}{(\code{integer(1)})\cr
+Number of cross-validation folds of a bagged configuration on a small data set.
+Default is \code{5}.}
+
+\item{bagging_small_repeats}{(\code{integer(1)})\cr
+Number of repetitions of the cross-validation of a bagged configuration on a small data set.
+A bagged configuration therefore trains \code{bagging_small_folds * bagging_small_repeats} child models.
+Default is \code{5}.}
+
+\item{bagging_small_size}{(\code{integer(1)})\cr
+Number of rows up to which a task counts as a small data set for \code{bagging}.
+Default is \code{500}.}
+
 \item{learner_timeout}{(\code{integer(1)})\cr
-Timeout for training and predicting with a single learner.}
+Timeout for training and predicting with a single configuration.
+With \code{bagging}, each child model receives an equal share of the timeout.}
 
 \item{n_threads}{(\code{integer(1)})\cr
 Number of threads used for training a single learner.}
@@ -39,12 +71,15 @@ Overrides the default of the learner.
 Can only be 0 or 1 for now.
 The torch learners, TabPFN, TabFM, and fastai default to 1; all other learners default to 0.
 Only effective when \code{"cuda"} is part of \code{devices}; otherwise every learner is trained on the CPU.
-When the requirements are mixed and the daemons of the \CRANpkg{mirai} compute profiles
-\code{"mlr3automl_cpu"} and \code{"mlr3automl_gpu"} are set up with \code{\link[rush:rush_plan]{rush::rush_plan()}}, the search space is
-partitioned into a cpu and a gpu subspace which are tuned with \link[mlr3mbo:TunerADBOSubspaces]{mlr3mbo::TunerADBOSubspaces}.
-The workers of a profile only ever propose and evaluate points of the subspace of that profile,
-so the number of workers per subspace is the number of workers of its profile.
-Otherwise the cpu and gpu learners are tuned in a single search space with \link[mlr3mbo:TunerAsyncMbo]{mlr3mbo::TunerAsyncMbo}.
+Every learner is a subspace of the search space that is tuned with \link[mlr3mbo:TunerADBOThompson]{mlr3mbo::TunerADBOThompson},
+and every subspace runs on a \CRANpkg{mirai} compute profile.
+Without compute profiles or with a single compute profile, all learners run on the same workers.
+When the daemons of the compute profiles \code{"mlr3automl_cpu"} and \code{"mlr3automl_gpu"} are set up with
+\code{\link[rush:rush_plan]{rush::rush_plan()}}, the learners with a \code{n_gpu} requirement of 1 run on the gpu profile and the remaining
+learners on the cpu profile.
+The workers of a profile only ever propose and evaluate points of the learners of that profile,
+and a profile that runs no learner stays idle.
+Other combinations of compute profiles are not supported.
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{mirai::daemons(7, .compute = "mlr3automl_cpu")
 mirai::daemons(1, .compute = "mlr3automl_gpu")
@@ -78,7 +113,8 @@ the memory that are freed on the cpu profiles.}
 Threshold value for the data set size (rows) from which special rules apply.}
 
 \item{small_data_resampling}{(\link[mlr3:Resampling]{mlr3::Resampling})\cr
-Resampling strategy to use for model training on small data sets.}
+Resampling strategy to use for model training on small data sets.
+Only used when \code{bagging} is \code{FALSE}.}
 
 \item{initial_design_default}{(\code{logical(1)})\cr
 Whether to use the default design of the learner.}
@@ -98,11 +134,12 @@ Possible values are \code{"lhs"}, \code{"sobol"}, \code{"random"}.
 
 \item{initial_design_fraction}{(\code{numeric(1)})\cr
 Fraction of the budget to use for the initial design.
-When the search space is partitioned into a cpu and a gpu subspace, the remaining points of both
-designs are dropped, because every compute profile has its own queue.}
+The remaining points of the designs of all learners are dropped, because every compute profile has its own
+queue.}
 
 \item{resampling}{(\link[mlr3:Resampling]{mlr3::Resampling})\cr
-Resampling strategy used for tuning.}
+Resampling strategy used for tuning.
+Only used when \code{bagging} is \code{FALSE}.}
 
 \item{terminator}{(\link[bbotk:Terminator]{bbotk::Terminator})\cr
 Terminator criterion for tuning.}

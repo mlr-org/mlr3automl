@@ -27,7 +27,7 @@ AutoMLP = R6Class(
     initialize = function(id = "mlp") {
       super$initialize(
         id = id,
-        properties = "internal_tuning",
+        properties = c("internal_tuning", "bagging_refit"),
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3torch"),
         devices = c("cuda", "cpu"),
@@ -64,7 +64,7 @@ AutoMLP = R6Class(
       po("colapply", id = "mlp_character", applicator = as.factor, affect_columns = selector_type("character")) %>>%
         po("removeconstants", id = "mlp_removeconstants") %>>%
         po("imputeoor", id = "mlp_imputeoor") %>>%
-        po("fixfactors", id = "mlp_fixfactors") %>>%
+        PipeOpFixFactorsStable$new(id = "mlp_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "mlp_imputesample") %>>%
         po("encodeimpact", id = "mlp_encode") %>>%
         po("removeconstants", id = "mlp_post_removeconstants") %>>%

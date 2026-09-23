@@ -41,7 +41,7 @@ AutoTabFM = R6Class(
     initialize = function(id = "tabfm", devices = "cuda") {
       super$initialize(
         id = id,
-        properties = character(0),
+        properties = "bagging_refit",
         task_types = c("classif", "regr"),
         packages = c("mlr3", "mlr3extralearners", "callr"),
         devices = assert_subset(devices, c("cpu", "cuda"), empty.ok = FALSE),
@@ -100,7 +100,7 @@ AutoTabFM = R6Class(
       # pipeline, so the graph only has to keep the factor levels stable across train and predict
       po("colapply", id = "tabfm_character", applicator = as.factor, affect_columns = selector_type("character")) %>>%
         po("removeconstants", id = "tabfm_removeconstants") %>>%
-        po("fixfactors", id = "tabfm_fixfactors") %>>%
+        PipeOpFixFactorsStable$new(id = "tabfm_fixfactors") %>>%
         learner
     },
 

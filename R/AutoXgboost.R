@@ -67,7 +67,7 @@ AutoXgboost = R6Class(
       po("colapply", id = "xgboost_character", applicator = as.factor, affect_columns = selector_type("character")) %>>%
         po("removeconstants", id = "xgboost_removeconstants") %>>%
         po("imputeoor", id = "xgboost_imputeoor") %>>%
-        po("fixfactors", id = "xgboost_fixfactors") %>>%
+        PipeOpFixFactorsStable$new(id = "xgboost_fixfactors") %>>%
         po("imputesample", affect_columns = selector_type(c("factor", "ordered")), id = "xgboost_imputesample") %>>%
         po("encodeimpact", id = "xgboost_encode") %>>%
         po("removeconstants", id = "xgboost_post_removeconstants") %>>%
