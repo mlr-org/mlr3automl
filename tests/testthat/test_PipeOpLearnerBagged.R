@@ -44,6 +44,8 @@ test_that("values set on the graph reach the inner learner", {
 
 test_that("train stores the child states and the out-of-fold score", {
   task = tsk("penguins")
+  # stratification keeps the majority class of every training fold equal to the overall majority class
+  task$col_roles$stratum = task$target_names
   learner = lrn("classif.featureless", id = "debug", predict_type = "prob")
   graph = po("removeconstants", id = "debug_removeconstants") %>>% learner
   pop = PipeOpLearnerBagged$new(graph, id = "debug", measure = msr("classif.ce"),
@@ -52,7 +54,6 @@ test_that("train stores the child states and the out-of-fold score", {
   expect_null(pop$train(list(task))[[1L]])
   expect_class(pop$state, "pipeop_learner_bagged_state")
   expect_list(pop$state$cv_model_states, len = 3L)
-  # featureless always predicts the majority class, so the out-of-fold score is deterministic
   majority = names(which.max(table(task$truth())))
   expect_equal(pop$state$internal_valid_scores$classif.ce, mean(task$truth() != majority))
   expect_null(pop$state$internal_tuned_values)
@@ -60,6 +61,8 @@ test_that("train stores the child states and the out-of-fold score", {
 
 test_that("repeats train folds * repeats child models", {
   task = tsk("penguins")
+  # stratification keeps the majority class of every training fold equal to the overall majority class
+  task$col_roles$stratum = task$target_names
   learner = lrn("classif.featureless", id = "debug", predict_type = "prob")
   pop = PipeOpLearnerBagged$new(as_graph(learner), id = "debug", measure = msr("classif.ce"),
     param_vals = list(bagging.folds = 3L, bagging.repeats = 2L))

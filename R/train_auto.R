@@ -299,16 +299,9 @@ train_auto = function(self, private, task) {
   tuner$param_set$set_values(
     subspaces = subspaces,
     subspace_profiles = assignment$subspace_profiles,
-    initial_design_subspace = initial_design_subspace
+    initial_design_subspace = initial_design_subspace,
+    catch_errors = pv$encapsulate_mbo
   )
-
-  # configure tuner
-  tuner$surrogate = default_surrogate(self$instance)
-  tuner$surrogate$param_set$set_values(catch_errors = pv$encapsulate_mbo)
-
-  if (!pv$encapsulate_mbo) {
-    tuner$surrogate$learner$encapsulate(method = "none")
-  }
 
   # tune
   lg$info("Learner '%s' starts tuning phase", self$id)
